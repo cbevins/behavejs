@@ -1,5 +1,6 @@
 import { DagNode } from './DagNode.js'
 
+// TO DO - set and propagate DagNode.dirty, and only update if dirty
 export class Dag {
     constructor() {
         this.nodes = []             // Array of references to all DagNodes
@@ -31,6 +32,21 @@ export class Dag {
 
     // Returns a reference to the DagNode with 'key' prop
     node(key) { return this.nodeMap.get(key) }
+
+    poke(refOrKey, value) {
+        const node = (typeof refOrKey === 'string') ? this.nodeMap.get(refOrKey) : refOrKey
+        node.value = value
+    }
+
+    update() {
+        for(let i=1; i<this.topoLevels.length; i++) {
+            for(let node of this.topoLevels[i]) node.update()
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Private methods
+    // -------------------------------------------------------------------------
 
     _dfsSort() {
         this.dfsOrder = []

@@ -33,15 +33,24 @@ dag.init()
 // console.log('\nDFS Sort Order:')
 // for(let node of dag.dfsOrder) console.log(node.key, node.value)
 
-a.update()
-c.update()
-d.update()
-b.update()
-
-// Should be [4,5], [0, 2], [3], [1]
-console.log('Kahn Sort Order:')
-for (let i=0; i<dag.topoLevels.length; i++) {
-    for(let node of dag.topoLevels[i])
-        console.log(i, node.key, node.value)
+function log() {
+    console.log('Nodes in Kahn Sort Order:')
+    for (let i=0; i<dag.topoLevels.length; i++) {
+        for(let node of dag.topoLevels[i]) {
+            let method = 'input'
+            if (node.updater) {
+                method = (node.updater===dag.constant ? "const" : 'value')
+            }
+            console.log(i, node.key, method, node.value)
+        }
+    }
 }
 
+// Step 4 - Make a run
+dag.update()
+log()
+
+// Change input and run again
+dag.poke(e, 4)
+dag.update()
+log()
