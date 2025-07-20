@@ -1,6 +1,5 @@
 import { DagNode } from './DagNode.js'
 
-// TO DO - set and propagate DagNode.dirty, and only update if dirty
 export class Dag {
     constructor() {
         this.nodes = []             // Array of references to all DagNodes
@@ -23,6 +22,7 @@ export class Dag {
         this._setOutputs()
         this._dfsSort()
         this._kahnSort()
+        this.update()
     }
 
     // Returns an array of references to client input DagNodes
@@ -36,11 +36,16 @@ export class Dag {
     poke(refOrKey, value) {
         const node = (typeof refOrKey === 'string') ? this.nodeMap.get(refOrKey) : refOrKey
         node.value = value
+        this._propagateDirty(node, true)
     }
 
+    // Updates all the nodes in topological order
     update() {
         for(let i=1; i<this.topoLevels.length; i++) {
-            for(let node of this.topoLevels[i]) node.update()
+            for(let node of this.topoLevels[i]) {
+                node.update()
+                node.tmp = false    // clear the dirty flag
+            }
         }
     }
 
@@ -88,6 +93,11 @@ export class Dag {
             // store found nodes at this depth
             this.topoLevels.push(found)
         }
+    }
+
+    _propagateDirty(node, isDirty=true) {
+        node.tmp = isDirty
+        for(let next of node.outputs) this._propagateDirty(next, isDirty)
     }
 
     // Sets each node's 'outputs' (users, consumers) based upon the
