@@ -1,16 +1,19 @@
 export class DagNode {
-    constructor(key, value=0) {
+    constructor(key, value=0, updater=null, inputs=[]) {
         this.key = key
         this.value = value
-        this.inputs = []
+        this.inputs = inputs
         this.outputs = []
-        this.tmp = false    // Used for dirty, visited, indegrees
-        this.updater = null // reference to an update method
+        this.status = 'ignored' // 'ignored', 'required', 'selected'
+        this.tmp = false        // Used for dirty, visited, indegrees
+        this.updater = updater  // reference to an update method
     }
 
+    // Sets the updater method and input dependencies
     depends(updater=null, inputs=[]) {
         this.updater = updater
         this.inputs = inputs
+        return this
     }
 
     update() {
@@ -23,6 +26,7 @@ export class DagNode {
                 args.push(this.inputs[i].value)
             }
             this.value = this.updater.apply(this, args)
+            console.log(`${this.key}.update() => ${this.value}`)
         }
     }
 }

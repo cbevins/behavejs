@@ -8,43 +8,89 @@ export class Dag {
         this.topoLevels = []        // Kahn sort topological levels
     }
 
-    // Adds a DagNode to this Dag
-    add(dagNode) {
-        this.nodes.push(dagNode)
-        this.nodeMap.set(dagNode.key, dagNode)
-        return dagNode
+    // Adds a DagNode that initially is client input
+    add(desc, value) {
+        const node = new DagNode(desc, value, this.client)
+        this.nodes.push(node)
+        this.nodeMap.set(node.key, node)
+        return node
     }
 
-    // Dummy updater method for constant DagNodes
+    clearSelected() { for(node of this.nodes) this.node.status = 'ignored' }
+
+    // Dummy updater method for DagNodes that are constant or client input via poke()
+    client() {}
     constant() {}
 
+    // Sets DagNode.outputs[], performs topological sort
+    // All DagNodes are clean and ignored
     init() {
+        console.log('Running Dag.init()...')
+        // Any node without an updater() must be client input
+        for(let node of this.nodes) if (!node.updater) node.updater=this.client
         this._setOutputs()
-        this._dfsSort()
+        // this._dfsSort()
         this._kahnSort()
         this.update()
     }
 
     // Returns an array of references to client input DagNodes
-    // Note that level 0 DagNodes with null 'updater' methods are considered to be
-    // Dag domain inputs whose values are set by clients via Dag.setNodeValue()
-    inputs() { return this.topoLevels[0].filter(node => node.updater === null) }
+    // Note that level 0 DagNodes have Dag.constant() or Dag.client() 'updater' methods
+    clientNodes() { return this.topoLevels[0].filter(node => node.updater === this.client) }
+    constantNodes() { return this.topoLevels[0].filter(node => node.updater === this.constant) }
 
     // Returns a reference to the DagNode with 'key' prop
-    node(key) { return this.nodeMap.get(key) }
+    node(key) { 
+        if (! this.nodeMap.has(key))
+            throw new Error(`Attempt to access Dag.nodeMap() with unknown key '${key}'.`)
+        return this.nodeMap.get(key)
+    }
 
-    poke(refOrKey, value) {
-        const node = (typeof refOrKey === 'string') ? this.nodeMap.get(refOrKey) : refOrKey
+    // Returns a reference to a DagNode givene its reference or its key
+    nodeRef(refOrKey) { return (typeof refOrKey === 'string') ? this.nodeMap.get(refOrKey) : refOrKey }
+
+    // Updates the value of the DagNode by its key or reference
+    poke(nodeRefOrKey, value) {
+        const node = this.nodeRef(nodeRefOrKey)
         node.value = value
         this._propagateDirty(node, true)
     }
 
-    // Updates all the nodes in topological order
+    // Returns an array of references to all the 'required' DagNodes
+    requiredNodes() { 
+        const ar = []
+        for(let node of this.nodes) if (node.status === 'required') ar.push(node)
+        return ar
+    }
+
+    // Sets a DagNode status to 'selected'
+    // Called by clients to indicate a Dag output of interest
+    select(nodeRefOrKey) {
+        const node = this.nodeRef(nodeRefOrKey)
+        node.status = 'selected'
+        node.tmp = 'dirty'
+    }
+
+    // Returns an array of references to all the 'selected' DagNodes
+    selectedNodes() {
+        const ar = []
+        for(let node of this.nodes) if (node.status==='selected') ar.push(node)
+        return ar
+    }
+
+    // Updates all the DagNode values in topological order
     update() {
+        console.log('\nRunning Dag.update() for', this.selectedNodes().length, 'output nodes:')
+        for(let node of this.selectedNodes()) {
+            // console.log(`update() - node ${node.key} is selected`)
+            for(let input of node.inputs) this._propagateRequired(input)
+        }
         for(let i=1; i<this.topoLevels.length; i++) {
             for(let node of this.topoLevels[i]) {
-                node.update()
-                node.tmp = false    // clear the dirty flag
+                if (node.status!=='ignored' && node.tmp) {
+                    node.update()
+                    node.tmp = false    // clear the dirty flag
+                }
             }
         }
     }
@@ -98,6 +144,15 @@ export class Dag {
     _propagateDirty(node, isDirty=true) {
         node.tmp = isDirty
         for(let next of node.outputs) this._propagateDirty(next, isDirty)
+    }
+
+    _propagateRequired(node) {
+        if (node.status === 'ignored') {    // if NOT already 'selected' or 'required'
+            node.status = 'required'
+            node.tmp = 'dirty'
+            // console.log(`update() - node ${node.key} is required`)
+            for(let next of node.inputs) this._propagateRequired(next)
+        }
     }
 
     // Sets each node's 'outputs' (users, consumers) based upon the
