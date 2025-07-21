@@ -1,5 +1,12 @@
 import { DagNode } from './DagNode.js'
 
+const CLEAN = 'clean'
+const DIRTY = 'dirty'
+
+const ACTIVE = 'active'
+const INACTIVE = 'inactive'
+const SELECTED = 'selected'
+
 export class Dag {
     constructor() {
         this.nodes = []             // Array of references to all DagNodes
@@ -10,24 +17,32 @@ export class Dag {
 
     // Adds a DagNode that initially is client input
     add(desc, value) {
-        const node = new DagNode(desc, value, this.client)
+        const node = new DagNode(desc, value)
+        node.updater = this.client
+        node.status = INACTIVE
+        node.dirty = CLEAN
+        node.tmp = false
         this.nodes.push(node)
         this.nodeMap.set(node.key, node)
         return node
     }
 
-    clearSelected() { for(node of this.nodes) this.node.status = 'ignored' }
+    clearSelected() { for(node of this.nodes) this.node.status = INACTIVE }
 
     // Dummy updater method for DagNodes that are constant or client input via poke()
     client() {}
     constant() {}
 
     // Sets DagNode.outputs[], performs topological sort
-    // All DagNodes are clean and ignored
+    // All DagNodes are CLEAN and INACTIVE
     init() {
         console.log('Running Dag.init()...')
-        // Any node without an updater() must be client input
-        for(let node of this.nodes) if (!node.updater) node.updater=this.client
+        for(let node of this.nodes) {
+            node.status = INACTIVE
+            node.dirty = CLEAN
+            // Any node without an updater() must be client input
+            if (!node.updater) node.updater=this.client
+        }
         this._setOutputs()
         // this._dfsSort()
         this._kahnSort()
@@ -56,10 +71,10 @@ export class Dag {
         this._propagateDirty(node, true)
     }
 
-    // Returns an array of references to all the 'required' DagNodes
-    requiredNodes() { 
+    // Returns an array of references to all the ACTIVE DagNodes
+    activeNodes() { 
         const ar = []
-        for(let node of this.nodes) if (node.status === 'required') ar.push(node)
+        for(let node of this.nodes) if (node.status === ACTIVE) ar.push(node)
         return ar
     }
 
@@ -67,14 +82,14 @@ export class Dag {
     // Called by clients to indicate a Dag output of interest
     select(nodeRefOrKey) {
         const node = this.nodeRef(nodeRefOrKey)
-        node.status = 'selected'
-        node.tmp = 'dirty'
+        node.status = SELECTED
+        node.dirty = DIRTY
     }
 
     // Returns an array of references to all the 'selected' DagNodes
     selectedNodes() {
         const ar = []
-        for(let node of this.nodes) if (node.status==='selected') ar.push(node)
+        for(let node of this.nodes) if (node.status===SELECTED) ar.push(node)
         return ar
     }
 
@@ -87,9 +102,9 @@ export class Dag {
         }
         for(let i=1; i<this.topoLevels.length; i++) {
             for(let node of this.topoLevels[i]) {
-                if (node.status!=='ignored' && node.tmp) {
+                if (node.status!==INACTIVE && node.dirty===DIRTY) {
                     node.update()
-                    node.tmp = false    // clear the dirty flag
+                    node.dirty = CLEAN
                 }
             }
         }
@@ -141,16 +156,17 @@ export class Dag {
         }
     }
 
-    _propagateDirty(node, isDirty=true) {
-        node.tmp = isDirty
-        for(let next of node.outputs) this._propagateDirty(next, isDirty)
+    // Propagates the 'dirty' flag to all the node's outputs
+    _propagateDirty(node) {
+        node.dirty = DIRTY
+        for(let next of node.outputs) this._propagateDirty(next)
     }
 
     _propagateRequired(node) {
-        if (node.status === 'ignored') {    // if NOT already 'selected' or 'required'
-            node.status = 'required'
-            node.tmp = 'dirty'
-            // console.log(`update() - node ${node.key} is required`)
+        if (node.status === INACTIVE) {    // if NOT already SELECTED or ACTIVE
+            node.status = ACTIVE
+            node.dirty = DIRTY
+            // console.log(`update() - node ${node.key} is ACTIVE`)
             for(let next of node.inputs) this._propagateRequired(next)
         }
     }

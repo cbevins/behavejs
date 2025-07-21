@@ -2,11 +2,11 @@ export class DagNode {
     constructor(key, value=0, updater=null, inputs=[]) {
         this.key = key
         this.value = value
-        this.inputs = inputs
-        this.outputs = []
-        this.status = 'ignored' // 'ignored', 'required', 'selected'
-        this.tmp = false        // Used for dirty, visited, indegrees
-        this.updater = updater  // reference to an update method
+        this.status = null      // INACTIVE, ACTIVE, or SELECTED
+        this.dirty = null       // Used for dirty, visited, indegrees
+        this.updater = null     // reference to an update method
+        this.inputs = []        // references to all input (provider) DagNodes
+        this.outputs = []       // references to all output (consumer) DagNodes
     }
 
     // Sets the updater method and input dependencies
