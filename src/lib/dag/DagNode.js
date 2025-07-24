@@ -1,32 +1,53 @@
 export class DagNode {
-    constructor(key, value=0, updater=null, inputs=[]) {
+    constructor(key, value=null) {
         this.key = key
         this.value = value
-        this.status = null      // INACTIVE, ACTIVE, or SELECTED
-        this.dirty = null       // Used for dirty, visited, indegrees
-        this.updater = null     // reference to an update method
-        this.inputs = []        // references to all input (provider) DagNodes
-        this.outputs = []       // references to all output (consumer) DagNodes
+        
+        // Reference to the value update method called by Dag.peek()
+        // This is set externally by the client during Dag configuration
+        // by calling DagNode.depends(method, [dagNodes]).
+        this.updater = null
+        
+        // References to DagNodes that supply parameters to *this* DagNode.
+        // These are set externally by the client during Dag configuration
+        // by calling DagNode.depends(method, [dagNodes]).
+        this.suppliers = []
+
+        // ---------------------------------------------------------------------
+        // Remaining props are set and used by the Dag
+
+        // References to DagNodes that consume *this* DagNode as a supplier.
+        // These are set internally when Dag.init() is called.
+        this.consumers = []
+
+        // References to all Dag INPUT DagNodes and that impact *this* DagNode
+        // These are set internally when Dag.init() is called.
+        // Note that Dag.constant and Dag.input updaters will have no inputs
+        this.inputs = []
+        this.dists = []     // distance from *this* DagNode to its nearest input
+
+        // Whether the DagNode is INACTIVE, ACTIVE, or OUTPUT
+        this.status = null
+        
+        // Whether the DagNode is DIRTY or CLEAN
+        this.dirty = null
     }
 
-    // Sets the updater method and input dependencies
-    depends(updater=null, inputs=[]) {
-        this.updater = updater
-        this.inputs = inputs
+    /**
+     * Declares the DagNode's updater method and supplier DagNodes
+     * @param {function} funcRef Reference to an updater function, which should be
+     *  - Dag.aasing()
+     *  - Dag.constant()
+     *  - Dag.input()
+     *  - any other function that, when passed the values of *this* DagNode's
+     *      suppliers as args, returns an updated value assigned to *this* DagNode
+     *  - left null, in which case it becomes a Dag input node.
+     * @param {array} suppliers Array of DagNode keys and/or references
+     * @returns 
+     */
+    depends(funcRef, suppliers=[]) {
+        this.updater = funcRef
+        this.suppliers = suppliers
         return this
-    }
-
-    update() {
-        if (this.updater) {
-            const args = []
-            // NOTE: This is the most heavily used function in the entire system.
-            // DO NOT use Array.map() to iterate over method parms,
-            // as it increases execution time time by 50% !!!
-            for (let i = 0; i < this.inputs.length; i++) {
-                args.push(this.inputs[i].value)
-            }
-            this.value = this.updater.apply(this, args)
-            console.log(`${this.key}.update() => ${this.value}`)
-        }
     }
 }

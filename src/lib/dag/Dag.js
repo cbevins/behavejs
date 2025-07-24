@@ -1,183 +1,218 @@
 import { DagNode } from './DagNode.js'
 
-const CLEAN = 'clean'
-const DIRTY = 'dirty'
+// DagNode.dirty values
+const CLEAN = 'CLEAN'
+const DIRTY = 'DIRTY'
 
-const ACTIVE = 'active'
-const INACTIVE = 'inactive'
-const SELECTED = 'selected'
+// DagNode.status values
+const INACTIVE = 'INACTIVE' // not in the suppliers stream of any OUTPUT node
+const ACTIVE = 'ACTIVE'     // in the suppliers stream of at least one OUTPUT node
+const OUTPUT = 'OUTPUT'     // OUTPUT node that is a supplier to at least one other OUTPUT node
+const TERMINAL = 'TERMINAL' // OUTPUT node that supplies no other OUTPUT nodes
 
+/**
+ * 1 - Create the Dag via new Dag('My Dag')
+ * 2 - Call dag.add() to add DagNodes
+ * 3 - Call dag.init() after all DagNodes are added.
+ * 4 - call dag.setOutputs() to declare output DagNodes
+ * 5 - call dag.set() to set value on an input DagNodes
+ * 6 - call dag.get() to return value of any DagNode after it is updated
+ */
 export class Dag {
-    constructor() {
+    constructor(desc) {
+        this.desc = desc
         this.nodes = []             // Array of references to all DagNodes
         this.nodeMap = new Map()    // Map of DagNode key => reference
-        this.dfsOrder = []          // DFS sort topological node order
-        this.topoLevels = []        // Kahn sort topological levels
+        this.inputs = new Set()     // Set of references to all possible input DagNodes (whether active or not)
+        this.outputs = new Set()    // Set of references to currently selected output DagNodes
     }
 
-    // Adds a DagNode that initially is client input
-    add(desc, value) {
-        const node = new DagNode(desc, value)
-        node.updater = this.client
-        node.status = INACTIVE
+    // DagNode.updater method for DagNodes whose values are directly assigned from other nodes
+    static assign(source) { return source.value }
+    // DagNode.updater method for DagNode whose value is constant.
+    static constant() {}
+    // DagNode.updater method for DagNodes whose value is client input via Dag.set()
+    static input() {}
+
+    // Adds a DagNode to this Dag
+    add(node) {
+        node.consumers = []
+        node.inputs = []
+        node.status = INACTIVE  // initialize all DagNode.status as INACTIVE
         node.dirty = CLEAN
-        node.tmp = false
         this.nodes.push(node)
         this.nodeMap.set(node.key, node)
         return node
     }
 
-    clearSelected() { for(node of this.nodes) this.node.status = INACTIVE }
+    // Called after Dag.init() to add one or more DagNodes as 'outputs'.
+    // Most efficient if only called once with the complete set of inputs in the arg array.
+    // 'refOrKeyArray' may be an array of, or a single of, DagNode keys or references
+    addOutputs(refOrKeyArray) {
+        const ar = Array.isArray(refOrKeyArray) ? refOrKeyArray : [refOrKeyArray]
+        for(let refOrKey of ar) {
+            const node = this.nodeRef(refOrKey)
+            this.outputs.add(node)  // add this to the Set() of output nodes
+            this._propagateSuppliersToActive(node)
+            node.status = TERMINAL  // for now, promote status from ACTIVE to TERMINAL
+        }
+        // Demote non-terminal output nodes to OUTPUT
+        this._demoteNonTerminals()
+        // this._setInputDepths()
+    }
 
-    // Dummy updater method for DagNodes that are constant or client input via poke()
-    client() {}
-    constant() {}
+    // All OUTPUT DagNodes are initially set as TERMINAL.
+    // This method checks the suppliers of every TERMINAL DagNode,
+    // and if any are TERMINAL, they are demoted to OUTPUT.
+    _demoteNonTerminals() {
+        for(let output of this.outputs) {
+            if (output.status===TERMINAL) {   // check only nodes not yet demoted to OUTPUT
+                for(let supplier of output.suppliers)
+                    this._demoteSupplierTerminals(supplier)
+            }
+        }
+    }
 
-    // Sets DagNode.outputs[], performs topological sort
-    // All DagNodes are CLEAN and INACTIVE
+    _demoteSupplierTerminals(node) {
+        if (node.status===TERMINAL)
+            node.status = OUTPUT
+        for(let supplier of node.suppliers)
+            this._demoteSupplierTerminals(supplier)
+    }
+
+    // TO DO
+    clearOutputs() {
+        this.outputs.clear()
+        this.init()
+    }
+
+    // Returns the DagNode value.
+    // If the DagNode is dirty, set() is recursively called on all its suppliers,
+    // its dirty flag is cleared before returning its updated value.
+    get(refOrKey) {
+        const node = this.nodeRef(refOrKey)
+        if (!node.dirty)
+            return (node.value)
+        if (node.updater !== Dag.constant && node.updater !== Dag.input) {
+            if (node.updater===Dag.assign) {
+                node.value = this.get(node.suppliers[0])
+            } else {
+                // get updated supplier values
+                const args = []
+                for(let supplier of node.suppliers)
+                    args.push(this.get(supplier))
+                node.value = node.updater.apply(node, args)
+            }
+        }
+        node.dirty = CLEAN
+        return node.value
+    }
+
+    // MUST BE CALLED AFTER ALL THE DagNodes HAVE BEEN ADDED TO THIS Dag
     init() {
-        console.log('Running Dag.init()...')
+        this._resolveNodeSupplierKeys()
+        this.inputs = new Set()
         for(let node of this.nodes) {
             node.status = INACTIVE
             node.dirty = CLEAN
-            // Any node without an updater() must be client input
-            if (!node.updater) node.updater=this.client
+            // Any node without an updater() must be a Dag input
+            if (!node.updater)
+                node.updater = Dag.input
+            if (node.updater === Dag.input)
+                this.inputs.add(node)
         }
-        this._setOutputs()
-        // this._dfsSort()
-        this._kahnSort()
-        this.update()
+        this._setConsumers()
+        // TO DO - ensure all Dag.assign() has exactly 1 supplier
     }
 
-    // Returns an array of references to client input DagNodes
-    // Note that level 0 DagNodes have Dag.constant() or Dag.client() 'updater' methods
-    clientNodes() { return this.topoLevels[0].filter(node => node.updater === this.client) }
-    constantNodes() { return this.topoLevels[0].filter(node => node.updater === this.constant) }
+    isConstantNode(refOrKey) { return this.nodeRef(refOrKey).updater === Dag.constant }
+    isInputNode(refOrKey) { return this.inputs.has(this.nodeRef(refOrKey)) }
+    isOutputNode(refOrKey) { return this.outputs.has(this.nodeRef(refOrKey)) }
 
     // Returns a reference to the DagNode with 'key' prop
-    node(key) { 
-        if (! this.nodeMap.has(key))
-            throw new Error(`Attempt to access Dag.nodeMap() with unknown key '${key}'.`)
-        return this.nodeMap.get(key)
-    }
-
-    // Returns a reference to a DagNode givene its reference or its key
-    nodeRef(refOrKey) { return (typeof refOrKey === 'string') ? this.nodeMap.get(refOrKey) : refOrKey }
-
-    // Updates the value of the DagNode by its key or reference
-    poke(nodeRefOrKey, value) {
-        const node = this.nodeRef(nodeRefOrKey)
-        node.value = value
-        this._propagateDirty(node, true)
-    }
-
-    // Returns an array of references to all the ACTIVE DagNodes
-    activeNodes() { 
-        const ar = []
-        for(let node of this.nodes) if (node.status === ACTIVE) ar.push(node)
-        return ar
-    }
-
-    // Sets a DagNode status to 'selected'
-    // Called by clients to indicate a Dag output of interest
-    select(nodeRefOrKey) {
-        const node = this.nodeRef(nodeRefOrKey)
-        node.status = SELECTED
-        node.dirty = DIRTY
-    }
-
-    // Returns an array of references to all the 'selected' DagNodes
-    selectedNodes() {
-        const ar = []
-        for(let node of this.nodes) if (node.status===SELECTED) ar.push(node)
-        return ar
-    }
-
-    // Updates all the DagNode values in topological order
-    update() {
-        console.log('\nRunning Dag.update() for', this.selectedNodes().length, 'output nodes:')
-        for(let node of this.selectedNodes()) {
-            // console.log(`update() - node ${node.key} is selected`)
-            for(let input of node.inputs) this._propagateRequired(input)
+    nodeRef(refOrKey) { 
+        if (typeof refOrKey === 'string') {
+            if (! this.nodeMap.has(refOrKey))
+                throw new Error(`Attempt to access Dag.nodeMap() with unknown key '${refOrKey}'.`)
+            return this.nodeMap.get(refOrKey)
         }
-        for(let i=1; i<this.topoLevels.length; i++) {
-            for(let node of this.topoLevels[i]) {
-                if (node.status!==INACTIVE && node.dirty===DIRTY) {
-                    node.update()
-                    node.dirty = CLEAN
-                }
-            }
+        return refOrKey // otherwise assume it is a DagNode reference
+    }
+
+    // Sets the DagNode value and propagates the dirty flags to its downstream consumers.
+    // Only works for INPUT DagNodes and if value is different from current value.
+    set(refOrKey, value) {
+        const node = this.nodeRef(refOrKey)
+        if (node.updater===Dag.input && node.value!== value) {
+            node.value = value
+            this._propagateDirty(node)
         }
+        return node.value
     }
 
     // -------------------------------------------------------------------------
     // Private methods
     // -------------------------------------------------------------------------
 
-    _dfsSort() {
-        this.dfsOrder = []
-        // use DagNode.tmp to store 'visited' flag
-        for (let node of this.nodes) node.tmp = false
-        // Topological Sort starting from each unvisited node
-        for (let node of this.nodes) if (!node.tmp) this._dfsSortNext(node)
-        this.dfsOrder.reverse()
-        return this.dfsOrder
+    _propagateSuppliersToActive(node) {
+        node.status = ACTIVE
+        for(let supplier of node.suppliers)
+            if (supplier.status===INACTIVE)
+                this._propagateSuppliersToActive(supplier)
     }
 
-    _dfsSortNext(node) {
-        node.tmp = true // Mark the current node as tmp
-        for (let output of node.outputs) if (!output.tmp) this._dfsSortNext(output)
-        this.dfsOrder.push(node) // Push current node to stack which stores the result
-    }
-
-    _kahnSort() {
-        this.topoLevels = []
-        // calculate indegrees for each node and store in node.tmp 
-        for (let node of this.nodes) node.tmp = node.inputs.length
-        // create Set of remaining nodes to be sorted
-        const todo = new Set(this.nodes.values())
-        while (todo.size) {
-            const found = []    // holds 0 indegrees nodes found at this depth
-            // first remove all nodes with 0 remaining indegrees
-            for (let node of todo) {
-                if (!node.tmp) {
-                    found.push(node)
-                    todo.delete(node)
-                }
-            }
-            // for each found node, decrement indegrees of its output nodes
-            for (let node of found) {
-                for(let output of node.outputs) {
-                    output.tmp--
-                }
-            }
-            // store found nodes at this depth
-            this.topoLevels.push(found)
-        }
-    }
-
-    // Propagates the 'dirty' flag to all the node's outputs
+    // Propagates the 'dirty' flag to all the node's consumers
     _propagateDirty(node) {
         node.dirty = DIRTY
-        for(let next of node.outputs) this._propagateDirty(next)
+        for(let next of node.consumers)
+            this._propagateDirty(next)
     }
 
-    _propagateRequired(node) {
-        if (node.status === INACTIVE) {    // if NOT already SELECTED or ACTIVE
-            node.status = ACTIVE
-            node.dirty = DIRTY
-            // console.log(`update() - node ${node.key} is ACTIVE`)
-            for(let next of node.inputs) this._propagateRequired(next)
-        }
+    // Converts (in-place) any supplier elements that are keys into references
+    _resolveNodeSupplierKeys() {
+        for(let node of this.nodes)
+            for (let i=0; i<node.suppliers.length; i++)
+                node.suppliers[i] = this.nodeRef(node.suppliers[i])
     }
 
-    // Sets each node's 'outputs' (users, consumers) based upon the
-    // inputs (sources, providers) that were set at node definition time
-    // MUST BE CALLED AFTER ALL THE DagNodes HAVE BEEN ADDED TO THIS Dag
-    _setOutputs() {
-        for (let node of this.nodes) node.outputs = []
-        for (let target of this.nodes) {
-            for (let source of target.inputs) source.outputs.push(target)
+    // Sets each DagNode's 'consumers' based upon the 'suppliers' that were
+    // declared at DagNode definition time.
+    _setConsumers() {
+        for(let node of this.nodes)
+            node.consumers = []
+        for(let node of this.nodes)
+            for(let supplier of node.suppliers)
+                supplier.consumers.push(node)
+    }
+
+    // _setInputDepths(node) {
+    //     for(let node of this.nodes) {
+    //         node.inputs = []
+    //         node.dists = []
+    //     }
+    //     // determine distances from each output to its inputs
+    //     for(let node of this.outputs)
+    //         this._setInputDepthsNext(node, node, 0)
+    // }
+
+    // _setInputDepthsNext(start, node, depth=0) {
+    //     for(let next of node.suppliers) {
+    //         if (next.updater===Dag.input) {
+    //             start.inputs.push(next.key)
+    //             start.dists.push(depth+1)
+    //         }
+    //         if (next.update!==Dag.constant)
+    //             this._setInputDepthsNext(start, next, depth+1)
+    //     }
+    // }
+
+    // Determines INACTIVE, ACTIVE, or OUTPUT status of ALL DagNodes given this.outputs
+    _setStatus() {
+        for(let node of this.nodes)
+            node.status = INACTIVE
+        for(let node of this.outputs) {
+            this._propagateActive(node)
+            node.status = OUTPUT
         }
     }
 }
