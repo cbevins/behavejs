@@ -1,7 +1,8 @@
 export class DagNode {
-    constructor(key, value=null) {
+    constructor(key, value=null, prop=null) {
         this.key = key
         this.value = value
+        this.prop = prop
         
         // Reference to the value update method called by Dag.peek()
         // This is set externally by the client during Dag configuration

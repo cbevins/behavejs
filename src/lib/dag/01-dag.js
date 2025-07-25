@@ -1,5 +1,6 @@
 import {Dag} from './Dag.js'
 import {DagNode} from './DagNode.js'
+import {showNodes} from './showNodes.js'
 
 // Some dummy update methods to reference
 function calcR(R0, W, S) { return R0 * (1 + W + S) }
@@ -7,23 +8,23 @@ function calcR0(Ir) { return 0.0001 * Ir }
 function calcIr(Bed, Heat, Mois) { return Bed * Heat *  (1-Mois)}
 function calcBed(Key) { return Key==='A' ? 2 : 3 }
 
-function showNodes(dag) {
-    for(let node of dag.nodes) {
-        let special = dag.isInputNode(node) ? 'INPUT' : ''
-        special = dag.isConstantNode(node) ? 'CONSTANT' : special
-        let str = [node.key.padEnd(4),
-            (node.updater===dag.input ? 'INPUT' : '.....').padEnd(5),
-            (node.updater===dag.constant ? 'CONST' : '.....').padEnd(5),
-            (''+node.value).padStart(8),
-            node.status.padEnd(8),
-            special.padEnd(8),
-            node.dirty,
-            (''+node.suppliers.length).padStart(3),
-            (''+node.consumers.length).padStart(3)
-        ].join(' ')
-        console.log(str)
-    }
-}
+// function showNodes(dag) {
+//     for(let node of dag.nodes) {
+//         let special = dag.isInputNode(node) ? 'INPUT' : ''
+//         special = dag.isConstantNode(node) ? 'CONSTANT' : special
+//         let str = [node.key.padEnd(4),
+//             (node.updater===dag.input ? 'INPUT' : '.....').padEnd(5),
+//             (node.updater===dag.constant ? 'CONST' : '.....').padEnd(5),
+//             (''+node.value).padStart(8),
+//             node.status.padEnd(8),
+//             special.padEnd(8),
+//             node.dirty,
+//             (''+node.suppliers.length).padStart(3),
+//             (''+node.consumers.length).padStart(3)
+//         ].join(' ')
+//         console.log(str)
+//     }
+// }
 
 console.log(new Date())
 const dag = new Dag('DagDfs')
