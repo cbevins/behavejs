@@ -1,6 +1,6 @@
 /**
- * @file Fuel bed equations as described by Rothermel (1972) and as implemented by BehavePlus V6.
- * @copyright 2021 Systems for Environmental Management
+ * @file 'fuel/bed' equations as described by Rothermel (1972) and as implemented by BehavePlus V6.
+ * @copyright 2025 Systems for Environmental Management
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
 */
@@ -46,6 +46,37 @@ export class Equations {
     }
 
     /**
+     * Calculate the open-canopy midflame wind speed adjustment factor.
+     *
+     * @param fuelDepth Fuel bed depth (ft+1)
+     * @return Wind speed adjustment factor
+     */
+    static openWindSpeedAdjustmentFactor (fuelDepth) {
+        const f = Math.min(6, Math.max(fuelDepth, 0.1))
+        return 1.83 / Math.log((20 + 0.36 * f) / (0.13 * f))
+    }
+
+    /**
+     * Calculate the fuel bed optimum packing ratio (fraction).
+     *
+     * See Rothermel (1972) eq 37 (p 19, 26) and eq 69 (p32).
+     *
+     * @param float bedSavr Fuel bed surface area-to-volume ratio (ft-1).
+     * @return float The fuel bed optimum packing ratio (fraction).
+     */
+    static optimumPackingRatio (savr) {
+        return savr <= 0 ? 0 : 3.348 / savr ** 0.8189
+    }
+
+    static packingRatio (deadPprc, livePprc, depth) {
+        return Calc.divide(deadPprc + livePprc, depth)
+    }
+
+    static packingRatioRatio(packingRatio, optPackingRatio) {
+        return Calc.divide(packingRatio, optPackingRatio)
+    }
+
+    /**
      * Calculate the no-wind propagating flux ratio (ratio).
      *
      * The propagating flux is the numerator of the Rothermel (1972) spread
@@ -64,13 +95,69 @@ export class Equations {
                 (192 + 0.2595 * savr)
     }
 
+    static reactionIntensity( deadRxi, libeRxi) {
+        return deadRxi + liveRxi
+    }
+
+    /**
+     * Calculate the fuel bed reaction velocity exponent 'A'.
+     *
+     * This is an arbitrary variable 'A'  used to derive the
+     * fuel bed optimum reaction velocity.
+     * See Rothermel (1972) eq 39 (p19, 26) and 67 (p 31).
+     *
+     * @param float savr Fuel bed surface area-to-volume ratio (ft-1).
+     * @return float Fuel bed reaction velocity exponent 'A' (ratio).
+     */
+    static reactionVelocityExponent (savr) {
+        return savr <= 0 ? 0 : 133 / savr ** 0.7913
+    }
+
+    /**
+     * Calculate the fuel bed maximum reaction velocity (min-1).
+     *
+     * See Rothermel (1972) eq 36 (p 19, 26) and 68 (p 32).
+     *
+     * @param float bedSavr Fuel bed surface area-to-volume ratio (ft-1).
+     * @return float Fuel bed maximum reaction velocity (min-1).
+     */
+    static reactionVelocityMaximum (sv15) {
+        return sv15 <= 0 ? 0 : sv15 / (495 + 0.0594 * sv15)
+    }
+
+    /**
+     * Calculate the fuel bed optimum reaction velocity (min-1).
+     *
+     * See Rothermel (1972) eq 38 (p 19, 26) and eq 67 (p 31).
+     *
+     * @param float betr Fuel bed packing ratio ratio (ratio).
+     * @param float rxvm Fuel bed maximum reaction velocity (min-1).
+     * @param float rxve Fuel bed reaction velocity exponent 'A' (ratio).
+     * @return float Fuel bed optimum reaction velocity (min-1).
+     */
+    static reactionVelocityOptimum (betr, rxvm, rxve) {
+        return betr <= 0 || betr === 1
+            ? 0
+            : rxvm * betr ** rxve * Math.exp(rxve * (1 - betr))
+    }
+
+    static surfaceArea(deadArea, liveArea) {
+        return deaArea + liveArea
+    }
+
     static weightedHeatOfPreIgnition(deadWtg, deadQig, liveWtg, liveQig) {
         return deadWtg * deadQig + liveWtg * liveQig
+    }
+
+    static weightedSurfaceAreaToVolumeRatio(deadWtg, deadSavr, liveWtg, liveSavr) {
+        return deadWtg * deadSavr + liveWtg * liveSavr
     }
 
     //--------------------------------------------------------------------------
     // UNUSED SO FAR ...
     //--------------------------------------------------------------------------
+
+
     /**
      * Calculate the 'live' fuel category moisture content of extinction.
      *
@@ -139,37 +226,6 @@ export class Equations {
         const r = Calc.divide(mois, mext)
         return Calc.fraction(1 - 2.59 * r + 5.11 * r * r - 3.52 * r * r * r)
     }
-
-    /**
-     * Calculate the open-canopy midflame wind speed adjustment factor.
-     *
-     * @param fuelDepth Fuel bed depth (ft+1)
-     * @return Wind speed adjustment factor
-     */
-    static openWindSpeedAdjustmentFactor (fuelDepth) {
-        const f = Math.min(6, Math.max(fuelDepth, 0.1))
-        return 1.83 / Math.log((20 + 0.36 * f) / (0.13 * f))
-    }
-
-    /**
-     * Calculate the fuel bed optimum packing ratio (fraction).
-     *
-     * See Rothermel (1972) eq 37 (p 19, 26) and eq 69 (p32).
-     *
-     * @param float bedSavr Fuel bed surface area-to-volume ratio (ft-1).
-     * @return float The fuel bed optimum packing ratio (fraction).
-     */
-    static optimumPackingRatio (savr) {
-        return savr <= 0 ? 0 : 3.348 / savr ** 0.8189
-    }
-
-    static packingRatio (deadPprc, livePprc, depth) {
-        return Calc.divide(deadPprc + livePprc, depth)
-    }
-
-    static fuelBedSurfaceArea(deadArea, liveArea) {
-        return deaArea + liveArea
-    }
     
     /**
      * Calculate the life fuel category reaction intensity without moisture damping.
@@ -183,48 +239,6 @@ export class Equations {
      */
     static reactionIntensityDry (rxvo, wnet, heat, etas) {
         return rxvo * wnet * heat * etas
-    }
-
-    /**
-     * Calculate the fuel bed reaction velocity exponent 'A'.
-     *
-     * This is an arbitrary variable 'A'  used to derive the
-     * fuel bed optimum reaction velocity.
-     * See Rothermel (1972) eq 39 (p19, 26) and 67 (p 31).
-     *
-     * @param float savr Fuel bed surface area-to-volume ratio (ft-1).
-     * @return float Fuel bed reaction velocity exponent 'A' (ratio).
-     */
-    static reactionVelocityExponent (savr) {
-        return savr <= 0 ? 0 : 133 / savr ** 0.7913
-    }
-
-    /**
-     * Calculate the fuel bed maximum reaction velocity (min-1).
-     *
-     * See Rothermel (1972) eq 36 (p 19, 26) and 68 (p 32).
-     *
-     * @param float bedSavr Fuel bed surface area-to-volume ratio (ft-1).
-     * @return float Fuel bed maximum reaction velocity (min-1).
-     */
-    static reactionVelocityMaximum (sv15) {
-        return sv15 <= 0 ? 0 : sv15 / (495 + 0.0594 * sv15)
-    }
-
-    /**
-     * Calculate the fuel bed optimum reaction velocity (min-1).
-     *
-     * See Rothermel (1972) eq 38 (p 19, 26) and eq 67 (p 31).
-     *
-     * @param float betr Fuel bed packing ratio ratio (ratio).
-     * @param float rxvm Fuel bed maximum reaction velocity (min-1).
-     * @param float rxve Fuel bed reaction velocity exponent 'A' (ratio).
-     * @return float Fuel bed optimum reaction velocity (min-1).
-     */
-    static reactionVelocityOptimum (betr, rxvm, rxve) {
-        return betr <= 0 || betr === 1
-            ? 0
-            : rxvm * betr ** rxve * Math.exp(rxve * (1 - betr))
     }
 
     // DEPRECATED - The size class surface area calculations are now done inside swtg()

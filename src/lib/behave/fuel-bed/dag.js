@@ -10,5 +10,5 @@ for(let nodeDef of nodeDefs) {
     dag.add(new DagNode(key, value, units).depends(updater, suppliers))
 }
 dag.init()
-dag.addOutputs(['fuel/no-wind no-slope/spread rate', 'fuel/heat sink'])
+dag.addOutputs(['fuel/bed/no-wind no-slope/spread rate', 'fuel/bed/heat sink'])
 showNodes(dag)
