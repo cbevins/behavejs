@@ -141,6 +141,32 @@ export class Equations {
             : rxvm * betr ** rxve * Math.exp(rxve * (1 - betr))
     }
 
+    /**
+     * Calculate the often-used intermediate parameter of the fuel bed's
+     * characteristics surface area-to-volume ratio raised to the 1.5 power.
+     *
+     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
+     * @return float Fuel bed parameter (ratio).
+     */
+    static savr15 (savr) {
+        return savr ** 1.5
+    }
+
+    /**
+     * Calculate the fuel bed slope coeffient `phiS` slope factor.
+     *
+     * This factor is an intermediate parameter that is constant for a fuel bed,
+     * and used to determine the fire spread slope coefficient `phiS`.
+     *
+     * See Rothermel (1972) eq 51 (p 24, 26) and eq 80 (p 33).
+     *
+     * @param float packingRatio Fuel bed packing ratio (ratio).
+     * @return float Factor used to derive the slope coefficient `phiS' (ratio).
+     */
+    static slopeK (beta) {
+        return beta <= 0 ? 0 : 5.275 * beta ** -0.3
+    }
+
     static surfaceArea(deadArea, liveArea) {
         return deaArea + liveArea
     }
@@ -151,6 +177,88 @@ export class Equations {
 
     static weightedSurfaceAreaToVolumeRatio(deadWtg, deadSavr, liveWtg, liveSavr) {
         return deadWtg * deadSavr + liveWtg * liveSavr
+    }
+
+    /**
+     * Calculate the fuel bed wind coefficient `phiW` correlation factor `B`.
+     *
+     * This factor is an intermediate parameter that is constant for a fuel bed,
+     * and is used to derive the fire spread wind coefficient `phiW`.
+     *
+     * See Rothermel (1972) eq 49 (p 23, 26) and eq 83 (p 33).
+     *
+     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
+     * @return float Wind coefficient `phiW` correlation parameter `B` (ratio).
+     */
+    static windB (savr) {
+        return 0.02526 * savr ** 0.54
+    }
+
+    /**
+     * Calculate the fuel bed wind coefficient `phiW` correlation factor `C`.
+     *
+     * This factor is an intermediate parameter that is constant for a fuel bed,
+     * and is used to derive the fire spread wind coefficient `phiW`.
+     *
+     * See Rothermel (1972) eq 48 (p 23, 26) and eq 82 (p 33).
+     *
+     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
+     * @return float Wind coefficient `phiW` correlation parameter `C` (ratio).
+     */
+    static windC (savr) {
+        return 7.47 * Math.exp(-0.133 * savr ** 0.55)
+    }
+
+    /**
+     * Calculate the fuel bed wind coefficient `phiW` correlation factor `E`.
+     *
+     * This factor is an intermediate parameter that is constant for a fuel bed,
+     * and is used to derive the fire spread wind coefficient `phiW`.
+     *
+     * See Rothermel (1972) eq 50 (p 23, 26) and eq 82 (p 33).
+     *
+     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
+     * @return float Wind coefficient `phiW` correlation parameter `E` (ratio).
+     */
+    static windE (savr) {
+        return 0.715 * Math.exp(-0.000359 * savr)
+    }
+
+    /**
+     * Calculate the fuel bed wind coeffient `phiW` inverse K wind factor.
+     *
+     * This factor is an intermediate parameter that is constant for a fuel bed,
+     * and used to determine the fire spread wind coefficient `phiW`.
+     *
+     * It is the inverse of the wind factor 'K', and is used to re-derive
+     * effective wind speeds within the BEHAVE fire spread computations.
+     *
+     * See Rothermel (1972) eq 47 (p 23, 26) and eq 79 (p 33).
+     *
+     * @param float betr Fuel bed packing ratio ratio (ratio).
+     * @param float wnde The fuel bed wind coefficient `phiW` correlation factor `E`.
+     * @param float wndc The fuel bed wind coefficient `phiW` correlation factor `C`.
+     * @return float Factor used to derive the wind coefficient `phiW' (ratio).
+     */
+    static windI (betr, wnde, wndc) {
+        return betr <= 0.0 || wndc <= 0 ? 0 : betr ** wnde / wndc
+    }
+
+    /**
+     * Calculate the fuel bed wind coeffient `phiW` wind factor.
+     *
+     * This factor is an intermediate parameter that is constant for a fuel bed,
+     * and used to determine the fire spread wind coefficient `phiW`.
+     *
+     * See Rothermel (1972) eq 47 (p 23, 26) and eq 79 (p 33).
+     *
+     * @param float betr Fuel bed packing ratio (ratio).
+     * @param float wnde The fuel bed wind coefficient `phiW` correlation factor `E`.
+     * @param float wndc The fuel bed wind coefficient `phiW` correlation factor `C`.
+     * @return float Factor used to derive the wind coefficient `phiW' (ratio).
+     */
+    static windK (betr, wnde, wndc) {
+        return betr <= 0 ? 0 : wndc * betr ** -wnde
     }
 
     //--------------------------------------------------------------------------
@@ -254,32 +362,6 @@ export class Equations {
     //   return area
     // }
 
-    /**
-     * Calculate the often-used intermediate parameter of the fuel bed's
-     * characteristics surface area-to-volume ratio raised to the 1.5 power.
-     *
-     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
-     * @return float Fuel bed parameter (ratio).
-     */
-    static savr15 (savr) {
-        return savr ** 1.5
-    }
-
-    /**
-     * Calculate the fuel bed slope coeffient `phiS` slope factor.
-     *
-     * This factor is an intermediate parameter that is constant for a fuel bed,
-     * and used to determine the fire spread slope coefficient `phiS`.
-     *
-     * See Rothermel (1972) eq 51 (p 24, 26) and eq 80 (p 33).
-     *
-     * @param float packingRatio Fuel bed packing ratio (ratio).
-     * @return float Factor used to derive the slope coefficient `phiS' (ratio).
-     */
-    static slopeK (beta) {
-        return beta <= 0 ? 0 : 5.275 * beta ** -0.3
-    }
-
     // Returns an array of 6 size class area weighting factors
     static sizeClassWeightingFactorArray (a1, s1, a2, s2, a3, s3, a4, s4, a5, s5) {
         const a = [a1, a2, a3, a4, a5]
@@ -309,88 +391,6 @@ export class Equations {
      */
     static taur (savr) {
         return savr <= 0 ? 0 : 384 / savr
-    }
-
-    /**
-     * Calculate the fuel bed wind coefficient `phiW` correlation factor `B`.
-     *
-     * This factor is an intermediate parameter that is constant for a fuel bed,
-     * and is used to derive the fire spread wind coefficient `phiW`.
-     *
-     * See Rothermel (1972) eq 49 (p 23, 26) and eq 83 (p 33).
-     *
-     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
-     * @return float Wind coefficient `phiW` correlation parameter `B` (ratio).
-     */
-    static windB (savr) {
-        return 0.02526 * savr ** 0.54
-    }
-
-    /**
-     * Calculate the fuel bed wind coefficient `phiW` correlation factor `C`.
-     *
-     * This factor is an intermediate parameter that is constant for a fuel bed,
-     * and is used to derive the fire spread wind coefficient `phiW`.
-     *
-     * See Rothermel (1972) eq 48 (p 23, 26) and eq 82 (p 33).
-     *
-     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
-     * @return float Wind coefficient `phiW` correlation parameter `C` (ratio).
-     */
-    static windC (savr) {
-        return 7.47 * Math.exp(-0.133 * savr ** 0.55)
-    }
-
-    /**
-     * Calculate the fuel bed wind coefficient `phiW` correlation factor `E`.
-     *
-     * This factor is an intermediate parameter that is constant for a fuel bed,
-     * and is used to derive the fire spread wind coefficient `phiW`.
-     *
-     * See Rothermel (1972) eq 50 (p 23, 26) and eq 82 (p 33).
-     *
-     * @param float savr Fuel bed characteristic surface area-to-volume ratio (ft-1).
-     * @return float Wind coefficient `phiW` correlation parameter `E` (ratio).
-     */
-    static windE (savr) {
-        return 0.715 * Math.exp(-0.000359 * savr)
-    }
-
-    /**
-     * Calculate the fuel bed wind coeffient `phiW` wind factor.
-     *
-     * This factor is an intermediate parameter that is constant for a fuel bed,
-     * and used to determine the fire spread wind coefficient `phiW`.
-     *
-     * See Rothermel (1972) eq 47 (p 23, 26) and eq 79 (p 33).
-     *
-     * @param float betr Fuel bed packing ratio (ratio).
-     * @param float wnde The fuel bed wind coefficient `phiW` correlation factor `E`.
-     * @param float wndc The fuel bed wind coefficient `phiW` correlation factor `C`.
-     * @return float Factor used to derive the wind coefficient `phiW' (ratio).
-     */
-    static windK (betr, wnde, wndc) {
-        return betr <= 0 ? 0 : wndc * betr ** -wnde
-    }
-
-    /**
-     * Calculate the fuel bed wind coeffient `phiW` inverse K wind factor.
-     *
-     * This factor is an intermediate parameter that is constant for a fuel bed,
-     * and used to determine the fire spread wind coefficient `phiW`.
-     *
-     * It is the inverse of the wind factor 'K', and is used to re-derive
-     * effective wind speeds within the BEHAVE fire spread computations.
-     *
-     * See Rothermel (1972) eq 47 (p 23, 26) and eq 79 (p 33).
-     *
-     * @param float betr Fuel bed packing ratio ratio (ratio).
-     * @param float wnde The fuel bed wind coefficient `phiW` correlation factor `E`.
-     * @param float wndc The fuel bed wind coefficient `phiW` correlation factor `C`.
-     * @return float Factor used to derive the wind coefficient `phiW' (ratio).
-     */
-    static windI (betr, wnde, wndc) {
-        return betr <= 0.0 || wndc <= 0 ? 0 : betr ** wnde / wndc
     }
 
     static windSpeedAdjustmentFactor (fuelSheltered, shelteredWaf, openWaf) {

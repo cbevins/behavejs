@@ -1,5 +1,11 @@
 import { DagNode } from './DagNode.js'
 
+/**
+ * TO DO
+ * Modify add() to accept an array of nodes
+ * Add nodes to nodeMap() first.
+ * Wait to create this.niodes array until init()
+ */
 // DagNode.dirty values
 const CLEAN = 'CLEAN'
 const DIRTY = 'DIRTY'
@@ -34,15 +40,18 @@ export class Dag {
     // DagNode.updater method for DagNodes whose value is client input via Dag.set()
     static input() {}
 
-    // Adds a DagNode to this Dag
-    add(node) {
-        node.consumers = []
-        node.inputs = []
-        node.status = INACTIVE  // initialize all DagNode.status as INACTIVE
-        node.dirty = CLEAN
-        this.nodes.push(node)
-        this.nodeMap.set(node.key, node)
-        return node
+    // Adds a DagNode to this Dag.
+    // If a DagNode with the 'key' already exists in nodeMap, it is replaced.
+    add(nodeOrArray) {
+        const nodes = Array.isArray(nodeOrArray) ? nodeOrArray : [nodeOrArray]
+        for(let node of nodes) {
+            node.consumers = []
+            node.inputs = []
+            node.status = INACTIVE  // initialize all DagNode.status as INACTIVE
+            node.dirty = CLEAN
+            this.nodeMap.set(node.key, node)
+        }
+        return nodeOrArray
     }
 
     // Called after Dag.init() to add one or more DagNodes as 'outputs'.
@@ -110,6 +119,7 @@ export class Dag {
 
     // MUST BE CALLED AFTER ALL THE DagNodes HAVE BEEN ADDED TO THIS Dag
     init() {
+        this.nodes = [...this.nodeMap.values()]
         this._resolveNodeSupplierKeys()
         this.inputs = new Set()
         for(let node of this.nodes) {
