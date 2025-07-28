@@ -5,7 +5,7 @@
  * @license MIT
 */
 
-import {Calc} from '../Calc.js'
+import {Calc} from '../index.js'
 
 export class Equations {
 

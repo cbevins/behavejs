@@ -1,11 +1,14 @@
-import {Calc} from '../Calc.js'
-import {Dag} from '../../dag/Dag.js'
-import {DagNode} from '../../dag/DagNode.js'
+/**
+ * @file Behave 'fuel/ldead' and '/fuel/live' DagNode definitions and creator method.
+ * @copyright 2025 Systems for Environmental Management
+ * @author Collin D. Bevins, <cbevins@montana.com>
+ * @license MIT
+ */
+import {Calc, Dag, DagNode} from '../index.js'
 import {Equations as Eq} from './equations.js'
 
-// 'prefix' will usually be like 'surface/primary'
 // 'life' must be 'dead' or 'live'
-export function createDagNodes(prefix, life='dead') {
+export function nodeTemplates(life='dead') {
     const other = life==='dead' ? 'live' : 'dead'
     const p = prefix + '/fuel/' + life
     const o = prefix + '/fuel/' + other
@@ -24,6 +27,5 @@ export function createDagNodes(prefix, life='dead') {
                 `${p}/surface area`,
                 `${o}/surface area`]
         ]
-    ]
     ]
         }
