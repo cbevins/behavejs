@@ -2,9 +2,27 @@ import { DagNode } from './DagNode.js'
 
 /**
  * TO DO
- * Modify add() to accept an array of nodes
- * Add nodes to nodeMap() first.
- * Wait to create this.niodes array until init()
+ * 
+ * - 1 CONSTANT is a root node with no suppliers, has consumers, cannot be set()
+ * - 2 INPUT is a root node with no suppliers, has no consumers, can be set()
+ * - 3 
+ * DagNode.status SUPPLIERS   CONSUMERS     set()  updater
+ *  1 CONSTANT        NO          YES         NO      Dag.constant()
+ *  2 INPUT           NO          YES         YES     Dag.input()
+ *  3 DERIVED         YES         YES         NO      some function()
+ *  4 TERMINAL        YES         NO          NO      some function()
+ *  0 ORPHAN*         NO          NO          YES     Dag.input()
+ *  * Usually occurs only as an error in the Dag definition
+ * 
+ *  DagNode.selected In Pathway  SELECTED  TERMINAL
+ *  0 INACTIVE            NO          NO      NA
+ *  1 ACTIVE              YES         NO      NO
+ *  2 SELECTED            YES         YES     NO
+ *  3 LEAF                YES         YES     YES
+ * 
+ * top-most is the starting node for iterative inputs
+ *  
+ * 
  */
 // DagNode.dirty values
 const CLEAN = 'CLEAN'
@@ -54,7 +72,7 @@ export class Dag {
         return nodeOrArray
     }
 
-    // Called after Dag.init() to add one or more DagNodes as 'outputs'.
+    // Called by client after Dag.init() to add one or more DagNodes as 'outputs'.
     // Most efficient if only called once with the complete set of inputs in the arg array.
     // 'refOrKeyArray' may be an array of, or a single of, DagNode keys or references
     addOutputs(refOrKeyArray) {
@@ -155,7 +173,7 @@ export class Dag {
         const node = this.nodeRef(refOrKey)
         if (node.updater===Dag.input && node.value!== value) {
             node.value = value
-            this._propagateDirty(node)
+            this._propagateDirtyToConsumers(node)
         }
         return node.value
     }
@@ -164,6 +182,14 @@ export class Dag {
     // Private methods
     // -------------------------------------------------------------------------
 
+    // Propagates the 'dirty' flag to all the node's consumers
+    _propagateDirtyToConsumers(node) {
+        node.dirty = DIRTY
+        for(let next of node.consumers)
+            if (!next.dirty)
+                this._propagateDirtyToConsumers(next)
+    }
+
     _propagateSuppliersToActive(node) {
         node.status = ACTIVE
         for(let supplier of node.suppliers)
@@ -171,21 +197,17 @@ export class Dag {
                 this._propagateSuppliersToActive(supplier)
     }
 
-    // Propagates the 'dirty' flag to all the node's consumers
-    _propagateDirty(node) {
-        node.dirty = DIRTY
-        for(let next of node.consumers)
-            this._propagateDirty(next)
-    }
-
     // Converts (in-place) any supplier elements that are keys into references
     _resolveNodeSupplierKeys() {
-        for(let node of this.nodes)
-            for (let i=0; i<node.suppliers.length; i++)
+        for(let node of this.nodes) {
+            for (let i=0; i<node.suppliers.length; i++) {
+                console.log('resolve node', node.key, 'supplier', i, node.suppliers[i])
                 node.suppliers[i] = this.nodeRef(node.suppliers[i])
+            }
+        }
     }
 
-    // Sets each DagNode's 'consumers' based upon the 'suppliers' that were
+    // Assigns DagNode's 'consumers' based upon the 'suppliers' that were
     // declared at DagNode definition time.
     _setConsumers() {
         for(let node of this.nodes)

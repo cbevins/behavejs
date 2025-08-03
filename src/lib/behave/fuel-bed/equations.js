@@ -12,6 +12,20 @@ export class Equations {
     static bulkDensity(totalOvendryLoad, bedDepth) {
         return Calc.divide(totalOvendryLoad, bedDepth)
     }
+    
+    /**
+     * Calculate the life fuel category reaction intensity without moisture damping.
+     *
+     * @param float rxvo Fuel bed optimum reaction velocity (min-1).
+     * @param float wnet Life fuel category net ovendry fuel load (lb+1 ft-2).
+     * @param float heat Life fuel category heat of combustion (btu+1 lb-1).
+     * @param float etas Life fuel category mineral damping coefficient (fraction).
+     * @return float The life fuel category reaction intensity (btu+1 ft-2 min-1)
+     *      without moisture damping.
+     */
+    static dryFuelReactionIntensity(rxvo, wnet, heat, etas) {
+        return rxvo * wnet * heat * etas
+    }
 
     /**
      * Calculate the fire spread heat sink
@@ -32,6 +46,64 @@ export class Equations {
      */
     static heatSource(rxi, pflx) {
         return pflx * rxi
+    }
+
+    /**
+     * Calculate the 'live' fuel category moisture content of extinction.
+     *
+     * @param real mextk The 'live' fuel category moisture content of extinction factor (ratio).
+     * @param real dfmc The 'dead' fuel category fine moisture content (ratio).
+     * @param real dmext The 'dead' category moisture content of extinction (ratio).
+     * @return real The 'live' fuel category  moisture content of extinction (ratio).
+     */
+    static liveFuelExtinctionMoistureContent (mextk, dfmc, dmext) {
+        const dry = 1 - Calc.divide(dfmc, dmext)
+        const lmext = mextk * dry - 0.226
+        return Math.max(lmext, dmext)
+    }
+
+    /**
+     * Calculate the 'live' fuel category moisture content of extinction factor.
+     *
+     * This factor is constant for a fuel bed, and represents the ratio
+     * of dead-to-live fuel mass that must be raised to ignition.  It
+     * is the method described by Rothermel (1972) on page 35 that was
+     * subsequently refined in BEHAVE and BehavePlus to use the
+     * effective fuel load and effective heating number to determine
+     * the ratio of fine dead to fine live fuels.
+     *
+     * See Rothermel (1972) eq 88 on page 35.
+     *
+     * @param float defl The 'dead' fuel catagory total fine fuel load (lb+1 ft-2).
+     * @param float lefl The 'live' fuel catagory total fine fuel load (lb+1 ft-2).
+     *
+     * @return float The 'live' fuel category moisture content of extinction factor.
+     */
+    static liveFuelExtinctionMoistureContentFactor(defl, lefl) {
+        return 2.9 * Calc.divide(defl, lefl)
+    }
+
+    /**
+     * Calculate the dead or live category mineral damping coefficient.
+     *
+     * @param float lifeCategoryEffectiveMineralContent (fraction)
+     * @return float Dead or live fuel category mineral damping coefficient (fraction)
+     */
+    static mineralDamping (seff) {
+        const etas = seff <= 0 ? 1 : 0.174 / seff ** 0.19
+        return Calc.fraction(etas)
+    }
+
+    /**
+     * Calculate the dead or live life category moisture damping coefficient.
+     *
+     * @param mois Life fuel category moisture content (ratio).
+     * @param mext Life fuel category moisture content of extinction (ratio).
+     * @return The life fuel category moisture damping coefficient (fraction).
+     */
+    static moistureDamping (mois, mext) {
+        const r = Calc.divide(mois, mext)
+        return Calc.fraction(1 - 2.59 * r + 5.11 * r * r - 3.52 * r * r * r)
     }
 
     /**
@@ -153,6 +225,32 @@ export class Equations {
     }
 
     /**
+     * Returns an array of 6 size class area weighting factors.
+     * @param {float} a1 - surface area of fuel element 1 
+     * @param {float} s1 - size class of fuel element 1
+     * @param {float} a5 - surface area of fuel element 15
+     * @param {float} s5 - size class of fuel element 5
+     * @returns Returns an array of 6 size class area weighting factors.
+     */
+    static sizeClassWeightingFactorArray(a1, s1, a2, s2, a3, s3, a4, s4, a5, s5) {
+        const a = [a1, a2, a3, a4, a5]
+        const s = [s1, s2, s3, s4, s5]
+        let tarea = 0.0
+        const scar = [0, 0, 0, 0, 0, 0]
+        for (let idx = 0; idx < 5; idx += 1) {
+            scar[s[idx]] += a[idx]
+            tarea += a[idx]
+        }
+        const scwt = [0, 0, 0, 0, 0, 0]
+        if (tarea > 0.0) {
+            for (let idx = 0; idx < 6; idx += 1) {
+            scwt[idx] = scar[idx] / tarea
+            }
+        }
+        return scwt
+    }
+
+    /**
      * Calculate the fuel bed slope coeffient `phiS` slope factor.
      *
      * This factor is an intermediate parameter that is constant for a fuel bed,
@@ -165,10 +263,6 @@ export class Equations {
      */
     static slopeK (beta) {
         return beta <= 0 ? 0 : 5.275 * beta ** -0.3
-    }
-
-    static surfaceArea(deadArea, liveArea) {
-        return deaArea + liveArea
     }
 
     static weightedHeatOfPreIgnition(deadWtg, deadQig, liveWtg, liveQig) {
@@ -267,41 +361,6 @@ export class Equations {
 
 
     /**
-     * Calculate the 'live' fuel category moisture content of extinction.
-     *
-     * @param real mextk The 'live' fuel category moisture content of extinction factor (ratio).
-     * @param real dfmc The 'dead' fuel category fine moisture content (ratio).
-     * @param real dmext The 'dead' category moisture content of extinction (ratio).
-     * @return real The 'live' fuel category  moisture content of extinction (ratio).
-     */
-    static extinctionMoistureContent (mextk, dfmc, dmext) {
-        const dry = 1 - Calc.divide(dfmc, dmext)
-        const lmext = mextk * dry - 0.226
-        return Math.max(lmext, dmext)
-    }
-
-    /**
-     * Calculate the 'live' fuel category moisture content of extinction factor.
-     *
-     * This factor is constant for a fuel bed, and represents the ratio
-     * of dead-to-live fuel mass that must be raised to ignition.  It
-     * is the method described by Rothermel (1972) on page 35 that was
-     * subsequently refined in BEHAVE and BehavePlus to use the
-     * effective fuel load and effective heating number to determine
-     * the ratio of fine dead to fine live fuels.
-     *
-     * See Rothermel (1972) eq 88 on page 35.
-     *
-     * @param float defl The 'dead' fuel catagory total fine fuel load (lb+1 ft-2).
-     * @param float lefl The 'live' fuel catagory total fine fuel load (lb+1 ft-2).
-     *
-     * @return float The 'live' fuel category moisture content of extinction factor.
-     */
-    static extinctionMoistureContentFactor (defl, lefl) {
-        return 2.9 * Calc.divide(defl, lefl)
-    }
-
-    /**
      * Calculate the fire heat per unit area.
      *
      * @param real rxi Fire reaction intensity (btu+1 ft-2 min-1).
@@ -310,43 +369,6 @@ export class Equations {
      */
     static heatPerUnitArea (rxi, taur) {
         return rxi * taur
-    }
-
-    /**
-     * Calculate the dead or live category mineral damping coefficient.
-     *
-     * @param float lifeCategoryEffectiveMineralContent
-     * @return float Dead or live fuel category mineral damping coefficient.
-     */
-    static mineralDamping (seff) {
-        const etas = seff <= 0 ? 1 : 0.174 / seff ** 0.19
-        return Calc.fraction(etas)
-    }
-
-    /**
-     * Calculate the dead or live life category moisture damping coefficient.
-     *
-     * @param mois Life fuel category moisture content (ratio).
-     * @param mext Life fuel category moisture content of extinction (ratio).
-     * @return The life fuel category moisture damping coefficient (fraction).
-     */
-    static moistureDamping (mois, mext) {
-        const r = Calc.divide(mois, mext)
-        return Calc.fraction(1 - 2.59 * r + 5.11 * r * r - 3.52 * r * r * r)
-    }
-    
-    /**
-     * Calculate the life fuel category reaction intensity without moisture damping.
-     *
-     * @param float rxvo Fuel bed optimum reaction velocity (min-1).
-     * @param float wnet Life fuel category net ovendry fuel load (lb+1 ft-2).
-     * @param float heat Life fuel category heat of combustion (btu+1 lb-1).
-     * @param float etas Life fuel category mineral damping coefficient (fraction).
-     * @return float The life fuel category reaction intensity (btu+1 ft-2 min-1)
-     *      without moisture damping.
-     */
-    static reactionIntensityDry (rxvo, wnet, heat, etas) {
-        return rxvo * wnet * heat * etas
     }
 
     // DEPRECATED - The size class surface area calculations are now done inside swtg()
@@ -361,25 +383,6 @@ export class Equations {
     //   area += (idx === s5) ? a5 : 0
     //   return area
     // }
-
-    // Returns an array of 6 size class area weighting factors
-    static sizeClassWeightingFactorArray (a1, s1, a2, s2, a3, s3, a4, s4, a5, s5) {
-        const a = [a1, a2, a3, a4, a5]
-        const s = [s1, s2, s3, s4, s5]
-        let tarea = 0.0
-        const scar = [0, 0, 0, 0, 0, 0]
-        for (let idx = 0; idx < 5; idx += 1) {
-            scar[s[idx]] += a[idx]
-            tarea += a[idx]
-        }
-        const scwt = [0, 0, 0, 0, 0, 0]
-        if (tarea > 0.0) {
-            for (let idx = 0; idx < 6; idx += 1) {
-            scwt[idx] = scar[idx] / tarea
-            }
-        }
-        return scwt
-    }
 
     /**
      * Calculate the fuel bed flame residence time.

@@ -1,0 +1,17 @@
+export const units = [
+    ['/fuel/bulk density'],
+    ['/fuel/bed depth'],
+    ['/fuel/heat of pre-ignition'],
+    ['/fuel/heat sink'],
+    ['/fuel/heat source'],
+    ['/fire/spread rate'],
+    ['/fuel/wind speed adjustment factor'],
+    ['/fuel/ovendry load'],
+    ['/fire/reaction intensity'],
+    ['/factor'],
+    ['/fire/reaction velocity'],
+    ['/fuel/surface area'],
+    ['/fuel/surface area to volume ratio'],
+    ['fuel/surface area'],
+    ['/fuel/volume'],
+]
