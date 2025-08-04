@@ -14,17 +14,16 @@ import {Equations as Eq} from './equations.js'
 // life must be 'dead' or 'live'
 // 'n' must be '1', '2', '3', '4', or '5'
 export function fuelElementNodeDefs(prefix, deadOrLive, n) {
-    console.log(prefix)
-    const bed = prefix + '/fuel/bed/'
+    const bed  = prefix + '/fuel/bed/'
     const dead = prefix + '/fuel/dead/'
     const live = prefix + '/fuel/live/'
     const life = prefix + '/fuel/'+deadOrLive
-    const p = life + '/element ' + n + '/'
+    const p    = life + '/element ' + n + '/'
     const dens = 'fiber density'
     const diam = 'cylindrical diameter'
     const efol = 'effective fuel ovendry load'
     const efwl = 'effective fuel water load'
-    const ehn  = 'effective heating  number'
+    const ehn  = 'effective heating number'
     const heat = 'heat of combustion'
     const qig  = 'heat of pre-ignition'
     const load = 'ovendry load'
@@ -82,7 +81,7 @@ export function fuelElementNodeDefs(prefix, deadOrLive, n) {
 
         [p+sawf, 0, '/fuel/weighting factor', Eq.surfaceAreaWeightingFactor, [p+sa, life+'/'+sa]],
 
-        [p+vol, 0, '/fuel/volume', Eq.volume, [p+load, p+dens]],
+        [p+vol, 0, '/fuel/'+vol, Eq.volume, [p+load, p+dens]],
 
         [p+efwl, 0, '/fuel/water load',
             Eq.effectiveFuelWaterLoad, [p+efol, p+mois]],

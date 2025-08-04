@@ -201,7 +201,7 @@ export class Dag {
     _resolveNodeSupplierKeys() {
         for(let node of this.nodes) {
             for (let i=0; i<node.suppliers.length; i++) {
-                console.log('resolve node', node.key, 'supplier', i, node.suppliers[i])
+                // console.log('resolve node', node.key, 'supplier', i, node.suppliers[i])
                 node.suppliers[i] = this.nodeRef(node.suppliers[i])
             }
         }

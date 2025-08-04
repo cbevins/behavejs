@@ -5,7 +5,6 @@ export function nodesFromDefs(defs) {
     const nodes = []
     for(let t of defs) {
         const def = {key: t[0], value: t[1], units: t[2], updater: t[3], suppliers: t[4]}
-        console.log(def.key)
         nodes.push(new DagNode(def.key, def.value, def.units)
             .depends(def.updater, def.suppliers))
     }
