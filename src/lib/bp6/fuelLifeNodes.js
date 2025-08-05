@@ -106,7 +106,3 @@ export function fuelLifeNodes(prefix, deadOrLive) {
     }
     return nodeDefs
 }
-
-for(let [key, value, units, method, suppliers] of fuelLifeNodes('surface/primary', 'dead')) {
-    console.log(key)
-}

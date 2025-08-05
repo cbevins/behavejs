@@ -53,6 +53,17 @@ export class FuelBedEquations {
     }
 
     /**
+     * Calculate the fire heat per unit area.
+     *
+     * @param {float} rxi Fire reaction intensity (btu+1 ft-2 min-1).
+     * @param {float} taur The fire/flame residence time (min+1).
+     * @return The heat per unit area (btu+1 ft-2).
+     */
+    static heatPerUnitArea (rxi, taur) {
+        return rxi * taur
+    }
+
+    /**
      * Calculate the 'live' fuel category moisture content of extinction.
      *
      * @param {float} mextk The 'live' fuel category moisture content of extinction factor (ratio).
@@ -269,11 +280,23 @@ export class FuelBedEquations {
         return beta <= 0 ? 0 : 5.275 * beta ** -0.3
     }
 
+    /**
+     * Calculate the fuel bed flame residence time.
+     *
+     * \TODO find reference
+     *
+     * @param {float} savr Fuel bed surface area-to-volume ratio (ft-1).
+     * @return Fuel bed flame residence time (min+1).
+     */
+    static fireResidenceTime (savr) {
+        return savr <= 0 ? 0 : 384 / savr
+    }
+
     static weightedHeatOfPreIgnition(deadWtg, deadQig, liveWtg, liveQig) {
         return deadWtg * deadQig + liveWtg * liveQig
     }
 
-    static weightedSurfaceAreaToVolumeRatio(deadWtg, deadSavr, liveWtg, liveSavr) {
+    static weightedSavr(deadWtg, deadSavr, liveWtg, liveSavr) {
         return deadWtg * deadSavr + liveWtg * liveSavr
     }
 
@@ -362,43 +385,6 @@ export class FuelBedEquations {
     //--------------------------------------------------------------------------
     // UNUSED SO FAR ...
     //--------------------------------------------------------------------------
-
-
-    /**
-     * Calculate the fire heat per unit area.
-     *
-     * @param {float} rxi Fire reaction intensity (btu+1 ft-2 min-1).
-     * @param {float} taur The fire/flame residence time (min+1).
-     * @return The heat per unit area (btu+1 ft-2).
-     */
-    static heatPerUnitArea (rxi, taur) {
-        return rxi * taur
-    }
-
-    // DEPRECATED - The size class surface area calculations are now done inside swtg()
-    // Accumulate fuel particle surface area by size class
-    // for fuel particles with size class idx
-    // static scArea(idx, s1, a1, s2, a2, s3, a3, s4, a4, s5, a5) {
-    //   let area = 0
-    //   area += (idx === s1) ? a1 : 0
-    //   area += (idx === s2) ? a2 : 0
-    //   area += (idx === s3) ? a3 : 0
-    //   area += (idx === s4) ? a4 : 0
-    //   area += (idx === s5) ? a5 : 0
-    //   return area
-    // }
-
-    /**
-     * Calculate the fuel bed flame residence time.
-     *
-     * \TODO find reference
-     *
-     * @param {float} savr Fuel bed surface area-to-volume ratio (ft-1).
-     * @return float Fuel bed flame residence time (min+1).
-     */
-    static taur (savr) {
-        return savr <= 0 ? 0 : 384 / savr
-    }
 
     static windSpeedAdjustmentFactor (fuelSheltered, shelteredWaf, openWaf) {
         return fuelSheltered ? Math.min(shelteredWaf, openWaf) : openWaf

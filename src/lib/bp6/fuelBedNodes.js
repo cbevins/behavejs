@@ -7,8 +7,10 @@
 import {Calc} from './Calc.js'
 import {FuelBedEquations as Eq} from './FuelBedEquations.js'
 import { 
-    beta, load, covr, depth, qig, sawf, bulk, nwns, ros, owaf, xi, rxi, rxv, rxvo, sa, savr, vol,
-    _beta, _load, _depth, _qig, _ros, _rxi, _rxv, _factor, _fraction, _owaf, _ratio, _hsink, _sa, _savr, _vol
+    beta, load, covr, depth, qig, sawf, bulk, nwns, ros, owaf, xi, rxi, rxv, rxvo,
+    sa, savr, taur, vol, hpua,
+    _beta, _load, _depth, _qig, _ros, _rxi, _rxv, _factor, _fraction, _owaf,
+    _ratio, _hsink, _sa, _savr, _vol, _taur, _hpua
 } from './standardKeys.js'
 
 export function surfacePrimaryNodes() { return nodeTemplates('surface/primary') }
@@ -18,7 +20,7 @@ export function fuelBedNodes(prefix='') {
     const bed = prefix + '/fuel/bed/'
     const dead = prefix + '/fuel/dead/'
     const live = prefix + '/fuel/live/'
-    // The following keys are only used by this file
+    // The following keys are only used within this file
     const bopt = beta+'/optimum'
     const brat = beta+'/ratio'
     const hsink = 'heat sink'
@@ -72,8 +74,7 @@ export function fuelBedNodes(prefix='') {
 
     [bed+sa, 0, _sa, Calc.sum, [dead+sa, live+sa]],
 
-    [bed+savr, 1, _savr,
-        Eq.weightedSurfaceAreaToVolumeRatio, [dead+sawf, dead+savr, live+sawf, live+savr]],
+    [bed+savr, 1, _savr, Eq.weightedSavr, [dead+sawf, dead+savr, live+sawf, live+savr]],
 
     [bed+savr15, 1, _savr, Eq.savr15, [bed+savr]],
 
@@ -86,9 +87,9 @@ export function fuelBedNodes(prefix='') {
     [bed+wndi, 0, _factor, Eq.windI, [bed+brat, bed+wnde, bed+wndc]],
 
     [bed+wndk, 0, _factor, Eq.windK, [bed+brat, bed+wnde, bed+wndc]],
-    ]
-}
 
-for(let [key, value, units, method, suppliers] of fuelBedNodes('surface/primary')) {
-    console.log(key)
+    [bed+taur, 0, _taur, Eq.fireResidenceTime, [bed+savr]],
+
+    [bed+hpua, 0, _hpua, Eq.heatPerUnitArea, [bed+rxi, bed+taur]]
+    ]
 }
