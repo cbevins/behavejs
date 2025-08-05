@@ -19,9 +19,9 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
     const p3 = life + 'element 3/'
     const p4 = life + 'element 4/'
     const p5 = life + 'element 5/'
-    const efmc = 'effective fuel moisture content'
-    const efol = 'effective fuel ovendry load'
-    const efwl = 'effective fuel water load'
+    const efmc = 'effective fuel/moisture content'
+    const efol = 'effective fuel/ovendry load'
+    const efwl = 'effective fuel/water load'
     const etam = 'moisture damping coefficient'
     const etas = 'mineral damping coefficient'
     const heat = 'heat of combustion'
@@ -30,6 +30,8 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
     const mext = 'extinction moisture content'
     const mois = 'moisture content'
     const net  = 'net ovendry load'
+    const rxi  = 'fire/reaction intensity'
+    const rxv  = 'fire/reaction velocity'
     const sa   = 'surface area'
     const savr = 'surface area to volume ratio'
     const sawf = 'surface area weighting factor'
@@ -44,13 +46,11 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
         [life+sa, 0, '/fuel/'+sa,
             Calc.sum, [p1+sa, p2+sa, p3+sa, p4+sa, p5+sa]],
         
-        [life+sawf, 0, '/fraction',
-            Calc.divide, [life+'surface area', bed+'surface area']],
+        [life+sawf, 0, '/fraction', Calc.divide, [life+sa, bed+sa]],
 
         [life+etas, 0, '/fraction', Eq.mineralDamping, [life+seff]],
         
-        [life+etam, 0, '/fraction',
-            Eq.moistureDamping, [life+mois, life+'extinction moisture content']],
+        [life+etam, 0, '/fraction', Eq.moistureDamping, [life+mois, life+mext]],
         
         [life+heat, 8000, '/fuel/'+heat,
             Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
@@ -62,7 +62,7 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
         [life+efol, 0, '/fuel/'+load,
             Calc.sum, [p1+efol, p2+efol, p3+efol, p4+efol, p5+efol]],
 
-        [life+mois, 1, 'fuel/'+mois,
+        [life+mois, 1, '/fuel/'+mois,
             Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
                 p1+mois, p2+mois, p3+mois, p4+mois, p5+mois]],
 
@@ -73,13 +73,12 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
             Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
                 p1+qig, p2+qig, p3+qig, p4+qig, p5+qig]],
 
-        [life+'fire reaction intensity', 0, '/fire/reaction intensity',
-            Calc.multiply, [life+'dry fuel reaction intensity', life+'moisture damping coefficient']],
+        [life+rxi, 0, '/fire/reaction intensity',
+            Calc.multiply, [life+'dry fuel reaction intensity', life+etam]],
 
         [life+'dry fuel reaction intensity', 0, '/fire/reaction intensity',
             Eq.dryFuelReactionIntensity, [
-                bed+'fire reaction velocity/optimum',
-                life+net, life+heat, life+etas]],
+                bed+rxv+'/optimum', life+net, life+heat, life+etas]],
 
         [life+savr, 1, '/fuel/'+savr,
             Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
@@ -103,11 +102,11 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
     if (deadOrLive === 'dead') {
         if (prefix === 'crown/canopy') {
             nodeDefs.push(
-                ['crown/canopy/fuel/bed/dead/extinction moisture content', 0.25, '/fuel/'+mois,
+                ['crown/canopy/fuel/bed/dead/'+mext, 0.25, '/fuel/'+mois,
                     Dag.constant, []])
         } else {
             nodeDefs.push(
-                [life+mext, 1, '/fuel/moisture content',
+                [life+mext, 1, '/fuel/'+mois,
                     Dag.input, []],
                 [life+efwl, 0, '/fuel/water load',
                     Calc.sum, [p1+efwl, p2+efwl, p3+efwl, p4+efwl, p5+efwl]],
@@ -117,11 +116,11 @@ export function fuelLifeNodeDefs(prefix, deadOrLive) {
         }
     } else {
         nodeDefs.push(
-            [life+'extinction moisture content/factor', 0, '/factor',
+            [life+mext+'/factor', 0, '/factor',
                 Eq.liveFuelExtinctionMoistureContentFactor, [dead+efol, live+efol]],
             [life+mext, 1, '/fuel/'+mois,
                 Eq.liveFuelExtinctionMoistureContent, [
-                    life+'extinction moisture content/factor',
+                    life+mext+'/factor',
                     dead+efmc,
                     dead+mext]]
         )

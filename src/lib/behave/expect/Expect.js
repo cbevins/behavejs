@@ -5,6 +5,7 @@ export class Expect {
         this.results = []
         this.pass = 0
         this.fail = 0
+        this._title()
     }
 
     alike(desc, expected, actual) {
@@ -32,7 +33,24 @@ export class Expect {
         return this
     }
 
+    summary() {
+        // black: 30, red: 31, green 32, yellow 33, blue 34, magenta 35, cyan 36, white 37 (+10 for BG)
+        if (this.fail) {
+            console.log(`\x1b[31m ${this.fail} FAILED TESTS\x1b[0m`)
+            console.log(`\x1b[32m ${this.pass} PASSED TESTS\x1b[0m`)
+        } else {
+            console.log(`\x1b[32mALL ${this.pass} TESTS PASSED\x1b[0m`)
+        }
+        return this
+    }
+
     //--------------------------------------------------------------------------
+
+    _title() {
+        console.log(`\n\x1b[36m${'-'.padStart(this.name.length, '-')}\x1b[0m`)
+        console.log(`\x1b[36m${this.name}\x1b[0m`)
+        console.log(`\x1b[36m${'-'.padStart(this.name.length, '-')}\x1b[0m`)
+    }
 
     _expectArray(desc, expected, actual) {
         let result = 'OK'
@@ -83,8 +101,8 @@ export class Expect {
         else this.fail++
         if (this.verbose) {
             // black: 30, red: 31, green 32, yellow 33, blue 34, magenta 35, cyan 36, white 37 (+10 for BG)
-            const c1 = (result === 'OK') ? '\x1b[0m' : '\x1b[31m'
-            console.log(`\x1b[36m${desc}\x1b[0m\n    EXPECTED: "${expected}"\n    ACTUAL: "${actual}"\n    ${c1}RESULT: ${result}\x1b[0m`)
+            const c1 = (result === 'OK') ? '\x1b[32m' : '\x1b[31m'
+            console.log(`\x1b[36mTest ${this.results.length}: ${desc}\x1b[0m\n    EXPECTED: "${expected}"\n    ACTUAL: "${actual}"\n    ${c1}RESULT: ${result}\x1b[0m`)
         }
     }
 }

@@ -92,6 +92,12 @@ export class StandardFuelModels {
         return map.has(key)
     }
 
+    static code(alias) { return StandardFuelModels.getObj(alias).code }
+    static depth(alias) { return StandardFuelModels.getObj(alias).depth }
+    static heatDead(alias) { return StandardFuelModels.getObj(alias).heatDead }
+    static heatLive(alias) { return StandardFuelModels.getObj(alias).heatLive }
+    static key(alias) { return StandardFuelModels.getObj(alias).key }
+    static label(alias) { return StandardFuelModels.getObj(alias).label }
     static load1(alias) { return StandardFuelModels.getObj(alias).load1 }
     static load10(alias) { return StandardFuelModels.getObj(alias).load10 }
     static load100(alias) { return StandardFuelModels.getObj(alias).load100 }
@@ -99,6 +105,8 @@ export class StandardFuelModels {
     static loadStem(alias) { return StandardFuelModels.getObj(alias).loadStem }
     static loadCured(alias, curedFraction) { return StandardFuelModels.getObj(alias).loadHerb * curedFraction}
     static loadUncured(alias, curedFraction) { return StandardFuelModels.getObj(alias).loadHerb * (1-curedFraction) }
+    static mext(alias) { return StandardFuelModels.getObj(alias).mext }
+    static number(alias) { return StandardFuelModels.getObj(alias).number }
     static savr1(alias) { return StandardFuelModels.getObj(alias).savr1 }
     static savrHerb(alias) { return StandardFuelModels.getObj(alias).savrHerb }
     static savrStem(alias) { return StandardFuelModels.getObj(alias).savrStem }
