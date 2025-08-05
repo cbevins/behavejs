@@ -7,10 +7,8 @@
 import {Calc} from './Calc.js'
 import {FuelBedEquations as Eq} from './FuelBedEquations.js'
 import { 
-    beta, bulk, dens, depth, diam, efol, efwl, ehn, heat, qig, load, mois, net, nwns, owaf,
-    ros, rxi, rxv, sa, savr, sawf, scwf, size, seff, stot, vol, xi,
-    _beta, _bulk, _dens, _depth, _diam, _efwl, _ehn, _factor, _fraction, _heat, _hsink, _load, _efol, _net, _mois, _owaf,
-    _ratio, _ros, _rxi, _rxv, _qig, _sa, _savr, _sawf, _scwf, _seff, _size, _stot, _vol, 
+    beta, load, covr, depth, qig, sawf, bulk, nwns, ros, owaf, xi, rxi, rxv, rxvo, sa, savr, vol,
+    _beta, _load, _depth, _qig, _ros, _rxi, _rxv, _factor, _fraction, _owaf, _ratio, _hsink, _sa, _savr, _vol
 } from './standardKeys.js'
 
 export function surfacePrimaryNodes() { return nodeTemplates('surface/primary') }
@@ -20,14 +18,13 @@ export function fuelBedNodes(prefix='') {
     const bed = prefix + '/fuel/bed/'
     const dead = prefix + '/fuel/dead/'
     const live = prefix + '/fuel/live/'
-
+    // The following keys are only used by this file
     const bopt = beta+'/optimum'
     const brat = beta+'/ratio'
     const hsink = 'heat sink'
     const hsrc = 'heat source'
     const rxve  = rxv+'/exponent'
     const rxvm  = rxv+'/maximum'
-    const rxvo  = rxv+'/optimum'
     const savr15 = savr+'/1.5'
     const slpk = 'slope/K'
     const wndb = 'wind/B'
@@ -39,6 +36,8 @@ export function fuelBedNodes(prefix='') {
     return [
     [bed+beta, 0, _beta, Eq.bulkDensity, [bed+load, bed+'depth']],
     
+    [bed+covr, 1, _fraction, null, []],
+
     [bed+depth, 1, _depth, null, []],
 
     [bed+qig, 0, _qig, Eq.weightedHeatOfPreIgnition, [dead+sawf, dead+qig, live+sawf, live+qig]],
