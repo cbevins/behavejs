@@ -1,5 +1,6 @@
 // src/lib/bp6/index.js
 export {Calc} from './Calc.js'
+export {Config} from './Config.js'
 export {Dag} from './Dag.js'
 export {FuelBedEquations} from './surface/FuelBedEquations.js'
 export {fuelBedNodes} from './surface/fuelBedNodes.js'

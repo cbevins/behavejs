@@ -1,37 +1,33 @@
-import { fuelBedNodes } from "./fuelBedNodes.js"
-import { fuelLifeNodes } from "./fuelLifeNodes.js"
+import { Config, fuelBedNodes, fuelStandardModelNodes, linkSurfaceFuel2StandardModel,
+    Util } from '../index.js'
 
-function checkNodeKeys(map) {
-    for(let node of map.values()) {
-        const [key, value, units, method, supkeys] = node
-        for(let supkey of supkeys) {
-            if(!map.has(supkey)) {
-                console.log(`*** "${key}" supplier "${supkey}" undefined`)
-            }
+/**
+ * Returns a Behavejs node Map according to configuration specs.
+ * @param {Config} config 
+ */
+export function configure(config=null) {
+    let master = new Map()
+    if (!config) config = new Config()
+    const {surface} = config
+
+    if (surface.active.value === 'activated') {
+        // Loop for 'primary' and 'secondary' fuel beds
+        for(let surface of ['surface/primary', /*'surface/secondary'*/]) {
+            master = new Map([...master, ...fuelBedNodes(surface)])
+            // Add standard fuel model to this primary/secondary fuel bed
+            master = new Map([...master, ...fuelStandardModelNodes(surface)])
+            // Assign the surface fuel element's values from the standard model
+            master = new Map([...master, ...linkSurfaceFuel2StandardModel(surface)])
         }
     }
+    Util.checkNodeKeys(master)
+    return master
 }
 
-let master = new Map()
-// Loop for 'primary' and 'secondary' fuel beds
-for(let surface of ['surface/primary', /*'surface/secondary'*/]) {
-    master = new Map([...master, ...fuelBedNodes(surface)])
-    // // Loop for 'dead' and 'live' fuel arrays within the fuel bed
-    // for(let life of ['dead', 'live']) {
-    //     master = new Map([...master, ...fuelLifeNodes(surface, life)])
-    //     // Add no-load fuel elements with default values to be subsequently overwritten
-    //     for(let el of ['1', '2', '3', '4', '5']) {
-    //         master = new Map([...master, ...fuelElementNodes(surface, life, el)])
-    //     }
-    // }
-    // // Add standard fuel model to this primary/secondary fuel bed
-    // master = new Map([...master, ...fuelStandardModelNodes(surface)])
-    // // Assign the primary/secondary element's values from the standard model
-    // master = new Map([...master, ...linkSurfaceFuel2StandardModel(surface)])
+function listNodeMap(map) {
+    const w = map.values().reduce((w, node) => Math.max(node[0].length, w), 0)
+    return map.values().reduce((str, node) => str + node[0].padEnd(w+2) + node[1] + '\n', '')
 }
-let l = 0
-for(let node of master.values()) l = Math.max(node[0].length, l)
-for(let node of master.values()) console.log(node[0].padEnd(70), node[1])
-console.log(master.size, 'nodes')
-// checkNodeKeys(master)
 
+const map = configure()
+console.log(listNodeMap(map))
