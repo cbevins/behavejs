@@ -13,7 +13,7 @@ import {
     _depth, _dens, _load, _savr, _heat, _seff, _stot, _mois,
 } from './standardKeys.js'
 
-export function fuelStandardModelNodes(prefix, custom=false) {
+export function fuelStandardModelNodes(prefix, method=null) {
     const dead = prefix + '/fuel/dead/'
     const live = prefix + '/fuel/live/'
 
@@ -46,9 +46,9 @@ export function fuelStandardModelNodes(prefix, custom=false) {
         [fm+'live/'+heat, 8000, _heat, Eq.heatLive, [key]],
     ]
 
-    if (custom) {
-        for(let node of customNodes) {
-            node[3] = Dag.input
+    if (method) {   // make all nodes either Dag.input or Dag.constant
+        for(let node of standardNodes) {
+            node[3] = method
             node[4] = []
         }
     }
@@ -71,6 +71,7 @@ export function fuelStandardModelNodes(prefix, custom=false) {
 export function linkSurfaceFuel2StandardModel(prefix) {
     const fm = prefix+'/fuel model/'
     const key = fm + 'key'
+    const bed = prefix+'/fuel/bed/'
     const d1 = prefix+'/fuel/dead/element 1/'
     const d2 = prefix+'/fuel/dead/element 2/'
     const d3 = prefix+'/fuel/dead/element 3/'
@@ -150,5 +151,11 @@ export function linkSurfaceFuel2StandardModel(prefix) {
         [l2+seff, 0.01, _seff, Dag.constant, []],
         [l2+stot, 0.0555, _stot, Dag.constant, []]
     ]
-    return Util.nodesToMap([...p1, ...p2, ...p3, ...p4, ...p5, ...p6])
+
+    const b = [
+        [prefix+'/fuel/bed/'+depth, 1, _depth, Dag.assign, [fm+depth]],
+        [prefix+'/fuel/dead/'+mext, 1, _mois, Dag.assign, [fm+mext]],
+    ]
+
+    return Util.nodesToMap([...p1, ...p2, ...p3, ...p4, ...p5, ...p6, ...b])
 }
