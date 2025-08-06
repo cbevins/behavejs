@@ -7,7 +7,7 @@
  * The '/fuel/bed/{life}/element n/' DagNodes define the characteristics
  * of a specific dead or live fuel particle type per Rothermel (1972) and BehavePlus V6.
  */
-import {Calc, Dag, StandardFuelModels as Eq, Util} from './index.js'
+import {Calc, Dag, StandardFuelModels as Eq, Util} from '../index.js'
 import {
     depth, mext, dens, load, savr, heat, seff, stot, mois,
     _depth, _dens, _load, _savr, _heat, _seff, _stot, _mois,
@@ -45,7 +45,7 @@ export function fuelStandardModelNodes(prefix) {
     return Util.nodesToMap(nodes)
 }
 
-export function linkFuelBed2Model(prefix) {
+export function linkSurfaceFuel2StandardModel(prefix) {
     const fm = prefix+'/fuel model/'
     const key = fm + 'key'
     const d1 = prefix+'/fuel/dead/element 1/'

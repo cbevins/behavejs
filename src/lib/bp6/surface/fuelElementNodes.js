@@ -4,7 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc, Dag, FuelElementEquations as Eq, Util} from './index.js'
+import {Calc, Dag, FuelElementEquations as Eq} from '../index.js'
 import {
     dens, efol, efwl, ehn, heat, qig, load, mois, net, sa, savr, sawf, scar,
     scwf, size, seff, stot, vol,
@@ -23,33 +23,46 @@ const _type = 'fuel/type'
 const _life = 'fuel/life'
 
 /**
- * Returns a single fuel element definition using 0 load and default values.
+ * Returns a single fuel element definition whose root (input) nodes are
+ * initialized as constants with default 'unused' element values.
+ *
+ * The following nodes' update method should be changed from Dag.constant
+ * by one or more external submodules:
+ * - /fuel/dead/mext
+ * 
  * @param {string} prefix 'surface/primary', 'surface/secondary', or 'crown/canopy'
  * @param {string} deadOrLive 'dead' or 'llive'
  * @param {string} n must be '1', '2', '3', '4', or '5'
  * @param {string} ftype is like 'dead 1-h' ,'dead 10-h', 'dead-100h', 'cured herb', 'live herb', 'live stem'
  * @param {function} method is either Dag.constant() or Dag.input()
- * @returns 
+ * @returns An array of 21 fuel element property nodes
  */
-export function fuelElementNodes(prefix, deadOrLive, n, ftype='', method=Dag.constant) {
+export function fuelElementNodes(prefix, deadOrLive, n, ftype='unused', method=Dag.constant) {
     const bed  = prefix + '/fuel/bed/'
     const dead = prefix + '/fuel/dead/'
     const live = prefix + '/fuel/live/'
     const lcat = prefix + '/fuel/'+deadOrLive
     const p    = lcat + '/element ' + n + '/'
-    const nodes = [
-        // input characteristics
-        [p+type, ftype, _type, method, []],
-        [p+life, deadOrLive, _life, method, []],
-        [p+load,      0, _load, method, []],
-        [p+savr,      1, _savr, method, []],
-        [p+heat,   8000, _heat, method, []],
-        [p+dens,     32, _dens, method, []],
-        [p+seff,   0.01, _seff, method, []],
-        [p+stot, 0.0555, _stot, method, []],
-        [p+mois,      1, _mois, method, []],
 
-        // derived characteristics
+    // The following node's update method should be changed from Dag.constant
+    // by one or more external submodules:
+    const externalNodes = [
+        // 8 root (input) characteristics
+        [p+type, ftype, _type, method, []],
+        [p+load, 0, _load, method, []],
+        [p+savr, 1, _savr, method, []],
+        [p+heat, 0, _heat, method, []],
+        [p+dens, 0, _dens, method, []],
+        [p+seff, 0, _seff, method, []],
+        [p+stot, 0, _stot, method, []],
+        [p+mois, 1, _mois, method, []],
+    ]
+
+    const internalNodes = [
+        // 1 constant node
+        [p+life, deadOrLive, _life, Dag.constant, []],
+
+        // 12 derived characteristics
         [p+ehn, 0, _ehn, Eq.effectiveHeatingNumber, [p+savr]],
 
         [p+efol, 0, _load, Eq.effectiveFuelLoad, [p+savr, p+load, p+life]],
@@ -73,7 +86,8 @@ export function fuelElementNodes(prefix, deadOrLive, n, ftype='', method=Dag.con
         [p+efwl, 0, _efwl, Eq.effectiveFuelWaterLoad, [p+efol, p+mois]],
 
         [p+diam, 0, _diam, Eq.cylindricalDiameter, [p+savr]],
+
         [p+leng, 0, _leng, Eq.cylindricalLength, [p+diam, p+vol]],
     ]
-    return Util.nodesToMap(nodes)
+    return [...externalNodes, ...internalNodes]
 }

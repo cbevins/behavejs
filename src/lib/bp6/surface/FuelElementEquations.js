@@ -4,7 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc} from './Calc.js'
+import {Calc} from '../Calc.js'
 
 export class FuelElementEquations {
 

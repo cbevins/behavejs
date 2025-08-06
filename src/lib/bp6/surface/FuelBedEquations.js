@@ -4,7 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
 */
-import {Calc} from './Calc.js'
+import {Calc} from '../index.js'
 
 export class FuelBedEquations {
     /**
@@ -161,6 +161,31 @@ export class FuelBedEquations {
 
     static packingRatioRatio(packingRatio, optPackingRatio) {
         return Calc.divide(packingRatio, optPackingRatio)
+    }
+
+    /** Calculate the fire spread rate slope coefficient (ratio).
+     *
+     * This returns Rothermel's (1972) `phiS' as per equation 51 (p 24, 26).
+     *
+     * @param slopeRatio Slope steepness ratio (vertical rise / horizontal reach).
+     * @param slopeK Fuel Bed slope factor.
+     * @return The fire spread rate slope coefficient (ratio).
+     */
+    static phiSlope (slopeRatio, slopeK) {
+        return slopeK * slopeRatio * slopeRatio
+    }
+
+    /** Calculate the fire spread rate wind coefficient (ratio).
+     *
+     * This returns Rothermel's (1972) `phiW' as per equation 47 (p 23, 26).
+     *
+     * @param midflameWind Wind speed at midflame height (ft+1 min-1).
+     * @param windB Fuel Bed wind factor `B`.
+     * @param windK Fuel Bed wind factor `K`.
+     * @return The fire spread rate wind coefficient (ratio).
+     */
+    static phiWind (midflameWind, windB, windK) {
+        return midflameWind <= 0 ? 0 : windK * Math.pow(midflameWind, windB)
     }
 
     /**
