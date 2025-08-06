@@ -4,9 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc} from './Calc.js'
-import {Util} from './Util.js'
-import {FuelBedEquations as Eq} from './FuelBedEquations.js'
+import {Calc, FuelBedEquations as Eq, Util} from './index.js'
 import { 
     beta, load, covr, depth, qig, sawf, bulk, nwns, ros, owaf, xi, rxi, rxv, rxvo,
     sa, savr, taur, vol, hpua,

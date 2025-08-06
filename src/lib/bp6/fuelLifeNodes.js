@@ -4,10 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc} from './Calc.js'
-import {Dag} from './Dag.js'
-import {Util} from './Util.js'
-import {FuelBedEquations as Eq} from './FuelBedEquations.js'
+import {Calc, Dag, FuelBedEquations as Eq, Util} from './index.js'
 import { 
     efmc, efol, efwl, etam, etas, heat, load, mext, mextf, mois, net, qig, rxi, 
     rxvo, sa, savr, sawf, scar, scwf, seff, size, stot, vol,

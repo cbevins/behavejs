@@ -1,7 +1,5 @@
-import { fuelBedNodes } from "./fuelBedNodes.js"
-import { fuelLifeNodes } from "./fuelLifeNodes.js"
-import { fuelElementNodes } from "./fuelElementNodes.js"
-import { fuelStandardModelNodes, linkFuelBed2Model } from './fuelStandardModelNodes.js'
+import { fuelBedNodes, fuelLifeNodes, fuelElementNodes, fuelStandardModelNodes, linkFuelBed2Model }
+from "./index.js"
 
 function checkNodeKeys(map) {
     for(let node of map.values()) {

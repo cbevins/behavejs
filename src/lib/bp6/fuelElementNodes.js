@@ -4,10 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc} from './Calc.js'
-import {Dag} from './Dag.js'
-import {Util} from './Util.js'
-import {FuelElementEquations as Eq} from './FuelElementEquations.js'
+import {Calc, Dag, FuelElementEquations as Eq, Util} from './index.js'
 import {
     dens, efol, efwl, ehn, heat, qig, load, mois, net, sa, savr, sawf, scar,
     scwf, size, seff, stot, vol,
