@@ -48,8 +48,8 @@ export function fuelStandardModelNodes(prefix, custom=false) {
 
     if (custom) {
         for(let node of customNodes) {
-        node[3] = Dag.input
-        node[4] = []
+            node[3] = Dag.input
+            node[4] = []
         }
     }
 

@@ -62,7 +62,7 @@ export function fuelBedNodes(prefix='') {
     // a configurator should change this update method to Dag.input only for two-fuels case
     // if two-fuels, change 'primary' to Dag.input value=1, 'secondary' to Dag.input, value=0
     // otherwise, change 'primary' to Dag.constant value=1 and 'secondary' to Dag.constant value=0
-    const coverNodes = [[bed+covr, 1, _fraction, Dag.constant, []]]
+    const coverNodes = [[bed+covr, 0, _fraction, Dag.constant, []]]
 
     // a fuel submodule should change this update method to Dag.assign linked to its own internal node
     const fuelNodes = [
