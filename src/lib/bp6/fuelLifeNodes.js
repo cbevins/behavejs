@@ -6,6 +6,7 @@
  */
 import {Calc} from './Calc.js'
 import {Dag} from './Dag.js'
+import {Util} from './Util.js'
 import {FuelBedEquations as Eq} from './FuelBedEquations.js'
 import { 
     efmc, efol, efwl, etam, etas, heat, load, mext, mextf, mois, net, qig, rxi, 
@@ -14,8 +15,12 @@ import {
     _scwf, _seff, _stot, _vol,
 } from './standardKeys.js'
 
-// 'deadOrLive' must be 'dead' or 'live'
-// 'prefix' is 'surface/primary', 'surface/secondary', or 'crown/canopy'
+/**
+ * 
+ * @param {*} prefix is 'surface/primary', 'surface/secondary', or 'crown/canopy'
+ * @param {*} deadOrLive must be 'dead' or 'live'
+ * @returns Map of node key-array
+ */
 export function fuelLifeNodes(prefix, deadOrLive) {
     const bed = prefix + '/fuel/bed/'
     const dead = prefix + '/fuel/dead/'
@@ -30,7 +35,7 @@ export function fuelLifeNodes(prefix, deadOrLive) {
     const dfrxi = 'dry fuel reaction intensity'
 
     // The following nodes exist for both 'dead' and 'live' fuels
-    const nodeDefs = [
+    const nodes = [
         [life+sa, 0, _sa, Calc.sum, [p1+sa, p2+sa, p3+sa, p4+sa, p5+sa]],
         
         [life+sawf, 0, _fraction, Calc.divide, [life+sa, bed+sa]],
@@ -87,22 +92,22 @@ export function fuelLifeNodes(prefix, deadOrLive) {
     // Dead, live, and canopy fuels have their own extinction moisture content methods
     if (deadOrLive === 'dead') {
         if (prefix === 'crown/canopy') {
-            nodeDefs.push(
+            nodes.push(
                 ['crown/canopy/fuel/bed/dead/'+mext, 0.25, _mois, Dag.constant, []])
         } else {
-            nodeDefs.push(
+            nodes.push(
                 [life+mext, 1, _mois, Dag.input, []],
                 [life+efwl, 0, _efwl, Calc.sum, [p1+efwl, p2+efwl, p3+efwl, p4+efwl, p5+efwl]],
                 [life+efmc, 0, _mois, Calc.divide, [life+efwl, life+efol]]
             )
         }
     } else {
-        nodeDefs.push(
+        nodes.push(
             [life+mextf, 0, _factor,
                 Eq.liveFuelExtinctionMoistureContentFactor, [dead+efol, live+efol]],
             [life+mext, 1, _mois,
                 Eq.liveFuelExtinctionMoistureContent, [life+mextf, dead+efmc, dead+mext]]
         )
     }
-    return nodeDefs
+    return Util.nodesToMap(nodes)
 }

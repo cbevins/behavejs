@@ -5,6 +5,7 @@
  * @license MIT
  */
 import {Calc} from './Calc.js'
+import {Util} from './Util.js'
 import {FuelBedEquations as Eq} from './FuelBedEquations.js'
 import { 
     beta, load, covr, depth, qig, sawf, bulk, nwns, ros, owaf, xi, rxi, rxv, rxvo,
@@ -35,8 +36,8 @@ export function fuelBedNodes(prefix='') {
     const wndk = 'wind/K'
     const wndi = 'wind/I'
 
-    return [
-    [bed+beta, 0, _beta, Eq.bulkDensity, [bed+load, bed+'depth']],
+    const nodes = [
+    [bed+bulk, 0, _beta, Eq.bulkDensity, [bed+load, bed+'depth']],
     
     [bed+covr, 1, _fraction, null, []],
 
@@ -92,4 +93,5 @@ export function fuelBedNodes(prefix='') {
 
     [bed+hpua, 0, _hpua, Eq.heatPerUnitArea, [bed+rxi, bed+taur]]
     ]
+    return Util.nodesToMap(nodes)
 }
