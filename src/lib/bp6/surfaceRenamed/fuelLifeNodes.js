@@ -22,7 +22,7 @@ export function fuelLifeNodes(f, deadOrLive) {
     const live = f + K.live
 
     // The following keys are only used within this file
-    const life = bed + deadOrLive
+    const life = deadOrLive === 'dead' ? f+K.dead : f+K.live
     const p1 = life + 'element/1/'
     const p2 = life + 'element/2/'
     const p3 = life + 'element/3/'

@@ -25,8 +25,8 @@ export function fuelElementNodes(f, deadOrLive, n, ftype='unused', method=Dag.co
     const bed = f + K.bed
     const dead = f + K.dead
     const live = f + K.live
-    const lcat = f + '/fuel/'+deadOrLive
-    const p    = lcat + '/element/' + n + '/'
+    const lcat = deadOrLive === 'dead' ? f+K.dead : f+K.live
+    const p    = lcat + 'element/' + n + '/'
 
     // The following node's update method should be changed from Dag.constant
     // by one or more external submodules:
@@ -59,11 +59,11 @@ export function fuelElementNodes(f, deadOrLive, n, ftype='unused', method=Dag.co
 
         [p+K.scwf, 0, K._scwf, Eq.sizeClassWeightingFactor, [
                 p+K.size,             // element's size class index
-                lcat+'/'+K.scar]],    // into this size class weighting array
+                lcat+K.scar]],    // into this size class weighting array
 
         [p+K.sa, 0, K._sa, Eq.surfaceArea, [p+K.load, p+K.savr, p+K.dens]],
 
-        [p+K.sawf, 0, K._sawf, Eq.surfaceAreaWeightingFactor, [p+K.sa, lcat+'/'+K.sa]],
+        [p+K.sawf, 0, K._sawf, Eq.surfaceAreaWeightingFactor, [p+K.sa, lcat+K.sa]],
 
         [p+K.vol, 0, K._vol, Eq.volume, [p+K.load, p+K.dens]],
 

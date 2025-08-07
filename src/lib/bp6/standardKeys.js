@@ -14,18 +14,18 @@ export const surf = 'surface/'
 // surface/fire contains the weighted bed/fire values
 export const surffire = surf+'fire/'              // ros, rosa, rosh, rxi, fl, hpua, dir, ...
 // primary and secondary fuel prefixes
-export const s1 = surf+'fuel/1/'                //
-export const s2 = surf+'fuel/2/'                //
+export const s1 = surf+'fuel/1/'                // leafs: covr
+export const s2 = surf+'fuel/2/'                // leafs: covr
 // sub-keys that, when used by the client, must be prefixed with s1 or s2
-    export const bed = 'bed/'                   // covr, depth, mext, bulk, beta, qig, phiw, phis, waf, taur, ...
-        export const dead = bed+'dead/'         // mext, drxi, etam, etas, mois, ...
+    export const bed = 'bed/'                   // leafs: depth, bulk, qig,  waf, load, beta bopt, brat, xi, rxve, rxvm, rxvo, sa, savr, savr15
+        export const dead = bed+'dead/'         // mext, efwl, efmc, drxi, etam, etas, mois, ... sa, sawf, etam, etas, heat, load, efol, mois, vol, qig, rxi. drxi, savr, seff, scar, net
             export const de = dead+'element/'   // placeholder, only used here to reduce redundancy and errors
-            export const dead1 = de+'1/'        // type, life, load, savr, dens, heat, seff, stot, mois, ...
+            export const dead1 = de+'1/'        // type, load, savr, heat, dens, seff, stot, mois, life ... ehn, efol, qig, net, size, scwf, sa, sawf, vol, efwl, diam, leng
             export const dead2 = de+'2/'
             export const dead3 = de+'3/'
             export const dead4 = de+'4/'
             export const dead5 = de+'5/'
-        export const live = bed+'live/'         // mext, drxi, etam, etas, mois, ...
+        export const live = bed+'live/'         // mext, mextf, efwl, efmc, drxi, etam, etas, mois, ... sa, sawf, etam, etas, heat, load, efol, mois, vol, qig, rxi. drxi, savr, seff, scar, net
             export const le = live+'element/'   // placeholder, only used here to reduce redundancy and errors
             export const live1 = le+'1/'        // type, life, load, savr, dens, heat, seff, stot, mois, ...
             export const live2 = le+'2/'
@@ -37,16 +37,16 @@ export const s2 = surf+'fuel/2/'                //
         export const aspen = M+'aspen/'         // input and output parameters
         export const chaparral = M+'chaparral/' // age, height, ...
         export const rough = M+'rough/'         // age, height, ...
-        export const standard = M+'standard/'   // number, code, label, depth, mext
-            export const msd = standard+'dead/'
-                export const deadh1 = msd+'1-h'          // load, savr
-                export const deadh10 = msd+'10-h'        // load
-                export const deadh100 = msd+'100-h'      // load
-                export const deadherb = msd+'cured herb'// load
-            export const msl = standard+'live/'
-                export const liveherbt = msl+'total herb' // load, savr
-                export const liveherb = msl+'uncured herb'// load
-                export const livestem = msl+'stem'        // load, savr
+        export const fm = M+'standard/'         // fmkey, fmnumber, fmcode, fmlabel, fmcured, depth, mext
+            export const fmdead = fm+'dead/'
+                export const fmh1 = fmdead+'1-h/'          // load, savr
+                export const fmh10 = fmdead+'10-h/'        // load
+                export const fmh100 = fmdead+'100-h/'      // load
+                export const fmdeadherb = fmdead+'cured herb/'// load
+            export const fmlive = fm+'live/'
+                export const fmherbtot = fmlive+'total herb/' // load, savr
+                export const fmliveherb = fmlive+'herb/'// load
+                export const fmlivestem = fmlive+'stem/'        // load, savr
     // following are local fuel/1/ and fuel/2/ nodes that are Dag.assign to
     // the overall surface moisture (sm), terrain (st), and wind (sw) nodes
     export const fuelmois = 'moisture/'
@@ -74,6 +74,12 @@ export const h10 = '10-h'
 export const h100 = '100-h'
 export const herb = 'herb'
 export const stem = 'stem'
+
+export const fmkey = 'key'
+export const fmnumb = 'number'
+export const fmcode = 'code'
+export const fmlabel = 'label'
+export const fmcured = 'cured herb fraction'
 
 //------------------------------------------------------------------------------
 // Surface leaf node names/keys
@@ -181,3 +187,7 @@ export const _diam = 'fuel/diameter'            // ft
 export const _leng = 'fuel/length'             // ft
 export const _type = 'fuel/type'
 export const _life = 'fuel/life'
+export const _fmkey = 'fuel/model/key'
+export const _fmnumb = 'fuel/model/number'
+export const _fmcode = 'fuel/model/code'
+export const _fmlabel = 'fuel/model/label'

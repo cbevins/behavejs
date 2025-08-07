@@ -30,8 +30,8 @@ export function fuelBedNodes(f='') {
     const coverNodes = [[f+K.covr, 0, K._fraction, Dag.constant, []]]
     // a fuel submodule should change this update method to Dag.assign linked to its own internal node
     const fuelNodes = [
-        [f+K.bed+K.depth, 1, K._depth, Dag.constant, []],
-        [f+K.bed+K.mext, 1, K._mois, Dag.constant, []],
+        [bed+K.depth, 1, K._depth, Dag.constant, []],
+        // [f+K.bed+K.mext, 1, K._mois, Dag.constant, []],
     ]
 
     // a moisture submodule should change these to Dag.assign to its own internal node
@@ -56,10 +56,10 @@ export function fuelBedNodes(f='') {
 
     const bedNodes = [
         [bed+K.bulk,   0, K._beta, Eq.bulkDensity, [bed+K.load, bed+'depth']],
-        [bed+K.qig,    0, K._qig, Eq.weightedHeatOfPreIgnition, [K.dead+K.sawf, K.dead+K.qig, K.live+K.sawf, K.live+K.qig]],
+        [bed+K.qig,    0, K._qig, Eq.weightedHeatOfPreIgnition, [f+K.dead+K.sawf, f+K.dead+K.qig, f+K.live+K.sawf, f+K.live+K.qig]],
         [bed+K.owaf,   1, K._owaf, Eq.openWindSpeedAdjustmentFactor, [bed+K.depth]],
-        [bed+K.load,   0, K._load, Calc.sum, [K.dead+K.load, K.live+K.load]],
-        [bed+K.beta,   0, K._beta, Eq.packingRatio, [K.dead+K.vol, K.live+K.vol, bed+K.depth]],
+        [bed+K.load,   0, K._load, Calc.sum, [f+K.dead+K.load, f+K.live+K.load]],
+        [bed+K.beta,   0, K._beta, Eq.packingRatio, [f+K.dead+K.vol, f+K.live+K.vol, bed+K.depth]],
         [bed+K.bopt,   0, K._beta, Eq.optimumPackingRatio, [bed+K.savr]],
         [bed+K.brat,   0, K._ratio, Eq.optimumPackingRatio, [bed+K.beta, bed+K.bopt]],
         [bed+K.xi,     0, K._ratio, Eq.propagatingFluxRatio, [bed+K.savr, bed+K.beta]],
@@ -67,8 +67,8 @@ export function fuelBedNodes(f='') {
         [bed+K.rxvm,   0, K._rxv, Eq.reactionVelocityMaximum, [bed+K.savr15]],
         [bed+K.rxvo,   0, K._rxv, Eq.reactionVelocityOptimum, [bed+K.brat, bed+K.rxvm, bed+K.rxve]],
         [bed+K.slpk,   0, K._factor, Eq.windB, [bed+K.beta]],
-        [bed+K.sa,     0, K._sa, Calc.sum, [K.dead+K.sa, K.live+K.sa]],
-        [bed+K.savr,   1, K._savr, Eq.weightedSavr, [K.dead+K.sawf, K.dead+K.savr, K.live+K.sawf, K.live+K.savr]],
+        [bed+K.sa,     0, K._sa, Calc.sum, [f+K.dead+K.sa, f+K.live+K.sa]],
+        [bed+K.savr,   1, K._savr, Eq.weightedSavr, [f+K.dead+K.sawf, f+K.dead+K.savr, f+K.live+K.sawf, f+K.live+K.savr]],
         [bed+K.savr15, 1, K._savr, Eq.savr15, [bed+K.savr]],
         [bed+K.wndb,   1, K._factor, Eq.windB, [bed+K.savr]],
         [bed+K.wndc,   0, K._factor, Eq.windC, [bed+K.savr]],
@@ -84,7 +84,7 @@ export function fuelBedNodes(f='') {
     const fireNodes = [
         [fire+K.hsink,  0, K._hsink, Eq.heatSink, [bed+K.qig, bed+K.bulk]],
         [fire+K.hsrc,   0, K._rxi, Eq.heatSource, [fire+K.rxi, bed+K.qig]],
-        [fire+K.rxi,    0, K._rxi, Eq.reactionIntensity, [K.dead+K.rxi, K.live+K.rxi]],
+        [fire+K.rxi,    0, K._rxi, Eq.reactionIntensity, [f+K.dead+K.rxi, f+K.live+K.rxi]],
         [fire+K.ros0,   0, K._ros, Eq.noWindNoSlopeSpreadRate, [fire+K.hsrc, fire+K.hsink]],
         [fire+K.taur,   0, K._taur, Eq.fireResidenceTime, [bed+K.savr]],
         [fire+K.hpua,   0, K._hpua, Eq.heatPerUnitArea, [fire+K.rxi, fire+K.taur]]
@@ -101,4 +101,3 @@ export function fuelBedNodes(f='') {
         ...fireNodes
     ])
 }
-fuelBedNodes(K.s1)
