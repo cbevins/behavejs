@@ -1,4 +1,5 @@
 import { Config, configurator } from '../index.js'
+import {Assert} from '../Assert.js'
 
 function listNodeMap(map) {
     const w = map.values().reduce((w, node) => Math.max(node[0].length, w), 0)
@@ -71,3 +72,7 @@ logNode(map, 'surface/secondary/fuel/dead/element 1/ovendry load')
 // logNode(map, d+'element 5/moisture content')
 // logNode(map, l+'element 1/moisture content')
 // logNode(map, l+'element 2/moisture content')
+
+const assert = new Assert('Behavejs Configurator')
+.that('assert equals', 123).equals(1234)
+console.log(assert.tests)
