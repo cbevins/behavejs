@@ -207,6 +207,10 @@ export class FuelBedEquations {
                 (192 + 0.2595 * savr)
     }
 
+    static secondaryCoverage(primaryCoverage) {
+        return 1 - primaryCoverage
+    }
+    
     static reactionIntensity( deadRxi, libeRxi) {
         return deadRxi + liveRxi
     }

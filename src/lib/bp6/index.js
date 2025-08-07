@@ -1,4 +1,5 @@
 // src/lib/bp6/index.js
+export {Assert} from './Assert.js'
 export {Calc} from './Calc.js'
 export {Config} from './Config.js'
 export {configurator} from './configurator.js'
