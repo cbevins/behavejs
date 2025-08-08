@@ -37,7 +37,7 @@ export function standardModelCatalogNodes(fuelId) {
  * Returns standard fuel model linked to client input
  * @param {string} id
  */
-function standardModelInputNodes(id) {
+export function standardModelInputNodes(id) {
     const nodes = standardModelCatalogNodes(id, cfg)
     for(let i=0; i<nodes.length; i++) {
         nodes[i][3] = Dag.input

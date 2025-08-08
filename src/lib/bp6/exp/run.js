@@ -3,37 +3,42 @@ import { moistureNodes } from './moistureNodes.js'
 import { surfaceBedNodes } from './surfaceBedNodes.js'
 import { surfaceLifeNodes } from './surfaceLifeNodes.js'
 import { surfaceElementNodesFromStandard } from './surfaceElementNodesFromStandard.js'
-import { standardModelCatalogNodes } from './standardModelCatalogNodes.js'
+import { standardModelCatalogNodes, standardModelInputNodes } from './standardModelCatalogNodes.js'
 
 console.log(new Date())
 const p      = 'surface/'
 const bedId  = 'bed/'
 const fireId = 'fire/'
-const fuelId = 'fuel/standard catalog/'   // or 'fuel/standard input/', 'fuel/chaparral'
 const moisId = 'moisture/input/'
 const windId = 'wind/input/'
+
 const cfg = {
     surface: {fuel: 'standard catalog'}
 }
-const catalogNodes = standardModelCatalogNodes(fuelId)
+
 const moisNodes = moistureNodes(moisId)
 const bedNodes = surfaceBedNodes(fireId, bedId)
-const deadNodes = surfaceLifeNodes(bedId, 'dead', fuelId, moisId)
-const liveNodes = surfaceLifeNodes(bedId, 'live', fuelId, moisId)
-let elNodes = []
+let nodes = [...moisNodes, ...bedNodes]
 
 if (cfg.surface.fuel==='standard catalog') {
-    elNodes = surfaceElementNodesFromStandard(bedId, fuelId, moisId)
+    const fuelId = 'fuel/standard catalog/'
+    const fuelNodes = standardModelCatalogNodes(fuelId)
+    const deadNodes = surfaceLifeNodes(bedId, 'dead', fuelId, moisId)
+    const liveNodes = surfaceLifeNodes(bedId, 'live', fuelId, moisId)
+    const elNodes = surfaceElementNodesFromStandard(bedId, fuelId, moisId)
+    nodes = [...nodes, ...fuelNodes, ...deadNodes, ...liveNodes, ...elNodes]
 } else if (cfg.surface.fuel==='standard input') {
+    const fuelId = 'fuel/standard input/'
+    const fuelNodes = standardModelInputNodes(fuelId)
+    const deadNodes = surfaceLifeNodes(bedId, 'dead', fuelId, moisId)
+    const liveNodes = surfaceLifeNodes(bedId, 'live', fuelId, moisId)
+    const elNodes = surfaceElementNodesFromStandard(bedId, fuelId, moisId)
+    nodes = [...nodes, ...fuelNodes, ...deadNodes, ...liveNodes, ...elNodes]
 } else if (cfg.surface.fuel==='chaparral') {
 } else if (cfg.surface.fuel==='southern rough') {
 } else if (cfg.surface.fuel==='western aspen') {
 }
-
-const nodes = [...bedNodes, ...deadNodes, ...liveNodes, ...elNodes,
-    ...catalogNodes,
-    ...moisNodes
-].sort()
+nodes.sort()
 // for(let node of nodes) console.log(node[0], node[1], node[2], node[3], node[4])
 
 const map = Util.nodesToMap(nodes)
