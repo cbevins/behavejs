@@ -147,6 +147,7 @@ export const type = 'type'
 export const life = 'life'
 
 // Units of measure keys
+export const _text = 'text'
 export const _factor = 'factor'                 // dl exponent, power, coeff, etc
 export const _fraction = 'fraction'             // dl portion of whole [0..1]
 export const _minr = 'fuel/mineral content'     // fraction [0..1]
