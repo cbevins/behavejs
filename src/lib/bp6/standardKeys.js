@@ -17,7 +17,7 @@ export const surffire = surf+'fire/'              // ros, rosa, rosh, rxi, fl, h
 export const s1 = surf+'fuel/1/'                // leafs: covr
 export const s2 = surf+'fuel/2/'                // leafs: covr
 // sub-keys that, when used by the client, must be prefixed with s1 or s2
-    export const bed = 'bed/'                   // leafs: depth, bulk, qig,  waf, load, beta bopt, brat, xi, rxve, rxvm, rxvo, sa, savr, savr15
+    export const bed = 'bed/'                   // leafs: depth, bulk, qig, waf, load, beta, bopt, brat, xi, rxve, rxvm, rxvo, sa, savr, savr15
         export const dead = bed+'dead/'         // mext, efwl, efmc, drxi, etam, etas, mois, ... sa, sawf, etam, etas, heat, load, efol, mois, vol, qig, rxi. drxi, savr, seff, scar, net
             export const de = dead+'element/'   // placeholder, only used here to reduce redundancy and errors
             export const dead1 = de+'1/'        // type, load, savr, heat, dens, seff, stot, mois, life ... ehn, efol, qig, net, size, scwf, sa, sawf, vol, efwl, diam, leng

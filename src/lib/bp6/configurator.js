@@ -1,7 +1,7 @@
 import { Config, Dag, Util } from './index.js'
 import { fuelBedNodes, fuelStandardModelNodes, linkSurfaceFuel2StandardModel } from './index.js'
 import { FuelBedEquations } from './index.js'
-import { covr, depth, mext } from './surface/standardKeys.js'
+import { covr, depth, mext } from './surfaceDEP/standardKeys.js'
 
 // Modifies the node properties store in map
 function modify(map, key, value, method=null, args=null) {

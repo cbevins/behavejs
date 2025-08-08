@@ -4,121 +4,114 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc, Dag, FuelBedEquations as Eq, Util, fuelElementNodes} from '../index.js'
-import { 
-    efmc, efol, efwl, etam, etas, heat, load, mext, mextf, mois, net, qig, rxi, 
-    rxvo, sa, savr, sawf, scar, scwf, seff, size, stot, vol,
-    _efmc, _efwl, _factor, _fraction, _heat, _load, _mois, _net, _qig, _rxi, _sa, _savr,
-    _scwf, _seff, _stot, _vol,
-} from './standardKeys.js'
+import {Calc, Dag, FuelBedEquations as Eq, Util, K} from '../index.js'
+import { fuelElementNodes } from './index.js'
 
 /**
  * The following nodes' update method should be changed from Dag.constant
  * by one or more external submodules:
  * - /fuel/dead/mext
  * 
- * @param {*} prefix is 'surface/primary', 'surface/secondary', or 'crown/canopy'
- * @param {*} deadOrLive must be 'dead' or 'live'
+ * @param {string} f is 'surface/fuel/1', 'surface/fuel/1', or 'crown/canopy'
+ * @param {string} deadOrLive must be 'dead' or 'live'
  * @returns Array of node defs
  */
-export function fuelLifeNodes(prefix, deadOrLive) {
-    const bed = prefix + '/fuel/bed/'
-    const dead = prefix + '/fuel/dead/'
-    const live = prefix + '/fuel/live/'
+export function fuelLifeNodes(f, deadOrLive) {
+    const bed = f + K.bed
+    const dead = f + K.dead
+    const live = f + K.live
 
     // The following keys are only used within this file
-    const life = prefix + '/fuel/'+deadOrLive+'/'
-    const p1 = life + 'element 1/'
-    const p2 = life + 'element 2/'
-    const p3 = life + 'element 3/'
-    const p4 = life + 'element 4/'
-    const p5 = life + 'element 5/'
-    const dfrxi = 'dry fuel reaction intensity'
+    const life = deadOrLive === 'dead' ? f+K.dead : f+K.live
+    const p1 = life + 'element/1/'
+    const p2 = life + 'element/2/'
+    const p3 = life + 'element/3/'
+    const p4 = life + 'element/4/'
+    const p5 = life + 'element/5/'
 
     // The following node only exists for the crown fire module
     const crownFireNodes = [
         // The following nodes need no further modification or linkage:
-        ['crown/canopy/fuel/dead/'+mext, 0.25, _mois, Dag.constant, []]
+        ['crown/canopy/fuel/dead/'+K.mext, 0.25, K._mois, Dag.constant, []]
     ]
 
     // The following nodes only exist for the surface fire 'dead' category
     const deadNodes = [
         // The following node's update method should be changed from Dag.constant
         // by one or more external submodules:
-        [life+mext, 1, _mois, Dag.constant, []],
+        [life+K.mext, 1, K._mois, Dag.constant, []],
         // The following nodes need no further modification or linkage:
-        [life+efwl, 0, _efwl, Calc.sum, [p1+efwl, p2+efwl, p3+efwl, p4+efwl, p5+efwl]],
-        [life+efmc, 0, _mois, Calc.divide, [life+efwl, life+efol]]
+        [life+K.efwl, 0, K._efwl, Calc.sum, [p1+K.efwl, p2+K.efwl, p3+K.efwl, p4+K.efwl, p5+K.efwl]],
+        [life+K.efmc, 0, K._mois, Calc.divide, [life+K.efwl, life+K.efol]]
     ]
 
     // The following nodes only exist for the surface fire 'live' category
     const liveNodes = [
         // The following nodes need no further modification or linkage:
-        [life+mextf, 0, _factor,
-            Eq.liveFuelExtinctionMoistureContentFactor, [dead+efol, live+efol]],
-        [life+mext, 1, _mois,
-            Eq.liveFuelExtinctionMoistureContent, [life+mextf, dead+efmc, dead+mext]]
+        [life+K.mextf, 0, K._factor,
+            Eq.liveFuelExtinctionMoistureContentFactor, [dead+K.efol, live+K.efol]],
+        [life+K.mext, 1, K._mois,
+            Eq.liveFuelExtinctionMoistureContent, [life+K.mextf, dead+K.efmc, dead+K.mext]]
     ]
 
     // The following nodes exist for both 'dead' and 'live' categories
     const categoryNodes = [
         // The following nodes need no further modification or linkage:
-        [life+sa, 0, _sa, Calc.sum, [p1+sa, p2+sa, p3+sa, p4+sa, p5+sa]],
+        [life+K.sa, 0, K._sa, Calc.sum, [p1+K.sa, p2+K.sa, p3+K.sa, p4+K.sa, p5+K.sa]],
         
-        [life+sawf, 0, _fraction, Calc.divide, [life+sa, bed+sa]],
+        [life+K.sawf, 0, K._fraction, Calc.divide, [life+K.sa, bed+K.sa]],
 
-        [life+etas, 0, _fraction, Eq.mineralDamping, [life+seff]],
+        [life+K.etas, 0, K._fraction, Eq.mineralDamping, [life+K.seff]],
         
-        [life+etam, 0, _fraction, Eq.moistureDamping, [life+mois, life+mext]],
+        [life+K.etam, 0, K._fraction, Eq.moistureDamping, [life+K.mois, life+K.mext]],
         
-        [life+heat, 8000, _heat,
-            Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
-                p1+heat, p2+heat, p3+heat, p4+heat, p5+heat]],
+        [life+K.heat, 8000, K._heat,
+            Calc.sumOfProducts, [p1+K.sawf, p2+K.sawf, p3+K.sawf, p4+K.sawf, p5+K.sawf,
+                p1+K.heat, p2+K.heat, p3+K.heat, p4+K.heat, p5+K.heat]],
         
-        [life+load, 0, _load, Calc.sum, [p1+load, p2+load, p3+load, p4+load, p5+load]],
+        [life+K.load, 0, K._load, Calc.sum, [p1+K.load, p2+K.load, p3+K.load, p4+K.load, p5+K.load]],
         
-        [life+efol, 0, _load, Calc.sum, [p1+efol, p2+efol, p3+efol, p4+efol, p5+efol]],
+        [life+K.efol, 0, K._load, Calc.sum, [p1+K.efol, p2+K.efol, p3+K.efol, p4+K.efol, p5+K.efol]],
 
-        [life+mois, 1, _mois,
-            Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
-                p1+mois, p2+mois, p3+mois, p4+mois, p5+mois]],
+        [life+K.mois, 1, K._mois,
+            Calc.sumOfProducts, [p1+K.sawf, p2+K.sawf, p3+K.sawf, p4+K.sawf, p5+K.sawf,
+                p1+K.mois, p2+K.mois, p3+K.mois, p4+K.mois, p5+K.mois]],
 
-        [life+vol, 0, _vol, Calc.sum, [p1+vol, p2+vol, p3+vol, p4+vol, p5+vol]],
+        [life+K.vol, 0, K._vol, Calc.sum, [p1+K.vol, p2+K.vol, p3+K.vol, p4+K.vol, p5+K.vol]],
         
-        [life+qig, 0, _qig,
-            Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
-                p1+qig, p2+qig, p3+qig, p4+qig, p5+qig]],
+        [life+K.qig, 0, K._qig,
+            Calc.sumOfProducts, [p1+K.sawf, p2+K.sawf, p3+K.sawf, p4+K.sawf, p5+K.sawf,
+                p1+K.qig, p2+K.qig, p3+K.qig, p4+K.qig, p5+K.qig]],
 
-        [life+rxi, 0, _rxi, Calc.multiply, [life+dfrxi, life+etam]],
+        [life+K.rxi, 0, K._rxi, Calc.multiply, [life+K.dfrxi, life+K.etam]],
 
-        [life+dfrxi, 0, _rxi,
-            Eq.dryFuelReactionIntensity, [bed+rxvo, life+net, life+heat, life+etas]],
+        [life+K.dfrxi, 0, K._rxi,
+            Eq.dryFuelReactionIntensity, [bed+K.rxvo, life+K.net, life+K.heat, life+K.etas]],
 
-        [life+savr, 1, _savr,
-            Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
-                p1+savr, p2+savr, p3+savr, p4+savr, p5+savr]],
+        [life+K.savr, 1, K._savr,
+            Calc.sumOfProducts, [p1+K.sawf, p2+K.sawf, p3+K.sawf, p4+K.sawf, p5+K.sawf,
+                p1+K.savr, p2+K.savr, p3+K.savr, p4+K.savr, p5+K.savr]],
 
-        [life+seff, 0, _seff,
-            Calc.sumOfProducts, [p1+sawf, p2+sawf, p3+sawf, p4+sawf, p5+sawf,
-                p1+seff, p2+seff, p3+seff, p4+seff, p5+seff]],
+        [life+K.seff, 0, K._seff,
+            Calc.sumOfProducts, [p1+K.sawf, p2+K.sawf, p3+K.sawf, p4+K.sawf, p5+K.sawf,
+                p1+K.seff, p2+K.seff, p3+K.seff, p4+K.seff, p5+K.seff]],
         
-        [life+scar, 0, _scwf, Eq.sizeClassWeightingFactorArray,
-            [p1+sa, p1+size, p2+sa, p2+size, p3+sa, p3+size, p4+sa, p4+size, p5+sa, p5+size]],
+        [life+K.scar, 0, K._scwf, Eq.sizeClassWeightingFactorArray,
+            [p1+K.sa, p1+K.size, p2+K.sa, p2+K.size, p3+K.sa, p3+K.size, p4+K.sa, p4+K.size, p5+K.sa, p5+K.size]],
 
         // Note that this uses the *SIZE CLASS* weighting factors!!
-        [life+net, 0, _net,
-            Calc.sumOfProducts, [p1+scwf, p2+scwf, p3+scwf, p4+scwf, p5+scwf,
-                p1+net, p2+net, p3+net, p4+net, p5+net]],
+        [life+K.net, 0, K._net,
+            Calc.sumOfProducts, [p1+K.scwf, p2+K.scwf, p3+K.scwf, p4+K.scwf, p5+K.scwf,
+                p1+K.net, p2+K.net, p3+K.net, p4+K.net, p5+K.net]],
     ]
 
     let elNodes = []
     for(let el of ['1', '2', '3', '4', '5'])
-        elNodes = [...elNodes, ...fuelElementNodes(prefix, deadOrLive, el)]
+        elNodes = [...elNodes, ...fuelElementNodes(f, deadOrLive, el)]
     
     // Dead, live, and canopy fuels have their own extinction moisture content methods
     if (deadOrLive === 'dead') {
-        if (prefix === 'crown/canopy')
-            return [...crownFireNodes, ...elNodes, ...categoryNodes]
+        if (f === 'crown/canopy') return [...crownFireNodes, ...elNodes, ...categoryNodes]
         return [...deadNodes,  ...elNodes, ...categoryNodes]
     }
     return [...liveNodes,  ...elNodes, ...categoryNodes]

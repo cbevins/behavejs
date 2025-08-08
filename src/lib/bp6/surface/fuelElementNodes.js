@@ -4,23 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc, Dag, FuelElementEquations as Eq} from '../index.js'
-import {
-    dens, efol, efwl, ehn, heat, qig, load, mois, net, sa, savr, sawf, scar,
-    scwf, size, seff, stot, vol,
-    _dens, _efol, _efwl, _ehn, _heat, _qig, _load, _mois, _net, _sa, _savr,
-    _sawf, _scwf, _size, _seff, _stot, _vol,
-} from './standardKeys.js'
-
-// The following keys are only used by this file
-const diam = 'cylindrical diameter'
-const leng = 'cylindrical length'
-const type = 'type'
-const life = 'life'
-const _diam = 'fuel/diameter'            // ft
-const _leng = 'fuel/length'             // ft
-const _type = 'fuel/type'
-const _life = 'fuel/life'
+import {Calc, Dag, FuelElementEquations as Eq, K} from '../index.js'
 
 /**
  * Returns a single fuel element definition whose root (input) nodes are
@@ -30,64 +14,64 @@ const _life = 'fuel/life'
  * by one or more external submodules:
  * - /fuel/dead/mext
  * 
- * @param {string} prefix 'surface/primary', 'surface/secondary', or 'crown/canopy'
+ * @param {string} f is 'surface/fuel/1', 'surface/fuel/1', or 'crown/canopy'
  * @param {string} deadOrLive 'dead' or 'llive'
  * @param {string} n must be '1', '2', '3', '4', or '5'
  * @param {string} ftype is like 'dead 1-h' ,'dead 10-h', 'dead-100h', 'cured herb', 'live herb', 'live stem'
  * @param {function} method is either Dag.constant() or Dag.input()
  * @returns An array of 21 fuel element property nodes
  */
-export function fuelElementNodes(prefix, deadOrLive, n, ftype='unused', method=Dag.constant) {
-    const bed  = prefix + '/fuel/bed/'
-    const dead = prefix + '/fuel/dead/'
-    const live = prefix + '/fuel/live/'
-    const lcat = prefix + '/fuel/'+deadOrLive
-    const p    = lcat + '/element ' + n + '/'
+export function fuelElementNodes(f, deadOrLive, n, ftype='unused', method=Dag.constant) {
+    const bed = f + K.bed
+    const dead = f + K.dead
+    const live = f + K.live
+    const lcat = deadOrLive === 'dead' ? f+K.dead : f+K.live
+    const p    = lcat + 'element/' + n + '/'
 
     // The following node's update method should be changed from Dag.constant
     // by one or more external submodules:
     const externalNodes = [
         // 8 root (input) characteristics
-        [p+type, ftype, _type, method, []],
-        [p+load, 0, _load, method, []],
-        [p+savr, 1, _savr, method, []],
-        [p+heat, 0, _heat, method, []],
-        [p+dens, 0, _dens, method, []],
-        [p+seff, 0, _seff, method, []],
-        [p+stot, 0, _stot, method, []],
-        [p+mois, 1, _mois, method, []],
+        [p+K.type, ftype, K._type, method, []],
+        [p+K.load, 0, K._load, method, []],
+        [p+K.savr, 1, K._savr, method, []],
+        [p+K.heat, 0, K._heat, method, []],
+        [p+K.dens, 0, K._dens, method, []],
+        [p+K.seff, 0, K._seff, method, []],
+        [p+K.stot, 0, K._stot, method, []],
+        [p+K.mois, 1, K._mois, method, []],
     ]
 
     const internalNodes = [
         // 1 constant node
-        [p+life, deadOrLive, _life, Dag.constant, []],
+        [p+K.life, deadOrLive, K._life, Dag.constant, []],
 
         // 12 derived characteristics
-        [p+ehn, 0, _ehn, Eq.effectiveHeatingNumber, [p+savr]],
+        [p+K.ehn, 0, K._ehn, Eq.effectiveHeatingNumber, [p+K.savr]],
 
-        [p+efol, 0, _load, Eq.effectiveFuelLoad, [p+savr, p+load, p+life]],
+        [p+K.efol, 0, K._load, Eq.effectiveFuelLoad, [p+K.savr, p+K.load, p+K.life]],
 
-        [p+qig, 0, _qig, Eq.heatOfPreignition, [p+mois, p+ehn]],
+        [p+K.qig, 0, K._qig, Eq.heatOfPreignition, [p+K.mois, p+K.ehn]],
 
-        [p+net, 0, _load, Eq.netOvendryLoad, [p+load, p+stot]],
+        [p+K.net, 0, K._load, Eq.netOvendryLoad, [p+K.load, p+K.stot]],
 
-        [p+size, 0, _size, Eq.sizeClass, [p+savr]],
+        [p+K.size, 0, K._size, Eq.sizeClass, [p+K.savr]],
 
-        [p+scwf, 0, _scwf, Eq.sizeClassWeightingFactor, [
-                p+size,             // element's size class index
-                lcat+'/'+scar]],    // into this size class weighting array
+        [p+K.scwf, 0, K._scwf, Eq.sizeClassWeightingFactor, [
+                p+K.size,             // element's size class index
+                lcat+K.scar]],    // into this size class weighting array
 
-        [p+sa, 0, _sa, Eq.surfaceArea, [p+load, p+savr, p+dens]],
+        [p+K.sa, 0, K._sa, Eq.surfaceArea, [p+K.load, p+K.savr, p+K.dens]],
 
-        [p+sawf, 0, _sawf, Eq.surfaceAreaWeightingFactor, [p+sa, lcat+'/'+sa]],
+        [p+K.sawf, 0, K._sawf, Eq.surfaceAreaWeightingFactor, [p+K.sa, lcat+K.sa]],
 
-        [p+vol, 0, _vol, Eq.volume, [p+load, p+dens]],
+        [p+K.vol, 0, K._vol, Eq.volume, [p+K.load, p+K.dens]],
 
-        [p+efwl, 0, _efwl, Eq.effectiveFuelWaterLoad, [p+efol, p+mois]],
+        [p+K.efwl, 0, K._efwl, Eq.effectiveFuelWaterLoad, [p+K.efol, p+K.mois]],
 
-        [p+diam, 0, _diam, Eq.cylindricalDiameter, [p+savr]],
+        [p+K.diam, 0, K._diam, Eq.cylindricalDiameter, [p+K.savr]],
 
-        [p+leng, 0, _leng, Eq.cylindricalLength, [p+diam, p+vol]],
+        [p+K.leng, 0, K._leng, Eq.cylindricalLength, [p+K.diam, p+K.vol]],
     ]
     return [...externalNodes, ...internalNodes]
 }

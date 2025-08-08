@@ -4,54 +4,19 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc, Dag, FuelBedEquations as Eq, Util, fuelLifeNodes} from '../index.js'
-import {
-    beta, load, covr, depth, qig, sawf, bulk, mext, nwns, ros, owaf, xi, rxi, rxv, rxvo,
-    sa, savr, taur, vol, hpua,
-    _beta, _load, _depth, _mois, _qig, _ros, _rxi, _rxv, _factor, _fraction, _owaf,
-    _ratio, _hsink, _sa, _savr, _vol, _taur, _hpua, _wnds
-} from './standardKeys.js'
-
+import {Calc, Dag, FuelBedEquations as Eq, Util, K} from '../index.js'
+import { fuelLifeNodes } from '../index.js'
 /**
  * The following nodes update method should be changed from Dag.constant
  * by one or more external submodules:
- * - /fuel/bed/cover
- * - /fuel/bed/depth
+ * - /surface/fuel/1/coverage
+ * - /surface/fuel/1/bed/depth
  * 
- * @param {string} prefix 'surface/primary' or 'surface/secondary'
+ * @param {string} f is 'surface/fuel/1', 'surface/fuel/1', or 'crown/canopy'
  * @returns 
  */
-export function fuelBedNodes(prefix='') {
-    const bed = prefix + '/fuel/bed/'
-    const dead = prefix + '/fuel/dead/'
-    const live = prefix + '/fuel/live/'
-    const fire = prefix + '/fire/'
-    const mois = prefix + '/moisture/'
-    const slope = prefix + '/terrain/slope/'
-    const wind = prefix + '/wind/'
-
-    // The following keys are only used within this file
-    const bopt = beta+'/optimum'
-    const brat = beta+'/ratio'
-    const hsink = 'heat sink'
-    const hsrc = 'heat source'
-    const mois1 = mois + 'dead/1-h'
-    const mois10 = mois + 'dead/10-h'
-    const mois100 = mois + 'dead/100-h'
-    const moish = mois + 'live/herb'
-    const moiss = mois + 'live/stem'
-    const ros0 = nwns + ros
-    const rxve  = rxv + '/exponent'
-    const rxvm  = rxv + '/maximum'
-    const savr15 = savr + '/1.5'
-    const slpk = 'slope/K'
-    const slpr = slope + 'rise to reach ratio'
-    const wndb = 'wind/B'
-    const wndc = 'wind/C'
-    const wnde = 'wind/E'
-    const wndk = 'wind/K'
-    const wndi = 'wind/I'
-    const wnds =  wind + 'speed at midflame height'
+export function fuelBedNodes(f='') {
+    const bed = f + K.bed
 
     // -------------------------------------------------------------------------
     // External nodes
@@ -62,28 +27,27 @@ export function fuelBedNodes(prefix='') {
     // a configurator should change this update method to Dag.input only for two-fuels case
     // if two-fuels, change 'primary' to Dag.input value=1, 'secondary' to Dag.input, value=0
     // otherwise, change 'primary' to Dag.constant value=1 and 'secondary' to Dag.constant value=0
-    const coverNodes = [[bed+covr, 0, _fraction, Dag.constant, []]]
-
+    const coverNodes = [[f+K.covr, 0, K._fraction, Dag.constant, []]]
     // a fuel submodule should change this update method to Dag.assign linked to its own internal node
     const fuelNodes = [
-        [bed+depth, 1, _depth, Dag.constant, []],
-        [dead+mext, 1, _mois, Dag.constant, []],
+        [bed+K.depth, 1, K._depth, Dag.constant, []],
+        // [f+K.bed+K.mext, 1, K._mois, Dag.constant, []],
     ]
 
     // a moisture submodule should change these to Dag.assign to its own internal node
     const moistureNodes = [
-        [mois1,   1, _mois, Dag.constant, []],
-        [mois10,  1, _mois, Dag.constant, []],
-        [mois100, 1, _mois, Dag.constant, []],
-        [moish,   1, _mois, Dag.constant, []],
-        [moiss,   1, _mois, Dag.constant, []],
+        [f+K.fuelmoisdead+K.h1,   1, K._mois, Dag.constant, []],
+        [f+K.fuelmoisdead+K.h10,  1, K._mois, Dag.constant, []],
+        [f+K.fuelmoisdead+K.h100, 1, K._mois, Dag.constant, []],
+        [f+K.fuelmoislive+K.herb, 1, K._mois, Dag.constant, []],
+        [f+K.fuelmoislive+K.stem, 1, K._mois, Dag.constant, []],
     ]
 
     // a terrain submodule should change this update method to Dag.assign linked to its own internal node
-    const terrainNodes = [[slpr, 0, _ratio, Dag.constant, []]]
+    const terrainNodes = [[f+K.fuelslope, 0, K._ratio, Dag.constant, []]]
 
     // a wind submodule should change this update method to Dag.assign linked to its own internal node
-    const windNodes = [[wnds, 0, _wnds, Dag.constant, []]]
+    const windNodes = [[f+K.fuelwindspeed, 0, K._wnds, Dag.constant, []]]
 
     // -------------------------------------------------------------------------
     // Internal nodes
@@ -91,39 +55,39 @@ export function fuelBedNodes(prefix='') {
     // -------------------------------------------------------------------------
 
     const bedNodes = [
-        [bed+bulk,   0, _beta, Eq.bulkDensity, [bed+load, bed+'depth']],
-        [bed+qig,    0, _qig, Eq.weightedHeatOfPreIgnition, [dead+sawf, dead+qig, live+sawf, live+qig]],
-        [bed+owaf,   1, _owaf, Eq.openWindSpeedAdjustmentFactor, [bed+depth]],
-        [bed+load,   0, _load, Calc.sum, [dead+load, live+load]],
-        [bed+beta,   0, _beta, Eq.packingRatio, [dead+vol, live+vol, bed+depth]],
-        [bed+bopt,   0, _beta, Eq.optimumPackingRatio, [bed+savr]],
-        [bed+brat,   0, _ratio, Eq.optimumPackingRatio, [bed+beta, bed+bopt]],
-        [bed+xi,     0, _ratio, Eq.propagatingFluxRatio, [bed+savr, bed+beta]],
-        [bed+rxve,   0, _factor, Eq.reactionVelocityExponent, [bed+savr]],
-        [bed+rxvm,   0, _rxv, Eq.reactionVelocityMaximum, [bed+savr15]],
-        [bed+rxvo,   0, _rxv, Eq.reactionVelocityOptimum, [bed+brat, bed+rxvm, bed+rxve]],
-        [bed+slpk,   0, _factor, Eq.windB, [bed+beta]],
-        [bed+sa,     0, _sa, Calc.sum, [dead+sa, live+sa]],
-        [bed+savr,   1, _savr, Eq.weightedSavr, [dead+sawf, dead+savr, live+sawf, live+savr]],
-        [bed+savr15, 1, _savr, Eq.savr15, [bed+savr]],
-        [bed+wndb,   1, _factor, Eq.windB, [bed+savr]],
-        [bed+wndc,   0, _factor, Eq.windC, [bed+savr]],
-        [bed+wnde,   1, _factor, Eq.windC, [bed+savr]],
-        [bed+wndi,   0, _factor, Eq.windI, [bed+brat, bed+wnde, bed+wndc]],
-        [bed+wndk,   0, _factor, Eq.windK, [bed+brat, bed+wnde, bed+wndc]],
+        [bed+K.bulk,   0, K._beta, Eq.bulkDensity, [bed+K.load, bed+'depth']],
+        [bed+K.qig,    0, K._qig, Eq.weightedHeatOfPreIgnition, [f+K.dead+K.sawf, f+K.dead+K.qig, f+K.live+K.sawf, f+K.live+K.qig]],
+        [bed+K.owaf,   1, K._owaf, Eq.openWindSpeedAdjustmentFactor, [bed+K.depth]],
+        [bed+K.load,   0, K._load, Calc.sum, [f+K.dead+K.load, f+K.live+K.load]],
+        [bed+K.beta,   0, K._beta, Eq.packingRatio, [f+K.dead+K.vol, f+K.live+K.vol, bed+K.depth]],
+        [bed+K.bopt,   0, K._beta, Eq.optimumPackingRatio, [bed+K.savr]],
+        [bed+K.brat,   0, K._ratio, Eq.optimumPackingRatio, [bed+K.beta, bed+K.bopt]],
+        [bed+K.xi,     0, K._ratio, Eq.propagatingFluxRatio, [bed+K.savr, bed+K.beta]],
+        [bed+K.rxve,   0, K._factor, Eq.reactionVelocityExponent, [bed+K.savr]],
+        [bed+K.rxvm,   0, K._rxv, Eq.reactionVelocityMaximum, [bed+K.savr15]],
+        [bed+K.rxvo,   0, K._rxv, Eq.reactionVelocityOptimum, [bed+K.brat, bed+K.rxvm, bed+K.rxve]],
+        [bed+K.slpk,   0, K._factor, Eq.windB, [bed+K.beta]],
+        [bed+K.sa,     0, K._sa, Calc.sum, [f+K.dead+K.sa, f+K.live+K.sa]],
+        [bed+K.savr,   1, K._savr, Eq.weightedSavr, [f+K.dead+K.sawf, f+K.dead+K.savr, f+K.live+K.sawf, f+K.live+K.savr]],
+        [bed+K.savr15, 1, K._savr, Eq.savr15, [bed+K.savr]],
+        [bed+K.wndb,   1, K._factor, Eq.windB, [bed+K.savr]],
+        [bed+K.wndc,   0, K._factor, Eq.windC, [bed+K.savr]],
+        [bed+K.wnde,   1, K._factor, Eq.windC, [bed+K.savr]],
+        [bed+K.wndi,   0, K._factor, Eq.windI, [bed+K.brat, bed+K.wnde, bed+K.wndc]],
+        [bed+K.wndk,   0, K._factor, Eq.windK, [bed+K.brat, bed+K.wnde, bed+K.wndc]],
     ]
 
-    const deadNodes = fuelLifeNodes(prefix, 'dead')
+    const deadNodes = fuelLifeNodes(f, 'dead')
+    const liveNodes = fuelLifeNodes(f, 'live')
     
-    const liveNodes = fuelLifeNodes(prefix, 'live')
-    
+    const fire = f+K.fuelfire
     const fireNodes = [
-        [fire+hsink,  0, _hsink, Eq.heatSink, [bed+qig, bed+bulk]],
-        [fire+hsrc,   0, _rxi, Eq.heatSource, [fire+rxi, bed+qig]],
-        [fire+rxi,    0, _rxi, Eq.reactionIntensity, [dead+rxi, live+rxi]],
-        [fire+ros0,   0, _ros, Eq.noWindNoSlopeSpreadRate, [fire+hsrc, fire+hsink]],
-        [fire+taur,   0, _taur, Eq.fireResidenceTime, [bed+savr]],
-        [fire+hpua,   0, _hpua, Eq.heatPerUnitArea, [fire+rxi, fire+taur]]
+        [fire+K.hsink,  0, K._hsink, Eq.heatSink, [bed+K.qig, bed+K.bulk]],
+        [fire+K.hsrc,   0, K._rxi, Eq.heatSource, [fire+K.rxi, bed+K.qig]],
+        [fire+K.rxi,    0, K._rxi, Eq.reactionIntensity, [f+K.dead+K.rxi, f+K.live+K.rxi]],
+        [fire+K.ros0,   0, K._ros, Eq.noWindNoSlopeSpreadRate, [fire+K.hsrc, fire+K.hsink]],
+        [fire+K.taur,   0, K._taur, Eq.fireResidenceTime, [bed+K.savr]],
+        [fire+K.hpua,   0, K._hpua, Eq.heatPerUnitArea, [fire+K.rxi, fire+K.taur]]
     ]
     return Util.nodesToMap([
         ...coverNodes,
