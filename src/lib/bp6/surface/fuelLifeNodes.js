@@ -5,7 +5,7 @@
  * @license MIT
  */
 import {Calc, Dag, FuelBedEquations as Eq, Util, K} from '../index.js'
-import { fuelElementNodes } from './index.js'
+import { fuelElementNodes } from '../index.js'
 
 /**
  * The following nodes' update method should be changed from Dag.constant

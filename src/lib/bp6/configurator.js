@@ -1,7 +1,6 @@
-import { Config, Dag, Util } from './index.js'
-import { fuelBedNodes, fuelStandardModelNodes, linkSurfaceFuel2StandardModel } from './index.js'
-import { FuelBedEquations } from './index.js'
-import { covr, depth, mext } from './surfaceDEP/standardKeys.js'
+import { Config, Dag, K, Util } from './index.js'
+import { fuelStandardModelNodes, useStandardFuelModels } from './index.js'
+import { fuelBedNodes, FuelBedEquations } from './index.js'
 
 // Modifies the node properties store in map
 function modify(map, key, value, method=null, args=null) {
@@ -18,40 +17,36 @@ export function configurator(config=null) {
     if (!config) config = new Config()
     const {surface} = config
 
-    const primary = 'surface/primary'
-    const secondary = 'surface/secondary'
-    const fm = '/fuel model/'
-    const bed = '/fuel/bed/'
-    const dead = '/fuel/dead/'
     if (surface.active.value === 'activated') {
-        // Start with 2 constant, unlinked fuel beds
+        // Start with 2 constant, unlinked surface fuel beds
         master = new Map([...master,
-            ...fuelBedNodes(primary),
-            ...fuelBedNodes(secondary)])
+            ...fuelBedNodes(K.s1),
+            ...fuelBedNodes(K.s2)])
             
         if (surface.fuels.value === 'one fuel') {
             master = new Map([...master,
-                ...fuelStandardModelNodes(primary),
-                ...linkSurfaceFuel2StandardModel(primary),
-                ...fuelStandardModelNodes(secondary, Dag.constant)]) // make all nodes Dag.constant
-            modify(master, primary+bed+covr, 1, Dag.constant, [])
+                ...fuelStandardModelNodes(K.s1),
+                ...useStandardFuelModels(K.s1),
+                ...fuelStandardModelNodes(K.s2, Dag.constant)]) // make all nodes Dag.constant
+            modify(master, K.s1+K.covr, 1, Dag.constant, [])
         }
 
         if (surface.fuels.value === 'two fuels') {
             master = new Map([...master,
-                ...fuelStandardModelNodes(primary),
-                ...linkSurfaceFuel2StandardModel(primary),
-                ...fuelStandardModelNodes(secondary),
-                ...linkSurfaceFuel2StandardModel(secondary)])
-            modify(master, primary+bed+covr, 1, Dag.input, [])
-            modify(master, secondary+bed+covr, 0, FuelBedEquations.secondaryCoverage, [primary+bed+covr])
+                ...fuelStandardModelNodes(K.s1),
+                ...useStandardFuelModels(K.s1),
+                ...fuelStandardModelNodes(K.s2),
+                ...useStandardFuelModels(K.s2)])
+            modify(master, K.s1+K.covr, 1, Dag.input, [])
+            modify(master, K.s2+K.covr, 0, FuelBedEquations.secondaryCoverage, [K.s1+K.covr])
         }
+
         if (surface.fuels.value === 'input') {
-            modify(master, primary+bed+covr, 1, Dag.constant, [])
+            modify(master, K.s1+K.covr, 1, Dag.constant, [])
             master = new Map([...master,
-                ...fuelStandardModelNodes(primary, Dag.input), // make all nodes Dag.input
-                ...linkSurfaceFuel2StandardModel(primary),
-                ...fuelStandardModelNodes(secondary, Dag.constant)]) // make all nodes Dag.constant
+                ...fuelStandardModelNodes(K.s1, Dag.input), // make all nodes Dag.input
+                ...useStandardFuelModels(K.s1),
+                ...fuelStandardModelNodes(K.s2, Dag.constant)]) // make all nodes Dag.constant
         }
     }
     Util.checkNodeKeys(master)

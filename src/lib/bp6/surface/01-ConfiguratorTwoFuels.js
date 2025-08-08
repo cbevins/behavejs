@@ -1,6 +1,6 @@
 import { Assert, Config, Dag, K, FuelBedEquations, StandardFuelModels, Util } from '../index.js'
-import { configurator } from './configurator.js'
-import { fuelBedNodes } from './fuelBedNodes.js'
+import { configurator } from '../index.js'
+import { fuelBedNodes } from '../index.js'
 
 const get = Util.getNode    // short-hand access
 
