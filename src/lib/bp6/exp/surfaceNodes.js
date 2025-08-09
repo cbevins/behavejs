@@ -14,9 +14,9 @@
  * @returns Nodes for a single surface fuel bed
  */
 import { surfaceBedNodes } from './surfaceBedNodes.js'
-import { surfaceFireNodes } from './surfaceFireNodes.js'
 import { surfaceLifeNodes } from './surfaceLifeNodes.js'
 import { surfaceElementNodesFromStandard } from './surfaceElementNodesFromStandard.js'
+import { surfaceElementNodesNone } from './surfaceElementNodesNone.js'
 import { standardModelCatalogNodes, standardModelInputNodes } from './standardModelCatalogNodes.js'
 
 export function surfaceNodes(id, moisId, windId, slopeId, cfgFuel) {
@@ -25,9 +25,11 @@ export function surfaceNodes(id, moisId, windId, slopeId, cfgFuel) {
     const bedId = id + 'bed/'
     const fuelId = id + 'fuel/' + cfgFuel + '/'
 
-    const bedNodes = surfaceBedNodes(fireId, bedId)
-    const fireNodes = surfaceFireNodes(fireId)
+    // surfaceNodes returns both the bedId and fireId nodes
+    // NEED TO CONFIGURE surface bed WAF as input or estimated
+    const bedNodes = surfaceBedNodes(fireId, bedId, slopeId)
 
+    // create the correct fuelId 
     if (cfgFuel==='standard catalog') {
         fuelNodes = standardModelCatalogNodes(fuelId)
         elNodes = surfaceElementNodesFromStandard(bedId, fuelId, moisId)
@@ -54,5 +56,5 @@ export function surfaceNodes(id, moisId, windId, slopeId, cfgFuel) {
     }
     const deadNodes = surfaceLifeNodes(bedId, 'dead', fuelId, moisId)
     const liveNodes = surfaceLifeNodes(bedId, 'live', fuelId, moisId)
-    return [...fireNodes, ...bedNodes, ...fuelNodes, ...deadNodes, ...liveNodes, ...elNodes]
+    return [...bedNodes, ...fuelNodes, ...deadNodes, ...liveNodes, ...elNodes]
 }

@@ -24,3 +24,4 @@ nodes.sort()
 
 const map = Util.nodesToMap(nodes)
 Util.checkNodeKeys(map)
+// Util.listNodeMap(map)

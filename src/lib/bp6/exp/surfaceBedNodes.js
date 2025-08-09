@@ -4,10 +4,11 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc, Dag, Util, K} from '../index.js'
+import { Calc, Dag, K, Util } from '../index.js'
 import { FuelBedEquations as Eq } from './FuelBedEquations.js'
+import { SurfaceFireEquations as Fire } from './SurfaceFireEquations.js'
 
-export function surfaceBedNodes(fireId, bedId) {
+export function surfaceBedNodes(fireId, bedId, slopeId) {
     const f = bedId
     const deadId = bedId + 'dead/'
     const liveId = bedId + 'live/'
@@ -17,16 +18,16 @@ export function surfaceBedNodes(fireId, bedId) {
     // by one or more external submodules:
     // -------------------------------------------------------------------------
 
-    // a configurator should change this update method to Dag.input only for two-fuels case
-    // if two-fuels, change 'primary' to Dag.input value=1, 'secondary' to Dag.input, value=0
-    // otherwise, change 'primary' to Dag.constant value=1 and 'secondary' to Dag.constant value=0
-    const coverNodes = [
+    // NEED TO CONFIFURE *WAF* for estimated:
+    // Try a windAdjustmentNodes(wafId, cfg) with waf as input or estimated node
+    // then pass wafId into this routine
+    const inputNodes = [
         [bedId+K.covr, 0, K._fraction, Dag.constant, []],
-        [bedId+K.cured, 0, K._fraction, Dag.input, []]
+        [bedId+K.cured, 0, K._fraction, Dag.input, []],
+        [bedId+K.wmid, 0, K._wnds, Dag.input, []],
     ]
 
     // -------------------------------------------------------------------------
-    // Internal nodes
     // The following internal nodes need no further submodule modifications.
     // -------------------------------------------------------------------------
 
@@ -51,15 +52,26 @@ export function surfaceBedNodes(fireId, bedId) {
         [bedId+K.wnde,   1, K._factor, Eq.windC, [bedId+K.savr]],
         [bedId+K.wndi,   0, K._factor, Eq.windI, [bedId+K.brat, bedId+K.wnde, bedId+K.wndc]],
         [bedId+K.wndk,   0, K._factor, Eq.windK, [bedId+K.brat, bedId+K.wnde, bedId+K.wndc]],
+        [bedId+K.phiw,   0, K._factor, Fire.phiWind, [bedId+K.wmid, bedId+K.wndb, bedId+K.wndk]],
+        [bedId+K.phis,   0, K._factor, Fire.phiSlope, [slopeId+'steepness/ratio', bedId+K.slpk]],
+        [bedId+K.phie,   0, K._factor, Fire.phiEffectiveWind, [bedId+K.phiw, bedId+K.phis]],
+        [bedId+K.weff,   0, K._wnds, Fire.effectiveWindSpeed, [bedId+K.phie, bedId+K.wndb, bedId+K.wndi]],
     ]
     
     const fireNodes = [
         [fireId+K.hsink,  0, K._hsink, Eq.heatSink, [bedId+K.qig, bedId+K.bulk]],
         [fireId+K.hsrc,   0, K._rxi, Eq.heatSource, [fireId+K.rxi, bedId+K.qig]],
         [fireId+K.rxi,    0, K._rxi, Eq.reactionIntensity, [deadId+K.rxi, liveId+K.rxi]],
+        [fireId+K.ros,    0, K._ros, Fire.maximumSpreadRate, [fireId+K.ros0, bedId+K.phie]],
+        [fireId+K.rosa,   0, K._ros, Fire.spreadRateWithRosLimitApplied, [fireId+K.ros, bedId+K.weff]],
         [fireId+K.ros0,   0, K._ros, Eq.noWindNoSlopeSpreadRate, [fireId+K.hsrc, fireId+K.hsink]],
         [fireId+K.taur,   0, K._taur, Eq.fireResidenceTime, [bedId+K.savr]],
-        [fireId+K.hpua,   0, K._hpua, Eq.heatPerUnitArea, [fireId+K.rxi, fireId+K.taur]]
+        [fireId+K.hpua,   0, K._hpua, Eq.heatPerUnitArea, [fireId+K.rxi, fireId+K.taur]],
+        [fireId+K.lwr,    1, K._ratio, Fire.lengthToWidthRatio, [bedId+K.weff]],
+        [fireId+K.fli,    0, K._ratio, Fire.firelineIntensity, [fireId+K.ros, fireId+K.rxi, fireId+K.taur]],
+        [fireId+K.flen,   0, K._flen, Fire.flameLength, [fireId+K.fli]],
+        [fireId+K.weffl,  0, K._wnds, Fire.effectiveWindSpeedLimit, [fireId+K.rxi]],
+        // [fireId+K.scor,   0, K._scor, Fire.scorchHeight, [fireId+K.fli, bedId+K.wmid, bed.Id+K.airt]],
     ]
-    return [...coverNodes, ...bedNodes, ...fireNodes]
+    return [...inputNodes, ...bedNodes, ...fireNodes]
 }
