@@ -1,8 +1,9 @@
-import {Calc, Dag, FuelElementEquations as Eq, K} from '../index.js'
+import { Calc, Dag, K } from '../index.js'
+import { FuelElementEquations as Eq } from './FuelElementEquations.js'
 import { surfaceElementDerivedNodes } from "./surfaceElementDerivedNodes.js"
 
 /**
- * 
+ * Assigns surface fuel bed parameters from a STandardFu
  * @param {string} bedId Prefix id of the applied surface fire bed nodes
  * @param {string} fuelId Prefix id of the applied standard fuel model nodes
  * @param {string} moisId Prefix id of the applied fuel moisture nodes
@@ -58,7 +59,7 @@ export function surfaceElementNodesFromStandard(bedId, fuelId, moisId) {
     const d4 = [    // special derived class for cured herb
         [p+K.type, 'cured herb', K._type, Dag.constant, []],
         [p+K.life, life, K._life, Dag.constant, []],
-        [p+K.load, 0, K._load, Dag.assign, [fuelId+'dead/cured herb/'+K.load]],   // NOTE - use cured herb load
+        [p+K.load, 0, K._load, Eq.curedHerbLoad, [bedId+K.cured, fuelId+'live/herb/'+K.load]],
         [p+K.savr, 1, K._savr, Dag.assign, [fuelId+'live/herb/'+K.savr]],   // NOTE - retain live savr value
         [p+K.heat, 8000, K._heat, Dag.assign, [fuelId+'dead/'+K.heat]],     // NOTE - use dead fuel heat of combustion
         [p+K.mois, 1, K._mois, Dag.assign, [moisId+'dead/1-h/'+K.mois]],     // NOTE - use dead fuel 1-h moisture
@@ -77,7 +78,7 @@ export function surfaceElementNodesFromStandard(bedId, fuelId, moisId) {
     const l1 = [
         [p+K.type, 'live herb', K._type, Dag.constant, []],
         [p+K.life, life, K._life, Dag.constant, []],
-        [p+K.load, 0, K._load, Dag.assign, [fuelId+'live/herb/'+K.load]],   // NOTE - used uncured herb load f+K.fmliveherb+K.load
+        [p+K.load, 0, K._load, Eq.uncuredHerbLoad, [bedId+K.cured, fuelId+'live/herb/'+K.load]],
         [p+K.savr, 1, K._savr, Dag.assign, [fuelId+'live/herb/'+K.savr]],
         [p+K.heat, 8000, K._heat, Dag.assign, [fuelId+'live/'+K.heat]],
         [p+K.mois, 1, K._mois, Dag.assign, [moisId+'live/herb/'+K.mois]],

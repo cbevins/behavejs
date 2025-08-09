@@ -4,7 +4,8 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc, Dag, FuelBedEquations as Eq, Util, K} from '../index.js'
+import {Calc, Dag, Util, K} from '../index.js'
+import { FuelBedEquations as Eq } from './FuelBedEquations.js'
 
 export function surfaceBedNodes(fireId, bedId) {
     const f = bedId
@@ -19,7 +20,10 @@ export function surfaceBedNodes(fireId, bedId) {
     // a configurator should change this update method to Dag.input only for two-fuels case
     // if two-fuels, change 'primary' to Dag.input value=1, 'secondary' to Dag.input, value=0
     // otherwise, change 'primary' to Dag.constant value=1 and 'secondary' to Dag.constant value=0
-    const coverNodes = [[bedId+K.covr, 0, K._fraction, Dag.constant, []]]
+    const coverNodes = [
+        [bedId+K.covr, 0, K._fraction, Dag.constant, []],
+        [bedId+K.cured, 0, K._fraction, Dag.input, []]
+    ]
 
     // -------------------------------------------------------------------------
     // Internal nodes

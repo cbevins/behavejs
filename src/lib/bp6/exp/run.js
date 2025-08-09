@@ -1,43 +1,24 @@
-import { Dag, Util} from '../index.js'
-import { moistureNodes } from './moistureNodes.js'
-import { surfaceBedNodes } from './surfaceBedNodes.js'
-import { surfaceLifeNodes } from './surfaceLifeNodes.js'
-import { surfaceElementNodesFromStandard } from './surfaceElementNodesFromStandard.js'
-import { standardModelCatalogNodes, standardModelInputNodes } from './standardModelCatalogNodes.js'
+import { Config, Dag, Util} from '../index.js'
+import { moistureInputNodes } from './moistureInputNodes.js'
+import { surfaceNodes } from './surfaceNodes.js'
+import { slopeInputNodes } from './slopeInputNodes.js'
+import { windInputNodes } from './windInputNodes.js'
 
 console.log(new Date())
-const p      = 'surface/'
-const bedId  = 'bed/'
-const fireId = 'fire/'
-const moisId = 'moisture/input/'
-const windId = 'wind/input/'
+const moisId  = 'moisture/input/'
+const slopeId = 'slope/input/'
+const windId  = 'wind/input/'
 
-const cfg = {
-    surface: {fuel: 'standard catalog'}
-}
+const cfg = new Config()
 
-const moisNodes = moistureNodes(moisId)
-const bedNodes = surfaceBedNodes(fireId, bedId)
-let nodes = [...moisNodes, ...bedNodes]
+// Both surface fuel beds share a common set of moisture, wind, and slope inputs
+const mois = moistureInputNodes(moisId, cfg.moisture.value)
+const slope = slopeInputNodes(slopeId, cfg.slope.steepness.value, cfg.slope.direction.value)
+const wind = windInputNodes(windId, cfg.wind.speed.value, cfg.wind.direction.value)
 
-if (cfg.surface.fuel==='standard catalog') {
-    const fuelId = 'fuel/standard catalog/'
-    const fuelNodes = standardModelCatalogNodes(fuelId)
-    const deadNodes = surfaceLifeNodes(bedId, 'dead', fuelId, moisId)
-    const liveNodes = surfaceLifeNodes(bedId, 'live', fuelId, moisId)
-    const elNodes = surfaceElementNodesFromStandard(bedId, fuelId, moisId)
-    nodes = [...nodes, ...fuelNodes, ...deadNodes, ...liveNodes, ...elNodes]
-} else if (cfg.surface.fuel==='standard input') {
-    const fuelId = 'fuel/standard input/'
-    const fuelNodes = standardModelInputNodes(fuelId)
-    const deadNodes = surfaceLifeNodes(bedId, 'dead', fuelId, moisId)
-    const liveNodes = surfaceLifeNodes(bedId, 'live', fuelId, moisId)
-    const elNodes = surfaceElementNodesFromStandard(bedId, fuelId, moisId)
-    nodes = [...nodes, ...fuelNodes, ...deadNodes, ...liveNodes, ...elNodes]
-} else if (cfg.surface.fuel==='chaparral') {
-} else if (cfg.surface.fuel==='southern rough') {
-} else if (cfg.surface.fuel==='western aspen') {
-}
+const bed1 = surfaceNodes('surface/fire1/', moisId, windId, slopeId, cfg.surface.fuel1.value)
+const bed2 = surfaceNodes('surface/fire2/', moisId, windId, slopeId, cfg.surface.fuel2.value)
+const nodes = [...mois, ...wind, ...slope, ...bed1, ...bed2]
 nodes.sort()
 // for(let node of nodes) console.log(node[0], node[1], node[2], node[3], node[4])
 

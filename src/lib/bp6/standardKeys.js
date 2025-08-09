@@ -80,6 +80,7 @@ export const fmnumb = 'number'
 export const fmcode = 'code'
 export const fmlabel = 'label'
 export const fmcured = 'cured herb fraction'
+export const cured = 'cured herb fraction'
 
 //------------------------------------------------------------------------------
 // Surface leaf node names/keys
@@ -183,6 +184,9 @@ export const _stot = _minr
 export const _taur = 'fire/residence time'      // min
 export const _vol  = 'fuel/volume'              // ft3
 export const _wnds = 'wind/velocity'            // ft/min
+export const _wspd = 'wind/velocity'            // ft/min
+export const _degh = 'degrees from horizontal'
+export const _degn = 'degrees from north'
 
 export const _diam = 'fuel/diameter'            // ft
 export const _leng = 'fuel/length'             // ft
