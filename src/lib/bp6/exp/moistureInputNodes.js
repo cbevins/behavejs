@@ -13,8 +13,8 @@ export function moistureInputNodes(moisId, cfg) {
     const dead = moisId + 'dead/category/' + K.mois
 
     const module = [
-        [moisId+'/module', 'moisture input', K._text, Dag.constant, []],
-        [moisId+'/version', '1', K._text, Dag.constant, []],
+        [moisId+'module', 'moisture input', K._text, Dag.constant, []],
+        [moisId+'version', '1', K._text, Dag.constant, []],
     ]
     let nodes = []
     if (cfg === '2') {

@@ -56,7 +56,7 @@ export class Config {
                 value: 'input'
             },
             // MAKE THIS A NODE since it does not alter node topog or input Set
-            fireSpreadWeighting: {
+            rosWeighting: {
                 prompt: 'Final fire spread rate when when applying two surface fuels is the',
                 options: [
                     {value: 'arithmetic', desc: 'arithmetic mean'},
