@@ -4,7 +4,7 @@ export class Keys {
     static mcfg = Keys.meta+'config/'
     static mver = Keys.meta+'version'
 
-    // Fuel Module properties
+    // Surface Element Module properties
     static dead = 'dead'
     static dens = 'fiber density'
     static depth = 'depth'
@@ -29,6 +29,45 @@ export class Keys {
     static stot = 'total mineral content'
     static ftype= 'fuel type'
     static vol  = 'volume'
+
+    // Surface Bed Module properties
+    static bulk = 'bulk density'
+    static cured = 'cured fraction'
+    static beta = 'packing ratio'
+    static bopt = Keys.beta+'/optimum'
+    static brat = Keys.beta+'/ratio'
+    static dfrxi = 'dry fuel reaction intensity'
+    static hsink = 'heat sink'
+    static hsrc = 'heat source'
+    static nwns = 'no-wind no-slope/'
+    static owaf = 'open wind speed adjustment factor'
+    static phie = 'spread rate coefficient/effective wind'
+    static phis = 'spread rate coefficient/slope'
+    static phiw = 'spread rate coefficient/wind'
+    static qig  = 'heat of pre-ignition'
+    static ros  = 'spread rate'
+    static ros0 = 'no-wind no-slope ' + Keys.ros
+    static rosl = 'effective wind limited ' + Keys.ros
+    static rosx = 'maximum ' + Keys.ros
+    static rxv  = 'reaction velocity'
+    static rxve  = Keys.rxv + '/exponent'
+    static rxvm  = Keys.rxv + '/maximum'
+    static rxvo  = Keys.rxv + '/optimum'
+    static savr15 = Keys.savr + '/1.5'
+    static slpk = 'slope/K'
+    static slpr = 'slope rise to reach ratio'
+    static taur = 'residence time'
+    static waf  = 'wind speed adjustment factor'
+    static weff = 'effective wind speed'
+    static weffl= 'effective wind speed limit'
+    static wlim = 'wind limit applied'
+    static wndb = 'wind/B'
+    static wndc = 'wind/C'
+    static wnde = 'wind/E'
+    static wndk = 'wind/K'
+    static wndi = 'wind/I'
+    static wmid = 'midflame wind speed'
+    static xi   = 'propagating flux ratio'
 
     // Standard fuel model properties
     static fmalias    = 'alias'

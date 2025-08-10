@@ -6,7 +6,7 @@
  */
 import {Calc} from '../index.js'
 
-export class FuelElementEquations {
+export class SurfaceElementEquations {
 
   /**
    * Calculate and return a fuel particle diameter (ft+1)

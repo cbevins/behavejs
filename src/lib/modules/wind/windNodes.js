@@ -54,7 +54,3 @@ export function windNodes(modId, cfg) {
     const dir = (cfgDir === 'source') ? inputFrom : inputHead
     return [...meta, ...speed, ...dir].sort()
 }
-
-const nodes = windNodes('wind/', WindConfig)
-const map = Util.nodesToMap(nodes)
-console.log(Util.listNodeMap(map))

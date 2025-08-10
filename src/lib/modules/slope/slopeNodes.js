@@ -52,7 +52,3 @@ export function slopeNodes(modId, cfg) {
     const dir = (cfgDir === 'aspect') ? inputAspect : inputUpslope
     return [...meta, ...steep, ...dir].sort()
 }
-
-const nodes = slopeNodes('slope/', SlopeConfig)
-const map = Util.nodesToMap(nodes)
-console.log(Util.listNodeMap(map))

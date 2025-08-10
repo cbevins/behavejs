@@ -62,7 +62,3 @@ export function moistureNodes(modId, cfg) {
     if (cfgInput === '4') return [...meta, ...input4]
     return [...meta, ...input5]
 }
-
-const nodes = moistureNodes('moisture/', MoistureConfig)
-const map = Util.nodesToMap(nodes)
-console.log(Util.listNodeMap(map))

@@ -22,15 +22,18 @@ export class Util {
         return {key, value, units, method, args}
     }
 
-    static listNodeMap(map) {
+    static listNodeMap(map,cols=4) {
         const w0 = map.values().reduce((w, node) => Math.max(node[0].length, w), 0)
         const w1 = map.values().reduce((w, node) => Math.max((''+node[1]).length, w), 0)
         let str = ''
         for(let node of map.values()) {
             const [key, value, units, method, args] = node
             let m = method.name
-            str += key.padEnd(w0+2) + (''+value).padEnd(w1+2) + m.padEnd()
-                + '(' + args.join(', ') + ')\n'
+            str += key.padEnd(w0+2)
+            if (cols>1) str += (''+value).padEnd(w1+2)
+            if (cols>2) str += m.padEnd()
+            if (cols>3) str += '(' + args.join(', ') + ')'
+            str += '\n'
         }
         return str + map.size + ' nodes'
     }

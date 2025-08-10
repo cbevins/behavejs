@@ -2,7 +2,7 @@
  * Returns standard fuel model linked to a fuel catalog
  * @param {string} fuelId All the nodes are prefaced with this id
 */
-import { StandardFuelModels as Eq} from './StandardFuelModelCatalog.js'
+import { StandardFuelModelCatalog as Eq} from './StandardFuelModelCatalog.js'
 import { Calc, Dag, K, U, Util } from '../index.js'
 
 export const StandardFuelConfig = {
@@ -52,7 +52,3 @@ export function standardFuelModelNodes(modId, cfg) {
     }
     return [...meta, ...nodes].sort()
 }
-
-const nodes = standardFuelModelNodes('standard/', StandardFuelConfig)
-const map = Util.nodesToMap(nodes)
-console.log(Util.listNodeMap(map))

@@ -19,6 +19,9 @@ export class Units {
     static seff = 'ratio'
     static stot = 'ratio'
 
+    // Surface Module
+    static wlim = 'wind limit applied'              // 'yes', 'no'
+    
     // Moisture Module units
     static mois = 'moisture content'
 

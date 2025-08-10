@@ -1,17 +1,17 @@
 /**
- * Returns nodes for a surface-bed module whose inbput elements are assigned
- * from a standard fuel model module.
+ * Returns nodes for a surface-bed module whose input elements are assigned
+ * from a standard fuel model module and a moisture module.
  * 
  * @param {string} modId 
  * @param {string} fuelId 
  */
 import { Dag, K, U, Util } from '../index.js'
-import { fuelElementNodes } from "../fuel-common/fuelElementNodes.js"
+import { surfaceElementNodes } from "../surface-bed/surfaceElementNodes.js"
 
-export function standardFuelBedNodes(modId, fuelId, moisId) {
+export function standardFuelSurfaceNodes(modId, fuelId, moisId) {
 
     // Get the common nodes with default constant value
-    const common = fuelElementNodes(modId)
+    const common = surfaceElementNodes(modId)
 
     const dead = modId + K.dead + '/'
     const live = modId + K.live + '/'
@@ -79,7 +79,3 @@ export function standardFuelBedNodes(modId, fuelId, moisId) {
     const set = new Set([...common, ...mods])
     return set.values()
 }
-
-const nodes = standardFuelBedNodes('bed/', 'standard/', 'moisture/')
-const map = Util.nodesToMap(nodes)
-console.log(Util.listNodeMap(map))

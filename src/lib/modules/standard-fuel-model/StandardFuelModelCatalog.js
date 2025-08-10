@@ -1,4 +1,4 @@
-export class StandardFuelModels {
+export class StandardFuelModelCatalog {
     static fuelData = [
         [0, "none", "No Fuel", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [1, "1", "Short grass", 1, 0.12, 0.034, 0, 0, 0, 0, 3500, 1500, 1500, 8000, 8000],

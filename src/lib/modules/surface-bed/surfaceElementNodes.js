@@ -20,9 +20,9 @@
  * These node values are all set to default constants to be modified by adapters.
 */
 import {Calc, Dag, K, U, Util} from '../index.js'
-import { FuelElementEquations as Eq } from './FuelElementEquations.js'
+import { SurfaceElementEquations as Eq } from './SurfaceElementEquations.js'
 
-export function fuelElementNodes(modId) {
+export function surfaceElementNodes(modId) {
     const meta = [
         [modId+K.mmod, 'common fuel elements', U.text, Dag.constant, []],
         [modId+K.mver, '1', U.text, Dag.constant, []],
@@ -31,9 +31,9 @@ export function fuelElementNodes(modId) {
         [modId+K.depth, 1, U.depth, Dag.constant, []],
         [modId+K.mext, 1, U.mext, Dag.constant, []],
     ]
-    for(let life of ['dead', 'live']) {
+    for(let life of [K.dead, K.live]) {
         for(let el of ['1', '2', '3', '4', '5']) {
-            nodes = nodes.concat(fuelElementNode(modId, life, el))
+            nodes = nodes.concat(surfaceElementNode(modId, life, el))
         }
     }
     return [...meta, ...nodes].sort()
@@ -44,7 +44,7 @@ export function fuelElementNodes(modId) {
  * @param {string} n must be '1', '2', '3', '4', or '5'
  * @returns An array of 21 fuel element property nodes
 */
-export function fuelElementNode(modId, life, n) {
+export function surfaceElementNode(modId, life, n) {
     const lcat = modId + life + '/'
     const p    = lcat + 'element/' + n + '/'
 
@@ -93,8 +93,3 @@ export function fuelElementNode(modId, life, n) {
     ]
     return [...externalNodes, ...internalNodes]
 }
-
-const nodes = fuelElementNodes('common/')
-const map = Util.nodesToMap(nodes)
-console.log(Util.listNodeMap(map))
-
