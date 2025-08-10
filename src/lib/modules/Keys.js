@@ -5,6 +5,7 @@ export class Keys {
     static mver = Keys.meta+'version'
 
     // Fuel Module properties
+    static dead = 'dead'
     static dens = 'fiber density'
     static depth = 'depth'
     static efol = 'effective fuel/ovendry load'
@@ -12,6 +13,8 @@ export class Keys {
     static efwl = 'effective fuel/water load'
     static ehn  = 'effective heating number'
     static heat = 'heat of combustion'
+    static life = 'life category'
+    static live = 'live'
     static load = 'ovendry load'
     static mext = 'extinction moisture content'
     static mois = 'moisture content'
@@ -24,6 +27,7 @@ export class Keys {
     static seff = 'effective mineral content'
     static size = 'size class'
     static stot = 'total mineral content'
+    static ftype= 'fuel type'
     static vol  = 'volume'
 
     // Standard fuel model properties
@@ -33,14 +37,14 @@ export class Keys {
     static fmcode     = 'code'
     static fmlabel    = 'label'
     static fmcured    = 'cured herb fraction'
-    static fmdepth    = 'depth'
-    static fmmext     = 'extinction moisture content'
+    static fmdepth    = Keys.depth
+    static fmmext     = Keys.mext
     static fmheatdead = 'dead/'+Keys.heat
     static fmheatlive = 'live/'+Keys.heat
     static fmload1    = 'dead/1-h/'+Keys.load
     static fmload10   = 'dead/10-h/'+Keys.load
     static fmload100  = 'dead/100-h/'+Keys.load
-    static fmloadherb = 'live/total herb/'+Keys.load
+    static fmloadherb = 'live/herb/'+Keys.load
     static fmloadstem = 'live/stem/'+Keys.load
     static fmsavr1    = 'dead/1-h/'+Keys.savr
     static fmsavrherb = 'live/herb/'+Keys.savr

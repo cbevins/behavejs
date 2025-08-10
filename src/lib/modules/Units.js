@@ -10,6 +10,8 @@ export class Units {
     // Fuel Module units
     static depth = 'depth'
     static diam = 'diameter'
+    static ftype = 'fuel type'                      // text
+    static life = 'fuel life'                       // 'dead' or 'live'
     static load = 'ovendry load'                    // lb/ft2
     static dens = 'fiber density'                   // lb/ft3
     static savr = 'surface area to volume ratio'    // ft2/ft3

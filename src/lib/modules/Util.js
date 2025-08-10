@@ -23,15 +23,14 @@ export class Util {
     }
 
     static listNodeMap(map) {
-        const w = map.values().reduce((w, node) => Math.max(node[0].length, w), 0)
+        const w0 = map.values().reduce((w, node) => Math.max(node[0].length, w), 0)
+        const w1 = map.values().reduce((w, node) => Math.max((''+node[1]).length, w), 0)
         let str = ''
         for(let node of map.values()) {
             const [key, value, units, method, args] = node
-            let m = 'Derived'
-            if (method === Dag.constant) m =    'Dag.constant'
-            else if (method === Dag.assign) m = 'Dag.assign'
-            else if (method === Dag.input) m =  'Dag.input'
-            str += key.padEnd(w+2) + m.padEnd(16) + value + '\n'
+            let m = method.name
+            str += key.padEnd(w0+2) + (''+value).padEnd(w1+2) + m.padEnd()
+                + '(' + args.join(', ') + ')\n'
         }
         return str + map.size + ' nodes'
     }
