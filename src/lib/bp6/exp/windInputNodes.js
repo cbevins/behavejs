@@ -25,8 +25,8 @@ export function windInputNodes(id, cfgSpeed, cfgDir) {
         [source, 180, K._degn, Dag.input, []],
     ]
     const module = [
-        [id+'module/', 'wind input', K._text, Dag.constant, []],
-        [id+'version/', '1', K._text, Dag.constant, []],
+        [id+'_module/', 'wind input', K._text, Dag.constant, []],
+        [id+'_version/', '1', K._text, Dag.constant, []],
     ]
     const speed = (cfgSpeed === '10-m') ? input10m : input20ft
     const dir = (cfgDir === 'source') ? inputSource : inputHeading

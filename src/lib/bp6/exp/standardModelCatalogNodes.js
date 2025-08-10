@@ -8,8 +8,8 @@ export function standardModelCatalogNodes(fuelId, moisId) {
     const id = fuelId
     const key = fuelId + K.fmkey
     const nodes = [
-        [id+'module', 'standard fuel catalog', K._text, Dag.constant, []],
-        [id+'version', '1', K._text, Dag.constant, []],
+        [id+'_module', 'standard fuel catalog', K._text, Dag.constant, []],
+        [id+'_version', '1', K._text, Dag.constant, []],
         [id+K.fmkey, '', K._fmkey, Dag.input, []],
         [id+K.fmcured, 0, K._fraction, Dag.input, []],
         [id+K.fmnumb, 0, K._fmnumb, Eq.code, [key]],
@@ -39,8 +39,8 @@ export function standardModelInputNodes(fuelId, moisId) {
     const id = fuelId
     const key = fuelId + K.fmkey
     return [
-        [id+'/module', 'standard fuel input', K._text, Dag.constant, []],
-        [id+'/version', '1', K._text, Dag.constant, []],
+        [id+'_module', 'standard fuel input', K._text, Dag.constant, []],
+        [id+'_version', '1', K._text, Dag.constant, []],
         [id+K.fmkey, 'input', K._fmkey, Dag.input, []],
         [id+K.fmcured, 0, K._fraction, Dag.input, []],
         [id+K.fmnumb, 0, K._fmnumb, Dag.input, []],

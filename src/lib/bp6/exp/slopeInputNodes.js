@@ -24,8 +24,8 @@ export function slopeInputNodes(id, cfgSteep, cfgDir) {
         [upslope, 180, K._degn, Dag.input, []],
     ]
     const module = [
-        [id+'module', 'terrain slope input', K._text, Dag.constant, []],
-        [id+'version', '1', K._text, Dag.constant, []],
+        [id+'module/', 'terrain slope input', K._text, Dag.constant, []],
+        [id+'version/', '1', K._text, Dag.constant, []],
     ]
     const steep = (cfgSteep === 'degrees') ? inputDegrees : inputRatio
     const dir = (cfgDir === 'aspect') ? inputAspect : inputUpslope

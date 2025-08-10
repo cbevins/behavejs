@@ -1,3 +1,5 @@
+import { Dag } from './index.js'
+
 export class Util {
 
     static checkNodeKeys(map) {
@@ -24,7 +26,12 @@ export class Util {
         const w = map.values().reduce((w, node) => Math.max(node[0].length, w), 0)
         let str = ''
         for(let node of map.values()) {
-            str += node[0].padEnd(w+2) + node[1] + '\n'
+            const [key, value, units, method, args] = node
+            let m = 'Derived'
+            if (method === Dag.constant) m =    'Dag.constant'
+            else if (method === Dag.assign) m = 'Dag.assign'
+            else if (method === Dag.input) m =  'Dag.input'
+            str += key.padEnd(w+2) + m.padEnd(16) + value + '\n'
         }
         return str + map.size + ' nodes'
     }
