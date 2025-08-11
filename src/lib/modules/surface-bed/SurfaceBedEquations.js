@@ -17,6 +17,11 @@ export class SurfaceBedEquations {
         return Calc.divide(totalOvendryLoad, bedDepth)
     }
 
+    static curedHerbFraction (liveHerbMc) {
+        const fraction = 1.333 - 1.11 * liveHerbMc
+        return Calc.fraction(fraction)
+    }
+
     /**
      * Calculate the life fuel category reaction intensity without moisture damping.
      *

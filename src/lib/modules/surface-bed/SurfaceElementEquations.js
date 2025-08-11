@@ -7,6 +7,14 @@
 import {Calc} from '../index.js'
 
 export class SurfaceElementEquations {
+    
+    static curedHerbLoad(totalLoad, curedFraction) {
+        return totalLoad * curedFraction
+    }
+    
+    static uncuredHerbLoad(totalLoad, curedFraction) {
+        return totalLoad * (1 - curedFraction)
+    }
 
   /**
    * Calculate and return a fuel particle diameter (ft+1)

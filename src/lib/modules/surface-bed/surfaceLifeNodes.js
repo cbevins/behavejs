@@ -28,7 +28,8 @@ export function surfaceLifeNodes(bedId, lcat, fuelId, moisId) {
     const deadNodes = [
         // The following nodes need no further modification or linkage:
         [id+K.efwl, 0, U.efwl, Calc.sum, [p1+K.efwl, p2+K.efwl, p3+K.efwl, p4+K.efwl, p5+K.efwl]],
-        [id+K.efmc, 0, U.mois, Calc.divide, [id+K.efwl, id+K.efol]]
+        [id+K.efmc, 0, U.mois, Calc.divide, [id+K.efwl, id+K.efol]],
+        [id+K.mext, 1, U.mois, Dag.assign, [bedId+K.mext]],
     ]
 
     // The following nodes only exist for the surface fire 'live' category

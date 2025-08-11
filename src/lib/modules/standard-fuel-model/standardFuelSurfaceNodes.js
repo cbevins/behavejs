@@ -6,7 +6,7 @@
  * @param {string} fuelId 
  */
 import { Dag, K, U, Util } from '../index.js'
-import { surfaceElementNodes } from "../surface-bed/surfaceElementNodes.js"
+import { surfaceElementNodes, SurfaceElementEquations as Eq } from "../index.js"
 
 export function standardFuelSurfaceNodes(modId, fuelId, moisId) {
 
@@ -43,13 +43,13 @@ export function standardFuelSurfaceNodes(modId, fuelId, moisId) {
         [d3+K.mois, 1, U.mois, Dag.assign, [moisId+K.md100]],
 
         [d4+K.type, 'cured herb', U.type, Dag.constant, []],
-        [d4+K.load, 0, U.load, Dag.assign, [fuelId+K.fmdloadherb]], // NOTE - use cured herb load
+        [d4+K.load, 0, U.load, Eq.curedHerbLoad, [fuelId+K.fmloadherb, modId+K.cured]],
         [d4+K.savr, 1, U.savr, Dag.assign, [fuelId+K.fmsavrherb]],  // NOTE - retain live savr value
         [d4+K.mois, 1, U.mois, Dag.assign, [moisId+K.md1]],         // NOTE - use fuel's dead 1-h moisture
 
         [l1+K.type, 'live herb', U.type, Dag.constant, []],
-        [l1+K.load, 0, U.load, Dag.assign, [fuelId+K.fmliveherb]],  // NOTE - used uncured herb load f+K.fmliveherb+K.load
-        [l1+K.savr, 1, U.savr, Dag.assign, [fuelId+K.savrherb]],
+        [l1+K.load, 0, U.load, Dag.uncuredHerbLoad, [fuelId+K.fmloadherb, modId+K.cured]],
+        [l1+K.savr, 1, U.savr, Dag.assign, [fuelId+K.fmsavrherb]],
         [l1+K.mois, 1, U.mois, Dag.assign, [moisId+K.mherb]],
 
         [l2+K.type, 'live stem', U.type, Dag.constant, []],

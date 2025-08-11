@@ -7,6 +7,8 @@ export {Keys as K} from './Keys.js'
 export {Units as U} from './Units.js'
 export {Util} from './Util.js'
 
+export {CanopyEquations} from './canopy/CanopyEquations.js'
+export {curingNodes, CuringConfig} from './curing/curingNodes.js'
 export {moistureNodes, MoistureConfig} from './moisture/moistureNodes.js'
 export {slopeNodes, SlopeConfig} from './slope/slopeNodes.js'
 export {windNodes, WindConfig} from './wind/windNodes.js'

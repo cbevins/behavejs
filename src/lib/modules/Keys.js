@@ -37,6 +37,7 @@ export class Keys {
     static bopt = Keys.beta+'/optimum'
     static brat = Keys.beta+'/ratio'
     static dfrxi = 'dry fuel reaction intensity'
+    static hpua = 'heat per unit area'
     static hsink = 'heat sink'
     static hsrc = 'heat source'
     static nwns = 'no-wind no-slope/'
@@ -89,6 +90,20 @@ export class Keys {
     static fmsavrherb = 'live/herb/'+Keys.savr
     static fmsavrstem = 'live/stem/'+Keys.savr
     
+    // Canopy Module
+    static bulk = 'bulk density'
+    static ccov =  'coverage'
+    static cfill = 'crown fill'
+    static cheat = 'canopy ' + Keys.heat
+    static chpua = 'canopy ' + Keys.hpua
+    static ctht = 'canopy height'
+    static cbht = 'base height'
+    static clen = 'crown length'
+    static crat = 'crown ratio'
+    static cload = 'load'
+    static cshelters = 'shelters fuel from wind'
+    static cwaf = 'canopy-induced' + Keys.waf
+
     // Moisture Module properties
     static md1   = 'dead/1-h/' + Keys.mois
     static md10  = 'dead/10-h/' + Keys.mois

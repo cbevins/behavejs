@@ -1,4 +1,5 @@
 import { Util } from './index.js'
+import { curingNodes, CuringConfig } from './index.js'
 import { moistureNodes, MoistureConfig } from './index.js'
 import { slopeNodes, SlopeConfig } from './index.js'
 import { standardFuelModelNodes, StandardFuelConfig } from './index.js'
@@ -19,7 +20,7 @@ const slope = slopeNodes('slope/', SlopeConfig)
 const wind = windNodes('wind/', WindConfig)
 
 // const midwind = midflameWindNodes('midflame wind/', MidflameConfig)
-// const curing = curingNodes('curing/', CuringConfig)
+const curing = curingNodes('curing/', 'moisture/', CuringConfig)
 // const rosWtg = rosWeightingNodes('ros weight/', RosWtgCOnfig)
 
 // Various fuel provider modules
@@ -34,4 +35,8 @@ const dead = surfaceLifeNodes('surface/bed/', 'dead', 'standard/', 'moisture/')
 const live = surfaceLifeNodes('surface/bed/', 'live', 'standard/', 'moisture/')
 const elements = standardFuelSurfaceNodes('surface/bed/', 'standard/', 'moisture/')
 
-showModule(bed)
+// showModule(bed)
+const nodes = [...wind, ...slope, ...moisture, ...standard, ...bed,
+    ...dead, ...live, ...elements]
+    const map = Util.nodesToMap(nodes)
+Util.checkNodeKeys(map)

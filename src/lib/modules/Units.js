@@ -5,7 +5,7 @@ export class Units {
     static fraction = 'fraction'
     static factor = 'factor'
     static length = 'length'                        // ft
-
+    static yesno = 'yes or no'                      //
 
     // Fuel Module units
     static depth = 'depth'
