@@ -4,6 +4,11 @@ export class Keys {
     static mcfg = Keys.meta+'config/'
     static mver = Keys.meta+'version'
 
+    //
+    static surface = 'surface/'
+    static crown = 'crown/'
+    static scorch = 'scorch/'
+    
     // Surface Element Module properties
     static dead = 'dead'
     static dens = 'fiber density'

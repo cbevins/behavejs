@@ -29,6 +29,7 @@ export {surfaceBedNodes} from './surface-bed/surfaceBedNodes.js'
 export {surfaceDefaultElementNodes, surfaceDefaultElementNode} from './surface-bed/surfaceDefaultElementNodes.js'
 export {surfaceFireNodes} from './surface-fire/surfaceFireNodes.js'
 export {surfaceLifeNodes} from './surface-bed/surfaceLifeNodes.js'
+export {surfaceNodes} from './surface/surfaceNodes.js'
 
 export {windNodes, WindConfig} from './wind/windNodes.js'
 export {windSpeedAdjustmentNodes, WindSpeedAdjustmentConfig} from './windspeed-adjustment/windSpeedAdjustmentNodes.js'

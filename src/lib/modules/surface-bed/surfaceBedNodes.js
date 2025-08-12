@@ -37,7 +37,7 @@ export function surfaceBedNodes(fireId, bedId, fuelId, moisId, midflameId, slope
     ]
 
     const assignedNodes  = [
-        [bedId+K.cured, 0, U.fraction, Dag.assign, [curingId+K.curing]],
+        [bedId+K.cured, 0, U.fraction, Dag.assign, [curingId+K.cured]],
         [bedId+K.wmid, 0, U.wspd, Dag.assign, [midflameId+K.wmid]],
     ]
 
