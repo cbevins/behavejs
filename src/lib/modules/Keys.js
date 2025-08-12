@@ -107,7 +107,7 @@ export class Keys {
     static crat = 'crown ratio'
     static cload = 'load'
     static cshelters = 'shelters fuel from wind'
-    static cwaf = 'canopy-induced' + Keys.waf
+    static cwaf = 'canopy-induced ' + Keys.waf
 
     // Moisture Module properties
     static md1   = 'dead/1-h/' + Keys.mois

@@ -1,6 +1,6 @@
 // src/lib/bp6/index.js
 // export {Assert} from './Assert.js'
-export {Dag} from './Dag.js'
+export {Dag} from './dag/Dag.js'
 export {Keys as K} from './Keys.js'
 export {Units as U} from './Units.js'
 export {Util} from './Util.js'

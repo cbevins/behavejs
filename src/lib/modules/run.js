@@ -1,4 +1,4 @@
-import { Util } from './index.js'
+import { Dag, Util } from './index.js'
 import { surfaceNodes } from './index.js'
 
 function showModule(nodes, cols=4) {
@@ -7,9 +7,9 @@ function showModule(nodes, cols=4) {
 }
 
 console.log(new Date())
-
-// showModule(bed)
-const nodes = surfaceNodes()
-const map = Util.nodesToMap(nodes)
-Util.checkNodeKeys(map)
-console.log(Util.listNodeMap(map, 3))
+const nodeDefs = surfaceNodes()
+const nodeDefsMap = Util.nodesToMap(nodeDefs)
+showModule(nodeDefs,3)
+const dag = new Dag(nodeDefsMap)
+const selected= ['surface/shared/Canopy/crown ratio']
+dag.select(selected)
