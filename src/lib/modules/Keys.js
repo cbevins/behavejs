@@ -41,7 +41,7 @@ export class Keys {
     static hsink = 'heat sink'
     static hsrc = 'heat source'
     static nwns = 'no-wind no-slope/'
-    static owaf = 'open wind speed adjustment factor'
+    static owaf = 'open-canopy wind speed adjustment factor'
     static phie = 'spread rate coefficient/effective wind'
     static phis = 'spread rate coefficient/slope'
     static phiw = 'spread rate coefficient/wind'

@@ -22,7 +22,7 @@ export function canopyNodes(modId, cfg) {
     const meta = [
         [modId+K.mmod, 'canopy', U.text, Dag.constant, []],
         [modId+K.mver, '1', U.text, Dag.constant, []],
-        [modId+K.mcfg+'source', cfgSource, U.text, Dag.constant, []],
+        [modId+K.mcfg+'inputs', cfgInputs, U.text, Dag.constant, []],
     ]
     const inputs = [
         [modId+K.ccov, 0, U.fraction, Dag.input, []],
