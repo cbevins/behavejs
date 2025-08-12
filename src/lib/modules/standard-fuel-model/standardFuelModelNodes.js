@@ -2,28 +2,23 @@
  * Returns standard fuel model linked to a fuel catalog
  * @param {string} fuelId All the nodes are prefaced with this id
 */
-import { StandardFuelModelCatalog as Eq} from './StandardFuelModelCatalog.js'
-import { Calc, Dag, K, U, Util } from '../index.js'
+import { Dag, K, U } from '../index.js'
+import { StandardFuelModelCatalog as Eq} from '../index.js'
 
-export const StandardFuelConfig = {
-    source: {
-        prompt: 'Standard fuel model parameters are',
-        options: [
-            {value: 'catalog', desc: 'retrieved from a catalog using a key'},
-            {value: 'input', desc: 'directly entered as input'},
-        ],
-        value: 'catalog',
-    },
-}
-
+/**
+ * 
+ * @param {*} modId 
+ * @param {object} cfg Object with cfg.model.value as defined by FuelModelConfig
+ * @returns 
+ */
 export function standardFuelModelNodes(modId, cfg) {
     const key = modId + K.fmalias
-    const cfgSource = cfg.source.value
+    const cfgModel = cfg.model.value
 
     const meta = [
         [modId+K.mmod, 'standard fuel model', U.text, Dag.constant, []],
         [modId+K.mver, '1', U.text, Dag.constant, []],
-        [modId+K.mcfg+'source', cfgSource, U.text, Dag.constant, []],
+        [modId+K.mcfg+'model', cfgModel, U.text, Dag.constant, []],
     ]
     const nodes = [
         [modId+K.fmalias,      '', U.fmkey, Dag.input, []],
@@ -44,7 +39,7 @@ export function standardFuelModelNodes(modId, cfg) {
         [modId+K.fmsavrherb,    1, U.savr, Eq.savrHerb, [key]],
         [modId+K.fmsavrstem,    1, U.savr, Eq.savrStem, [key]],
     ]
-    if (cfgSource === 'input') {
+    if (cfgModel === 'standard input') {
         for(let i=0; i<nodes.length; i++) {
             node[i][3] = Dag.input
             node[i][4] = []

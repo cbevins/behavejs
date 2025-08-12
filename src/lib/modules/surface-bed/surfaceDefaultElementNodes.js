@@ -22,7 +22,7 @@
 import {Calc, Dag, K, U, Util} from '../index.js'
 import { SurfaceElementEquations as Eq } from './SurfaceElementEquations.js'
 
-export function surfaceElementNodes(modId) {
+export function surfaceDefaultElementNodes(modId) {
     const meta = [
         [modId+K.mmod, 'common fuel elements', U.text, Dag.constant, []],
         [modId+K.mver, '1', U.text, Dag.constant, []],
@@ -33,7 +33,7 @@ export function surfaceElementNodes(modId) {
     ]
     for(let life of [K.dead, K.live]) {
         for(let el of ['1', '2', '3', '4', '5']) {
-            nodes = nodes.concat(surfaceElementNode(modId, life, el))
+            nodes = nodes.concat(surfaceDefaultElementNode(modId, life, el))
         }
     }
     return [...meta, ...nodes].sort()
@@ -44,7 +44,7 @@ export function surfaceElementNodes(modId) {
  * @param {string} n must be '1', '2', '3', '4', or '5'
  * @returns An array of 21 fuel element property nodes
 */
-export function surfaceElementNode(modId, life, n) {
+export function surfaceDefaultElementNode(modId, life, n) {
     const lcat = modId + life + '/'
     const p    = lcat + 'element/' + n + '/'
 

@@ -6,12 +6,12 @@
  * @param {string} fuelId 
  */
 import { Dag, K, U, Util } from '../index.js'
-import { surfaceElementNodes, SurfaceElementEquations as Eq } from "../index.js"
+import { surfaceDefaultElementNodes, SurfaceElementEquations as Eq } from "../index.js"
 
-export function standardFuelSurfaceNodes(modId, fuelId, moisId) {
+export function standardFuelElementNodes(modId, fuelId, moisId) {
 
     // Get the common nodes with default constant value
-    const common = surfaceElementNodes(modId)
+    const common = surfaceDefaultElementNodes(modId)
 
     const dead = modId + K.dead + '/'
     const live = modId + K.live + '/'

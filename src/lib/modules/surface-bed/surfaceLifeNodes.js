@@ -6,7 +6,7 @@
  */
 import {Calc, Dag, SurfaceBedEquations as Eq, Util, K, U} from '../index.js'
 
-export function surfaceLifeNodes(bedId, lcat, fuelId, moisId) {
+export function surfaceLifeNodes(bedId, lcat) {
     // The id will be .../bed/dead or .../bed/live
     const id = bedId + lcat + '/'
     const dead = bedId + 'dead/'

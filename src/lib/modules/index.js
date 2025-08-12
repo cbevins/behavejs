@@ -17,13 +17,18 @@ export {SurfaceFireEquations} from './surface-bed/SurfaceFireEquations.js'
 // Modules
 export {canopyNodes, CanopyConfig} from './canopy/canopyNodes.js'
 export {curingNodes, CuringConfig} from './curing/curingNodes.js'
+export {fuelModelNodes, FuelModelConfig} from './fuel-model/fuelModelNodes.js'
 export {midflameWindNodes, MidflameWindConfig} from './midflame-wind/midflameWindNodes.js'
 export {moistureNodes, MoistureConfig} from './moisture/moistureNodes.js'
 export {slopeNodes, SlopeConfig} from './slope/slopeNodes.js'
-export {standardFuelModelNodes, StandardFuelConfig } from './standard-fuel-model/standardFuelModelNodes.js'
-export {standardFuelSurfaceNodes} from './standard-fuel-model/standardFuelSurfaceNodes.js'
+
+export {standardFuelElementNodes} from './standard-fuel-model/standardFuelElementNodes.js'
+export {standardFuelModelNodes} from './standard-fuel-model/standardFuelModelNodes.js'
+
 export {surfaceBedNodes} from './surface-bed/surfaceBedNodes.js'
-export {surfaceElementNodes, surfaceElementNode} from './surface-bed/surfaceElementNodes.js'
+export {surfaceDefaultElementNodes, surfaceDefaultElementNode} from './surface-bed/surfaceDefaultElementNodes.js'
+export {surfaceFireNodes} from './surface-fire/surfaceFireNodes.js'
 export {surfaceLifeNodes} from './surface-bed/surfaceLifeNodes.js'
+
 export {windNodes, WindConfig} from './wind/windNodes.js'
 export {windSpeedAdjustmentNodes, WindSpeedAdjustmentConfig} from './windspeed-adjustment/windSpeedAdjustmentNodes.js'

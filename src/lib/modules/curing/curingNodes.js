@@ -19,10 +19,10 @@ export function curingNodes(modId, moisId, cfg) {
         [modId+K.mcfg+'source', cfgSource, U.text, Dag.constant, []],
     ]
     const input = [
-        [modId+K.curing, 0, U.fraction, Eq.curedHerbFraction, [moisId+K.mherb]],
+        [modId+K.cured, 0, U.fraction, Eq.curedHerbFraction, [moisId+K.mherb]],
     ]
     const estimated = [
-        [modId+K.curing, 0, U.fraction, Dag.input, []],
+        [modId+K.cured, 0, U.fraction, Dag.input, []],
     ]
     const curing = (cfgSource === 'input') ? input : estimated
     return [...meta, ...curing].sort()
