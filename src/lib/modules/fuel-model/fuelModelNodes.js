@@ -16,10 +16,9 @@ export const FuelModelConfig = {
         value: 'standard catalog',
     }
 }
-
 /**
- * Returns nodes for a fuel model defined by the cfg.model.value
- * @param {string} modId Fuel module id
+ * 
+ * @param {string} path Module pathway prefixed to all the returned nodes' keys
  * @param {object} cfg Object with cfg.model.value as defined above by FuelModelConfig
  * @returns Returns nodes for a fuel model defined by the cfg.model.value
  */

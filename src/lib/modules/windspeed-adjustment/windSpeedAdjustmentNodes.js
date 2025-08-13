@@ -1,4 +1,4 @@
-import { Calc, Dag, K, U, Util } from '../index.js'
+import { Dag, L, U } from '../index.js'
 import { CanopyEquations as Canopy} from '../index.js'
 import { SurfaceBedEquations as Bed} from '../index.js'
 
@@ -15,37 +15,37 @@ export const WindSpeedAdjustmentConfig= {
 }
 /**
  * 
- * @param {string} modId  This module's id (prefix)
- * @param {string} bedId  Surface bed module id
- * @param {string} windId Wind module id
- * @param {string} canId Canopy module id
- * @param {string} cfg Config object with cfg.source.value={input|open|canopy}
- * @returns 
+ * @param {string} path Module pathway prefixed to all the returned nodes' keys
+ * @param {string} bed Path of the Bed Module to be applied
+ * @param {string} wind Path of the Wind Module to be applied
+ * @param {string} canopy Path of the Canopy Module to be applied
+ * @param {Config} cfg cfg.source.value of 'input', 'open', or 'canopy'
+ * @returns Array of wind speed adjustment module factor node definitions
  */
-export function windSpeedAdjustmentNodes(modId, bedId, windId, canId, cfg) {
+export function windSpeedAdjustmentNodes(path, bed, wind, canopy, cfg) {
     const cfgSource = cfg.source.value
 
     const meta = [
-        // [modId+K.mmod, 'midflame wind', U.text, Dag.constant, []],
-        [modId+K.mver, '1', U.text, Dag.constant, []],
-        [modId+K.mcfg+'source', 'x', U.text, Dag.constant, []],
+        [path+L.mmod, 'wind speed adjustment', U.text, Dag.constant, []],
+        [path+L.mver, '1', U.text, Dag.constant, []],
+        [path+L.mcfg+'source', cfgSource, U.text, Dag.constant, []],
     ]
     const input = [
-        [modId+K.waf,  1, U.factor, Dag.input, []],   // final waf
-        [modId+K.owaf, 1, U.factor, Dag.constant, []],  // open canopy waf
-        [modId+K.cwaf, 1, U.factor, Dag.constant, []],  // canopy-induced waf
+        [path+L.waf,  1, U.factor, Dag.input, []],   // final waf
+        [path+L.owaf, 1, U.factor, Dag.constant, []],  // open canopy waf
+        [path+L.cwaf, 1, U.factor, Dag.constant, []],  // canopy-induced waf
     ]
     const open = [
-        [modId+K.waf,  1, U.factor, Dag.assign, [modId+K.owaf]],   // final waf
-        [bedId+K.owaf, 1, U.owaf,   Bed.openWindSpeedAdjustmentFactor, [bedId+K.depth]],
-        [modId+K.cwaf, 1, U.factor, Dag.constant, []],  // canopy-induced waf
+        [path+L.waf,  1, U.factor, Dag.assign, [path+L.owaf]],   // final waf
+        [bed+L.owaf, 1, U.owaf,   Bed.openWindSpeedAdjustmentFactor, [bed+L.depth]],
+        [path+L.cwaf, 1, U.factor, Dag.constant, []],  // canopy-induced waf
     ]
-    const canopy = [
-        [modId+K.waf,  1, U.factor, Dag.assign, [modId+K.cwaf]],   // final waf
-        [bedId+K.owaf, 1, U.owaf,   Dag.constant, []],
-        [modId+K.cwaf, 1, U.factor, Dag.assign, [canId+K.cwaf]],  // canopy-induced waf
+    const can = [
+        [path+L.waf,  1, U.factor, Dag.assign, [path+L.cwaf]],   // final waf
+        [bed+L.owaf, 1, U.owaf,   Dag.constant, []],
+        [path+L.cwaf, 1, U.factor, Dag.assign, [canopy+L.cwaf]],  // canopy-induced waf
     ]
-    let nodes = [...meta, ...canopy]
+    let nodes = [...meta, ...can]
     if (cfgSource === 'input') nodes = [...meta, ...input]
     else if (cfgSource === 'open') nodes = [...meta, ...open]
     return nodes.sort()

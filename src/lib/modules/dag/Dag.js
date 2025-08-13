@@ -151,6 +151,7 @@ export class Dag {
             for(let supplier of node.suppliers)
                 args.push(this.get(supplier))
             node.value = node.updater.apply(node, args)
+            console.log('Called', node.updater.name)
         }
         node.dirty = Dag.clean
         return node.value

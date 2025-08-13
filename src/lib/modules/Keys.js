@@ -109,14 +109,14 @@ export class Keys {
     static cshelters = 'shelters fuel from wind'
     static cwaf = 'canopy-induced ' + Keys.waf
 
-    // Moisture Module properties
-    static md1   = 'dead/1-h/' + Keys.mois
-    static md10  = 'dead/10-h/' + Keys.mois
-    static md100 = 'dead/100-h/' + Keys.mois
-    static mherb = 'live/herb/' + Keys.mois
-    static mstem = 'live/stem/' + Keys.mois
-    static mlive = 'live/category/' + Keys.mois
-    static mdead = 'dead/category/' + Keys.mois
+    // DEPRECATED - USE PATHS AND Keys.mois Moisture Module properties
+    // static md1   = 'dead/1-h/' + Keys.mois
+    // static md10  = 'dead/10-h/' + Keys.mois
+    // static md100 = 'dead/100-h/' + Keys.mois
+    // static mherb = 'live/herb/' + Keys.mois
+    // static mstem = 'live/stem/' + Keys.mois
+    // static mlive = 'live/category/' + Keys.mois
+    // static mdead = 'dead/category/' + Keys.mois
 
     // Slope Module properties
     static sasp = 'direction/aspect (downslope)'
@@ -129,4 +129,5 @@ export class Keys {
     static wfrom = 'direction/source'
     static w10m = 'speed/10-m'
     static w20f = 'speed/20-ft'
+    static wmid = 'speed/midflame'
 }

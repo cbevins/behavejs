@@ -1,4 +1,4 @@
-import { Calc, Dag, K, U, Util } from '../index.js'
+import { Calc, Dag, L, U } from '../index.js'
 import { CanopyEquations as Canopy} from '../index.js'
 
 export const CanopyConfig = {
@@ -15,80 +15,84 @@ export const CanopyConfig = {
         value: 'ratio-height',
     },
 }
-
-export function canopyNodes(modId, cfg) {
+/**
+ * @param {string} path Module pathway prefixed to all the returned nodes' keys
+ * @param {Config} cfg cfg.input.value as defined above
+ * @returns Array of canopy module node definitions
+ */
+export function canopyNodes(path, cfg) {
     const cfgInputs = cfg.inputs.value
 
     const meta = [
-        [modId+K.mmod, 'canopy', U.text, Dag.constant, []],
-        [modId+K.mver, '1', U.text, Dag.constant, []],
-        [modId+K.mcfg+'inputs', cfgInputs, U.text, Dag.constant, []],
+        [path+L.mmod, 'canopy', U.text, Dag.constant, []],
+        [path+L.mver, '1', U.text, Dag.constant, []],
+        [path+L.mcfg+'inputs', cfgInputs, U.text, Dag.constant, []],
     ]
     const inputs = [
-        [modId+K.ccov, 0, U.fraction, Dag.input, []],
-        [modId+K.cbulk, 0, U.fraction, Dag.input, []],
-        [modId+K.cheat, 0, U.heat, Dag.input, []],
+        [path+L.ccov, 0, U.fraction, Dag.input, []],
+        [path+L.cbulk, 0, U.fraction, Dag.input, []],
+        [path+L.cheat, 0, U.heat, Dag.input, []],
     ]
     const derived = [
-        [modId+K.cfill, 0, U.fraction, Canopy.crownFill, [
-            modId+K.ccov, modId+K.crat]],
-        [modId+K.cload, 0, U.load, Canopy.fuelLoad, [
-            modId+K.cbulk, modId+K.clen]],
-        [modId+K.chpua, 0, U.hpua, Canopy.heatPerUnitArea, [
-            modId+K.cload, modId+K.cheat]],
-        [modId+K.cshelters, 0, U.yesno, Canopy.sheltersFuelFromWind, [
-            modId+K.ccov, modId+K.ctht, modId+K.cfill]],
-        [modId+K.cwaf, 0, U.ratio, Canopy.windSpeedAdjustmentFactor, [
-            modId+K.ccov, modId+K.ctht, modId+K.cfill]],
+        [path+L.cfill, 0, U.fraction, Canopy.crownFill, [
+            path+L.ccov, path+L.crat]],
+        [path+L.cload, 0, U.load, Canopy.fuelLoad, [
+            path+L.cbulk, path+L.clen]],
+        [path+L.chpua, 0, U.hpua, Canopy.heatPerUnitArea, [
+            path+L.cload, path+L.cheat]],
+        [path+L.cshelters, 0, U.yesno, Canopy.sheltersFuelFromWind, [
+            path+L.ccov, path+L.ctht, path+L.cfill]],
+        [path+L.cwaf, 0, U.ratio, Canopy.windSpeedAdjustmentFactor, [
+            path+L.ccov, path+L.ctht, path+L.cfill]],
     ]
     const nodes = [...meta, ...inputs, ...derived]
     const ratioHeight = [
-        [modId+K.cbht, 0, U.clen, Canopy.baseFromRatioHeight, [
-            modId+K.crat, modId+K.ctht]],
-        [modId+K.clen, 0, U.clen, Canopy.lengthFromRatioHeight, [
-            modId+K.crat, modId+K.ctht]],
-        [modId+K.ctht, 0, U.clen, Dag.input, []],
-        [modId+K.crat, 0, U.fraction, Dag.input, []],
+        [path+L.cbht, 0, U.clen, Canopy.baseFromRatioHeight, [
+            path+L.crat, path+L.ctht]],
+        [path+L.clen, 0, U.clen, Canopy.lengthFromRatioHeight, [
+            path+L.crat, path+L.ctht]],
+        [path+L.ctht, 0, U.clen, Dag.input, []],
+        [path+L.crat, 0, U.fraction, Dag.input, []],
     ]
     const ratioBase = [
-        [modId+K.cbht, 0, U.clen, Dag.input, []],
-        [modId+K.clen, 0, U.clen, Canopy.lengthFromRatioBase, [
-            modId+K.crat, modId+K.cbht]],
-        [modId+K.ctht, 0, U.clen, Canopy.heightFromRatioBase, [
-            modId+K.crat, modId+K.cbht]],
-        [modId+K.crat, 0, U.fraction, Dag.input, []],
+        [path+L.cbht, 0, U.clen, Dag.input, []],
+        [path+L.clen, 0, U.clen, Canopy.lengthFromRatioBase, [
+            path+L.crat, path+L.cbht]],
+        [path+L.ctht, 0, U.clen, Canopy.heightFromRatioBase, [
+            path+L.crat, path+L.cbht]],
+        [path+L.crat, 0, U.fraction, Dag.input, []],
     ]
     const ratioLength = [
-        [modId+K.cbht, 0, U.clen, Canopy.baseFromRatioLength, [
-            modId+K.crat, modId+K.clen]],
-        [modId+K.clen, 0, U.clen, Dag.input, []],
-        [modId+K.ctht, 0, U.clen, Canopy.heightFromRatioLength, [
-            modId+K.crat, modId+K.clen]],
-        [modId+K.crat, 0, U.fraction, Dag.input, []],
+        [path+L.cbht, 0, U.clen, Canopy.baseFromRatioLength, [
+            path+L.crat, path+L.clen]],
+        [path+L.clen, 0, U.clen, Dag.input, []],
+        [path+L.ctht, 0, U.clen, Canopy.heightFromRatioLength, [
+            path+L.crat, path+L.clen]],
+        [path+L.crat, 0, U.fraction, Dag.input, []],
     ]
     const heightLength = [
-        [modId+K.cbht, 0, U.clen, Canopy.baseFromHeightLength, [
-            modId+K.ctht, modId+K.clen]],
-        [modId+K.clen, 0, U.clen, Dag.input, []],
-        [modId+K.ctht, 0, U.clen, Dag.input, []],
-        [modId+K.crat, 0, U.fraction, Canopy.ratioFromHeightLength, [
-            modId+K.ctht, modId+K.clen]],
+        [path+L.cbht, 0, U.clen, Canopy.baseFromHeightLength, [
+            path+L.ctht, path+L.clen]],
+        [path+L.clen, 0, U.clen, Dag.input, []],
+        [path+L.ctht, 0, U.clen, Dag.input, []],
+        [path+L.crat, 0, U.fraction, Canopy.ratioFromHeightLength, [
+            path+L.ctht, path+L.clen]],
     ]
     const heightBase = [
-        [modId+K.cbht, 0, U.clen, Dag.input, []],
-        [modId+K.clen, 0, U.clen, Canopy.lengthFromHeightBase, [
-            modId+K.ctht, modId+K.cbht]],
-        [modId+K.ctht, 0, U.clen, Dag.input, []],
-        [modId+K.crat, 0, U.fraction, Canopy.ratioFromHeightBase, [
-            modId+K.ctht, modId+K.cbht]],
+        [path+L.cbht, 0, U.clen, Dag.input, []],
+        [path+L.clen, 0, U.clen, Canopy.lengthFromHeightBase, [
+            path+L.ctht, path+L.cbht]],
+        [path+L.ctht, 0, U.clen, Dag.input, []],
+        [path+L.crat, 0, U.fraction, Canopy.ratioFromHeightBase, [
+            path+L.ctht, path+L.cbht]],
     ]
     const lengthBase = [
-        [modId+K.cbht, 0, U.clen, Dag.input, []],
-        [modId+K.clen, 0, U.clen, Dag.input, []],
-        [modId+K.ctht, 0, U.clen, Canopy.heightFromLengthBase, [
-            modId+K.ctht, modId+K.cbht]],
-        [modId+K.crat, 0, U.fraction, Canopy.ratioFromLengthBase, [
-            modId+K.ctht, modId+K.cbht]],
+        [path+L.cbht, 0, U.clen, Dag.input, []],
+        [path+L.clen, 0, U.clen, Dag.input, []],
+        [path+L.ctht, 0, U.clen, Canopy.heightFromLengthBase, [
+            path+L.ctht, path+L.cbht]],
+        [path+L.crat, 0, U.fraction, Canopy.ratioFromLengthBase, [
+            path+L.ctht, path+L.cbht]],
     ]
 
     if (cfgInputs === 'ratio-height') return [...nodes, ...ratioHeight].sort()

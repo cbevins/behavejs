@@ -1,4 +1,4 @@
-import { Compass, Dag, K, U, Util } from '../index.js'
+import { Compass, Dag, L, U } from '../index.js'
 
 export const SlopeConfig = {
     steepness: {
@@ -17,20 +17,25 @@ export const SlopeConfig = {
         value: 'aspect'
     }
 }
-
-export function slopeNodes(modId, cfg) {
-    const srat = modId+K.srat
-    const sdeg = modId+K.sdeg
-    const sasp = modId+K.sasp
-    const sups = modId+K.sups
+/**
+ * @param {string} path Module pathway prefixed to all the returned nodes' keys
+ * @param {Config} cfg cfg.steepness.value of ''ratio' or 'degrees'
+ *  and a cfg.direction.value of 'aspect' or 'upslope'
+ * @returns Array of slope steepness and direction node definitions
+ */
+export function slopeNodes(path, cfg) {
+    const srat = path+L.srat
+    const sdeg = path+L.sdeg
+    const sasp = path+L.sasp
+    const sups = path+L.sups
     const cfgDir = cfg.direction.value
     const cfgSteep = cfg.steepness.value
 
     const meta = [
-        [modId+K.mmod, 'slope', U.text, Dag.constant, []],
-        [modId+K.mver, '1', U.text, Dag.constant, []],
-        [modId+K.mcfg+'direction', cfgDir, U.text, Dag.constant, []],
-        [modId+K.mcfg+'steep', cfgSteep, U.text, Dag.constant, []],
+        [path+L.mmod, 'slope', U.text, Dag.constant, []],
+        [path+L.mver, '1', U.text, Dag.constant, []],
+        [path+L.mcfg+'direction', cfgDir, U.text, Dag.constant, []],
+        [path+L.mcfg+'steep', cfgSteep, U.text, Dag.constant, []],
     ]
     const inputRatio = [
         [srat, 0, U.srat, Dag.input, []],

@@ -4,7 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import { Calc, Dag, K, U } from '../index.js'
+import { Calc, Dag, L, U } from '../index.js'
 import { SurfaceBedEquations as Eq } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
 import { standardFuelElementNodes } from "../index.js"
@@ -14,76 +14,74 @@ import { standardFuelElementNodes } from "../index.js"
 import { surfaceLifeNodes, surfaceDefaultElementNodes } from "../index.js"
 
 /**
- * 
- * @param {*} fireId 
- * @param {*} bedId 
- * @param {*} fuelId 
- * @param {*} moisId 
- * @param {*} midflameId 
- * @param {*} slopeId 
- * @param {*} curingId 
- * @param {*} cfg Object with cfg.model.value (see FuelModelConfig)
- * @returns 
+ * @param {string} bed Module pathway prefixed to all the returned nodes' keys
+ * @param {string} fuel Path of the Fuel Model Module to be applied
+ * @param {string} mois Path of the Moisture Module to be applied
+ * @param {string} windmid Path of the Wind at Midflame Module to be applied
+ * @param {string} slope Path of the Slope Module to be applied
+ * @param {string} curing Path of the Curing Module to be applied
+ * @param {object} cfg Object with cfg.model.value (see FuelModelConfig)
+ * @returns Array of surface fuel bed module node definitions
  */
-export function surfaceBedNodes(fireId, bedId, fuelId, moisId, midflameId, slopeId, curingId, cfg) {
-    const deadId = bedId + 'dead/'
-    const liveId = bedId + 'live/'
+export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, cfg) {
+    const dead = bed + 'dead/'
+    const live = bed + 'live/'
     const cfgFuel = cfg.model.value
 
     const meta = [
-        [bedId+K.mmod, 'surface bed', U.text, Dag.constant, []],
-        [bedId+K.mver, '1', U.text, Dag.constant, []],
-        [bedId+K.mcfg+'fuel', cfgFuel, U.text, Dag.constant, []],
+        [bed+L.mmod, 'surface bed', U.text, Dag.constant, []],
+        [bed+L.mver, '1', U.text, Dag.constant, []],
+        [bed+L.mcfg+'fuel', cfgFuel, U.text, Dag.constant, []],
     ]
 
     const assignedNodes  = [
-        [bedId+K.cured, 0, U.fraction, Dag.assign, [curingId+K.cured]],
-        [bedId+K.wmid, 0, U.wspd, Dag.assign, [midflameId+K.wmid]],
+        [bed+L.cured, 0, U.fraction, Dag.assign, [curing+L.cured]],
+        [bed+L.wmid, 0, U.wspd, Dag.assign, [windmid+L.wmid]],
     ]
 
     const bedNodes = [
-        [bedId+K.bulk,   0, U.beta, Eq.bulkDensity, [bedId+K.load, bedId+K.depth]],
-        [bedId+K.qig,    0, U.qig, Eq.weightedHeatOfPreIgnition, [deadId+K.sawf, deadId+K.qig, liveId+K.sawf, liveId+K.qig]],
-        [bedId+K.owaf,   1, U.owaf, Eq.openWindSpeedAdjustmentFactor, [bedId+K.depth]],
-        [bedId+K.load,   0, U.load, Calc.sum, [deadId+K.load, liveId+K.load]],
-        [bedId+K.beta,   0, U.beta, Eq.packingRatio, [deadId+K.vol, liveId+K.vol, bedId+K.depth]],
-        [bedId+K.bopt,   0, U.beta, Eq.optimumPackingRatio, [bedId+K.savr]],
-        [bedId+K.brat,   0, U.ratio, Eq.optimumPackingRatio, [bedId+K.beta, bedId+K.bopt]],
-        [bedId+K.xi,     0, U.ratio, Eq.propagatingFluxRatio, [bedId+K.savr, bedId+K.beta]],
-        [bedId+K.rxve,   0, U.factor, Eq.reactionVelocityExponent, [bedId+K.savr]],
-        [bedId+K.rxvm,   0, U.rxv, Eq.reactionVelocityMaximum, [bedId+K.savr15]],
-        [bedId+K.rxvo,   0, U.rxv, Eq.reactionVelocityOptimum, [bedId+K.brat, bedId+K.rxvm, bedId+K.rxve]],
-        [bedId+K.slpk,   0, U.factor, Eq.slopeK, [bedId+K.beta]],
-        [bedId+K.sa,     0, U.sa, Calc.sum, [deadId+K.sa, liveId+K.sa]],
-        [bedId+K.savr,   1, U.savr, Eq.weightedSavr, [deadId+K.sawf, deadId+K.savr, liveId+K.sawf, liveId+K.savr]],
-        [bedId+K.savr15, 1, U.savr, Eq.savr15, [bedId+K.savr]],
-        [bedId+K.wndb,   1, U.factor, Eq.windB, [bedId+K.savr]],
-        [bedId+K.wndc,   0, U.factor, Eq.windC, [bedId+K.savr]],
-        [bedId+K.wnde,   1, U.factor, Eq.windC, [bedId+K.savr]],
-        [bedId+K.wndi,   0, U.factor, Eq.windI, [bedId+K.brat, bedId+K.wnde, bedId+K.wndc]],
-        [bedId+K.wndk,   0, U.factor, Eq.windK, [bedId+K.brat, bedId+K.wnde, bedId+K.wndc]],
-        [bedId+K.phiw,   0, U.factor, Fire.phiWind, [bedId+K.wmid, bedId+K.wndb, bedId+K.wndk]],
-        [bedId+K.phis,   0, U.factor, Fire.phiSlope, [slopeId+K.srat, bedId+K.slpk]],
-        [bedId+K.phie,   0, U.factor, Fire.phiEffectiveWind, [bedId+K.phiw, bedId+K.phis]],
-        [bedId+K.weff,   0, U.wnds, Fire.effectiveWindSpeed, [bedId+K.phie, bedId+K.wndb, bedId+K.wndi]],
+        [bed+L.bulk,   0, U.bulk, Eq.bulkDensity, [bed+L.load, bed+L.depth]],
+        [bed+L.qig,    0, U.qig, Eq.weightedHeatOfPreIgnition, [dead+L.sawf, dead+L.qig, live+L.sawf, live+L.qig]],
+        [bed+L.owaf,   1, U.fraction, Eq.openWindSpeedAdjustmentFactor, [bed+L.depth]],
+        [bed+L.load,   0, U.load, Calc.sum, [dead+L.load, live+L.load]],
+        [bed+L.beta,   0, U.ratio, Eq.packingRatio, [dead+L.vol, live+L.vol, bed+L.depth]],
+        [bed+L.bopt,   0, U.ratio, Eq.optimumPackingRatio, [bed+L.savr]],
+        [bed+L.bratio, 0, U.ratio, Eq.optimumPackingRatio, [bed+L.beta, bed+L.bopt]],
+        [bed+L.xi,     0, U.ratio, Eq.propagatingFluxRatio, [bed+L.savr, bed+L.beta]],
+        [bed+L.rxve,   0, U.factor, Eq.reactionVelocityExponent, [bed+L.savr]],
+        [bed+L.rxvm,   0, U.rxv, Eq.reactionVelocityMaximum, [bed+L.savr15]],
+        [bed+L.rxvo,   0, U.rxv, Eq.reactionVelocityOptimum, [bed+L.bratio, bed+L.rxvm, bed+L.rxve]],
+        [bed+L.slpk,   0, U.factor, Eq.slopeK, [bed+L.beta]],
+        [bed+L.sa,     0, U.sa, Calc.sum, [dead+L.sa, live+L.sa]],
+        [bed+L.savr,   1, U.savr, Eq.weightedSavr, [dead+L.sawf, dead+L.savr, live+L.sawf, live+L.savr]],
+        [bed+L.savr15, 1, U.savr, Eq.savr15, [bed+L.savr]],
+        [bed+L.wndb,   1, U.factor, Eq.windB, [bed+L.savr]],
+        [bed+L.wndc,   0, U.factor, Eq.windC, [bed+L.savr]],
+        [bed+L.wnde,   1, U.factor, Eq.windC, [bed+L.savr]],
+        [bed+L.wndi,   0, U.factor, Eq.windI, [bed+L.bratio, bed+L.wnde, bed+L.wndc]],
+        [bed+L.wndk,   0, U.factor, Eq.windK, [bed+L.bratio, bed+L.wnde, bed+L.wndc]],
+        [bed+L.phiw,   0, U.factor, Fire.phiWind, [bed+L.wmid, bed+L.wndb, bed+L.wndk]],
+        [bed+L.phis,   0, U.factor, Fire.phiSlope, [slope+L.srat, bed+L.slpk]],
+        [bed+L.phie,   0, U.factor, Fire.phiEffectiveWind, [bed+L.phiw, bed+L.phis]],
+        [bed+L.weff,   0, U.wspd, Fire.effectiveWindSpeed, [bed+L.phie, bed+L.wndb, bed+L.wndi]],
     ]
 
-    const deadNodes = surfaceLifeNodes(bedId, 'dead')
-    const liveNodes = surfaceLifeNodes(bedId, 'live')
+    const deadNodes = surfaceLifeNodes(bed, 'dead')
+    const liveNodes = surfaceLifeNodes(bed, 'live')
 
-    // The surface fuel elements are assigned to the configured fuelId parameters
+    // The surface fuel elements are assigned to the configured fuel parameters
     let elementNodes = []
     if (cfgFuel === 'standard catalog' || cfgFuel === 'standard input')
-        elementNodes = standardFuelElementNodes(bedId, fuelId, moisId)
+        elementNodes = standardFuelElementNodes(bed, fuel, mois)
     else if (cfgFuel === 'chaparral') {
-        // elementNodes = chaparralFuelElementNodes(bedId, fuelId, moisId)
+        // elementNodes = chaparralFuelElementNodes(bed, fuel, mois)
     } else if (cfgFuel === 'southern rough') {
-        // elementNodes = southernRoughFuelElementNodes(bedId, fuelId, moisId)
+        // elementNodes = southernRoughFuelElementNodes(bed, fuel, mois)
     } else if (cfgFuel === 'western aspen') {
-        elementNodes = westernAspenFuelElementNodes(bedId, fuelId, moisId)
-    } else // if (cfgFuel === 'none')
-        elementNodes = surfaceDefaultElementNodes(bedId)
-
+        elementNodes = westernAspenFuelElementNodes(bed, fuel, mois)
+    } else { // if (cfgFuel === 'none')
+        elementNodes = surfaceDefaultElementNodes(bed)
+    }
     return [ ...meta, ...assignedNodes,
         ...bedNodes, ...deadNodes, ...liveNodes, ...elementNodes].sort()
 }

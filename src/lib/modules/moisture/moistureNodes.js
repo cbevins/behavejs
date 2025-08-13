@@ -1,8 +1,4 @@
-/**
- * Returns standard fuel model linked to a fuel catalog
- * @param {string} modId All the nodes are prefaces with this id
-*/
-import { Dag, K, U, Util} from '../index.js'
+import { Dag, L, U } from '../index.js'
 
 export const MoistureConfig = {
     input: {
@@ -15,43 +11,47 @@ export const MoistureConfig = {
         value: '5'
     }
 }
-
-export function moistureNodes(modId, cfg) {
-    const md1   = modId + K.md1
-    const md10  = modId + K.md10
-    const md100 = modId + K.md100
-    const mherb = modId + K.mherb
-    const mstem = modId + K.mstem
-    const mlive = modId + K.mlive
-    const mdead = modId + K.mdead
+/**
+ * @param {string} path Module pathway prefixed to all the returned nodes' keys
+ * @param {Config} cfg cfg.input.value of '5', '4', or '2'
+ * @returns Array of moisture module fuel moisture content node definitions
+ */
+export function moistureNodes(path, cfg) {
+    const md1   = path + L.m1
+    const md10  = path + L.m10
+    const md100 = path + L.m100
+    const mherb = path + L.mherb
+    const mstem = path + L.mstem
+    const mlive = path + L.mlive
+    const mdead = path + L.mdead
     const cfgInput = cfg.input.value
     
     const meta = [
-        [modId+K.mmod, 'fuel moisture', U.text, Dag.constant, []],
-        [modId+K.mver, '1', U.text, Dag.constant, []],
-        [modId+K.mcfg+'input', cfgInput, U.text, Dag.constant, []],
+        [path+L.mmod, 'moisture', U.text, Dag.constant, []],
+        [path+L.mver, '1', U.text, Dag.constant, []],
+        [path+L.mcfg+'input', cfgInput, U.text, Dag.constant, []],
     ]
     const input2 = [
         [mdead, 0, U.mois, Dag.input, []],
         [mlive, 0, U.mois, Dag.input, []],
-        [md1, 0, U.mois, Dag.assign, [mdead]],
-        [md10, 0, U.mois, Dag.assign, [mdead]],
+        [md1,   0, U.mois, Dag.assign, [mdead]],
+        [md10,  0, U.mois, Dag.assign, [mdead]],
         [md100, 0, U.mois, Dag.assign, [mdead]],
         [mherb, 0, U.mois, Dag.assign, [mlive]],
         [mstem, 0, U.mois, Dag.assign, [mlive]],
     ]
     const input4 = [
-        [md1, 0, U.mois, Dag.input, []],
-        [md10, 0, U.mois, Dag.input, []],
+        [mdead, 0, U.mois, Dag.constant, []],
+        [md1,   0, U.mois, Dag.input, []],
+        [md10,  0, U.mois, Dag.input, []],
         [md100, 0, U.mois, Dag.input, []],
         [mlive, 0, U.mois, Dag.input, []],
         [mherb, 0, U.mois, Dag.assign, [mlive]],
         [mstem, 0, U.mois, Dag.assign, [mlive]],
-        [mdead, 0, U.mois, Dag.constant, []],
     ]
     const input5 = [
-        [md1, 0, U.mois, Dag.input, []],
-        [md10, 0, U.mois, Dag.input, []],
+        [md1,   0, U.mois, Dag.input, []],
+        [md10,  0, U.mois, Dag.input, []],
         [md100, 0, U.mois, Dag.input, []],
         [mherb, 0, U.mois, Dag.input, []],
         [mstem, 0, U.mois, Dag.input, []],
