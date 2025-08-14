@@ -15,6 +15,7 @@ export class Units {
     static efwl = 'water load'                      // lb/ft2
     static ehn   = 'effective heating number'       // fraction
     static fleng = 'fuel length, diameter'          // ft
+    static flamelen = 'flame length'                // ft
     static fmcode = 'fuel model code'
     static fmkey = 'fuel model key'                 // text 1-4 chars
     static fmlabel = 'fuel model label'
@@ -22,10 +23,12 @@ export class Units {
     static ftype = 'fuel type'                      // text
     static heat = 'heat of combustion'              // BTU/lb
     static hpua = 'heat per unit area'              // BTU/ft2
+    static hsink = 'heat sink'                      // BTU/ft3
     static life = 'fuel life'                       // 'dead' or 'live'
     static load = 'ovendry fuel load'               // lb/ft2
     static mois = 'moisture content'                // ratio
     static qig  = 'heat of pre-ignition'            // BTU/lb
+    static ros  = 'spread rate'                     // ft/min
     static rxi  = 'reaction intensity'              // BTU/ft2/min
     static rxv  = 'reaction  velocity'              // 1/min 
     static sa   = 'surface area'                    // ft2
@@ -35,6 +38,7 @@ export class Units {
     static seff = 'mineral content'                 // fraction
     static size = 'size class'                      // 1-6
     static stot = 'mineral content'                 // fraction
+    static taur = 'residence time'                  // min
     static vol  = 'volume'                          // ft3
     
     // Canopy module

@@ -4,37 +4,39 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import { Dag, K, U } from '../index.js'
+import { Dag, L, U } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
+import { SurfaceBedEquations as Bed } from '../index.js'
 
-export function surfaceFireNodes(fireId, bedId) {
-    const deadId = bedId + 'dead/'
-    const liveId = bedId + 'live/'
+export function surfaceFireNodes(fire, bed) {
+    const deadId = bed + 'dead/'
+    const liveId = bed + 'live/'
 
     const meta = [
-        [bedId+K.mmod, 'surface fire', U.text, Dag.constant, []],
-        [bedId+K.mver, '1', U.text, Dag.constant, []],
+        [bed+L.mmod, 'surface fire', U.text, Dag.constant, []],
+        [bed+L.mver, '1', U.text, Dag.constant, []],
     ]
 
     const inputNodes = [
-        [fireId+K.wlim, 'yes', U.wlim, Dag.input, []]
+        [fire+L.wlim, 'yes', U.wlim, Dag.input, []]
     ]
     
     const derivedNodes = [
-        [fireId+K.hsink,  0, U.hsink, Eq.heatSink, [bedId+K.qig, bedId+K.bulk]],
-        [fireId+K.hsrc,   0, U.rxi, Eq.heatSource, [fireId+K.rxi, bedId+K.qig]],
-        [fireId+K.rxi,    0, U.rxi, Eq.reactionIntensity, [deadId+K.rxi, liveId+K.rxi]],
-        [fireId+K.rosx,   0, U.ros, Fire.maximumSpreadRate, [fireId+K.ros0, bedId+K.phie]],
-        [fireId+K.rosl,   0, U.ros, Fire.spreadRateWithRosLimitApplied, [fireId+K.ros, bedId+K.weff]],
-        [fireId+K.ros,    0, U.ros, Fire.spreadRateFinal, [fireId+K.wlim, fireId+K.ros, fireId+K.rosa]],
-        [fireId+K.ros0,   0, U.ros, Eq.noWindNoSlopeSpreadRate, [fireId+K.hsrc, fireId+K.hsink]],
-        [fireId+K.taur,   0, U.taur, Eq.fireResidenceTime, [bedId+K.savr]],
-        [fireId+K.hpua,   0, U.hpua, Eq.heatPerUnitArea, [fireId+K.rxi, fireId+K.taur]],
-        [fireId+K.lwr,    1, U.ratio, Fire.lengthToWidthRatio, [bedId+K.weff]],
-        [fireId+K.fli,    0, U.ratio, Fire.firelineIntensity, [fireId+K.ros, fireId+K.rxi, fireId+K.taur]],
-        [fireId+K.flen,   0, U.flen, Fire.flameLength, [fireId+K.fli]],
-        [fireId+K.weffl,  0, U.wnds, Fire.effectiveWindSpeedLimit, [fireId+K.rxi]],
-        // [fireId+K.scor,   0, U.scor, Fire.scorchHeight, [fireId+K.fli, bedId+K.wmid, bed.Id+K.airt]],
+        [fire+L.hsink,  0, U.hsink, Bed.heatSink, [bed+L.qig, bed+L.bulk]],
+        [fire+L.hsrc,   0, U.rxi, Bed.heatSource, [fire+L.rxi, bed+L.qig]],
+        [fire+L.rxi,    0, U.rxi, Bed.reactionIntensity, [deadId+L.rxi, liveId+L.rxi]],
+        [fire+L.rosmax, 0, U.ros, Fire.maximumSpreadRate, [fire+L.ros0, bed+L.phie]],
+        // this needs to be reviewed...need to recalc phiw, phie for it!!
+        [fire+L.roseff, 0, U.ros, Fire.spreadRateWithRosLimitApplied, [fire+L.ros0, bed+L.weff]],
+        [fire+L.ros,    0, U.ros, Fire.spreadRateFinal, [fire+L.wlim, fire+L.rosmax, fire+L.roseff]],
+        [fire+L.ros0,   0, U.ros, Bed.noWindNoSlopeSpreadRate, [fire+L.hsrc, fire+L.hsink]],
+        [fire+L.taur,   0, U.taur, Bed.fireResidenceTime, [bed+L.savr]],
+        [fire+L.hpua,   0, U.hpua, Bed.heatPerUnitArea, [fire+L.rxi, fire+L.taur]],
+        [fire+L.lwr,    1, U.ratio, Fire.lengthToWidthRatio, [bed+L.weff]],
+        [fire+L.fli,    0, U.ratio, Fire.firelineIntensity, [fire+L.ros, fire+L.rxi, fire+L.taur]],
+        [fire+L.flen,   0, U.flamelen, Fire.flameLength, [fire+L.fli]],
+        [fire+L.weffl,  0, U.wspd, Fire.effectiveWindSpeedLimit, [fire+L.rxi]],
+        // [fire+L.scor,   0, U.scor, Fire.scorchHeight, [fire+L.fli, bed+L.wmid, bed.Id+L.airt]],
     ]
-    return [ ...meta, ...inputNodes, ...derivedNodes].sort
+    return [ ...meta, ...inputNodes, ...derivedNodes].sort()
 }

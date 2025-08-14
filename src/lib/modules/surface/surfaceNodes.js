@@ -7,6 +7,7 @@ import { moistureNodes, MoistureConfig } from '../index.js'
 import { slopeNodes, SlopeConfig } from '../index.js'
 import { standardFuelModelNodes } from '../index.js'
 import { surfaceBedNodes } from '../index.js'
+import { surfaceFireNodes } from '../index.js'
 import { windNodes, WindConfig } from '../index.js'
 import { windSpeedAdjustmentNodes, WindSpeedAdjustmentConfig } from '../index.js'
 
@@ -25,7 +26,8 @@ export function surfaceNodes() {
     const windadjMod1 = windSpeedAdjustmentNodes(P.windadj1, P.bed1, P.wind, P.canopy, WindSpeedAdjustmentConfig)
     const midwindMod1 = midflameWindNodes(P.windmid1, P.wind, P.windadj1, MidflameWindConfig)
     const bedMod1 = surfaceBedNodes(P.bed1, P.fuel1, P.moisture, P.windmid1, P.slope, P.curing, FuelModelConfig)
-    const primaryNodes = [...midwindMod1, ...windadjMod1, ...bedMod1, ...fuelMod1]
+    const fireMod1 = surfaceFireNodes(P.fire1, P.bed1)
+    const primaryNodes = [...midwindMod1, ...windadjMod1, ...bedMod1, ...fuelMod1, ...fireMod1]
 
     // Surface Secondary fire and fuel bed linked to the above modules as configured
     const fuelMod2 = fuelModelNodes(P.fuel2, FuelModelConfig)   // may be standard, chaparral, aspen, or rough

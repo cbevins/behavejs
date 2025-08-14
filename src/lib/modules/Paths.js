@@ -1,5 +1,3 @@
-import {K} from './index.js'
-
 export class P {
     // Module names
     static canopy   = 'Canopy/'
@@ -44,61 +42,13 @@ export class P {
 }
 
 // Names that, when appended to a Path, define a unique node
+// DO NOT RE-ORDER!!! MUST ONLY REFERENCE PREVIOUSLY DEFINED VARS
 export class L {
     // Module meta data to append to any module path
     static meta = '_meta/'
     static mmod = L.meta+'module'
     static mcfg = L.meta+'config/'  // followed by a config.value
     static mver = L.meta+'version'
-    
-    // Canopy Module leafs to append to P.canopy
-    static cbulk = 'bulk density'
-    static ccov  =  'coverage'
-    static cfill = 'crown fill'
-    static cheat = K.heat
-    static chpua = K.hpua
-    static ctht  = 'total height'
-    static cbht  = 'base height'
-    static clen  = 'crown length'
-    static crat  = 'crown ratio'
-    static cload = K.load
-    static cshelters = 'shelters fuel from wind'
-    static cwaf  = 'canopy-induced ' + K.waf
-
-    // Moisture Module leafs to append to P.moisture
-    static m1 = 'dead/1-h/' + K.mois
-    static m10 = 'dead/10-h/' + K.mois
-    static m100 = 'dead/100-h/' + K.mois
-    static mherb = 'live/herb/' + K.mois
-    static mstem = 'live/stem/' + K.mois
-    static mdead = 'dead/category/' + K.mois
-    static mlive = 'live/category/' + K.mois
-
-    // Slope Module leafs to append to P.slope
-    static sasp = 'direction/aspect (downslope)'
-    static sups = 'direction/upslope'
-    static srat = 'steepness/ratio'
-    static sdeg = 'steepness/degrees'
-
-    // Standard fuel model Module leaf nodes
-    static fmalias    = 'alias'
-    static fmkey      = 'key'
-    static fmnumb     = 'number'
-    static fmcode     = 'code'
-    static fmlabel    = 'label'
-    static fmcured    = 'cured herb fraction'
-    static fmdepth    = K.depth
-    static fmmext     = K.mext
-    static fmheatdead = 'dead/'+K.heat
-    static fmheatlive = 'live/'+K.heat
-    static fmload1    = 'dead/1-h/'+K.load
-    static fmload10   = 'dead/10-h/'+K.load
-    static fmload100  = 'dead/100-h/'+K.load
-    static fmloadherb = 'live/herb/'+K.load
-    static fmloadstem = 'live/stem/'+K.load
-    static fmsavr1    = 'dead/1-h/'+K.savr
-    static fmsavrherb = 'live/herb/'+K.savr
-    static fmsavrstem = 'live/stem/'+K.savr
 
     // Surface Element Module leaf nodes
     static diam = 'cylindrical diameter'
@@ -128,18 +78,58 @@ export class L {
     static type = 'type'
     static vol  = 'volume'
 
+    // Moisture Module leafs to append to P.moisture
+    static m1 = 'dead/1-h/' + L.mois
+    static m10 = 'dead/10-h/' + L.mois
+    static m100 = 'dead/100-h/' + L.mois
+    static mherb = 'live/herb/' + L.mois
+    static mstem = 'live/stem/' + L.mois
+    static mdead = 'dead/category/' + L.mois
+    static mlive = 'live/category/' + L.mois
+
+    // Slope Module leafs to append to P.slope
+    static sasp = 'direction/aspect (downslope)'
+    static sups = 'direction/upslope'
+    static srat = 'steepness/ratio'
+    static sdeg = 'steepness/degrees'
+
+    // Standard fuel model Module leaf nodes
+    static fmalias    = 'alias'
+    static fmkey      = 'key'
+    static fmnumb     = 'number'
+    static fmcode     = 'code'
+    static fmlabel    = 'label'
+    static fmcured    = 'cured herb fraction'
+    static fmdepth    = L.depth
+    static fmmext     = L.mext
+    static fmheatdead = 'dead/'+L.heat
+    static fmheatlive = 'live/'+L.heat
+    static fmload1    = 'dead/1-h/'+L.load
+    static fmload10   = 'dead/10-h/'+L.load
+    static fmload100  = 'dead/100-h/'+L.load
+    static fmloadherb = 'live/herb/'+L.load
+    static fmloadstem = 'live/stem/'+L.load
+    static fmsavr1    = 'dead/1-h/'+L.savr
+    static fmsavrherb = 'live/herb/'+L.savr
+    static fmsavrstem = 'live/stem/'+L.savr
+
     // Surface Bed Module leafs
+    static beta = 'packing ratio'
     static bulk = 'bulk density'
     static cured = 'cured fraction'
     static beta = 'packing ratio'
-    static bopt = K.beta+'/optimum'
-    static bratio = K.beta+'/ratio'
+    static bopt = L.beta+'/optimum'
+    static bratio = L.beta+'/ratio'
     static dfrxi = 'dry fuel reaction intensity'
     static etam = 'moisture damping coefficient'
     static etas = 'mineral damping coefficient'
+    static flen = 'flame length'
+    static fli = 'fireline intensity'
     static hpua = 'heat per unit area'
     static hsink = 'heat sink'
     static hsrc = 'heat source'
+    static lwr  = 'length to width ratio'
+    static mext = 'extinction moisture content'
     static mextf = L.mext + '/factor'
     static owaf = 'open-canopy wind speed adjustment factor'
     static phie = 'spread rate coefficient/effective wind'
@@ -147,15 +137,15 @@ export class L {
     static phiw = 'spread rate coefficient/wind'
     static qig  = 'heat of pre-ignition'
     static ros  = 'spread rate'
-    static ros0   = 'no-wind no-slope ' + K.ros
-    static roseff = 'effective wind limited ' + K.ros
-    static rosmax = 'up-wind up-slope ' + K.ros
+    static ros0   = 'no-wind no-slope ' + L.ros
+    static roseff = 'effective wind limited ' + L.ros
+    static rosmax = 'up-wind up-slope ' + L.ros
     static rxi    = 'reaction intensity'
     static rxv  = 'reaction velocity'
-    static rxve  = K.rxv + '/exponent'
-    static rxvm  = K.rxv + '/maximum'
-    static rxvo  = K.rxv + '/optimum'
-    static savr15 = K.savr + '/1.5'
+    static rxve  = L.rxv + '/exponent'
+    static rxvm  = L.rxv + '/maximum'
+    static rxvo  = L.rxv + '/optimum'
+    static savr15 = L.savr + '/1.5'
     static slpk = 'slope/K'
     static slpr = 'slope rise to reach ratio'
     static taur = 'residence time'
@@ -169,6 +159,20 @@ export class L {
     static wndk = 'wind/K'
     static wndi = 'wind/I'
     static xi   = 'propagating flux ratio'
+    
+    // Canopy Module leafs to append to P.canopy
+    static cbulk = 'bulk density'
+    static ccov  =  'coverage'
+    static cfill = 'crown fill'
+    static cheat = L.heat
+    static chpua = L.hpua
+    static ctht  = 'total height'
+    static cbht  = 'base height'
+    static clen  = 'crown length'
+    static crat  = 'crown ratio'
+    static cload = L.load
+    static cshelters = 'shelters fuel from wind'
+    static cwaf  = 'canopy-induced ' + L.waf
     
     // Wind (and Midflame) Module leafs to append to P.wind (or P.windmid)
     static whead = 'direction/heading'
