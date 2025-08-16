@@ -60,7 +60,7 @@ export class StandardFuelModelCatalog {
     // Returns the fuel model data **array**
     static getData(alias) {
         const key = (typeof alias === 'string') ? alias.toLowerCase() : alias
-        const map = StandardFuelModels.getMap() // ensure it exists!
+        const map = StandardFuelModelCatalog.getMap() // ensure it exists!
         return map.get(key)
     }
 
@@ -68,7 +68,7 @@ export class StandardFuelModelCatalog {
     static getObj(alias) {
         const [number, code, label, depth, mext, load1, load10, load100,
             loadHerb, loadStem, savr1, savrHerb, savrStem, heatDead, heatLive]
-        = StandardFuelModels.getData(alias)
+        = StandardFuelModelCatalog.getData(alias)
         return {number, code, label, depth, mext, load1, load10, load100,
             loadHerb, loadStem, savr1, savrHerb, savrStem, heatDead, heatLive}
     }
@@ -76,39 +76,39 @@ export class StandardFuelModelCatalog {
     // Returns the fuel map, after first building it if necessary
     // Always called by this.getData() and this.getObj()
     static getMap() {
-        if (! StandardFuelModels.fuelMap.size) {
-            for(let m of StandardFuelModels.fuelData) {
-                StandardFuelModels.fuelMap.set(m[0], m)      // numeric key
-                StandardFuelModels.fuelMap.set(''+m[0], m)   // number string key
-                StandardFuelModels.fuelMap.set(m[1], m)      // code key
+        if (! StandardFuelModelCatalog.fuelMap.size) {
+            for(let m of StandardFuelModelCatalog.fuelData) {
+                StandardFuelModelCatalog.fuelMap.set(m[0], m)      // numeric key
+                StandardFuelModelCatalog.fuelMap.set(''+m[0], m)   // number string key
+                StandardFuelModelCatalog.fuelMap.set(m[1], m)      // code key
             }
         }
-        return StandardFuelModels.fuelMap
+        return StandardFuelModelCatalog.fuelMap
     }
 
     // Returns TRUE if the fuel model number or code exists in the map
     static has(alias) {
         const key = (typeof alias === 'string') ? alias.toLowerCase() : alias
-        const map = StandardFuelModels.getMap() // ensure it exists!
+        const map = StandardFuelModelCatalog.getMap() // ensure it exists!
         return map.has(key)
     }
 
-    static code(alias) { return StandardFuelModels.getObj(alias).code }
-    static depth(alias) { return StandardFuelModels.getObj(alias).depth }
-    static heatDead(alias) { return StandardFuelModels.getObj(alias).heatDead }
-    static heatLive(alias) { return StandardFuelModels.getObj(alias).heatLive }
-    static key(alias) { return StandardFuelModels.getObj(alias).key }
-    static label(alias) { return StandardFuelModels.getObj(alias).label }
-    static load1(alias) { return StandardFuelModels.getObj(alias).load1 }
-    static load10(alias) { return StandardFuelModels.getObj(alias).load10 }
-    static load100(alias) { return StandardFuelModels.getObj(alias).load100 }
-    static loadHerb(alias) { return StandardFuelModels.getObj(alias).loadHerb }
-    static loadStem(alias) { return StandardFuelModels.getObj(alias).loadStem }
-    static loadCured(alias, curedFraction) { return StandardFuelModels.getObj(alias).loadHerb * curedFraction}
-    static loadUncured(alias, curedFraction) { return StandardFuelModels.getObj(alias).loadHerb * (1-curedFraction) }
-    static mext(alias) { return StandardFuelModels.getObj(alias).mext }
-    static number(alias) { return StandardFuelModels.getObj(alias).number }
-    static savr1(alias) { return StandardFuelModels.getObj(alias).savr1 }
-    static savrHerb(alias) { return StandardFuelModels.getObj(alias).savrHerb }
-    static savrStem(alias) { return StandardFuelModels.getObj(alias).savrStem }
+    static code(alias) { return StandardFuelModelCatalog.getObj(alias).code }
+    static depth(alias) { return StandardFuelModelCatalog.getObj(alias).depth }
+    static heatDead(alias) { return StandardFuelModelCatalog.getObj(alias).heatDead }
+    static heatLive(alias) { return StandardFuelModelCatalog.getObj(alias).heatLive }
+    static key(alias) { return StandardFuelModelCatalog.getObj(alias).key }
+    static label(alias) { return StandardFuelModelCatalog.getObj(alias).label }
+    static load1(alias) { return StandardFuelModelCatalog.getObj(alias).load1 }
+    static load10(alias) { return StandardFuelModelCatalog.getObj(alias).load10 }
+    static load100(alias) { return StandardFuelModelCatalog.getObj(alias).load100 }
+    static loadHerb(alias) { return StandardFuelModelCatalog.getObj(alias).loadHerb }
+    static loadStem(alias) { return StandardFuelModelCatalog.getObj(alias).loadStem }
+    static loadCured(alias, curedFraction) { return StandardFuelModelCatalog.getObj(alias).loadHerb * curedFraction}
+    static loadUncured(alias, curedFraction) { return StandardFuelModelCatalog.getObj(alias).loadHerb * (1-curedFraction) }
+    static mext(alias) { return StandardFuelModelCatalog.getObj(alias).mext }
+    static number(alias) { return StandardFuelModelCatalog.getObj(alias).number }
+    static savr1(alias) { return StandardFuelModelCatalog.getObj(alias).savr1 }
+    static savrHerb(alias) { return StandardFuelModelCatalog.getObj(alias).savrHerb }
+    static savrStem(alias) { return StandardFuelModelCatalog.getObj(alias).savrStem }
 }

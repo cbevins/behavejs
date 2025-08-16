@@ -79,8 +79,8 @@ export class SurfaceElementEquations {
 
   static effectiveFuelLoad (savr, load, life) {
     return life === 'dead'
-      ? Equations.effectiveFuelLoadDead(savr, load)
-      : Equations.effectiveFuelLoadLive(savr, load)
+      ? SurfaceElementEquations.effectiveFuelLoadDead(savr, load)
+      : SurfaceElementEquations.effectiveFuelLoadLive(savr, load)
   }
 
   static effectiveFuelLoadDead (savr, load) {

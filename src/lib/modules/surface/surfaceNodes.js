@@ -22,21 +22,21 @@ export function surfaceNodes() {
     const commonNodes = [...canopyMod, ...curingMod, ...moistureMod, ...slopeMod, ...windMod]
 
     // Surface Primary fire and fuel bed linked to the above modules as configured
-    const fuelMod1 = fuelModelNodes(P.fuel1, FuelModelConfig)   // may be standard, chaparral, aspen, or rough
-    const windadjMod1 = windSpeedAdjustmentNodes(P.windadj1, P.bed1, P.wind, P.canopy, WindSpeedAdjustmentConfig)
+    const fuelMod1 = fuelModelNodes(P.fuel1, 'standard catalog')   // may be standard, chaparral, aspen, or rough
+    const windadjMod1 = windSpeedAdjustmentNodes(P.windadj1, P.bed1, P.canopy, WindSpeedAdjustmentConfig)
     const midwindMod1 = midflameWindNodes(P.windmid1, P.wind, P.windadj1, MidflameWindConfig)
     const bedMod1 = surfaceBedNodes(P.bed1, P.fuel1, P.moisture, P.windmid1, P.slope, P.curing, FuelModelConfig)
     const fireMod1 = surfaceFireNodes(P.fire1, P.bed1)
     const primaryNodes = [...midwindMod1, ...windadjMod1, ...bedMod1, ...fuelMod1, ...fireMod1]
 
     // Surface Secondary fire and fuel bed linked to the above modules as configured
-    const fuelMod2 = fuelModelNodes(P.fuel2, FuelModelConfig)   // may be standard, chaparral, aspen, or rough
-    const windadjMod2 = windSpeedAdjustmentNodes(P.windadj2, P.bed2, P.wind, P.canopy, WindSpeedAdjustmentConfig)
+    const fuelMod2 = fuelModelNodes(P.fuel2, 'standard catalog')   // may be standard, chaparral, aspen, or rough
+    const windadjMod2 = windSpeedAdjustmentNodes(P.windadj2, P.bed2, P.canopy, WindSpeedAdjustmentConfig)
     const midwindMod2 = midflameWindNodes(P.windmid2, P.wind, P.windadj2, MidflameWindConfig)
     const bedMod2 = surfaceBedNodes(P.bed2, P.fuel2, P.moisture, P.windmid2, P.slope, P.curing, FuelModelConfig)
     const secondaryNodes = [...midwindMod2, ...windadjMod2, ...bedMod2, ...fuelMod2]
 
     const nodes = [...commonNodes, ...primaryNodes, ...secondaryNodes].sort()
-    for(let node of nodes) console.log(node)
+    // for(let node of nodes) console.log(node)
     return nodes
 }

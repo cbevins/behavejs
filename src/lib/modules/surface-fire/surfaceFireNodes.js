@@ -22,8 +22,8 @@ export function surfaceFireNodes(fire, bed) {
     ]
     
     const derivedNodes = [
-        [fire+L.hsink,  0, U.hsink, Bed.heatSink, [bed+L.qig, bed+L.bulk]],
-        [fire+L.hsrc,   0, U.rxi, Bed.heatSource, [fire+L.rxi, bed+L.qig]],
+        [fire+L.hsink,  0, U.hsink, Bed.heatSink, [bed+L.bulk, bed+L.qig]],
+        [fire+L.hsrc,   0, U.rxi, Bed.heatSource, [fire+L.rxi, bed+L.xi]],
         [fire+L.rxi,    0, U.rxi, Bed.reactionIntensity, [deadId+L.rxi, liveId+L.rxi]],
         [fire+L.rosmax, 0, U.ros, Fire.maximumSpreadRate, [fire+L.ros0, bed+L.phie]],
         // this needs to be reviewed...need to recalc phiw, phie for it!!

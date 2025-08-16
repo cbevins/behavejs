@@ -3,22 +3,24 @@
  * @param {string} fuelId All the nodes are prefaced with this id
 */
 import { Dag, L, U } from '../index.js'
-import { StandardFuelModelCatalog as Eq } from '../index.js'
+import { StandardFuelModelCatalog as Eq, FuelModelOptions } from '../index.js'
 
 /**
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
- * @param {object} cfg Object with cfg.model.value (see FuelModelConfig)
+ * @param {string} model One of the FuelModelOptions
  * @returns Array of surface fuel bed module node definitions
  */
 
-export function standardFuelModelNodes(path, cfg) {
+export function standardFuelModelNodes(path, model) {
+    if (!FuelModelOptions.includes(model))
+        throw new Error(`standardFuelModelNodes() received unknown configuration option "${model}"`)
+
     const key = path + L.fmalias
-    const cfgModel = cfg.model.value
 
     const meta = [
         [path+L.mmod, 'standard fuel model', U.text, Dag.constant, []],
         [path+L.mver, '1', U.text, Dag.constant, []],
-        [path+L.mcfg+'model', cfgModel, U.text, Dag.constant, []],
+        [path+L.mcfg+'model', model, U.text, Dag.constant, []],
     ]
     const nodes = [
         [path+L.fmalias,      '', U.fmkey, Dag.input, []],
@@ -39,7 +41,7 @@ export function standardFuelModelNodes(path, cfg) {
         [path+L.fmsavrherb,    1, U.savr, Eq.savrHerb, [key]],
         [path+L.fmsavrstem,    1, U.savr, Eq.savrStem, [key]],
     ]
-    if (cfgModel === 'standard input') {
+    if (model === 'standard input') {
         for(let i=0; i<nodes.length; i++) {
             node[i][3] = Dag.input
             node[i][4] = []

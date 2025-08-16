@@ -14,11 +14,12 @@ export {StandardFuelModelCatalog} from './standard-fuel-model/StandardFuelModelC
 export {SurfaceBedEquations} from './surface-bed/SurfaceBedEquations.js'
 export {SurfaceElementEquations} from './surface-bed/SurfaceElementEquations.js'
 export {SurfaceFireEquations} from './surface-bed/SurfaceFireEquations.js'
+export {WindEquations} from './wind/WindEquations.js'
 
 // Modules
 export {canopyNodes, CanopyConfig} from './canopy/canopyNodes.js'
 export {curingNodes, CuringConfig} from './curing/curingNodes.js'
-export {fuelModelNodes, FuelModelConfig} from './fuel-model/fuelModelNodes.js'
+export {fuelModelNodes, FuelModelConfig, FuelModelOptions} from './fuel-model/fuelModelNodes.js'
 export {midflameWindNodes, MidflameWindConfig} from './midflame-wind/midflameWindNodes.js'
 export {moistureNodes, MoistureConfig} from './moisture/moistureNodes.js'
 export {slopeNodes, SlopeConfig} from './slope/slopeNodes.js'

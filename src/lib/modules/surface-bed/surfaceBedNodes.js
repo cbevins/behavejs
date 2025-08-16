@@ -7,6 +7,7 @@
 import { Calc, Dag, L, U } from '../index.js'
 import { SurfaceBedEquations as Eq } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
+import { SurfaceElementEquations as Fuel } from '../index.js'
 import { standardFuelElementNodes } from "../index.js"
 // import { chaparralFuelElementNodes } from "../index.js"
 // import { southernRoughFuelElementNodes } from "../index.js"
@@ -46,7 +47,8 @@ export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, cfg) {
         [bed+L.load,   0, U.load, Calc.sum, [dead+L.load, live+L.load]],
         [bed+L.beta,   0, U.ratio, Eq.packingRatio, [dead+L.vol, live+L.vol, bed+L.depth]],
         [bed+L.bopt,   0, U.ratio, Eq.optimumPackingRatio, [bed+L.savr]],
-        [bed+L.bratio, 0, U.ratio, Eq.optimumPackingRatio, [bed+L.beta, bed+L.bopt]],
+        [bed+L.bratio, 0, U.ratio, Eq.packingRatioRatio, [bed+L.beta, bed+L.bopt]],
+        [bed+L.ehn,    0, U.ratio, Fuel.effectiveHeatingNumber, [bed+L.savr]],
         [bed+L.xi,     0, U.ratio, Eq.propagatingFluxRatio, [bed+L.savr, bed+L.beta]],
         [bed+L.rxve,   0, U.factor, Eq.reactionVelocityExponent, [bed+L.savr]],
         [bed+L.rxvm,   0, U.rxv, Eq.reactionVelocityMaximum, [bed+L.savr15]],
@@ -60,8 +62,8 @@ export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, cfg) {
         [bed+L.wnde,   1, U.factor, Eq.windC, [bed+L.savr]],
         [bed+L.wndi,   0, U.factor, Eq.windI, [bed+L.bratio, bed+L.wnde, bed+L.wndc]],
         [bed+L.wndk,   0, U.factor, Eq.windK, [bed+L.bratio, bed+L.wnde, bed+L.wndc]],
-        [bed+L.phiw,   0, U.factor, Fire.phiWind, [bed+L.wmid, bed+L.wndb, bed+L.wndk]],
-        [bed+L.phis,   0, U.factor, Fire.phiSlope, [slope+L.srat, bed+L.slpk]],
+        [bed+L.phiw,   0, U.factor, Eq.phiWind, [bed+L.wmid, bed+L.wndb, bed+L.wndk]],
+        [bed+L.phis,   0, U.factor, Eq.phiSlope, [slope+L.srat, bed+L.slpk]],
         [bed+L.phie,   0, U.factor, Fire.phiEffectiveWind, [bed+L.phiw, bed+L.phis]],
         [bed+L.weff,   0, U.wspd, Fire.effectiveWindSpeed, [bed+L.phie, bed+L.wndb, bed+L.wndi]],
     ]

@@ -1,5 +1,5 @@
 const _dagnode = {key: '', value: null, units: '', updater: null,
-    suppliers: [], consumers: [], status: null, dirty: false, visited: false}
+    suppliers: [], consumers: [], status: null, dirty: false}
 
 const _tracker = {clean: 0, constant: 0, input: 0, assign: 0, calc: 0}
 
@@ -38,14 +38,14 @@ export class Dag {
     static selected = 'SELECTED'// a 'selected' node that is a supplier to at least one other selected node
     static leaf     = 'LEAF'    // a 'selected' node that supplies no other selected nodes
 
-    activeInputs() { return this.activeInputsSet.values() }
+    activeInputs() { return [...this.activeInputsSet] }
 
     // Returns the DagNode value.
     // If the DagNode is dirty, get() is recursively called on all its suppliers,
     // and its dirty flag is cleared before returning its updated value.
-    get(refOrKey) {
+    get(refOrKey, log=false) {
         this.tracker = {..._tracker}
-        return this._get(refOrKey)
+        return this._get(refOrKey, log)
     }
 
     // Returns a reference to the DagNode with 'key' prop
@@ -86,7 +86,7 @@ export class Dag {
         return this
     }
 
-    selected() { return this.selectSet.values() }
+    selected() { return [...this.selectSet] }
 
     // Sets the DagNode value and propagates the dirty flags to its downstream consumers.
     // Only works for INPUT DagNodes and if value is different from current value.
@@ -107,12 +107,12 @@ export class Dag {
             const [key, value, units, method, supkeys] = node
             for(let supkey of supkeys) {
                 if(!map.has(supkey)) {
-                    console.log(`*** "${key}" supplier "${supkey}" undefined`)
+                    console.log(`*** Node "${key}" supplier "${supkey}" key is unknown`)
                     n++
                 }
             }
         }
-        if (n) throw new Error(`Map of ${map.size} node definitions has ${n} undefined supplier keys.`)
+        if (n) throw new Error(`Map of ${map.size} node definitions has ${n} unknown supplier keys.`)
         return this
     }
 
@@ -134,7 +134,7 @@ export class Dag {
             this._demoteSelectedSuppliers(supplier)
     }
 
-    _get(refOrKey) {
+    _get(refOrKey, log) {
         const node = this.nodeRef(refOrKey, '_get()')
         if (node.updater === Dag.constant) {
             this.tracker.constant++
@@ -144,14 +144,14 @@ export class Dag {
             this.tracker.clean++
         } else if (node.updater === Dag.assign) {
             this.tracker.assign++
-            node.value = this._get(node.suppliers[0])
+            node.value = this._get(node.suppliers[0], log)
         } else { // get updated supplier values
             this.tracker.calc++
             const args = []
             for(let supplier of node.suppliers)
-                args.push(this.get(supplier))
+                args.push(this._get(supplier, log))
             node.value = node.updater.apply(node, args)
-            console.log('Called', node.updater.name)
+            if(log) console.log(`_get(${node.key}) invoked ${node.updater.name}`)
         }
         node.dirty = Dag.clean
         return node.value

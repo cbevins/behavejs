@@ -42,8 +42,8 @@ export class SurfaceBedEquations {
      * @param {float} bulk Fuel bed bulk density (lb+1 ft-3)
      * @return float Fuel bed heat sink (btu+1 ft-3)
      */
-    static heatSink (qig, bulk) {
-        return qig * bulk
+    static heatSink (bulk, qig) {
+        return bulk * qig
     }
 
     /**
@@ -177,7 +177,9 @@ export class SurfaceBedEquations {
      * @return The fire spread rate slope coefficient (ratio).
      */
     static phiSlope (slopeRatio, slopeK) {
-        return slopeK * slopeRatio * slopeRatio
+        const phis = slopeK * slopeRatio * slopeRatio
+        console.log(`***phiSlope() slopeRatio=${slopeRatio}, slopeK=${slopeK} yields ${phis}`)
+        return phis
     }
 
     /** Calculate the fire spread rate wind coefficient (ratio).
@@ -190,7 +192,9 @@ export class SurfaceBedEquations {
      * @return The fire spread rate wind coefficient (ratio).
      */
     static phiWind (midflameWind, windB, windK) {
-        return midflameWind <= 0 ? 0 : windK * Math.pow(midflameWind, windB)
+        const phiw = midflameWind <= 0 ? 0 : windK * Math.pow(midflameWind, windB)
+        console.log(`***phiWind() midws=${midflameWind}, windB=${windB}, windK=${windK} yields ${phiw}`)
+        return phiw
     }
 
     /**
@@ -206,6 +210,7 @@ export class SurfaceBedEquations {
      * @return float The fuel bed no-wind propagating flux ratio (ratio).
      */
     static propagatingFluxRatio (savr, beta) {
+        console.log('***propflux savr=', savr, 'beta=',beta)
         return savr <= 0
             ? 0
             : Math.exp((0.792 + 0.681 * Math.sqrt(savr)) * (beta + 0.1)) /
@@ -216,7 +221,7 @@ export class SurfaceBedEquations {
         return 1 - primaryCoverage
     }
     
-    static reactionIntensity( deadRxi, libeRxi) {
+    static reactionIntensity( deadRxi, liveRxi) {
         return deadRxi + liveRxi
     }
 
@@ -346,7 +351,9 @@ export class SurfaceBedEquations {
      * @return float Wind coefficient `phiW` correlation parameter `B` (ratio).
      */
     static windB (savr) {
-        return 0.02526 * savr ** 0.54
+        const b = 0.02526 * savr ** 0.54
+        console.log(`windB() savr=${savr} yields ${b}`)
+        return b
     }
 
     /**
@@ -361,7 +368,9 @@ export class SurfaceBedEquations {
      * @return float Wind coefficient `phiW` correlation parameter `C` (ratio).
      */
     static windC (savr) {
-        return 7.47 * Math.exp(-0.133 * savr ** 0.55)
+        const c = 7.47 * Math.exp(-0.133 * savr ** 0.55)
+        console.log(`windC() savr=${savr} yields ${c}`)
+        return c
     }
 
     /**
@@ -413,7 +422,9 @@ export class SurfaceBedEquations {
      * @return float Factor used to derive the wind coefficient `phiW' (ratio).
      */
     static windK (betr, wnde, wndc) {
-        return betr <= 0 ? 0 : wndc * betr ** -wnde
+        const k = betr <= 0 ? 0 : wndc * betr ** -wnde
+        console.log(`windK() betr=${betr} wnde=${wnde} wndc=${wndc} yields ${k}`)
+        return k
     }
 
     //--------------------------------------------------------------------------

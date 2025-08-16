@@ -1,3 +1,5 @@
+/*
+*/
 export class P {
     // Module names
     static canopy   = 'Canopy/'
@@ -180,4 +182,32 @@ export class L {
     static w10m = 'speed/10-m'
     static w20f = 'speed/20-ft'
     static wmid = 'midflame wind speed'
+}
+
+export class X {
+    // Wind Speed Module
+    static ws20 = 'wind/speed/at 20-ft'
+    static ws10 = 'wind/speed/at 10-m'
+    
+    // Wind Speed Reduction Module
+    static wsrfo = 'wind/speed/reduction factor/open canopy' // uses bed depth
+    static wsrfc = 'wind/speed/reduction factor/closed canopy' // uses  canopy parms
+    static wsrf = 'wind/speed/reduction factor' // the applied WRF based on config
+    
+    // Wind Speed at Midflame Module
+    static wsmf = 'wind/speed/at midflame'
+
+    // Upslope Upwind Fire Module
+    static ros0 = 'fire/spread rate/no-wind, no-slope'  // (ft/min)
+    // unrestricted midflame wind speed
+    static phiw = 'fire/wind/coefficient'               // calculated using unrestricted wind speed at midflame (dl)
+    static phis = 'fire/slope/coefficient'              // calculated using slope steepness
+    static rosup = 'fire/spread rate/up-wind up-slope'  // = ros0 * (1 + phiw + phis) (unrestricted, ft/min)
+    // at the upper limit of effective wind speed
+    static wslimit = 'fire/wind/speed/limit'            // upper limit of effective midflame wind speed = 0.9 * rxi (ft/min)
+    static phiwlimit = 'fire/wind/coefficient/limit'    // calculated using the wind speed limit (dl)
+    static roslimit = 'fire/spread rate/limit'          // calculated using the wind coefficient limit (ft/min)
+    static wsexceed = 'fire/wind/speed/limit/exceeded'  // midflame wind speed > wind speed limit? (yes or no)
+    static wsenforced = 'fire/wind/speed/limit/enforced'// (yes or no)
+    static ros = 'fire/spread rate'
 }

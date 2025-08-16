@@ -16,23 +16,27 @@ export const FuelModelConfig = {
         value: 'standard catalog',
     }
 }
+export const FuelModelOptions = ['standard catalog', 'standard input', 'chaparral',
+    'southern rough', 'western aspen', 'none']
+
 /**
  * 
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
- * @param {object} cfg Object with cfg.model.value as defined above by FuelModelConfig
- * @returns Returns nodes for a fuel model defined by the cfg.model.value
+ * @param {string} model One of the FuelModelOptions
+ * @returns Returns nodes for a fuel model defined by the model value
  */
-export function fuelModelNodes(modId, cfg) {
-    const cfgModel = cfg.model.value
+export function fuelModelNodes(path, model) {
+    if (!FuelModelOptions.includes(model))
+        throw new Error(`fuelModelNodes() received unknown configuration option "${model}"`)
 
-    if (cfgModel === 'standard catalog' || cfgModel === 'standard input') {
-        return standardFuelModelNodes(modId, cfg)
-    } else if (cfgModel === 'chaparral') {
-        // const chaparral = chaparralModelNodes(chaparralId)
-    } else if (cfgModel === 'southern rough') {
-        // const rough = roughModelNodes(roughId)
-    } else if (cfgModel === 'western aspen') {
-        // const aspen = aspenModelNodes(aspenId)
+    if (model === 'standard catalog' || model === 'standard input') {
+        return standardFuelModelNodes(path, model)
+    } else if (model === 'chaparral') {
+        // return chaparralModelNodes(path)
+    } else if (model === 'southern rough') {
+        // return roughModelNodes(path)
+    } else if (model === 'western aspen') {
+        // return aspenModelNodes(path)
     }
     return []
 }
