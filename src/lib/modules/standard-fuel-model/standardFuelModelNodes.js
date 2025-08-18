@@ -10,8 +10,7 @@ import { StandardFuelModelCatalog as Eq, FuelModelOptions } from '../index.js'
  * @param {string} model One of the FuelModelOptions
  * @returns Array of surface fuel bed module node definitions
  */
-
-export function standardFuelModelNodes(path, model) {
+export function standardFuelModelNodes(path, model='standard catalog') {
     if (!FuelModelOptions.includes(model))
         throw new Error(`standardFuelModelNodes() received unknown configuration option "${model}"`)
 

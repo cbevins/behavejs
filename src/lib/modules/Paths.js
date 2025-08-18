@@ -138,10 +138,12 @@ export class L {
     static phis = 'spread rate coefficient/slope'
     static phiw = 'spread rate coefficient/wind'
     static qig  = 'heat of pre-ignition'
-    static ros  = 'spread rate'
+    // ros types
+    static ros  = 'spread rate'             // generic - could be 'spread rate' or 'rate of spread'
     static ros0   = 'no-wind no-slope ' + L.ros
     static roseff = 'effective wind limited ' + L.ros
     static rosmax = 'up-wind up-slope ' + L.ros
+
     static rxi    = 'reaction intensity'
     static rxv  = 'reaction velocity'
     static rxve  = L.rxv + '/exponent'
@@ -179,6 +181,7 @@ export class L {
     // Wind (and Midflame) Module leafs to append to P.wind (or P.windmid)
     static whead = 'direction/heading'
     static wfrom = 'direction/source'
+    static wupslope = 'direction/upslope'
     static w10m = 'speed/10-m'
     static w20f = 'speed/20-ft'
     static wmid = 'midflame wind speed'
@@ -198,7 +201,7 @@ export class X {
     static wsmf = 'wind/speed/at midflame'
 
     // Upslope Upwind Fire Module
-    static ros0 = 'fire/spread rate/no-wind, no-slope'  // (ft/min)
+    static rosupup = 'fire/spread rate/no-wind, no-slope'  // (ft/min)
     // unrestricted midflame wind speed
     static phiw = 'fire/wind/coefficient'               // calculated using unrestricted wind speed at midflame (dl)
     static phis = 'fire/slope/coefficient'              // calculated using slope steepness

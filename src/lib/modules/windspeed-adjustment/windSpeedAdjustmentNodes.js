@@ -13,17 +13,16 @@ export const WindSpeedAdjustmentConfig= {
         value: 'input',
     },
 }
+export const WindSpeedAdjustmentOptions = ['input', 'open', 'canopy']
 /**
  * 
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
  * @param {string} bed Path of the Bed Module to be applied
  * @param {string} canopy Path of the Canopy Module to be applied
- * @param {Config} cfg cfg.source.value of 'input', 'open', or 'canopy'
+ * @param {Config} cfgSource One of the WindSpeedAdjustmentOptions
  * @returns Array of wind speed adjustment module factor node definitions
  */
-export function windSpeedAdjustmentNodes(path, bed, canopy, cfg) {
-    const cfgSource = cfg.source.value
-
+export function windSpeedAdjustmentNodes(path, bed, canopy, cfgSource) {
     const meta = [
         [path+L.mmod, 'wind speed adjustment', U.text, Dag.constant, []],
         [path+L.mver, '1', U.text, Dag.constant, []],

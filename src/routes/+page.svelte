@@ -1,7 +1,7 @@
 <script>
 	import { rxi } from '$lib/bp6/standardKeys';
     import { Dag, L, P, Util } from '$lib/modules/index.js'
-    import { surfaceNodes, FuelModelConfig } from '$lib/modules/index.js'
+    import { surfaceNodes } from '$lib/modules/index.js'
     const configFm010Fm124 = [
         ['configure.fire.effectiveWindSpeedLimit', ['applied', 'ignored'][0]],
         ['configure.fire.firelineIntensity', ['firelineIntensity', 'flameLength'][1]],
@@ -44,7 +44,7 @@
         ['surface.weighted.fire.primaryCover', [0.6]]
     ]
 
-    const nodeDefs = surfaceNodes(FuelModelConfig)
+    const nodeDefs = surfaceNodes()
     const nodeDefsMap = Util.nodesToMap(nodeDefs)
     const dag = new Dag(nodeDefsMap)
 
@@ -68,9 +68,15 @@
         P.fire1+L.hsink,
         P.fire1+L.hsrc,
         P.fire1+L.ros0,
+        P.bed1+L.wmid,
+        P.bed1+L.wndb,
+        P.bed1+L.wndc,
+        P.bed1+L.wnde,
+        P.bed1+L.wndk,
         P.bed1+L.phiw,
         P.bed1+L.phis,
         P.bed1+L.phie,
+        P.bed1+L.weff,
         P.fire1+L.rosmax]
     dag.select(selected)
 

@@ -9,27 +9,26 @@ export const CuringConfig = {
         value: 'input'
     },
 }
+export const CuringInputOptions = ['input', 'estimated']
 /**
  * 
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
  * @param {string} mois Path of the Moisture Model to be applied
- * @param {Config} cfg cfg.source.value of 'input' or 'estimated'
+ * @param {string} cfgopt One of the CuringInputOptions
  * @returns Array of curing module node definitions
  */
-export function curingNodes(path, mois, cfg) {
-    const cfgSource = cfg.source.value
-
+export function curingNodes(path, mois, cfgopt='input') {
     const meta = [
         [path+L.mmod, 'curing', U.text, Dag.constant, []],
         [path+L.mver, '1', U.text, Dag.constant, []],
-        [path+L.mcfg+'source', cfgSource, U.text, Dag.constant, []],
+        [path+L.mcfg+'input', cfgopt, U.text, Dag.constant, []],
     ]
     const input = [
-        [path+L.cured, 0, U.fraction, Eq.curedHerbFraction, [mois+L.mherb]],
-    ]
-    const estimated = [
         [path+L.cured, 0, U.fraction, Dag.input, []],
     ]
-    const curing = (cfgSource === 'input') ? input : estimated
-    return [...meta, ...curing].sort()
+    const estimated = [
+        [path+L.cured, 0, U.fraction, Eq.curedHerbFraction, [mois+L.mherb]],
+    ]
+    const nodes = (cfgopt === 'input') ? input : estimated
+    return [...meta, ...nodes].sort()
 }

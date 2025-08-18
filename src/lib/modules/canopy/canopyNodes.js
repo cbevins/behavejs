@@ -15,13 +15,15 @@ export const CanopyConfig = {
         value: 'ratio-height',
     },
 }
+export const CanopyInputOptions = ['ratio-height', 'ratio-base', 'ratio-length',
+    'height-length', 'height-base', 'length-base']
+
 /**
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
  * @param {Config} cfg cfg.input.value as defined above
  * @returns Array of canopy module node definitions
  */
-export function canopyNodes(path, cfg) {
-    const cfgInputs = cfg.inputs.value
+export function canopyNodes(path, cfgInputs='ratio-height') {
 
     const meta = [
         [path+L.mmod, 'canopy', U.text, Dag.constant, []],
@@ -95,10 +97,10 @@ export function canopyNodes(path, cfg) {
             path+L.ctht, path+L.cbht]],
     ]
 
-    if (cfgInputs === 'ratio-height') return [...nodes, ...ratioHeight].sort()
     if (cfgInputs === 'ratio-base') return [...nodes, ...ratioBase].sort()
     if (cfgInputs === 'ratio-length') return [...nodes, ...ratioLength].sort()
     if (cfgInputs === 'height-length') return [...nodes, ...heightLength].sort()
     if (cfgInputs === 'height-base') return [...nodes, ...heightBase].sort()
     if (cfgInputs === 'length-base') return [...nodes, ...lengthBase].sort()
+    return [...nodes, ...ratioHeight].sort() // (cfgInputs === 'ratio-height')
 }

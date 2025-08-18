@@ -25,7 +25,7 @@ export const FuelModelOptions = ['standard catalog', 'standard input', 'chaparra
  * @param {string} model One of the FuelModelOptions
  * @returns Returns nodes for a fuel model defined by the model value
  */
-export function fuelModelNodes(path, model) {
+export function fuelModelNodes(path, model='standard catalog') {
     if (!FuelModelOptions.includes(model))
         throw new Error(`fuelModelNodes() received unknown configuration option "${model}"`)
 

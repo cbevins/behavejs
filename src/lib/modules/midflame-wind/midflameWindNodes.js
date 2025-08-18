@@ -10,16 +10,15 @@ export const MidflameWindConfig = {
         value: 'input',
     },
 }
+export const MidflameWindInputOptions = ['input', 'estimated']
 /**
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
  * @param {string} wind Prefix pathway to the Wind Module to be applied
  * @param {string} waf Prefix pathway to the Wind Adjustment Factor Module to be applied
- * @param {Config} cfg cfg.input.value of 'input' or 'estimated'
+ * @param {Config} cfgSource One of the MidflameWindInputOptions
  * @returns Array of midflame wind module speed node definitions
  */
-export function midflameWindNodes(path, wind, waf, cfg) {
-    const cfgSource = cfg.source.value
-
+export function midflameWindNodes(path, wind, waf, cfgSource='input') {
     const meta = [
         [path+L.mmod, 'wind at midflame', U.text, Dag.constant, []],
         [path+L.mver, '1', U.text, Dag.constant, []],

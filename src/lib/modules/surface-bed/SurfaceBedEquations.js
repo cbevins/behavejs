@@ -178,7 +178,7 @@ export class SurfaceBedEquations {
      */
     static phiSlope (slopeRatio, slopeK) {
         const phis = slopeK * slopeRatio * slopeRatio
-        console.log(`***phiSlope() slopeRatio=${slopeRatio}, slopeK=${slopeK} yields ${phis}`)
+        // console.log(`***phiSlope() slopeRatio=${slopeRatio}, slopeK=${slopeK} yields ${phis}`)
         return phis
     }
 
@@ -193,7 +193,7 @@ export class SurfaceBedEquations {
      */
     static phiWind (midflameWind, windB, windK) {
         const phiw = midflameWind <= 0 ? 0 : windK * Math.pow(midflameWind, windB)
-        console.log(`***phiWind() midws=${midflameWind}, windB=${windB}, windK=${windK} yields ${phiw}`)
+        // console.log(`***phiWind() midws=${midflameWind}, windB=${windB}, windK=${windK} yields ${phiw}`)
         return phiw
     }
 
@@ -210,7 +210,7 @@ export class SurfaceBedEquations {
      * @return float The fuel bed no-wind propagating flux ratio (ratio).
      */
     static propagatingFluxRatio (savr, beta) {
-        console.log('***propflux savr=', savr, 'beta=',beta)
+        // console.log('***propflux savr=', savr, 'beta=',beta)
         return savr <= 0
             ? 0
             : Math.exp((0.792 + 0.681 * Math.sqrt(savr)) * (beta + 0.1)) /
@@ -352,7 +352,7 @@ export class SurfaceBedEquations {
      */
     static windB (savr) {
         const b = 0.02526 * savr ** 0.54
-        console.log(`windB() savr=${savr} yields ${b}`)
+        // console.log(`***windB() savr=${savr} yields ${b}`)
         return b
     }
 
@@ -369,7 +369,7 @@ export class SurfaceBedEquations {
      */
     static windC (savr) {
         const c = 7.47 * Math.exp(-0.133 * savr ** 0.55)
-        console.log(`windC() savr=${savr} yields ${c}`)
+        // console.log(`***windC() savr=${savr} yields ${c}`)
         return c
     }
 
@@ -423,7 +423,7 @@ export class SurfaceBedEquations {
      */
     static windK (betr, wnde, wndc) {
         const k = betr <= 0 ? 0 : wndc * betr ** -wnde
-        console.log(`windK() betr=${betr} wnde=${wnde} wndc=${wndc} yields ${k}`)
+        // console.log(`***windK() betr=${betr} wnde=${wnde} wndc=${wndc} yields ${k}`)
         return k
     }
 

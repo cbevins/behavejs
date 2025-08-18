@@ -21,22 +21,22 @@ import { surfaceLifeNodes, surfaceDefaultElementNodes } from "../index.js"
  * @param {string} windmid Path of the Wind at Midflame Module to be applied
  * @param {string} slope Path of the Slope Module to be applied
  * @param {string} curing Path of the Curing Module to be applied
- * @param {object} cfg Object with cfg.model.value (see FuelModelConfig)
+ * @param {string} model One of the FuelModelOptions 'standard catalog', 'standard input', 'none', etc
  * @returns Array of surface fuel bed module node definitions
  */
-export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, cfg) {
+export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, model) {
     const dead = bed + 'dead/'
     const live = bed + 'live/'
-    const cfgFuel = cfg.model.value
 
     const meta = [
         [bed+L.mmod, 'surface bed', U.text, Dag.constant, []],
         [bed+L.mver, '1', U.text, Dag.constant, []],
-        [bed+L.mcfg+'fuel', cfgFuel, U.text, Dag.constant, []],
+        [bed+L.mcfg+'fuel', model, U.text, Dag.constant, []],
     ]
 
     const assignedNodes  = [
-        [bed+L.cured, 0, U.fraction, Dag.assign, [curing+L.cured]],
+        // [bed+L.cured, 0, U.fraction, Dag.assign, [curing+L.cured]],
+        [bed+L.cured, 0, U.fraction, Dag.input, []],
         [bed+L.wmid, 0, U.wspd, Dag.assign, [windmid+L.wmid]],
     ]
 
@@ -59,7 +59,7 @@ export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, cfg) {
         [bed+L.savr15, 1, U.savr, Eq.savr15, [bed+L.savr]],
         [bed+L.wndb,   1, U.factor, Eq.windB, [bed+L.savr]],
         [bed+L.wndc,   0, U.factor, Eq.windC, [bed+L.savr]],
-        [bed+L.wnde,   1, U.factor, Eq.windC, [bed+L.savr]],
+        [bed+L.wnde,   1, U.factor, Eq.windE, [bed+L.savr]],
         [bed+L.wndi,   0, U.factor, Eq.windI, [bed+L.bratio, bed+L.wnde, bed+L.wndc]],
         [bed+L.wndk,   0, U.factor, Eq.windK, [bed+L.bratio, bed+L.wnde, bed+L.wndc]],
         [bed+L.phiw,   0, U.factor, Eq.phiWind, [bed+L.wmid, bed+L.wndb, bed+L.wndk]],
@@ -73,15 +73,15 @@ export function surfaceBedNodes(bed, fuel, mois, windmid, slope, curing, cfg) {
 
     // The surface fuel elements are assigned to the configured fuel parameters
     let elementNodes = []
-    if (cfgFuel === 'standard catalog' || cfgFuel === 'standard input')
+    if (model === 'standard catalog' || model === 'standard input')
         elementNodes = standardFuelElementNodes(bed, fuel, mois)
-    else if (cfgFuel === 'chaparral') {
+    else if (model === 'chaparral') {
         // elementNodes = chaparralFuelElementNodes(bed, fuel, mois)
-    } else if (cfgFuel === 'southern rough') {
+    } else if (model === 'southern rough') {
         // elementNodes = southernRoughFuelElementNodes(bed, fuel, mois)
-    } else if (cfgFuel === 'western aspen') {
+    } else if (model === 'western aspen') {
         elementNodes = westernAspenFuelElementNodes(bed, fuel, mois)
-    } else { // if (cfgFuel === 'none')
+    } else { // if (model === 'none')
         elementNodes = surfaceDefaultElementNodes(bed)
     }
     return [ ...meta, ...assignedNodes,

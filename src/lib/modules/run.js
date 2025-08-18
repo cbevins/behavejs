@@ -1,6 +1,5 @@
 import { Dag, L, P, Util } from './index.js'
 import { surfaceNodes } from './index.js'
-import { FuelModelConfig } from './index.js'
 
 function showModule(nodes, cols=4) {
     const map = Util.nodesToMap(nodes)
@@ -8,7 +7,7 @@ function showModule(nodes, cols=4) {
 }
 
 console.log(new Date())
-const nodeDefs = surfaceNodes(FuelModelConfig)
+const nodeDefs = surfaceNodes()
 const nodeDefsMap = Util.nodesToMap(nodeDefs)
 // showModule(nodeDefs,4)
 const dag = new Dag(nodeDefsMap)
@@ -18,8 +17,11 @@ const selected= [
     P.bed1+L.wndk,
     P.bed1+L.wndb,
     P.bed1+L.wnde,
+    P.bed1+L.weff,
     P.fuel1+L.fmdepth,
     P.fire1+L.rosmax,
+    // P.fire1+L.roseff,
+    // P.fire1+L.ros,
 ]
 dag.select(selected)
 
@@ -37,12 +39,13 @@ dag.set(P.moisture+L.mstem, 1.5)
 dag.set(P.slope+L.srat, 0.25)
 dag.set(P.windmid1+L.wmid, 10*88)
 
-const depth = dag.get(P.fuel1+L.fmdepth)
-console.log(`Fuel Model "${alias}" depth = ${depth}`)
-const rosmax = dag.get(P.fire1+L.rosmax)
+let rosmax = dag.get(P.fire1+L.rosmax)
+console.log('First run rosmax=', rosmax, dag.tracker)
 
-const savr = dag.get(P.bed1+L.savr)
-console.log('Bed savr=', savr)
-console.log( 'B =', 0.02526 * savr ** 0.54)
-console.log('C=', 7.47 * Math.exp(-0.133 * savr ** 0.55))
-console.log('E=', 0.715 * Math.exp(-3.59 + 0.0001*savr))
+dag.set(P.moisture+L.m1, 0.06)
+rosmax = dag.get(P.fire1+L.rosmax)
+console.log('Second run rosmax=', rosmax, dag.tracker)
+
+dag.set(P.moisture+L.m1, 0.05)
+rosmax = dag.get(P.fire1+L.rosmax)
+console.log('Third run rosmax=', rosmax, dag.tracker)

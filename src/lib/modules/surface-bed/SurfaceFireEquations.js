@@ -43,6 +43,7 @@ export class SurfaceFireEquations {
           const b = 1.0 / windB
           ews = Math.pow(a, b)
         }
+        console.log(`*** effectiveWindSpeed() phiew=${phiew}, windB=${windB}, windI=${windI} yields ${ews}`)
         return ews
     }
 
