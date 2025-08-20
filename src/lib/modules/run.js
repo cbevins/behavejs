@@ -17,18 +17,22 @@ const selected= [
     P.bed1+L.wndk,
     P.bed1+L.wndb,
     P.bed1+L.wnde,
+    P.bed1+L.wndi,
+    P.bed1+L.phiw,
+    P.bed1+L.phis,
+    P.bed1+L.phie,
     P.bed1+L.weff,
-    P.fuel1+L.fmdepth,
+    P.fire1+L.weff1,
     P.fire1+L.rosmax,
     // P.fire1+L.roseff,
     // P.fire1+L.ros,
 ]
 dag.select(selected)
 
+// Display active input nodes and set their values
 for(let node of dag.activeInputs()) {
     console.log('input:', node.key)
 }
-
 const alias = '10'
 dag.set(P.fuel1+L.fmalias, alias)
 dag.set(P.moisture+L.m1, 0.05)
@@ -39,13 +43,8 @@ dag.set(P.moisture+L.mstem, 1.5)
 dag.set(P.slope+L.srat, 0.25)
 dag.set(P.windmid1+L.wmid, 10*88)
 
-let rosmax = dag.get(P.fire1+L.rosmax)
-console.log('First run rosmax=', rosmax, dag.tracker)
 
-dag.set(P.moisture+L.m1, 0.06)
-rosmax = dag.get(P.fire1+L.rosmax)
-console.log('Second run rosmax=', rosmax, dag.tracker)
-
-dag.set(P.moisture+L.m1, 0.05)
-rosmax = dag.get(P.fire1+L.rosmax)
-console.log('Third run rosmax=', rosmax, dag.tracker)
+for(let key of selected) {
+    const node = dag.nodeRef(key)
+    console.log(node.key, dag.get(node))
+}

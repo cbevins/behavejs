@@ -67,16 +67,17 @@
         P.fire1+L.rxi,
         P.fire1+L.hsink,
         P.fire1+L.hsrc,
-        P.fire1+L.ros0,
         P.bed1+L.wmid,
         P.bed1+L.wndb,
         P.bed1+L.wndc,
         P.bed1+L.wnde,
         P.bed1+L.wndk,
+        P.bed1+L.wndi,
         P.bed1+L.phiw,
         P.bed1+L.phis,
         P.bed1+L.phie,
-        P.bed1+L.weff,
+        P.fire1+L.ros0,
+        P.fire1+L.weff1,
         P.fire1+L.rosmax]
     dag.select(selected)
 

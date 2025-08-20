@@ -1,5 +1,5 @@
-import { Compass, Dag, L, U } from '../index.js'
-import { WindEquations as Wind} from '../index.js'
+import { Compass, Dag, L, U } from '../../index.js'
+import { WindEquations as Wind} from '../../index.js'
 /**
  * @param {string} path Module pathway prefixed to all the returned nodes' keys
  * @param {Config} cfg Wind is input at '20-ft' or '10-m'.

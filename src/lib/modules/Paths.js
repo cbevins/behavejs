@@ -163,6 +163,7 @@ export class L {
     static wndk = 'wind/K'
     static wndi = 'wind/I'
     static xi   = 'propagating flux ratio'
+    static weff1 = 'effective wind speed/step 1'
     
     // Canopy Module leafs to append to P.canopy
     static cbulk = 'bulk density'

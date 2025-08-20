@@ -38,6 +38,7 @@ export function surfaceFireNodes(fire, bed) {
         [fire+L.fli,    0, U.ratio, Fire.firelineIntensity, [fire+L.ros, fire+L.rxi, fire+L.taur]],
         [fire+L.flen,   0, U.flamelen, Fire.flameLength, [fire+L.fli]],
         [fire+L.weffl,  0, U.wspd, Fire.effectiveWindSpeedLimit, [fire+L.rxi]],
+        [fire+L.weff1,  0, U.wspd, Fire.effectiveWindSpeed, [bed+L.phie, bed+L.wndb, bed+L.wndi]],
         // [fire+L.scor,   0, U.scor, Fire.scorchHeight, [fire+L.fli, bed+L.wmid, bed.Id+L.airt]],
     ]
     return [ ...meta, ...inputNodes, ...derivedNodes].sort()

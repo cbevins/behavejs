@@ -4,9 +4,9 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
 */
-import {Calc} from '../index.js'
+import {Calc} from './index.js'
 
-export class SurfaceBedEquations {
+export class FuelBedEquations {
     /**
      * Calculate the fuel bed bulk density (lb/ft3)
      * @param {float} totalOvendryLoad  (lb/ft2)
