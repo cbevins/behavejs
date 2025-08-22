@@ -4,7 +4,7 @@
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
-import {Calc} from './index.js'
+import {Calc} from './Calc.js'
 
 export class CanopyEquations {
     // Canopy volumetric fill ratio the volume under the canopy top that

@@ -1,17 +1,71 @@
-import { Dag, C, P, U, Util } from './index.js'
-import { CanopyModuleFactory } from './index.js'
-import { FuelBedModuleFactory } from './FuelBedModuleFactory.js'
-import { WindSpeedModuleFactory } from './index.js'
+import { Dag, Util } from '../index.js'
+import { P, U, Genome } from './index.js'
+import { CanopyModule } from './index.js'
+import { FuelBedModule } from './FuelBedModule.js'
+import { MidflameWindSpeedModule } from './MidflameWindSpeedModule.js'
+import { WindSpeedModule } from './WindSpeedModule.js'
+import { WindSpeedReductionModule } from './WindSpeedReductionModule.js'
 
-const canopyNodes = CanopyModuleFactory.configure(P.canopy)
-const windSpeedNodes = WindSpeedModuleFactory.configure(P.windSpeed,
-    [['wind speed input', 'at 20-ft']],
-    [['canopy reduction factor', P.canopy+'wind reduction factor'],
-    [['fuel bed reduction factor', P.bed1]]]
-)
-const fuelBed1Nodes = FuelBedModuleFactory.configure(P.bed1)
+//------------------------------------------------------------------------------
+// Step 1 - construct a genome of all possible nodes and configurations
+//------------------------------------------------------------------------------
 
+const canopy = new CanopyModule(P.canopy)
+const wind = new WindSpeedModule(P.windSpeed)
+const wsrf1 = new WindSpeedReductionModule(P.bed1,
+    P.canopy+'wind speed reduction factor',
+    P.bed1+'fuel bed wind reduction factor')
+const midflame1 = new MidflameWindSpeedModule(P.bed1,
+    P.windSpeed+'at 20-ft',
+    P.bed1+'fuel bed wind reduction factor')
+const bed1 = new FuelBedModule(P.bed1)
 
-Util.logNodes(canopyNodes, 'Canopy Module')
-Util.logNodes(windSpeedNodes, 'Wind Speed Module')
-Util.logNodes(fuelBed1Nodes, 'Primary Fuel Bed Module')
+const genome = new Genome([
+    // site
+    ...canopy.genome(),
+    ...wind.genome(),
+    // surface/primary
+    ...bed1.genome(),
+    ...midflame1.genome(),
+    ...wsrf1.genome()
+].sort())
+// genome.logGenome()
+
+//------------------------------------------------------------------------------
+// Step 2 - configure the genome as desired
+//------------------------------------------------------------------------------
+
+const configs = [
+    [canopy.config, canopy.options[4]], // 'canopy height input' = 'height-base'
+    [midflame1.config, midflame1.options[1]],       // 'wind speed at midflame' = 'estimated'
+    [wind.config, wind.options[0]],     // 'wind speed input' = 'at 20-ft'
+    [wsrf1.config, wsrf1.options[1]],     // 'wind speed reduction factor' = 'estimated'
+]
+const nodes = genome.applyConfig(configs)
+
+//------------------------------------------------------------------------------
+// Step 3 - construct the directed acyclical graph
+//------------------------------------------------------------------------------
+
+const nodeMap = new Map()
+for (let node of nodes) nodeMap.set(node[0], node)
+const dag = new Dag(nodeMap)
+
+const at10m = P.windSpeed+'at 10-m'
+const at20ft = P.windSpeed+'at 20-ft'
+const atMidflame = P.bed1+'wind speed at midflame'
+const factor = P.bed1+'wind speed reduction factor'
+const bedWsrf = P.bed1+'fuel bed wind reduction factor'
+const bedDepth = P.bed1+'depth'
+const canopyWsrf = P.canopy+'wind speed reduction factor'
+const baseHt = P.canopy+'base height'
+const totalHt = P.canopy+'total height'
+const canopyCover = P.canopy+'coverage'
+const canopyShelters = P.canopy+'shelters fuel from wind'
+
+const select = [atMidflame, bedWsrf, canopyWsrf, canopyShelters]
+dag.select(select)
+Util.logDagNodes(dag.selected(), 'Selected Nodes')
+
+const inputs = dag.activeInputs()
+Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')

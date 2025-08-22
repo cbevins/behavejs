@@ -1,4 +1,4 @@
-import { Dag } from './index.js'
+import { Dag } from '../index.js'
 
 export class Util {
 
@@ -59,5 +59,31 @@ export class Util {
         const map = new Map()
         for (let node of nodes) map.set(node[0], node)
         return map
+    }
+
+    static logDagNodes(nodes, title='') {
+        console.log(Util.listDagNodes(nodes, title))
+    }
+
+    static listDagNodes(nodes, title='') {
+        const w0 = nodes.reduce((w, node) => Math.max(node.key.length, w), 0)
+        const w1 = nodes.reduce((w, node) => Math.max((''+node.value).length, w), 0)
+        const w2 = nodes.reduce((w, node) => Math.max((''+node.units).length, w), 0)
+        const w3 = nodes.reduce((w, node) => Math.max((''+node.updater.name).length, w), 0)
+        const w6 = nodes.reduce((w, node) => Math.max((''+node.status).length, w), 0)
+        const w7 = nodes.reduce((w, node) => Math.max((''+node.dirty).length, w), 0)
+        let str = `\n${title}\n`
+        for(let node of nodes) {
+            const {key, value, units, updater, suppliers, consumers, status, dirty} = node
+            str += key.padEnd(w0+2)
+            str += (''+value).padEnd(w1+2)
+            str += status.padEnd(w6+2)
+            str += dirty.padEnd(w7+2)
+            str += (updater.name).padEnd(w3+2)
+            str += (''+suppliers.length).padStart(4)
+            str += (''+consumers.length).padStart(4)
+            str += '\n'
+        }
+        return str + nodes.length + ' nodes'
     }
 }

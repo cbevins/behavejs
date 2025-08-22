@@ -1,7 +1,7 @@
 export {C, P, U} from './Names.js'
 export {Calc} from './Calc.js'
 export {configureNodeDefs} from './configureNodeDefs.js'
-export {CanopyEquations} from './CanopyEquations.js'
+export {CanopyEquations} from '../equations/CanopyEquations.js'
 export {FuelBedEquations} from './FuelBedEquations.js'
 export {Dag} from './Dag.js'
 export {Util} from './Util.js'
