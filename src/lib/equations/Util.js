@@ -74,7 +74,7 @@ export class Util {
         const w7 = nodes.reduce((w, node) => Math.max((''+node.dirty).length, w), 0)
         let str = `\n${title}\n`
         for(let node of nodes) {
-            const {key, value, units, updater, suppliers, consumers, status, dirty} = node
+            const {key, value, units, updater, suppliers, consumers, status, dirty, cfgkey, cfgopt} = node
             str += key.padEnd(w0+2)
             str += (''+value).padEnd(w1+2)
             str += status.padEnd(w6+2)
@@ -82,6 +82,7 @@ export class Util {
             str += (updater.name).padEnd(w3+2)
             str += (''+suppliers.length).padStart(4)
             str += (''+consumers.length).padStart(4)
+            str += `  "${cfgkey}" = "${cfgopt}"`
             str += '\n'
         }
         return str + nodes.length + ' nodes'

@@ -6,6 +6,15 @@ import { MidflameWindSpeedModule } from './MidflameWindSpeedModule.js'
 import { WindSpeedModule } from './WindSpeedModule.js'
 import { WindSpeedReductionModule } from './WindSpeedReductionModule.js'
 
+function listActiveConfigs(dag) {
+    let str = '\nActive Configurations:\n'
+    for(let config of dag.activeConfigs()) {
+        const [key, opt] = config.split('=')
+        str += `  ${key}  [${opt}]\n`
+    }
+    console.log(str)
+}
+
 //------------------------------------------------------------------------------
 // Step 1 - construct a genome of all possible nodes and configurations
 //------------------------------------------------------------------------------
@@ -17,7 +26,7 @@ const wsrf1 = new WindSpeedReductionModule(P.bed1,
     P.bed1+'fuel bed wind reduction factor')
 const midflame1 = new MidflameWindSpeedModule(P.bed1,
     P.windSpeed+'at 20-ft',
-    P.bed1+'fuel bed wind reduction factor')
+    P.bed1+'wind speed reduction factor')
 const bed1 = new FuelBedModule(P.bed1)
 
 const genome = new Genome([
@@ -36,10 +45,10 @@ const genome = new Genome([
 //------------------------------------------------------------------------------
 
 const configs = [
-    [canopy.config, canopy.options[4]], // 'canopy height input' = 'height-base'
     [midflame1.config, midflame1.options[1]],       // 'wind speed at midflame' = 'estimated'
+    [canopy.config, canopy.options[4]], // 'canopy height input' = 'height-base'
     [wind.config, wind.options[0]],     // 'wind speed input' = 'at 20-ft'
-    [wsrf1.config, wsrf1.options[1]],     // 'wind speed reduction factor' = 'estimated'
+    [wsrf1.config, wsrf1.options[1]],     // 'wind speed reduction factor' = 'input' or 'estimated'
 ]
 const nodes = genome.applyConfig(configs)
 
@@ -50,6 +59,10 @@ const nodes = genome.applyConfig(configs)
 const nodeMap = new Map()
 for (let node of nodes) nodeMap.set(node[0], node)
 const dag = new Dag(nodeMap)
+
+//------------------------------------------------------------------------------
+// Step 4 - select nodes of interest
+//------------------------------------------------------------------------------
 
 const at10m = P.windSpeed+'at 10-m'
 const at20ft = P.windSpeed+'at 20-ft'
@@ -63,9 +76,21 @@ const totalHt = P.canopy+'total height'
 const canopyCover = P.canopy+'coverage'
 const canopyShelters = P.canopy+'shelters fuel from wind'
 
-const select = [atMidflame, bedWsrf, canopyWsrf, canopyShelters]
+const select = [atMidflame] //, bedWsrf, canopyWsrf, canopyShelters]
 dag.select(select)
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
+//------------------------------------------------------------------------------
+// Step 5 - determine active configurations (informational)
+//------------------------------------------------------------------------------
+
+listActiveConfigs(dag)
+
+//------------------------------------------------------------------------------
+// Step 6 - determine active inputs (informational)
+//------------------------------------------------------------------------------
+
 const inputs = dag.activeInputs()
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
+
+// Util.logDagNodes(dag.nodes, 'All')

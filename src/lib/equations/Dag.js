@@ -1,5 +1,5 @@
 const _dagnode = {key: '', value: null, units: '', updater: null,
-    suppliers: [], consumers: [], status: null, dirty: false}
+    suppliers: [], consumers: [], status: null, dirty: false, cfgkey: '', cfgopt: ''}
 
 const _tracker = {clean: 0, constant: 0, input: 0, assign: 0, calc: 0, stack: []}
 
@@ -37,6 +37,17 @@ export class Dag {
     static active   = 'ACTIVE'  // in the suppliers stream of at least one SELECTED node
     static selected = 'SELECTED'// a 'selected' node that is a supplier to at least one other selected node
     static leaf     = 'LEAF'    // a 'selected' node that supplies no other selected nodes
+
+    // Returns an array of config key strings
+    activeConfigs() {
+        const configs = new Set()
+        for(let node of this.nodes) {
+            if (node.status !== Dag.ignored)
+                configs.add(`${node.cfgkey}=${node.cfgopt}`)
+        }
+        configs.delete("*=*")
+        return [...configs.values()].sort()
+    }
 
     activeInputs() { return [...this.activeInputsSet] }
 
@@ -194,8 +205,8 @@ export class Dag {
     _initDagNodeMap(nodeDefsMap) {
         this.nodeMap = new Map()
         for(let nodeDef of nodeDefsMap.values()) {
-            const [key, value, units, updater, suppliers] = nodeDef
-            const node = {..._dagnode, key, value, units, updater, suppliers}
+            const [key, value, units, updater, suppliers, cfgkey, cfgopt] = nodeDef
+            const node = {..._dagnode, key, value, units, updater, suppliers, cfgkey, cfgopt}
             this.nodeMap.set(key, node)
         }
         this.nodes = [...this.nodeMap.values()]

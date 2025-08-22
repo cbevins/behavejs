@@ -34,7 +34,7 @@ export class Genome {
             str += `${key}    ${value}    ${units}\n`
             for(let option of options) {
                 const [cfgName, cfgOpt, updater, args] = option
-                str += `        ["${cfgName}", "${cfgOpt}"] ${updater.name}(${args.join(', ')})\n`
+                str += `        ["${cfgName}", "${cfgOpt}"] ${updater.name}(${args.join(', ')}) ${cfgName}=${cfgOpt}\n`
             }
         }
         return str + this.genome.length + ' genes'
