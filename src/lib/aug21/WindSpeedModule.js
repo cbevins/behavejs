@@ -1,6 +1,5 @@
 import { Dag, WindEquations as Wind } from '../index.js'
-import { P, U } from './names.js'
-import { ModuleBase } from './ModuleBase.js'
+import { ModuleBase, U } from './index.js'
 
 export class WindSpeedModule extends ModuleBase {
     /**
@@ -9,24 +8,25 @@ export class WindSpeedModule extends ModuleBase {
      */
     constructor(path){
         super(path)
-        // node keys
-        this.at20ft = 'at 20-ft'
-        this.at10m = 'at 10-m'
+        // fully qualified node keys
+        this.at20ft = path + 'at 20-ft'
+        this.at10m  = path + 'at 10-m'
         // config keys
         this.config = 'wind speed input'
-        this.options = [this.at20ft, this.at10m]
+        this.input20ft = 'at 20-ft'
+        this.input10m = 'at 10-m'
+        this.options = [this.input20ft, this.input10m]
     }
 
     genome() {
-        const path = this.path
         return [
-            [path+this.at20ft, 0, U.windSpeed, [
-                [this.config, this.at20ft, Dag.input, []],
-                [this.config, this.at10m, Wind.at20ftFrom10m, [path+this.at10m]],
+            [this.at20ft, 0, U.windSpeed, [
+                [this.config, 'at 20-ft', Dag.input, []],
+                [this.config, 'at 10-m', Wind.at20ftFrom10m, [this.at10m]],
             ]],
-            [path+this.at10m, 0, U.windSpeed, [
-                [this.config, this.at10m, Dag.input, []],
-                [this.config, this.at20ft, Wind.at10mFrom20ft, [path+this.at20ft]],
+            [this.at10m, 0, U.windSpeed, [
+                [this.config, 'at 20-ft', Dag.input, []],
+                [this.config, 'at 10-m', Wind.at10mFrom20ft, [this.at20ft]],
             ]],
         ]
     }

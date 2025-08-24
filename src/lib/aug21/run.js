@@ -1,10 +1,10 @@
 import { Dag, Util } from '../index.js'
 import { P, U, Genome } from './index.js'
 import { CanopyModule } from './index.js'
-import { FuelBedModule } from './FuelBedModule.js'
-import { MidflameWindSpeedModule } from './MidflameWindSpeedModule.js'
-import { WindSpeedModule } from './WindSpeedModule.js'
-import { WindSpeedReductionModule } from './WindSpeedReductionModule.js'
+import { FuelBedModule } from './index.js'
+import { MidflameWindSpeedModule } from './index.js'
+import { WindSpeedModule } from './index.js'
+import { WindSpeedReductionModule } from './index.js'
 
 function listActiveConfigs(dag) {
     let str = '\nActive Configurations:\n'
@@ -19,16 +19,22 @@ function listActiveConfigs(dag) {
 // Step 1 - construct a genome of all possible nodes and configurations
 //------------------------------------------------------------------------------
 
+// The following Modules require no external node links
 const canopy = new CanopyModule(P.canopy)
 const wind = new WindSpeedModule(P.windSpeed)
-const wsrf1 = new WindSpeedReductionModule(P.bed1,
-    P.canopy+'wind speed reduction factor',
-    P.bed1+'fuel bed wind reduction factor')
-const midflame1 = new MidflameWindSpeedModule(P.bed1,
-    P.windSpeed+'at 20-ft',
-    P.bed1+'wind speed reduction factor')
 const bed1 = new FuelBedModule(P.bed1)
 
+// WindSpeedReductionModule extends the FuelBedModule named in arg 1 by
+// linking the surface fuel-induced wrf and the canopy-indiced wrf
+// to derive the midflame wrf for the fuel bed
+const wsrf1 = new WindSpeedReductionModule(P.bed1, canopy.wsrf, bed1.wsrf)
+
+// MidflameWindSpeedModule extends the FuelBedModule named in arg 1 by
+// linking the wind at 20-ft and midflame reduction factor
+// to estimate the wind speed at midflame height for the fuel bed
+const midflame1 = new MidflameWindSpeedModule(P.bed1, wind.at20ft, wsrf1.mwsrf)
+
+// Combine all the module genomes
 const genome = new Genome([
     // site
     ...canopy.genome(),
@@ -45,9 +51,9 @@ const genome = new Genome([
 //------------------------------------------------------------------------------
 
 const configs = [
-    [midflame1.config, midflame1.options[1]],       // 'wind speed at midflame' = 'estimated'
-    [canopy.config, canopy.options[4]], // 'canopy height input' = 'height-base'
-    [wind.config, wind.options[0]],     // 'wind speed input' = 'at 20-ft'
+    [midflame1.config, 'estimated'],       // 'wind speed at midflame' = 'estimated'
+    [canopy.config, canopy.heightBase],     // 'canopy height input' = 'height-base'
+    [wind.config, wind.input20ft],          // 'wind speed input' = 'at 20-ft'
     [wsrf1.config, wsrf1.options[1]],     // 'wind speed reduction factor' = 'input' or 'estimated'
 ]
 const nodes = genome.applyConfig(configs)
