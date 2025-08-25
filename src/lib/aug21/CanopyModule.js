@@ -3,6 +3,10 @@ import { U } from './index.js'
 import { ModuleBase } from './ModuleBase.js'
 
 export class CanopyModule extends ModuleBase {
+    /**
+     * Creates the canopy module nodes.
+     * @param {string} path Prefix for this module's fully qualified node names ('site/canopy/')
+     */
     constructor(path) {
         super(path)
         // fully qualified node keys

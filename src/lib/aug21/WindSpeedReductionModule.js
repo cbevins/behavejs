@@ -1,13 +1,13 @@
 import { Dag } from '../index.js'
 import { ModuleBase, U } from './index.js'
 
-/**
- * Adds wind speed reduction factor node to a fuel bed.
- * @param {string} path Prefix for this module's fully qualified node names ('site/{primary|secondary}/bed/')
- * @param {string} cwsrf Fully qualified node name ('site/canopy/wind speed reduction factor')
- * @param {string} fwsrf Fully qualified node name ('site/{primary|secondary}/bed/fuel bed reduction factor')
- */
 export class WindSpeedReductionModule extends ModuleBase {
+    /**
+     * Adds wind speed reduction factor node to a fuel bed.
+     * @param {string} path Prefix for this module's fully qualified node names ('site/surface/{primary|secondary}/bed/')
+     * @param {string} cwsrf Fully qualified node name ('site/canopy/wind speed reduction factor')
+     * @param {string} fwsrf Fully qualified node name ('site/surface/{primary|secondary}/bed/fuel bed reduction factor')
+     */
     constructor(path, cwsrf, fwsrf){
         super(path)
         // fully qualified node keys

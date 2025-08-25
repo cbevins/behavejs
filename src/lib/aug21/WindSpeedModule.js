@@ -3,7 +3,7 @@ import { ModuleBase, U } from './index.js'
 
 export class WindSpeedModule extends ModuleBase {
     /**
-     * 
+     * Creates the wind speed module nodes.
      * @param {string} path Prefix for this module's fully qualified node names ('site/weather/wind/speed/')
      */
     constructor(path){

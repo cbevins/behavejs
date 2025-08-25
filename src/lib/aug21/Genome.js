@@ -68,7 +68,7 @@ export class Genome {
                     break
                 }
             }
-            if (! found) throw new Error(`"${key}" has no passing configuration sepc`)
+            if (! found) throw new Error(`"${key}" has no passing configuration spec`)
         }
         if(nodes.length !== this.genome.length)
             throw new Error(`Configuration resulted in ${nodes.length} instead of ${this.genome.length} nodes.`)

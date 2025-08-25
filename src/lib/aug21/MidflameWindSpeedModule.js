@@ -4,9 +4,9 @@ import { ModuleBase, U, WindSpeedModule as Wind, WindSpeedReductionModule as Wsr
 export class MidflameWindSpeedModule extends ModuleBase {
     /**
      * 
-     * @param {string} path Prefix for this module's fully qualified node names ('site/{primary|secondary}/bed/')
+     * @param {string} path Prefix for this module's fully qualified node names ('site/surface/{primary|secondary}/bed/')
      * @param {string} ws20 Fully qualified node name ('site/weather/wind/speed/at 20-ft')
-     * @param {string} wsrf Fully qualified node name ('site/{primary|secondary}/bed/wind speed reduction factor')
+     * @param {string} wsrf Fully qualified node name ('site/surface/{primary|secondary}/bed/wind speed reduction factor')
      */
     constructor(path, ws20, wsrf) {
         super(path)
