@@ -1,6 +1,9 @@
 import { Calc, Dag } from '../index.js'
-import { ModuleBase, U, WindSpeedModule as Wind, WindSpeedReductionModule as Wsrf } from './index.js'
+import { ModuleBase, U } from './index.js'
 
+// MidflameWindSpeedModule extends the FuelBedModule (named in arg 1)
+// by linking the wind at 20-ft (arg 2) and midflame reduction factor (arg 3)
+// to estimate the fuel bed's wind speed at midflame height
 export class MidflameWindSpeedModule extends ModuleBase {
     /**
      * 

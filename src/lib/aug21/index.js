@@ -1,6 +1,8 @@
 export {CanopyModule} from './CanopyModule.js'
 export {FuelBedModule} from './FuelBedModule.js'
+export {FuelMoistureModule} from './FuelMoistureModule.js'
 export {Genome} from './Genome.js'
+export {LiveCuringModule} from './LiveCuringModule.js'
 export {MidflameWindSpeedModule} from './MidflameWindSpeedModule.js'
 export {ModuleBase} from './ModuleBase.js'
 export {P, U} from './Names.js'

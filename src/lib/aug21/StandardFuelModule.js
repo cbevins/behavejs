@@ -35,55 +35,55 @@ export class StandardFuelModule extends ModuleBase {
     genome() {
         const key = this.key
         return [
-            [this.alias,      '', U.fmkey, [
+            [this.alias,      '', U.fuelKey, [
                 [this.config, this.catalog, Dag.input, []]],
                 [this.config, this.input, Dag.constant, []]],
-            [this.key,        '', U.fmkey, [
+            [this.key,        '', U.fuelKey, [
                 [this.config, this.catalog, Eq.key, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.number,        0, U.fmnumb,[
+            [this.number,        0, U.fmNumber,[
                 [this.config, this.catalog, Eq.number, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.code,   'none', U.fmcode,[
+            [this.code,   'none', U.fuelCode,[
                 [this.config, this.catalog, Eq.code, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.label,      '', U.fmlabel, [
+            [this.label,      '', U.fuelLabel, [
                 [this.config, this.catalog, Eq.label, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.depth,       1, U.depth, [
+            [this.depth,       1, U.fuelDepth, [
                 [this.config, this.catalog, Eq.depth, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.mext,     0.25, U.mois, [
+            [this.mext,     0.25, U.fuelMois, [
                 [this.config, this.catalog, Eq.mext, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.heatdead, 8000, U.heat,[
+            [this.heatdead, 8000, U.fuelHeat,[
                 [this.config, this.catalog, Eq.heatDead, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.heatlive, 8000, U.heat, [
+            [this.heatlive, 8000, U.fuelHeat, [
                 [this.config, this.catalog, Eq.heatLive, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.load1,       0, U.load, [
+            [this.load1,       0, U.fuelLoad, [
                 [this.config, this.catalog, Eq.load1, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.load10,      0, U.load, [
+            [this.load10,      0, U.fuelLoad, [
                 [this.config, this.catalog, Eq.load10, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.load100,     0, U.load, [
+            [this.load100,     0, U.fuelLoad, [
                 [this.config, this.catalog, Eq.load100, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.loadherb,    0, U.load, [
+            [this.loadherb,    0, U.fuelLoad, [
                 [this.config, this.catalog, Eq.loadHerb, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.loadstem,    0, U.load, [
+            [this.loadstem,    0, U.fuelLoad, [
                 [this.config, this.catalog, Eq.loadStem, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.savr1,       1, U.savr, [
+            [this.savr1,       1, U.fuelSavr, [
                 [this.config, this.catalog, Eq.savr1, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.savrherb,    1, U.savr, [
+            [this.savrherb,    1, U.fuelSavr, [
                 [this.config, this.catalog, Eq.savrHerb, [key]]],
                 [this.config, this.input, Dag.input, []]],
-            [this.savrstem,    1, U.savr, [
+            [this.savrstem,    1, U.fuelSavr, [
                 [this.config, this.catalog, Eq.savrStem, [key]]],
                 [this.config, this.input, Dag.input, []]],
         ]

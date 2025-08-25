@@ -2,8 +2,10 @@ import { Dag, Util } from '../index.js'
 import { P, U, Genome } from './index.js'
 import { CanopyModule } from './index.js'
 import { FuelBedModule } from './index.js'
-import { StandardFuelModule } from './index.js'
+import { FuelMoistureModule } from './index.js'
+import { LiveCuringModule } from './index.js'
 import { MidflameWindSpeedModule } from './index.js'
+import { StandardFuelModule } from './index.js'
 import { WindSpeedModule } from './index.js'
 import { WindSpeedReductionModule } from './index.js'
 
@@ -21,8 +23,10 @@ function listActiveConfigs(dag) {
 //------------------------------------------------------------------------------
 
 // The following Modules require no external node links
-const canopy = new CanopyModule(P.canopy)
+const mois = new FuelMoistureModule(P.moisture)
 const wind = new WindSpeedModule(P.windSpeed)
+const canopy = new CanopyModule(P.canopy)
+
 const bed1 = new FuelBedModule(P.bed1)
 
 // WindSpeedReductionModule extends the FuelBedModule (named in arg 1)
@@ -35,15 +39,23 @@ const wsrf1 = new WindSpeedReductionModule(P.bed1, canopy.wsrf, bed1.wsrf)
 // to estimate the fuel bed's wind speed at midflame height
 const midflame1 = new MidflameWindSpeedModule(P.bed1, wind.at20ft, wsrf1.mwsrf)
 
+// LiveCuringModule extends the FuelBedModule (named in arg1)
+// by linking live herb moisture content (arg 2)
+// to estimate the fuel bed fraction of cured live fuel.
+const cured1 = new LiveCuringModule(bed1, mois.herb)
+
+// Adds standard fuel models to the fuel bed
 const model1 = new StandardFuelModule(P.model1)
 
 // Combine all the module genomes
 const genome = new Genome([
     // site
     ...canopy.genome(),
+    ...mois.genome(),
     ...wind.genome(),
     // surface/primary
     ...bed1.genome(),
+    ...cured1.genome(),
     ...midflame1.genome(),
     ...wsrf1.genome(),
     ...model1.genome()
@@ -59,7 +71,10 @@ const configs = [
     [canopy.config, canopy.heightBase],     // 'canopy height input' = 'height-base'
     [wind.config, wind.input20ft],          // 'wind speed input' = 'at 20-ft'
     [wsrf1.config, wsrf1.estimated],     // 'wind speed reduction factor' = 'input' or 'estimated'
-    [model1.config, model1.catalog]
+    [model1.config, model1.catalog],
+    [cured1.config, cured1.estimated],
+    [mois.config, mois.individual],
+
 ]
 const nodes = genome.applyConfig(configs)
 
