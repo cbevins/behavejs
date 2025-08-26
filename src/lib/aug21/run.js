@@ -2,7 +2,8 @@ import { Dag, Util } from '../index.js'
 import { P, U, Genome } from './index.js'
 import { CanopyModule } from './index.js'
 import { FuelBedModule } from './index.js'
-import { FuelMoistureModule } from './index.js'
+import { DeadFuelMoistureModule } from './index.js'
+import { LiveFuelMoistureModule } from './index.js'
 import { LiveCuringModule } from './index.js'
 import { MidflameWindSpeedModule } from './index.js'
 import { StandardFuelModule } from './index.js'
@@ -23,7 +24,8 @@ function listActiveConfigs(dag) {
 //------------------------------------------------------------------------------
 
 // The following Modules require no external node links
-const mois = new FuelMoistureModule(P.moisture)
+const deadmois = new DeadFuelMoistureModule(P.deadmois)
+const livemois = new LiveFuelMoistureModule(P.livemois)
 const wind = new WindSpeedModule(P.windSpeed)
 const canopy = new CanopyModule(P.canopy)
 
@@ -42,7 +44,7 @@ const midflame1 = new MidflameWindSpeedModule(P.bed1, wind.at20ft, wsrf1.mwsrf)
 // LiveCuringModule extends the FuelBedModule (named in arg1)
 // by linking live herb moisture content (arg 2)
 // to estimate the fuel bed fraction of cured live fuel.
-const cured1 = new LiveCuringModule(bed1, mois.herb)
+const cured1 = new LiveCuringModule(bed1, livemois.herb)
 
 // Adds standard fuel models to the fuel bed
 const model1 = new StandardFuelModule(P.model1)
@@ -51,7 +53,8 @@ const model1 = new StandardFuelModule(P.model1)
 const genome = new Genome([
     // site
     ...canopy.genome(),
-    ...mois.genome(),
+    ...deadmois.genome(),
+    ...livemois.genome(),
     ...wind.genome(),
     // surface/primary
     ...bed1.genome(),
@@ -73,7 +76,8 @@ const configs = [
     [wsrf1.config, wsrf1.estimated],     // 'wind speed reduction factor' = 'input' or 'estimated'
     [model1.config, model1.catalog],
     [cured1.config, cured1.estimated],
-    [mois.config, mois.individual],
+    [deadmois.config, deadmois.individual],
+    [livemois.config, livemois.individual],
 
 ]
 const nodes = genome.applyConfig(configs)

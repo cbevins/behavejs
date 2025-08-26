@@ -2,6 +2,8 @@ export class P {
 
     static canopy = 'site/canopy/'
     static moisture = 'site/weather/moisture/'
+    static deadmois = 'site/weather/moisture/dead/'
+    static livemois = 'site/weather/moisture/live/'
     static windDir = 'site/weather/wind/direction/'
     static windSpeed = 'site/weather/wind/speed/'
 
