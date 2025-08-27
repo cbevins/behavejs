@@ -12,23 +12,23 @@ export class MidflameWindSpeedModule extends ModuleBase {
      */
     constructor(path, ws20, wsrf) {
         super(path)
+
         // fully qualified node keys
         this.wsmid = path + 'wind speed at midflame'
         // linked node keys referenced by genome()
         this.ws20 = ws20
         this.wsrf = wsrf
         // config keys
+
         this.config = 'wind speed at midflame'
         this.input = 'input'
         this.estimated = 'estimated'
         this.options = [this.input, this.estimated]
-    }
 
-    genome() {
-        return [
-            [this.wsmid, 0, U.windSpeed, [
-                [this.config, this.input, Dag.input, []],
-                [this.config, this.estimated, Calc.multiply, [this.ws20, this.wsrf]]
+        this.genome = [
+            [this.wsmid, 0, U.windSpeed, 0, [
+                [this.input, Dag.input, []],
+                [this.estimated, Calc.multiply, [this.ws20, this.wsrf]]
             ]],
         ]
     }

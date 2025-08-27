@@ -8,21 +8,21 @@ export class FuelBedModule extends ModuleBase {
      */
     constructor(path){
         super(path)
+
         // fully qualified node keys
         this.depth = path + 'depth'
         this.wsrf  = path + 'wind speed reduction factor'
-    }
 
     /**
      * Note that:
      * - 'wind speed reduction factor' is added to this path by the WindSpeedReductionModule
      * - 'wind speed at midflame' is added to this path by the MidflameWindSpeedModule
      */
-    genome() {
-        return [
-            [this.depth, 1, U.fuelDepth, [[this.any, this.any, Dag.input, []]]],
-            [this.wsrf, 1, U.factor, [
-                [this.any, this.any, Bed.openWindSpeedAdjustmentFactor, [this.depth]]]]
+    this.genome = [
+            [this.depth, 1, U.fuelDepth, 0, [
+                [this.any, Dag.input, []]]],
+            [this.wsrf, 1, U.factor, 0, [
+                [this.any, Bed.openWindSpeedAdjustmentFactor, [this.depth]]]]
         ]
     }
 }
