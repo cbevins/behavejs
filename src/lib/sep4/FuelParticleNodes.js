@@ -19,50 +19,61 @@ export class FuelParticleNodes extends ModuleBase {
         // configs
         this.config = 'fuel source'
         // config options
-        const cat = 'standard-catalog'
-        const inp = 'standard-input'
-        const ch = 'chaparral'
-        const pg = 'palmetto-gallberry'
-        const wa = 'western aspen'
-        this.options = [cat, inp, ch, pg, wa]
+        this.cat = 'standard-catalog'
+        this.inp = 'standard-input'
+        this.ch = 'chaparral'
+        this.pg = 'palmetto-gallberry'
+        this.wa = 'western aspen'
+        this.options = [this.cat, this.inp, this.ch, this.pg, this.wa]
+
+        const stdNodes = [
+            [stdModelKey, '', U.fuelKey, 0, [
+                [this.all, Dag.input, []],
+            ]],
+        ]
 
         const d1 = this.path + 'dead/1/'
         const d1Nodes = [
             [d1+L.fuelLife, K.fuelDeadCat, U.fuelLife, 0, [
-                [this.all, Dag.assign, K.fuelDeadCat]
+                [this.all, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d1+L.fuelType, K.fuelDeadDown, U.fuelType, 0, [
-                [cat, Dag.assign, K.fuelDeadDown],
-                [inp, Dag.assign, K.fuelDeadDown],
+                [this.cat, Dag.assign, [K.fuelDeadDown]],
+                [this.inp, Dag.assign, [K.fuelDeadDown]],
             ]],
             [d1+L.fuelMois, 1, U.fuelMois, 0, [
-                [cat, Dag.assign, [moisDead1]],
-                [inp, Dag.assign, [moisDead1]],
-            ]]
+                [this.cat, Dag.assign, [moisDead1]],
+                [this.inp, Dag.assign, [moisDead1]],
+            ]],
             [d1+L.fuelLoad, K.fuelLoad, U.fuelLoad, 0, [
-                [cat, S.load1, [stdModelKey]],
-                [inp, Dag.input, []],
+                [this.cat, S.load1, [stdModelKey]],
+                [this.inp, Dag.input, []],
             ]],
             [d1+L.fuelSavr, K.fuelSavr, U.fuelSavr, 0, [
-                [cat, S.savr1, [stdModelKey]],
-                [inp, Dag.input, []],
+                [this.cat, S.savr1, [stdModelKey]],
+                [this.inp, Dag.input, []],
             ]],
             [d1+L.fuelHeat, K.fuelHeat, U.fuelHeat, 0, [
-                [cat, S.heatDead, [stdModelKey]],
-                [inp, Dag.input, []],
+                [this.cat, S.heatDead, [stdModelKey]],
+                [this.inp, Dag.input, []],
             ]],
             [d1+L.fuelDens, K.fuelDens, U.fuelDens, 0, [
-                [cat, S.dens, []],
-                [inp, S.dens, []],
+                [this.cat, S.dens, []],
+                [this.inp, S.dens, []],
             ]],
             [d1+L.fuelStot, K.fuelStot, U.fuelStot, 0, [
-                [cat, S.stot, []],
-                [inp, S.stot, []],
+                [this.cat, S.stot, []],
+                [this.inp, S.stot, []],
             ]],
             [d1+L.fuelSeff, K.fuelSeff, U.fuelSeff, 0, [
-                [cat, S.seff, []],
-                [inp, S.seff, []],
+                [this.cat, S.seff, []],
+                [this.inp, S.seff, []],
             ]],
+        ]
+
+        this.nodes = [
+            ...stdNodes,
+            ...d1Nodes,
         ]
     }
 }

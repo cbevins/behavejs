@@ -33,6 +33,7 @@ export class L {
 
 export class P {
     static canopy    = 'site/canopy/'
+    static constants = 'constants/'
     static terrain   = 'site/terrain/'
     static slope     = 'site/terrain/slope/'
     static moisture  = 'site/weather/moisture/'

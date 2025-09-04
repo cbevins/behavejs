@@ -4,6 +4,8 @@ export class ModuleBase {
         this.path = path
         this.any = '*'
         this.nodes = []
+        this.config = null
+        this.options = []
     }
     
     configure(applyOption) {

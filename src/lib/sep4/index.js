@@ -2,6 +2,7 @@ export {ModuleBase} from './ModuleBase.js'
 export {Dag} from './Dag.js'
 export {K,L,P,U} from './Names.js'
 
+export {ConstantsModule}  from './ConstantsModule.js'
 export {DeadFuelMoistureModule} from './DeadFuelMoistureModule.js'
 export {FuelParticleNodes} from './FuelParticleNodes.js'
 export {LiveCuringModule} from './LiveCuringModule.js'

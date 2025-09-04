@@ -1,4 +1,5 @@
 import { Dag, P } from './index.js'
+import { ConstantsModule } from './index.js'
 import { DeadFuelMoistureModule } from './index.js'
 import { LiveCuringModule } from './index.js'
 import { LiveFuelMoistureModule } from './index.js'
@@ -33,19 +34,28 @@ function logNodes(nodes, title='') {console.log(listNodes(nodes, title))}
 // Step 1 - construct a genome of all possible nodes and configurations
 //------------------------------------------------------------------------------
 
+const constants = new ConstantsModule(P.constants)
 const deadmois = new DeadFuelMoistureModule(P.deadmois)
 const livemois = new LiveFuelMoistureModule(P.livemois)
 const curing1 = new LiveCuringModule(P.curing1, livemois.herb)
-const mod = new FuelParticleNodes('surface/primary/bed/')
+
+// Need to define this from a Module!
+const stdModelKey = P.standard1 + 'key'
+
+const fuelpart1 = new FuelParticleNodes(P.bed1,
+    deadmois.dead1, deadmois.dead10, deadmois.dead100,
+    livemois.herb, livemois.stem, stdModelKey, curing1.applied)
 
 //------------------------------------------------------------------------------
 // Step 2 - Configure and combine all the module genomes
 //------------------------------------------------------------------------------
 
 const nodes = [
+    ...constants.configure(),
     ...deadmois.configure(deadmois.individual),
     ...livemois.configure(livemois.individual),
     ...curing1.configure(curing1.est),
+    ...fuelpart1.configure(fuelpart1.cat),
 ].sort()
 
 logNodes(nodes)
