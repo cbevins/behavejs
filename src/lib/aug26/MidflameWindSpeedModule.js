@@ -1,5 +1,5 @@
-import { Calc, Dag } from '../index.js'
-import { ModuleBase, U } from './index.js'
+import { Dag, ModuleBase, U } from './index.js'
+import { Calc } from '../index.js'
 
 // MidflameWindSpeedModule extends the FuelBedModule (named in arg 1)
 // by linking the wind at 20-ft (arg 2) and midflame reduction factor (arg 3)

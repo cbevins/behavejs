@@ -1,6 +1,6 @@
-import { Dag, CanopyEquations as Canopy} from '../index.js'
-import { U } from './index.js'
+import { Dag, U } from './index.js'
 import { ModuleBase } from './ModuleBase.js'
+import { CanopyEquations as Canopy} from '../index.js'
 
 export class CanopyModule extends ModuleBase {
     /**
@@ -28,17 +28,17 @@ export class CanopyModule extends ModuleBase {
         this.config = 'canopy height input'
         // combinations of inputs
         this.baseHeight = 'height-base'
-        this.heightBase = 'height-base'
+        this.heightBase = this.baseHeight
         this.ratioHeight = 'ratio-height'
-        this.heightRatio = 'ratio-height'
+        this.heightRatio = this.ratioHeight
         this.lengthHeight = 'height-length'
-        this.heightLength = 'height-length'
+        this.heightLength = this.lengthHeight
         this.ratioBase = 'ratio-base'
-        this.baseRatio = 'ratio-base'
+        this.baseRatio = this.ratioBase
         this.ratioLength = 'ratio-length'
-        this.lengthRatio = 'ratio-length'
+        this.lengthRatio = this.ratioLength
         this.lengthBase = 'length-base'
-        this.baseLength = 'length-base'
+        this.baseLength = this.baseLength
 
         this.options = [
             this.ratioHeight, this.ratioBase, this.ratioLength,

@@ -1,5 +1,4 @@
-import { Dag } from '../index.js'
-import { ModuleBase, U } from './index.js'
+import { Dag, ModuleBase, U } from './index.js'
 
 // WindSpeedReductionModule extends the FuelBedModule (named in arg 1)
 // by linking the canopy-indiced wrf (arg2 ) and the surface fuel-induced wrf (arg 3) 
@@ -18,7 +17,7 @@ export class WindSpeedReductionModule extends ModuleBase {
         this.mwsrf = path + 'midflame wind speed reduction factor'
         // linked node keys referenced by genome()
         this.cwsrf = cwsrf  // probably 'site/canopy/wind speed reduction factor'
-        this.fwsrf = fwsrf  // probably 'site/{primary|secondary}/bed/fuel bed reduction factor'
+        this.fwsrf = fwsrf  // probably 'site/{primary|secondary}/bed/wind speed reduction factor'
 
         // config keys
         this.config = 'midflame wind speed reduction factor'

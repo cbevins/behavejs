@@ -1,21 +1,23 @@
 export class P {
 
-    static canopy = 'site/canopy/'
-    static moisture = 'site/weather/moisture/'
-    static deadmois = 'site/weather/moisture/dead/'
-    static livemois = 'site/weather/moisture/live/'
-    static windDir = 'site/weather/wind/direction/'
+    static canopy    = 'site/canopy/'
+    static terrain   = 'site/terrain/'
+    static slope     = 'site/terrain/slope/'
+    static moisture  = 'site/weather/moisture/'
+    static deadmois  = 'site/weather/moisture/dead/'
+    static livemois  = 'site/weather/moisture/live/'
+    static windDir   = 'site/weather/wind/direction/'
     static windSpeed = 'site/weather/wind/speed/'
 
     static sfire = 'site/surface/fire'
     static cfire = 'site/crown/fire'
 
-    static bed1   = `site/surface/primary/bed/`
-    static dead1   = `site/surface/primary/bed/dead/`
-    static live1   = `site/surface/primary/bed/live/`
-    static model1 = `site/surface/primary/model/`
+    static bed1      = `site/surface/primary/bed/`
+    static dead1     = `site/surface/primary/bed/dead/`
+    static live1     = `site/surface/primary/bed/live/`
+    static model1    = `site/surface/primary/model/`
     static standard1 = `site/surface/primary/model/standard/`
-    static fire1  = `site/surface/primary/fire/`
+    static fire1     = `site/surface/primary/fire/`
 }
 
 export class U {

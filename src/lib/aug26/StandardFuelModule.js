@@ -1,5 +1,5 @@
-import { Dag, StandardFuelModelCatalog as Eq } from '../index.js'
-import { ModuleBase, U } from './index.js'
+import { Dag, ModuleBase, U } from './index.js'
+import { StandardFuelModelCatalog as Eq } from '../index.js'
 
 export class StandardFuelModule extends ModuleBase {
     /**

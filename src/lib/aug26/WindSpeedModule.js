@@ -1,5 +1,5 @@
-import { Dag, WindEquations as Wind } from '../index.js'
-import { ModuleBase, U } from './index.js'
+import { Dag, ModuleBase, U } from './index.js'
+import { WindEquations as Wind } from '../index.js'
 
 export class WindSpeedModule extends ModuleBase {
     /**

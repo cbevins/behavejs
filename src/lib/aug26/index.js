@@ -1,6 +1,7 @@
 export {CanopyModule} from './CanopyModule.js'
 export {Dag} from './Dag.js'
 export {FuelBedModule} from './FuelBedModule.js'
+export {FuelBedLifeModule} from './FuelBedLifeModule.js'
 export {DeadFuelMoistureModule} from './DeadFuelMoistureModule.js'
 export {Genome} from './Genome.js'
 export {LiveCuringModule} from './LiveCuringModule.js'

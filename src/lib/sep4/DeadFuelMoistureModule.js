@@ -20,7 +20,7 @@ export class DeadFuelMoistureModule extends ModuleBase {
         this.category = 'category'
         this.options = [this.individual, this.category]
 
-        this.genome = [
+        this.nodes = [
             [this.dead, 1, U.fuelMois, 0, [
                 [this.individual, Dag.constant, []],
                 [this.category, Dag.input, []]]],

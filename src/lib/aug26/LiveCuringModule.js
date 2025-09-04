@@ -1,5 +1,5 @@
-import { Dag, FuelBedEquations as Eq } from '../index.js'
-import { ModuleBase, U } from './index.js'
+import { Dag, ModuleBase, U } from './index.js'
+import { FuelBedEquations as Eq } from '../index.js'
 
 // LiveCuringModule extends the FuelBedModule (named in arg1)
 // by linking live herb moisture content (arg 2)
