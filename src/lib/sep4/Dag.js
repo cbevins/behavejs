@@ -164,9 +164,9 @@ export class Dag {
         for(let node of this.nodeMap.values())
             node.consumers = []
         for(let node of this.nodeMap.values()) {
-            console.log('checking', node.suppliers.length, 'suppliers for', node.key)
+            // console.log('checking', node.suppliers.length, 'suppliers for', node.key)
             for(let supplier of node.suppliers) {
-                console.log('....supplier is', supplier.key)
+                // console.log('....supplier is', supplier.key)
                 supplier.consumers.push(node)
             }
         }

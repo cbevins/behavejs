@@ -1,19 +1,24 @@
 // Defines all the units-of-measure keys
 export class U {
-    static bulkDens = 'bulk density'        // lb/ft3
-    static curedLive = 'cured live fraction'    // fraction
-    static fuelDens = 'fiber density'       // lb/ft3
-    static fuelHeat = 'heat of combustion'  // BTU/lb
+    static bulkDens = 'bulk density'                // lb/ft3
+    static curedLive = 'cured live fraction'        // fraction
+    static fuelDens = 'fiber density'               // lb/ft3
+    static fuelDiam = 'cylindrical diameter'        // ft
+    static fuelEhn  = 'effective heating number'    // fraction
+    static fuelHeat = 'heat of combustion'          // BTU/lb
     static fuelKey  = 'fuel key'
-    static fuelLife = 'fuel life'           // 'dead' or 'live'
-    static fuelLoad = 'ovendry fuel load'   // lb/ft2
-    static fuelModel= 'fuel model'          // 'standard', 'chaparral', 'western aspen', 'palmetto-gallberry'
-    static fuelMois = 'moisture content'    // fraction
-    static fuelSa   = 'surface area'        //ft2
-    static fuelSavr = 'surface area-to-volume ratio'
-    static fuelSeff = 'mineral content'     // fraction
-    static fuelStot = 'mineral content'     // fraction
-    static fuelType = 'fuel type'           // 'dead-down', 'herb', 'stem', 'duff'
+    static fuelLife = 'fuel life'                   // 'dead' or 'live'
+    static fuelLoad = 'ovendry fuel load'           // lb/ft2
+    static fuelModel= 'fuel model'                  // 'standard', 'chaparral', 'western aspen', 'palmetto-gallberry'
+    static fuelMois = 'moisture content'            // fraction
+    static fuelQig  = 'heat of pre-ignition'
+    static fuelSa   = 'surface area'                //ft2
+    static fuelSavr = 'surface area-to-volume ratio'// ft2/ft3
+    static fuelScwf = 'size class weighting factor' // fraction
+    static fuelSeff = 'mineral content'             // fraction
+    static fuelStot = 'mineral content'             // fraction
+    static fuelType = 'fuel type'                   // 'dead-down', 'herb', 'stem', 'duff'
+    static fuelVol  = 'volume'                      // ft3
 }
 
 // Defines common leaf segment keys
@@ -21,15 +26,28 @@ export class L {
     static bulkDens = 'bulk density'
     static fuelDens = 'fiber density'
     static fuelDepth = 'depth'
+    static fuelDiam = 'cylindrical diameter'
+    static fuelEfol = 'effective fuel/ovendry load'
+    static fuelEfwl = 'effective fuel/water load'
+    static fuelEhn  = 'effective heating number'
     static fuelHeat = 'heat of combustion'      // BTU/lb
+    static fuelLeng = 'cylindrical length'
     static fuelLife = 'life category'           // lb/ft2
     static fuelLoad = 'ovendry fuel load'       // lb/ft2
+    static fuelNet  = 'net ovendry load'
     static fuelMext = 'extinction moisture content'
     static fuelMois = 'moisture content'
+    static fuelQig  = 'heat of pre-ignition'
+    static fuelSa   = 'surface area'
     static fuelSavr = 'surface area-to-volume ratio'
+    static fuelSawf = 'surface area weighting factor'
+    static fuelScar = 'size class weighting array'
+    static fuelScwf = 'size class weighting factor'
     static fuelSeff = 'silica-free mineral content'     // fraction
+    static fuelSize = 'size class'
     static fuelStot = 'total mineral content'     // fraction
     static fuelType = 'fuel type'
+    static fuelVol  = 'volume'
 }
 
 export class P {
