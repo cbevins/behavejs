@@ -9,6 +9,8 @@ export class ModuleBase {
     }
     
     configure(applyOption) {
+        if (this.options.length && ! this.options.includes(applyOption))
+            throw new Error(`Attempt to configure "${this.path}" with invalid option "${applyOption}".`)
         for(let i=0; i<this.nodes.length; i++) {
             const [key, value, units, option, options] = this.nodes[i]
             let found = false

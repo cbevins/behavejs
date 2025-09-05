@@ -1,29 +1,30 @@
 // Defines all the units-of-measure keys
 export class U {
     static bulkDens = 'bulk density'        // lb/ft3
-    static curedLive = 'cured live fuel'    // fraction
+    static curedLive = 'cured live fraction'    // fraction
     static fuelDens = 'fiber density'       // lb/ft3
     static fuelHeat = 'heat of combustion'  // BTU/lb
     static fuelKey  = 'fuel key'
     static fuelLife = 'fuel life'           // 'dead' or 'live'
     static fuelLoad = 'ovendry fuel load'   // lb/ft2
-    static fuelSeff = 'mineral content'     // fraction
-    static fuelStot = 'mineral content'     // fraction
     static fuelModel= 'fuel model'          // 'standard', 'chaparral', 'western aspen', 'palmetto-gallberry'
     static fuelMois = 'moisture content'    // fraction
-    static fuelType = 'fuel type'           // 'dead-down', 'herb', 'stem', 'duff'
     static fuelSa   = 'surface area'        //ft2
     static fuelSavr = 'surface area-to-volume ratio'
+    static fuelSeff = 'mineral content'     // fraction
+    static fuelStot = 'mineral content'     // fraction
+    static fuelType = 'fuel type'           // 'dead-down', 'herb', 'stem', 'duff'
 }
 
 // Defines common leaf segment keys
 export class L {
     static bulkDens = 'bulk density'
     static fuelDens = 'fiber density'
+    static fuelDepth = 'depth'
     static fuelHeat = 'heat of combustion'      // BTU/lb
     static fuelLife = 'life category'           // lb/ft2
     static fuelLoad = 'ovendry fuel load'       // lb/ft2
-    static fuelMext = 'fire extinction moisture content'
+    static fuelMext = 'extinction moisture content'
     static fuelMois = 'moisture content'
     static fuelSavr = 'surface area-to-volume ratio'
     static fuelSeff = 'silica-free mineral content'     // fraction
@@ -80,4 +81,7 @@ export class K {
     static fuelSeff = 'constants/fuel/silica-free mineral content'     // fraction
     static fuelStot = 'constants/fuel/total mineral content'     // fraction
     static fuelType = 'constants/fuel/fuel type'
+
+    static zero = 'constants/zero'
+    static one = 'constants/one'
 }

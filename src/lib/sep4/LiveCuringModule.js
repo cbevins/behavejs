@@ -1,9 +1,10 @@
 import { Dag, ModuleBase, U } from './index.js'
 import { FuelBedEquations as Eq } from '../index.js'
 
-// LiveCuringModule extends the FuelBedModule (named in arg1)
-// by linking live herb moisture content (arg 2)
-// to estimate the fuel bed fraction of cured live fuel.
+// LiveCuringModule provides a cured live fuel fraction
+// from either an observation (input) or estimated from a herb moisture
+// content node specified in arg2.
+// It is used only by the StandardFuelModelModule.
 export class LiveCuringModule extends ModuleBase {
     /**
      * 

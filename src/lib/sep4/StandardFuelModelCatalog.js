@@ -23,7 +23,7 @@ export class StandardFuelModelCatalog {
     // Always called by this.getData() and this.getObj()
     static getMap() {
         if (! StandardFuelModelCatalog.fuelMap.size) {
-            for(let m of StandardFuelModels.fuelData) {
+            for(let m of StandardFuelModels) {
                 StandardFuelModelCatalog.fuelMap.set(m[0], m)      // numeric key
                 StandardFuelModelCatalog.fuelMap.set(''+m[0], m)   // number string key
                 StandardFuelModelCatalog.fuelMap.set(m[1], m)      // code key
@@ -62,4 +62,11 @@ export class StandardFuelModelCatalog {
     static savrStem(alias) { return StandardFuelModelCatalog.getObj(alias).savrStem }
     static seff() { return 0.01 }
     static stot() { return 0.0555 }
+    static type1() { return 'dead & down' }
+    static type10() { return 'dead & down' }
+    static type100() { return 'dead & down' }
+    static typeCured() { return 'cured herb' }
+    static typeHerb() { return 'herb' }
+    static typeStem() { return 'stem' }
+    static typeUncured() { return 'uncured herb' }
 }

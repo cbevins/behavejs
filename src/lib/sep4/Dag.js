@@ -73,6 +73,8 @@ export class Dag {
         return refOrKey // otherwise assume it is a DagNode reference
     }
 
+    nodes() { return  [...this.nodeMap.values()] }
+
     reset(nodeDefs) {
         this._1_createNodeMap(nodeDefs)
         this._2_checkSupplierKeys()
@@ -157,9 +159,13 @@ export class Dag {
     _4_initConsumerRefs() {
         for(let node of this.nodeMap.values())
             node.consumers = []
-        for(let node of this.nodeMap.values())
-            for(let supplier of node.suppliers)
+        for(let node of this.nodeMap.values()) {
+            console.log('checking', node.suppliers.length, 'suppliers for', node.key)
+            for(let supplier of node.suppliers) {
+                console.log('....supplier is', supplier.key)
                 supplier.consumers.push(node)
+            }
+        }
         return this
     }
 

@@ -1,10 +1,13 @@
 import { Dag, P } from './index.js'
 import { ConstantsModule } from './index.js'
 import { DeadFuelMoistureModule } from './index.js'
+import { FuelParticleNodes } from './index.js'
 import { LiveCuringModule } from './index.js'
 import { LiveFuelMoistureModule } from './index.js'
-import { FuelParticleNodes } from './index.js'
+import { StandardFuelModelModule } from './index.js'
 import { Util } from '../index.js'
+
+console.log(new Date())
 
 function listActiveConfigs(dag) {
     let str = '\nActive Configurations:\n'
@@ -37,14 +40,15 @@ function logNodes(nodes, title='') {console.log(listNodes(nodes, title))}
 const constants = new ConstantsModule(P.constants)
 const deadmois = new DeadFuelMoistureModule(P.deadmois)
 const livemois = new LiveFuelMoistureModule(P.livemois)
+
+// We need a LiveCuringModule for the StandardFuelModelModule
 const curing1 = new LiveCuringModule(P.curing1, livemois.herb)
-
-// Need to define this from a Module!
-const stdModelKey = P.standard1 + 'key'
-
-const fuelpart1 = new FuelParticleNodes(P.bed1,
+const standard1 = new StandardFuelModelModule(P.standard1,
     deadmois.dead1, deadmois.dead10, deadmois.dead100,
-    livemois.herb, livemois.stem, stdModelKey, curing1.applied)
+    livemois.herb, livemois.stem, curing1.applied)
+
+const fuelpart1 = new FuelParticleNodes(P.bed1, P.standard1)
+// const fuelpartderived1 = new FuelParticleDerivedNodes(P.bed1)
 
 //------------------------------------------------------------------------------
 // Step 2 - Configure and combine all the module genomes
@@ -55,10 +59,11 @@ const nodes = [
     ...deadmois.configure(deadmois.individual),
     ...livemois.configure(livemois.individual),
     ...curing1.configure(curing1.est),
-    ...fuelpart1.configure(fuelpart1.cat),
+    ...standard1.configure(standard1.catalog),
+    ...fuelpart1.configure(fuelpart1.std)
 ].sort()
 
-logNodes(nodes)
+// logNodes(nodes)
 
 //------------------------------------------------------------------------------
 // Step 3 - construct the directed acyclical graph
@@ -70,7 +75,7 @@ const dag = new Dag(nodes)
 // Step 4 - select nodes of interest
 //------------------------------------------------------------------------------
 
-const select = [curing1.applied]
+const select = ['totalLoad', standard1.curedFraction, standard1.totalHerbLoad, standard1.deadHerbLoad]
 dag.select(select)
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
@@ -92,10 +97,17 @@ Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 //------------------------------------------------------------------------------
 
 dag.set(livemois.herb, 0.5)
+dag.set(standard1.key, '124')
 
 //------------------------------------------------------------------------------
 // Step 8 - Get output values
 //------------------------------------------------------------------------------
 
+const totalLoad = dag.get('totalLoad')
+const totalHerb = dag.get(standard1.totalHerbLoad)
 const curedEst = dag.get(curing1.estimated)
-console.log('Estimate curing at 50% MC', curedEst)
+const cured = dag.get(standard1.curedFraction)
+const deadHerb = dag.get(standard1.deadHerbLoad)
+const liveHerb = dag.get(standard1.liveHerbLoad)
+Util.logDagNodes(dag.selected(), 'Selected Node Values')
+// Util.logDagNodes(dag.nodes(), 'All Nodes')
