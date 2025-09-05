@@ -60,7 +60,8 @@ export class Dag {
     // and its dirty flag is cleared before returning its updated value.
     get(refOrKey, log=false) {
         this.tracker = {..._tracker}
-        return this._get(refOrKey, log)
+        const node = this.nodeRef(refOrKey)  // only use node references within _get()!!!
+        return this._get(node, log)
     }
 
     // Returns a reference to the DagNode with 'key' prop
@@ -115,6 +116,9 @@ export class Dag {
         }
         return this
     }
+
+    // Runs get() on all selected nodes to ensure they are all updated
+    updateAll() { for(let node of this.selected()) this.get(node) }
 
     //--------------------------------------------------------------------------
 
@@ -199,8 +203,7 @@ export class Dag {
             this._demoteSelectedSuppliers(supplier)
     }
 
-    _get(refOrKey, log) {
-        const node = this.nodeRef(refOrKey, '_get()')
+    _get(node, log) {
         if (node.updater === Dag.constant) {
             this.tracker.constant++
         } else if (node.updater === Dag.input) {

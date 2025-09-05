@@ -103,11 +103,6 @@ dag.set(standard1.key, '124')
 // Step 8 - Get output values
 //------------------------------------------------------------------------------
 
-const totalLoad = dag.get('totalLoad')
-const totalHerb = dag.get(standard1.totalHerbLoad)
-const curedEst = dag.get(curing1.estimated)
-const cured = dag.get(standard1.curedFraction)
-const deadHerb = dag.get(standard1.deadHerbLoad)
-const liveHerb = dag.get(standard1.liveHerbLoad)
+dag.updateAll()
 Util.logDagNodes(dag.selected(), 'Selected Node Values')
 // Util.logDagNodes(dag.nodes(), 'All Nodes')
