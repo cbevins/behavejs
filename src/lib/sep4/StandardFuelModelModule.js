@@ -23,7 +23,7 @@ export class StandardFuelModelModule extends ModuleBase {
         this.key = path + 'key'
         this.code = path + 'code'
         this.curedFraction = curedFraction
-        this.depth = path + 'depth'
+        this.depth = path + L.fuelDepth
         this.deadMext = path + 'dead/' + L.fuelMext
         this.label = path + 'label'
         this.number = path + 'number'

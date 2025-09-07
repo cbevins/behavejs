@@ -29,11 +29,11 @@ export class LiveCuringModule extends ModuleBase {
         this.options = [this.obs, this.est]
 
         this.nodes = [
-            [this.observed, 0, U.curedLive, 0, [
+            [this.observed, 0, U.fraction, 0, [
                 [this.any, Dag.input, []]]],
-            [this.estimated, 0, U.curedLive, 0, [
+            [this.estimated, 0, U.fraction, 0, [
                 [this.any, Eq.curedHerbFraction, [this.herbMois]]]],
-            [this.applied, 0, U.curedLive, 0, [
+            [this.applied, 0, U.fraction, 0, [
                 [this.obs, Dag.assign, [this.observed]],
                 [this.est, Dag.assign, [this.estimated]],
             ]],

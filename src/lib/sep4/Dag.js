@@ -139,12 +139,12 @@ export class Dag {
         for(let node of this.nodeMap.values()) {
             for(let supkey of node.suppliers) {
                 if(! this.nodeMap.has(supkey)) {
-                    console.log(`*** Node "${node.key}" option "${node.cfgopt}" supplier "${supkey}" key is unknown`)
+                    console.log(`*** Node "${node.key}" option "${node.cfgopt}" supplier "${supkey}" has no node instance.`)
                     n++
                 }
             }
         }
-        if (n) throw new Error(`Dag of ${this.nodeMap.size} node definitions has ${n} unknown supplier keys.`)
+        if (n) throw new Error(`Dag of ${this.nodeMap.size} nodes has ${n} supplier references to nonexistent nodes.`)
         return this
     }
 
