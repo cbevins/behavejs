@@ -1,42 +1,3 @@
-// Defines all the units-of-measure keys
-export class U {
-    static degrees  = 'degrees'
-    static factor   = 'factor units'                      // any number
-    static fraction = 'fraction units'                    // number [0..1]
-    static ratio    = 'ratio units'                       // any rational number
-
-    static fireRos  = 'fire spread rate units'                  // ft/min
-    static fireRxi  = 'fire reaction intensity units'           // BTU/ft2-min
-    static fireFli  = 'fireline intensity units'
-
-    static fuelLeng = 'fuel diameter, depth, and length units'  // ft
-    static fuelDens = 'fuel bulk and particle density units'    // lb/ft3
-    static fuelHeat = 'fuel heat of combustion units'           // BTU/lb
-    static fuelLife = 'fuel life categories'                    // 'dead' or 'live'
-    static fuelLoad = 'fuel load units'                         // lb/ft2
-    static fuelMois = 'fuel moisture content units'             // fraction
-    static fuelQig  = 'fuel heat of pre-ignition units'         // BTU/lb
-    static fuelRxv  = 'reaction velocity units'                 // 1/min
-    static fuelSa   = 'fuel surface area units'                 // ft2
-    static fuelSavr = 'fuel surface area-to-volume ratio units' // ft2/ft3
-    static fuelSink = 'fuel heat sink'                          // BTU/ft3
-    static fuelWtg  = 'fuel weighting factor units'             // fraction, percent
-    static fuelFrac = 'fuel portion units [0..1]'               // fraction, percent
-    static fuelVol  = 'fuel volume units'                       // ft3
-
-    static fuelKey  = 'fuel key'                    // fuel model code or number
-    static fuelModel= 'fuel model'                  // 'standard', 'chaparral', 'western aspen', 'palmetto-gallberry'
-    static fuelSawf = 'surface area weighting factor'// fraction
-    static fuelScwf = 'size class weighting factor' // fraction
-    static fuelSeff = 'mineral content'             // fraction
-    static fuelStot = 'mineral content'             // fraction
-    static fuelType = 'fuel type'                   // 'dead-down', 'herb', 'stem', 'duff'
-
-    static treeLeng = 'tree length dimensions'      // ft
-
-    static windSpeed = 'wind speed units'
-}
-
 export class P {
     static canopy    = 'site/canopy/'
     static constants = 'constants/'
@@ -64,11 +25,7 @@ export class P {
     static palmetto1 = `site/surface/primary/model/palmetto/`
     static aspen1    = `site/surface/primary/model/aspen/`
     static wsrf1     = 'site/surface/primary/wind/speed/reduction'
-    // the following are Leafs, not Paths
     static midflame1 = 'site/surface/primary/wind/midflame'
-    // static wsrf1     = 'site/surface/primary/wind/reduction/factor'
-    // static wsrfbed1  = 'site/surface/primary/wind/reduction/fuel bed'
-    // static wsrfcan1  = 'site/surface/primary/wind/reduction/canopy'
     static fire1     = `site/surface/primary/fire/`
 }
 
@@ -127,6 +84,24 @@ export class L {
     static fuelVol  = 'volume'
     static fuelXi   = 'propagating flux ratio'
 
+    static tl1h     = '1-h'
+    static tl10h    = '10-h'
+    static tl100h   = '100-h'
+    static dead1h   = 'dead/1-h'
+    static dead10h  = 'dead/10-h'
+    static dead100h = 'dead/100-h'
+    static herb     = 'herb'
+    static stem     = 'stem'
+    static liveHerb = 'live/herb'
+    static liveStem = 'live/stem'
+
+    static applied = 'applied'
+    static estimated = 'estimated'
+    static observed = 'observed'
+
+    static at20ft = 'at 20-ft'
+    static at10m  = 'at 10-m'
+
     static windB = 'wind/factor B'
     static windC = 'wind/factor C'
     static windE = 'wind/factor E'
@@ -134,9 +109,10 @@ export class L {
     static windI = 'wind/factor I'
 
     // Surface Bed Module properties
-    static fuelWsrf = 'open-canopy wind speed reduction factor'
+    static wsrfCanopy  = 'wind speed reduction factor/fuel bed'
+    static wsrfFuel = 'wind speed reduction factor/fuel'
+    static wsrfMidf = 'wind speed reduction factor/midflame'
     static taur = 'residence time'
-    static waf  = 'wind speed adjustment factor'
     
     static ros  = 'spread rate/'
     static rosNwns = L.ros + 'no-wind no-slope'
@@ -146,7 +122,14 @@ export class L {
     static weffUpsl  = L.weff + 'upslope wind'
     static weffLimit = L.weff + 'limit'
     static weffAppl  = L.weff + 'limit/applied'
+    static midflame = 'wind speed at midflame'
 
+    // LiveFuelCuringModule leaf nodes
+    static curedObs = 'cured fraction/observed'
+    static curedEst = 'cured fraction/estimated'
+    static curedApp = 'cured fraction/applied'
+
+    // SLopeModule leaf nodes
     static slopeDeg = 'steepness/degrees from horizontal'
     static slopeRat = 'steepness/rise-to-reach ratio'
 }
@@ -156,27 +139,27 @@ export class K {
     static fuelDeadCat = 'constants/fuel/life/dead category'
     static fuelLiveCat = 'constants/fuel/life/live category'
 
-    static fuelStandard = 'constants/fuel/model/standard'
-    static fuelChaparral ='constants/fuel/model/chaparral'
-    static fuelAspen = 'constants/fuel/model/western aspen'
-    static fuelPg = 'constants/fuel/model/palmetto-gallberry'
+    // static fuelStandard = 'constants/fuel/model/standard'
+    // static fuelChaparral ='constants/fuel/model/chaparral'
+    // static fuelAspen = 'constants/fuel/model/western aspen'
+    // static fuelPg = 'constants/fuel/model/palmetto-gallberry'
 
-    static fuelDeadDown = 'constants/fuel/type/dead-down'
-    static fuelGrass = 'constants/fuel/type/grass'
-    static fuelDuff = 'constants/fuel/type/duff'
-    static fuelHerb = 'constants/fuel/type/herb'
-    static fuelStem = 'constants/fuel/type/stem'
-    static fuelCured = 'constants/fuel/type/cured'
+    // static fuelDeadDown = 'constants/fuel/type/dead-down'
+    // static fuelGrass = 'constants/fuel/type/grass'
+    // static fuelDuff = 'constants/fuel/type/duff'
+    // static fuelHerb = 'constants/fuel/type/herb'
+    // static fuelStem = 'constants/fuel/type/stem'
+    // static fuelCured = 'constants/fuel/type/cured'
     static fuelUnused = 'constants/fuel/type/unused'
 
-    static fuelDens = 'constants/fuel/fiber density'
-    static fuelHeat = 'constants/fuel/heat of combustion'      // BTU/lb
-    static fuelLife = 'constants/fuel/life category'           // lb/ft2
-    static fuelLoad = 'constants/fuel/ovendry fuel load'       // lb/ft2
-    static fuelSavr = 'constants/fuel/surface area-to-volume ratio'
-    static fuelSeff = 'constants/fuel/silica-free mineral content'     // fraction
-    static fuelStot = 'constants/fuel/total mineral content'     // fraction
-    static fuelType = 'constants/fuel/fuel type'
+    // static fuelDens = 'constants/fuel/fiber density'
+    // static fuelHeat = 'constants/fuel/heat of combustion'      // BTU/lb
+    // static fuelLife = 'constants/fuel/life category'           // lb/ft2
+    // static fuelLoad = 'constants/fuel/ovendry fuel load'       // lb/ft2
+    // static fuelSavr = 'constants/fuel/surface area-to-volume ratio'
+    // static fuelSeff = 'constants/fuel/silica-free mineral content'     // fraction
+    // static fuelStot = 'constants/fuel/total mineral content'     // fraction
+    // static fuelType = 'constants/fuel/fuel type'
 
     static zero = 'constants/zero'
     static one = 'constants/one'

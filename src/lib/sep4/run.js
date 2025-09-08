@@ -1,13 +1,13 @@
-import { Dag, P } from './index.js'
+import { Dag, L, P } from './index.js'
 import { CanopyModule } from './index.js'
 import { ConstantsModule } from './index.js'
 import { DeadFuelMoistureModule } from './index.js'
-import { LiveCuringModule } from './index.js'
+import { LiveFuelCuringModule } from './index.js'
 import { LiveFuelMoistureModule } from './index.js'
 import { MidflameWindSpeedModule } from './index.js'
 import { SlopeModule } from './index.js'
 import { StandardFuelModelModule } from './index.js'
-import { SurfaceFireModule } from './index.js'
+// import { SurfaceFireModule } from './index.js'
 import { SurfaceFuelModule } from './index.js'
 import { WindSpeedModule } from './index.js'
 import { WindSpeedReductionModule } from './index.js'
@@ -41,27 +41,38 @@ function logNodes(nodes, title='') {console.log(listNodes(nodes, title))}
 
 //------------------------------------------------------------------------------
 // Step 1 - construct a genome of all possible nodes
+// Note: only used P.* and L.* name keys in this section to avoid circular deps
 //------------------------------------------------------------------------------
 
 const constants = new ConstantsModule(P.constants)
 const canopy = new CanopyModule(P.canopy)
-const deadmois = new DeadFuelMoistureModule(P.deadmois)
-const livemois = new LiveFuelMoistureModule(P.livemois)
+
+// Need wind speed and slope for surface fire model
 const windspeed = new WindSpeedModule(P.windSpeed)
 const slope = new SlopeModule(P.slope)
 
-// We need a LiveCuringModule for the StandardFuelModelModule
-const curing1 = new LiveCuringModule(P.curing1, livemois.herb)
-const standard1 = new StandardFuelModelModule(P.standard1,
-    deadmois.dead1, deadmois.dead10, deadmois.dead100,
-    livemois.herb, livemois.stem, curing1.applied)
+// Need fuel particle moisture contents for surface fuel models
+const deadmois = new DeadFuelMoistureModule(P.deadmois)
+const livemois = new LiveFuelMoistureModule(P.livemois)
 
+// Need a LiveFuelCuringModule for the StandardFuelModelModule
+const curing1 = new LiveFuelCuringModule(P.curing1, P.livemois+L.herb)
+const standard1 = new StandardFuelModelModule(P.standard1,
+    P.deadmois+L.tl1h, P.deadmois+L.tl10h, P.deadmois+L.tl100h,
+    P.livemois+L.herb, P.livemois+L.stem,
+    P.curing1+L.curedApp)
+
+// Need a WindSpeedReductionModule and a MidflameWindSpeedModule for surface fire
+const wsrf1 = new WindSpeedReductionModule(P.wsrf1,
+    P.canopy+L.wsrfCanopy,
+    P.bed1+L.wsrfFuel)
+const midflame1 = new MidflameWindSpeedModule(P.midflame1,
+    P.windSpeed+L.at20ft,
+    P.wsrf1+L.wsrfMidf)
 const bed1 = new SurfaceFuelModule(P.bed1,
+    P.slope+L.slopeRat,
+    P.midflame1 + L.midflame,
     P.standard1, P.chaparral1, P.palmetto1, P.aspen1)
-const wsrf1 = new WindSpeedReductionModule(P.wsrf1, canopy.wsrf, bed1.fuelWsrf)
-const midflame1 = new MidflameWindSpeedModule(P.midflame1, windspeed.at20ft, wsrf1.mwsrf)
-const fire1 = new SurfaceFireModule(P.fire1, bed1.fuelNwns, bed1.fuelRxi,
-    bed1.fuelSavr, bed1.fuelBeta, slope.slopeRatio, midflame1.wsmid)
 
 //------------------------------------------------------------------------------
 // Step 2 - Configure and combine all the module genomes
@@ -94,7 +105,7 @@ const dag = new Dag(nodes)
 // Step 4 - select nodes of interest
 //------------------------------------------------------------------------------
 
-const select = ['totalLoad', standard1.curedFraction, standard1.totalHerbLoad, standard1.deadHerbLoad]
+const select = [standard1.curedFraction, standard1.totalHerbLoad, standard1.deadHerbLoad]
 dag.select(select)
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 

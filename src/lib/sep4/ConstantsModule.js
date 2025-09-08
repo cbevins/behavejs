@@ -14,12 +14,12 @@ export class ConstantsModule extends ModuleBase {
             // [K.fuelAspen, 'western aspen', U.fuelModel, 0, [[this.all, Dag.constant, []]]],
             // [K.fuelPg, 'palmetto-gallberry', U.fuelModel, 0, [[this.all, Dag.constant, []]]],
             
-            [K.fuelDeadDown, 'dead-down', U.fuelType, 0, [[this.all, Dag.constant, []]]],
+            // [K.fuelDeadDown, 'dead-down', U.fuelType, 0, [[this.all, Dag.constant, []]]],
             // [K.fuelGrass, 'grass', U.fuelType, 0, [[this.all, Dag.constant, []]]],
             // [K.fuelDuff, 'duff', U.fuelType, 0, [[this.all, Dag.constant, []]]],
             // [K.fuelHerb, 'herb', U.fuelType, 0, [[this.all, Dag.constant, []]]],
             // [K.fuelStem, 'stem', U.fuelType, 0, [[this.all, Dag.constant, []]]],
-            [K.fuelCured, 'cured', U.fuelType, 0, [[this.all, Dag.constant, []]]],
+            // [K.fuelCured, 'cured', U.fuelType, 0, [[this.all, Dag.constant, []]]],
             [K.fuelUnused, 'unused', U.fuelType, 0, [[this.all, Dag.constant, []]]],
 
             // [K.fuelDens, 32., U.fuelDens, 0, [[this.all, Dag.constant, []]]],

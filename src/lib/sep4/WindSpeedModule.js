@@ -1,4 +1,4 @@
-import { Dag, ModuleBase, U } from './index.js'
+import { Dag, L, ModuleBase, U } from './index.js'
 import { WindEquations as Wind } from '../index.js'
 
 export class WindSpeedModule extends ModuleBase {
@@ -18,8 +18,8 @@ export class WindSpeedModule extends ModuleBase {
         this.options = [this.input20ft, this.input10m]
 
         // fully qualified node keys
-        this.at20ft = path + 'at 20-ft'
-        this.at10m  = path + 'at 10-m'
+        this.at20ft = path + L.at20ft
+        this.at10m  = path + L.at10m
 
         this.nodes = [
             [this.at20ft, 0, U.windSpeed, 0, [

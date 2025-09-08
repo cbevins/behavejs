@@ -1,5 +1,5 @@
 
-import { Dag, ModuleBase, U } from './index.js'
+import { Dag, L, ModuleBase, U } from './index.js'
 import { Calc } from '../index.js'
 
 // MidflameWindSpeedModule extends the FuelBedModule (named in arg 1)
@@ -17,7 +17,7 @@ export class MidflameWindSpeedModule extends ModuleBase {
         super(path)
 
         // fully qualified node keys
-        this.wsmid = path + 'wind speed at midflame'
+        this.wsmid = path + L.midflame
         // linked node keys referenced by genome()
         this.ws20 = ws20
         this.wsrf = wsrf

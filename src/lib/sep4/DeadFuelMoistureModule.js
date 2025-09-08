@@ -1,4 +1,4 @@
-import { Dag, ModuleBase, U } from './index.js'
+import { Dag, L, ModuleBase, U } from './index.js'
 
 export class DeadFuelMoistureModule extends ModuleBase {
     /**
@@ -10,9 +10,9 @@ export class DeadFuelMoistureModule extends ModuleBase {
 
         // fully qualified node keys
         this.dead = path + 'category'
-        this.dead1 = path + '1-h'
-        this.dead10 = path + '10-h'
-        this.dead100 = path + '100-h'
+        this.dead1 = path + L.tl1h
+        this.dead10 = path + L.tl10h
+        this.dead100 = path + L.tl100h
 
         // config keys
         this.config = 'dead fuel moisture input by'

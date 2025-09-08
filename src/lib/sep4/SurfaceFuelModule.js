@@ -8,6 +8,10 @@ export class SurfaceFuelModule extends ModuleBase {
      * 
      * @param {string} fuelBedPath Prefix for this module's fully qualified node kets,
      *        something like `site/surface/primary/bed/`
+     * @param {string} slope Fully qualified path to slope steepness ratio node,
+     *        something like 'site/terrain/slope/steepness/ratio'
+     * @param {string} midflame Fully qualified path to the midflame wind speed,
+     *        something like 'site/surface/primary/wind/midflame'
      * @param {string} stdPath Fully qualified path to standard fuel model
      *        something like `site/surface/primary/model/standard/`
      * @param {string} chPath Fully qualified path to chaparral fuel model
@@ -17,7 +21,7 @@ export class SurfaceFuelModule extends ModuleBase {
      * @param {string} waPath Fully qualified path to western aspen fuel model
      *        something like `site/surface/primary/model/aspen/`
     */
-    constructor(fuelBedPath, stdPath='', chPath='', pgPath='', waPath='') {
+    constructor(fuelBedPath, slope, midflame, stdPath='', chPath='', pgPath='', waPath='') {
         super(fuelBedPath)
 
         // configs
@@ -340,12 +344,6 @@ export class SurfaceFuelModule extends ModuleBase {
             [l5+L.fuelSeff, 0, U.fuelFrac, 0, [
                 [this.std, Dag.assign, [K.zero]],
             ]],
-            // TEST NODE!!!
-            ['totalLoad', 0, U.fuelLoad, 0, [
-                [this.std, Calc.sum, [
-                    d1+L.fuelLoad, d2+L.fuelLoad, d3+L.fuelLoad, d4+L.fuelLoad, d5+L.fuelLoad,
-                    l1+L.fuelLoad, l2+L.fuelLoad, l3+L.fuelLoad, l4+L.fuelLoad, l5+L.fuelLoad,]]
-            ]]
         ]
 
         //----------------------------------------------------------------------
@@ -509,8 +507,8 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.reactionVelocityMaximum, [bed+L.fuelSavr15]]]],
             [bed+L.fuelRxvo,   0, U.fuelRxv, 0, [
                 [this.any, Bed.reactionVelocityOptimum, [bed+L.fuelBrat, bed+L.fuelRxvm, bed+L.fuelRxve]]]],
-            // [bed+L.fuelSlpk,   0, U.factor, 0, [
-            //     [this.any, Bed.slopeK, [bed+L.fuelBeta]]]],
+            [bed+L.fuelSlpk,   0, U.factor, 0, [
+                [this.any, Bed.slopeK, [bed+L.fuelBeta]]]],
             [bed+L.fuelSavr15, 1, U.fuelSavr, 0, [
                 [this.any, Bed.savr15, [bed+L.fuelSavr]]]],
             [bed+L.fuelSink,   0, U.fuelSink, 0, [
@@ -519,50 +517,50 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.reactionIntensity, [dead+L.fireRxi, live+L.fireRxi]]]],
             [bed+L.fuelSource, 0, U.fireRxi, 0, [
                 [this.any, Bed.heatSource, [bed+L.fireRxi, bed+L.fuelXi]]]],
-            // [bed+L.windB,      1, U.factor, 0, [
-            //     [this.any, Bed.windB, [bed+L.fuelSavr]]]],
-            // [bed+L.windC,      0, U.factor, 0, [
-            //     [this.any, Bed.windC, [bed+L.fuelSavr]]]],
-            // [bed+L.windE,      1, U.factor, 0, [
-            //     [this.any, Bed.windE, [bed+L.fuelSavr]]]],
-            // [bed+L.windI,      0, U.factor, 0, [
-            //     [this.any, Bed.windI, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
-            // [bed+L.windK,      0, U.factor, 0, [
-            //     [this.any, Bed.windK, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
+            [bed+L.windB,      1, U.factor, 0, [
+                [this.any, Bed.windB, [bed+L.fuelSavr]]]],
+            [bed+L.windC,      0, U.factor, 0, [
+                [this.any, Bed.windC, [bed+L.fuelSavr]]]],
+            [bed+L.windE,      1, U.factor, 0, [
+                [this.any, Bed.windE, [bed+L.fuelSavr]]]],
+            [bed+L.windI,      0, U.factor, 0, [
+                [this.any, Bed.windI, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
+            [bed+L.windK,      0, U.factor, 0, [
+                [this.any, Bed.windK, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
             [bed+L.fireTaur,   0, U.taur, 0, [
                 [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
             [bed+L.fireHpua,   0, U.hpua, 0, [
                 [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
-            [bed+L.fuelWsrf,   1, U.fraction, 0, [
+            [bed+L.wsrfFuel,   1, U.fraction, 0, [
                 [this.any, Bed.openWindSpeedAdjustmentFactor, [bed+L.fuelDepth]]]],
             [bed+L.rosNwns,    0, U.fireRos, 0, [
                 [this.any, Bed.noWindNoSlopeSpreadRate, [bed+L.fuelSource, bed+L.fuelSink]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
 
-            // [bed+L.fuelPhiW,   0, U.factor, 0, [
-            //     [this.any, Bed.phiWind, [midflame, bed+L.windB, bed+L.windK]]]],
-            // [bed+L.fuelPhiS,   0, U.factor, 0, [
-            //     [this.any, Bed.phiSlope, [slope, bed+L.fuelSlpk]]]],
-            // [bed+L.fuelPhiE,   0, U.factor, 0, [
-            //     [this.any, Fire.phiEffectiveWind, [bed+L.fuelPhiW, bed+L.fuelPhiS]]]],
-            // // The following apply only to upslope wind conditions
-            // [bed+L.weffUpsl,   0, U.windSpeed, 0, [
-            //     [this.any, Fire.effectiveWindSpeed, [bed+L.fuelPhiE, bed+L.windB, bed+L.windI]]]],
-            // [bed+L.rosUpsl,    0, U.fireRos, 0, [
-            //     [this.any, Fire.maximumSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiE]]]],
-            // [bed+L.fireTaur,   0, U.taur, 0, [
-            //     [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
-            // [bed+L.fireHpua,   0, U.hpua, 0, [
-            //     [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
-            // [bed+L.fireLwr,    1, U.ratio, 0, [
-            //     [this.any, Fire.lengthToWidthRatio, [bed+L.weffUpsl]]]],
-            // [bed+L.fireFli,    0, U.fireFli, 0, [
-            //     [this.any, Fire.firelineIntensity, [bed+L.rosUpsl, bed+L.fireRxi, bed+L.fireTaur]]]],
-            // [bed+L.fireFlame,   0, U.flamelen, 0, [
-            //     [this.any, Fire.flameLength, [bed+L.fireFli]]]],
+            [bed+L.fuelPhiW,   0, U.factor, 0, [
+                [this.any, Bed.phiWind, [midflame, bed+L.windB, bed+L.windK]]]],
+            [bed+L.fuelPhiS,   0, U.factor, 0, [
+                [this.any, Bed.phiSlope, [slope, bed+L.fuelSlpk]]]],
+            [bed+L.fuelPhiE,   0, U.factor, 0, [
+                [this.any, Fire.phiEffectiveWind, [bed+L.fuelPhiW, bed+L.fuelPhiS]]]],
+            // The following apply only to upslope wind conditions
+            [bed+L.weffUpsl,   0, U.windSpeed, 0, [
+                [this.any, Fire.effectiveWindSpeed, [bed+L.fuelPhiE, bed+L.windB, bed+L.windI]]]],
+            [bed+L.rosUpsl,    0, U.fireRos, 0, [
+                [this.any, Fire.maximumSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiE]]]],
+            [bed+L.fireTaur,   0, U.taur, 0, [
+                [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
+            [bed+L.fireHpua,   0, U.hpua, 0, [
+                [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
+            [bed+L.fireLwr,    1, U.ratio, 0, [
+                [this.any, Fire.lengthToWidthRatio, [bed+L.weffUpsl]]]],
+            [bed+L.fireFli,    0, U.fireFli, 0, [
+                [this.any, Fire.firelineIntensity, [bed+L.rosUpsl, bed+L.fireRxi, bed+L.fireTaur]]]],
+            [bed+L.fireFlame,   0, U.flamelen, 0, [
+                [this.any, Fire.flameLength, [bed+L.fireFli]]]],
         )
     }
 }

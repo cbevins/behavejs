@@ -1,4 +1,4 @@
-import { Dag, ModuleBase, U } from './index.js'
+import { Dag, L, ModuleBase, U } from './index.js'
 import { CanopyEquations as Canopy} from '../index.js'
 
 export class CanopyModule extends ModuleBase {
@@ -11,17 +11,17 @@ export class CanopyModule extends ModuleBase {
 
         // fully qualified node keys
         this.base     = path + 'base height'
-        this.bulk     = path + 'bulk density'
+        this.bulk     = path + L.fuelBulk
         this.cover    = path + 'coverage'
-        this.heat     = path + 'heat of combustion'
+        this.heat     = path + L.fuelHeat
         this.height   = path + 'total height'
-        this.hpua     = path + 'heat per unit area'
+        this.hpua     = path + L.fireHpua
         this.length   = path + 'crown length'
-        this.load     = path + 'fuel load'
+        this.load     = path + L.fuelLoad
         this.ratio    = path + 'crown ratio'
         this.shelters = path + 'shelters fuel from wind'
         this.vol      = path + 'volumetric fill ratio'
-        this.wsrf     = path + 'wind speed reduction factor'
+        this.wsrf     = path + L.wsrfCanopy
 
         // configs
         this.config = 'canopy height input'
