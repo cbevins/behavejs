@@ -352,7 +352,6 @@ export class FuelBedEquations {
      */
     static windB (savr) {
         const b = 0.02526 * savr ** 0.54
-        // console.log(`***windB() savr=${savr} yields ${b}`)
         return b
     }
 
@@ -369,7 +368,6 @@ export class FuelBedEquations {
      */
     static windC (savr) {
         const c = 7.47 * Math.exp(-0.133 * savr ** 0.55)
-        // console.log(`***windC() savr=${savr} yields ${c}`)
         return c
     }
 

@@ -105,41 +105,13 @@ const dag = new Dag(nodes)
 //------------------------------------------------------------------------------
 
 const select = [
-    P.bed1+L.fuelBeta,
-    P.bed1+L.fuelBulk,
-    
-    P.bed1+L.fuelLoad,
-    P.dead1+L.fuelLoad,
-    P.live1+L.fuelLoad,
-
-    P.bed1+L.fuelSa,
-    P.dead1+L.fuelSa,
-    P.live1+L.fuelSa,
-    
-    P.bed1+L.fuelSavr,
-    
-    P.dead1+L.fuelHeat,
-    P.live1+L.fuelHeat,
-
-    P.dead1+L.fuelSeff,
-    P.live1+L.fuelSeff,
-
-    P.dead1+L.fuelMois,
-    P.live1+L.fuelMois,
-
-    P.dead1+L.fuelNet,
-    P.live1+L.fuelNet,
-
-    P.dead1+L.fuelEtas,
-    P.live1+L.fuelEtas,
-
-    P.dead1+L.fuelEtam,
-    P.live1+L.fuelEtam,
-
-    P.bed1+L.rosNwns
+    P.bed1+L.rosNwns,
+    P.bed1+L.fuelPhiW,
+    P.bed1+L.fuelPhiS,
+    P.bed1+L.rosUpsl
 ]
 dag.select(select)
-Util.logDagNodes(dag.selected(), 'Selected Nodes')
+// Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
 //------------------------------------------------------------------------------
 // Step 5 - determine/confirm active configurations (informational)
@@ -176,3 +148,10 @@ Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 dag.updateAll()
 Util.logDagNodes(dag.selected(), 'Selected Node Values')
 // Util.logDagNodes(dag.nodes(), 'All Nodes')
+
+function showNode(node) {
+    console.log(`\nNode "${node.key}" has ${node.suppliers.length} suppliers:`)
+    for(let n of node.suppliers) console.log('  ', n.key, '=', n.value)
+    console.log(`Node "${node.key}" has ${node.consumers.length} consumers:`)
+    for(let n of node.consumers) console.log('  ', n.key)
+}

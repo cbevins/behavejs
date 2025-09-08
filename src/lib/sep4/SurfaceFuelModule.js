@@ -355,7 +355,6 @@ export class SurfaceFuelModule extends ModuleBase {
             const p3 = (lcat===dead) ? d3 : l3
             const p4 = (lcat===dead) ? d4 : l4
             const p5 = (lcat===dead) ? d5 : l5
-            console.log('lcat+L.fuelScar=', lcat+L.fuelScar)
             //------------------------------------------------------------------
             // Fuel particle *derived* nodes
             //------------------------------------------------------------------
@@ -372,11 +371,6 @@ export class SurfaceFuelModule extends ModuleBase {
                         [this.any, Fuel.netOvendryLoad, [p+L.fuelLoad, p+L.fuelStot]]]],
                     [p+L.fuelSize, 0, U.fuelSize, 0, [
                         [this.any, Fuel.sizeClass, [p+L.fuelSavr]]]],
-
-                    // [p+L.fuelScwf, 0, U.fuelWtg, 0, [
-                    //     [this.any, Fuel.sizeClassWeightingFactor, [
-                    //         p+L.fuelSize,           // element's size class index
-                    //         lcat+L.fuelScar]]]],    // into this size class weighting array
 
                     [p+L.fuelScwf, 0, U.fuelWtg, 0, [
                         [this.any, Fuel.sizeClassWeightingFactor, [p+L.fuelSize, lcat+L.fuelScar]]]],
@@ -398,7 +392,6 @@ export class SurfaceFuelModule extends ModuleBase {
             //------------------------------------------------------------------
             // Fuel life category *derived* nodes
             //------------------------------------------------------------------
-            console.log('Line 395: lact=', lcat, 'etaS=', lcat+L.fuelEtas)
             this.nodes.push(
                 [lcat+L.fuelScar, 0, U.fuelWtg, 0, [
                     [this.any, Bed.sizeClassWeightingFactorArray, [
@@ -411,10 +404,10 @@ export class SurfaceFuelModule extends ModuleBase {
                     [this.any, Calc.sum, [p1+L.fuelSa, p2+L.fuelSa, p3+L.fuelSa, p4+L.fuelSa, p5+L.fuelSa]]]],
                 [lcat+L.fuelSawf, 0, U.fuelWtg, 0, [
                     [this.any, Calc.divide, [lcat+L.fuelSa, bed+L.fuelSa]]]],
-                [lcat+L.fuelEtas, 9, U.fraction, 0, [
-                    [this.any, Fuel.mineralDamping, [lcat+L.fuelSeff]]]],
-                [lcat+L.fuelEtam, 8, U.fraction, 0, [
-                    [this.any, Fuel.moistureDamping, [lcat+L.fuelMois, lcat+L.fuelMext]]]],
+                [lcat+L.fuelEtas, 0, U.fraction, 0, [
+                    [this.any, Bed.mineralDamping, [lcat+L.fuelSeff]]]],
+                [lcat+L.fuelEtam, 0, U.fraction, 0, [
+                    [this.any, Bed.moistureDamping, [lcat+L.fuelMois, lcat+L.fuelMext]]]],
                 [lcat+L.fuelHeat, 0, U.fuelHeat, 0, [
                     [this.any, Calc.sumOfProducts, [
                         p1+L.fuelSawf, p2+L.fuelSawf, p3+L.fuelSawf, p4+L.fuelSawf, p5+L.fuelSawf,
@@ -427,16 +420,16 @@ export class SurfaceFuelModule extends ModuleBase {
                     [this.any, Calc.sumOfProducts, [
                         p1+L.fuelSawf, p2+L.fuelSawf, p3+L.fuelSawf, p4+L.fuelSawf, p5+L.fuelSawf,
                         p1+L.fuelMois, p2+L.fuelMois, p3+L.fuelMois, p4+L.fuelMois, p5+L.fuelMois]]]],
-                [lcat+L.fuelVol, 0, U.fuelVol, 0, [
+                [lcat+L.fuelVol,  0, U.fuelVol, 0, [
                     [this.any, Calc.sum, [p1+L.fuelVol, p2+L.fuelVol, p3+L.fuelVol, p4+L.fuelVol, p5+L.fuelVol]]]],
-                [lcat+L.fuelQig, 0, U.fuelQig, 0, [
+                [lcat+L.fuelQig,  0, U.fuelQig, 0, [
                     [this.any, Calc.sumOfProducts, [
                         p1+L.fuelSawf, p2+L.fuelSawf, p3+L.fuelSawf, p4+L.fuelSawf, p5+L.fuelSawf,
                         p1+L.fuelQig, p2+L.fuelQig, p3+L.fuelQig, p4+L.fuelQig, p5+L.fuelQig]]]],
-                [lcat+L.fireRxi, 0, U.fireRxi, 0, [
+                [lcat+L.fireRxi,  0, U.fireRxi, 0, [
                     [this.any, Calc.multiply, [lcat+L.fuelDrxi, lcat+L.fuelEtam]]]],
                 [lcat+L.fuelDrxi, 0, U.fireRxi, 0, [
-                    [this.any, Fuel.dryFuelReactionIntensity, [
+                    [this.any, Bed.dryFuelReactionIntensity, [
                         bed+L.fuelRxvo, lcat+L.fuelNet, lcat+L.fuelHeat, lcat+L.fuelEtas]]]],
                 [lcat+L.fuelSavr, 1, U.fuelSavr, 0, [
                     [this.any, Calc.sumOfProducts, [
@@ -465,9 +458,10 @@ export class SurfaceFuelModule extends ModuleBase {
         // The following nodes only exist for the surface fire 'live' category
         this.nodes.push(
             [live+L.fuelMextf, 0, U.factor, 0, [
-                [this.any, Fuel.liveFuelExtinctionMoistureContentFactor, [dead+L.fuelEfol, live+L.fuelEfol]]]],
-            [live+L.fuelMext, 1, U.fuelMois, 0, [
-                [this.any, Fuel.liveFuelExtinctionMoistureContent, [
+                [this.any, Bed.liveFuelExtinctionMoistureContentFactor, [dead+L.fuelEfol, live+L.fuelEfol]]]],
+                // [this.any, Bed.dummy, [dead+L.fuelEfol, live+L.fuelEfol, live+L.fuelMois]]]],
+            [live+L.fuelMext,  0, U.fuelMois, 0, [
+                [this.any, Bed.liveFuelExtinctionMoistureContent, [
                     live+L.fuelMextf, dead+L.fuelEfmc, dead+L.fuelMext]]]]
         )
         // The crown canopy fuel model mext is 0.25
@@ -497,7 +491,7 @@ export class SurfaceFuelModule extends ModuleBase {
             [bed+L.fuelBrat,   0, U.ratio, 0, [
                 [this.any, Bed.packingRatioRatio, [bed+L.fuelBeta, bed+L.fuelBopt]]]],
             [bed+L.fuelEhn,    0, U.ratio, 0, [
-                [this.any, Fuel.effectiveHeatingNumber, [bed+L.fuelSavr]]]],
+                [this.any, Bed.effectiveHeatingNumber, [bed+L.fuelSavr]]]],
             [bed+L.fuelXi,     0, U.ratio, 0, [
                 [this.any, Bed.propagatingFluxRatio, [bed+L.fuelSavr, bed+L.fuelBeta]]]],
             [bed+L.fuelRxve,   0, U.factor, 0, [
