@@ -57,7 +57,7 @@ export class SurfaceFuelModule extends ModuleBase {
         //----------------------------------------------------------------------
         this.nodes = [
             [d1+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelDeadCat]]
+                [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d1+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [stdPath + 'dead/1-h/' + L.fuelType]],
@@ -86,7 +86,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Dead particle 2
             [d2+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelDeadCat]]
+                [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d2+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [stdPath + 'dead/10-h/' + L.fuelType]],
@@ -115,7 +115,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Dead particle 3
             [d3+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelDeadCat]]
+                [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d3+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [stdPath + 'dead/100-h/' + L.fuelType]],
@@ -144,7 +144,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Dead particle 4
             [d4+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelDeadCat]]
+                [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d4+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [stdPath + 'dead/herb/' + L.fuelType]],
@@ -173,7 +173,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Dead particle 5
             [d5+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelDeadCat]]
+                [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d5+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [K.fuelUnused]],
@@ -202,7 +202,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Live particle 1
             [l1+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelLiveCat]]
+                [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l1+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [stdPath + 'live/herb/' + L.fuelType]],
@@ -231,7 +231,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Live particle 2
             [l2+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelLiveCat]]
+                [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l2+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [stdPath + 'live/stem/' + L.fuelType]],
@@ -260,7 +260,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Live particle 3
             [l3+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelLiveCat]]
+                [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l3+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [K.fuelUnused]],
@@ -289,7 +289,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Live particle 4
             [l4+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelLiveCat]]
+                [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l4+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [K.fuelUnused]],
@@ -318,7 +318,7 @@ export class SurfaceFuelModule extends ModuleBase {
 
             // Live particle 5
             [l5+L.fuelLife, '', U.fuelLife, 0, [
-                [this.all, Dag.assign, [K.fuelLiveCat]]
+                [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l5+L.fuelType, '', U.fuelType, 0, [
                 [this.std, Dag.assign, [K.fuelUnused]],
@@ -355,6 +355,7 @@ export class SurfaceFuelModule extends ModuleBase {
             const p3 = (lcat===dead) ? d3 : l3
             const p4 = (lcat===dead) ? d4 : l4
             const p5 = (lcat===dead) ? d5 : l5
+            console.log('lcat+L.fuelScar=', lcat+L.fuelScar)
             //------------------------------------------------------------------
             // Fuel particle *derived* nodes
             //------------------------------------------------------------------
@@ -371,10 +372,15 @@ export class SurfaceFuelModule extends ModuleBase {
                         [this.any, Fuel.netOvendryLoad, [p+L.fuelLoad, p+L.fuelStot]]]],
                     [p+L.fuelSize, 0, U.fuelSize, 0, [
                         [this.any, Fuel.sizeClass, [p+L.fuelSavr]]]],
+
+                    // [p+L.fuelScwf, 0, U.fuelWtg, 0, [
+                    //     [this.any, Fuel.sizeClassWeightingFactor, [
+                    //         p+L.fuelSize,           // element's size class index
+                    //         lcat+L.fuelScar]]]],    // into this size class weighting array
+
                     [p+L.fuelScwf, 0, U.fuelWtg, 0, [
-                        [this.any, Fuel.sizeClassWeightingFactor, [
-                            p+L.fuelSize,       // element's size class index
-                            lcat+L.fuelScar]]]],  // into this size class weighting array
+                        [this.any, Fuel.sizeClassWeightingFactor, [p+L.fuelSize, lcat+L.fuelScar]]]],
+
                     [p+L.fuelSa, 0, U.fuelSa, 0, [
                         [this.any, Fuel.surfaceArea, [p+L.fuelLoad, p+L.fuelSavr, p+L.fuelDens]]]],
                     [p+L.fuelSawf, 0, U.fuelWtg, 0, [
@@ -392,27 +398,27 @@ export class SurfaceFuelModule extends ModuleBase {
             //------------------------------------------------------------------
             // Fuel life category *derived* nodes
             //------------------------------------------------------------------
+            console.log('Line 395: lact=', lcat, 'etaS=', lcat+L.fuelEtas)
             this.nodes.push(
-                [lcat+L.fuelSa, 0, U.fuelSa, 0, [
-                    [this.any, Calc.sum, [p1+L.fuelSa, p2+L.fuelSa, p3+L.fuelSa, p4+L.fuelSa, p5+L.fuelSa]]
-                ]],
-                [lcat+L.fuelSawf, 0, U.fuelWtg, 0, [
-                    [this.any, Calc.divide, [lcat+L.fuelSa, bed+L.fuelSa]]]],
-                [lcat+L.fuelEtas, 0, U.fraction, 0, [
-                    [this.any, Fuel.mineralDamping, [lcat+L.fuelSeff]]]],
-                [lcat+L.fuelEtam, 0, U.fraction, 0, [
-                    [this.any, Fuel.moistureDamping, [lcat+L.fuelMois, lcat+L.fuelMext]]]],
-                [lcat+L.fuelHeat, 0, U.fuelHeat, 0, [
-                    [this.any, Calc.sumOfProducts, [
-                        p1+L.fuelSawf, p2+L.fuelSawf, p3+L.fuelSawf, p4+L.fuelSawf, p5+L.fuelSawf,
-                        p1+L.fuelHeat, p2+L.fuelHeat, p3+L.fuelHeat, p4+L.fuelHeat, p5+L.fuelHeat]]]],
                 [lcat+L.fuelScar, 0, U.fuelWtg, 0, [
-                    [this.any, Fuel.sizeClassWeightingFactorArray, [
+                    [this.any, Bed.sizeClassWeightingFactorArray, [
                         p1+L.fuelSa, p1+L.fuelSize,
                         p2+L.fuelSa, p2+L.fuelSize,
                         p3+L.fuelSa, p3+L.fuelSize,
                         p4+L.fuelSa, p4+L.fuelSize,
                         p5+L.fuelSa, p5+L.fuelSize]]]],
+                [lcat+L.fuelSa, 0, U.fuelSa, 0, [
+                    [this.any, Calc.sum, [p1+L.fuelSa, p2+L.fuelSa, p3+L.fuelSa, p4+L.fuelSa, p5+L.fuelSa]]]],
+                [lcat+L.fuelSawf, 0, U.fuelWtg, 0, [
+                    [this.any, Calc.divide, [lcat+L.fuelSa, bed+L.fuelSa]]]],
+                [lcat+L.fuelEtas, 9, U.fraction, 0, [
+                    [this.any, Fuel.mineralDamping, [lcat+L.fuelSeff]]]],
+                [lcat+L.fuelEtam, 8, U.fraction, 0, [
+                    [this.any, Fuel.moistureDamping, [lcat+L.fuelMois, lcat+L.fuelMext]]]],
+                [lcat+L.fuelHeat, 0, U.fuelHeat, 0, [
+                    [this.any, Calc.sumOfProducts, [
+                        p1+L.fuelSawf, p2+L.fuelSawf, p3+L.fuelSawf, p4+L.fuelSawf, p5+L.fuelSawf,
+                        p1+L.fuelHeat, p2+L.fuelHeat, p3+L.fuelHeat, p4+L.fuelHeat, p5+L.fuelHeat]]]],
                 [lcat+L.fuelLoad, 0, U.fuelLoad, 0, [
                     [this.any, Calc.sum, [p1+L.fuelLoad, p2+L.fuelLoad, p3+L.fuelLoad, p4+L.fuelLoad, p5+L.fuelLoad]]]],
                 [lcat+L.fuelEfol, 0, U.fuelLoad, 0, [
@@ -440,13 +446,6 @@ export class SurfaceFuelModule extends ModuleBase {
                     [this.any, Calc.sumOfProducts, [
                         p1+L.fuelSawf, p2+L.fuelSawf, p3+L.fuelSawf, p4+L.fuelSawf, p5+L.fuelSawf,
                         p1+L.fuelSeff, p2+L.fuelSeff, p3+L.fuelSeff, p4+L.fuelSeff, p5+L.fuelSeff]]]],
-                [lcat+L.fuelScar, 0, U.fuelWtg, 0, [
-                    [this.any, Fuel.sizeClassWeightingFactorArray, [
-                        p1+L.fuelSa, p1+L.fuelSize,
-                        p2+L.fuelSa, p2+L.fuelSize,
-                        p3+L.fuelSa, p3+L.fuelSize,
-                        p4+L.fuelSa, p4+L.fuelSize,
-                        p5+L.fuelSa, p5+L.fuelSize]]]],
                 // Note that this uses the *SIZE CLASS* weighting factors!!
                 [lcat+L.fuelNet, 0, U.fuelLoad, 0, [
                     [this.any, Calc.sumOfProducts, [

@@ -298,7 +298,7 @@ export class FuelBedEquations {
         const scwt = [0, 0, 0, 0, 0, 0]
         if (tarea > 0.0) {
             for (let idx = 0; idx < 6; idx += 1) {
-            scwt[idx] = scar[idx] / tarea
+                scwt[idx] = scar[idx] / tarea
             }
         }
         return scwt

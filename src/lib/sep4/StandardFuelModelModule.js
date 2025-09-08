@@ -20,13 +20,13 @@ export class StandardFuelModelModule extends ModuleBase {
         super(path)
 
         // fully qualified node keys
-        this.key = path + 'key'
-        this.code = path + 'code'
+        this.key = path + L.fuelKey
+        this.code = path + L.fuelCode
         this.curedFraction = curedFraction
         this.depth = path + L.fuelDepth
         this.deadMext = path + 'dead/' + L.fuelMext
-        this.label = path + 'label'
-        this.number = path + 'number'
+        this.label = path + L.fuelLabel
+        this.number = path + L.fuelNumber
         this.dens = path + L.fuelDens
         this.seff = path + L.fuelSeff
         this.stot = path + L.fuelStot
@@ -104,21 +104,21 @@ export class StandardFuelModelModule extends ModuleBase {
                 [this.catalog, Cat.mext, [this.key]],
                 [this.custom, Dag.input, []],
             ]],
-            // common to all particles
             [this.deadHeat, 0, U.fuelHeat, 0, [
-                [this.any, Cat.heatDead, []],
-            ]],
-            [this.dens, 0, U.fuelDens, 0, [
-                [this.any, Cat.dens, []],
+                [this.any, Cat.heatDead, [this.key]],
             ]],
             [this.liveHeat, 0, U.fuelHeat, 0, [
-                [this.any, Cat.heatLive, []],
+                [this.any, Cat.heatLive, [this.key]],
+            ]],
+            // common to all particles (this.key arg is ignored)
+            [this.dens, 0, U.fuelDens, 0, [
+                [this.any, Cat.dens, [this.key]],
             ]],
             [this.seff, 0, U.fuelSeff, 0, [
-                [this.any, Cat.seff, []],
+                [this.any, Cat.seff, [this.key]],
             ]],
             [this.stot, 0, U.fuelStot, 0, [
-                [this.any, Cat.stot, []],
+                [this.any, Cat.stot, [this.key]],
             ]],
             // 1-h dead
             [this.dead1Load, 0, U.fuelLoad, 0, [
@@ -132,8 +132,8 @@ export class StandardFuelModelModule extends ModuleBase {
                 [this.catalog, Cat.savr1, [this.key]],
                 [this.custom, Dag.input, []],
             ]],
-            [this.dead1Type, '', U.fuelType, 0, [
-                [this.any, Cat.type1, []],
+            [this.dead1Type, Cat.type1(), U.fuelType, 0, [
+                [this.any, Dag.constant(), []],
             ]],
             // 10-h dead
             [this.dead10Load, 0, U.fuelLoad, 0, [
@@ -146,8 +146,8 @@ export class StandardFuelModelModule extends ModuleBase {
             [this.dead10Savr, 1, U.fuelSavr, 0, [
                 [this.any, Cat.savr10, []],
             ]],
-            [this.dead10Type, '', U.fuelType, 0, [
-                [this.any, Cat.type10, []],
+            [this.dead10Type, Cat.type10(), U.fuelType, 0, [
+                [this.any, Dag.constant, []],
             ]],
             // 100-h dead
             [this.dead100Load, 0, U.fuelLoad, 0, [
@@ -160,8 +160,8 @@ export class StandardFuelModelModule extends ModuleBase {
             [this.dead100Savr, 1, U.fuelSavr, 0, [
                 [this.any, Cat.savr100, []],
             ]],
-            [this.dead100Type, '', U.fuelType, 0, [
-                [this.any, Cat.type100, []],
+            [this.dead100Type, Cat.type100(), U.fuelType, 0, [
+                [this.any, Dag.constant(), []],
             ]],
             // cured portion of total herb load
             [this.deadHerbLoad, 0, U.fuelLoad, 0, [
@@ -173,8 +173,8 @@ export class StandardFuelModelModule extends ModuleBase {
             [this.deadHerbSavr, 1, U.fuelSavr, 0, [
                 [this.any, Dag.assign, [this.totalHerbSavr]],
             ]],
-            [this.deadHerbType, '', U.fuelType, 0, [
-                [this.any, Cat.typeCured, []],
+            [this.deadHerbType, Cat.typeCured(), U.fuelType, 0, [
+                [this.any, Dag.constant, []],
             ]],
             // uncured portion of total herb load
             [this.liveHerbLoad, 0, U.fuelLoad, 0, [
@@ -186,8 +186,8 @@ export class StandardFuelModelModule extends ModuleBase {
             [this.liveHerbSavr, 1, U.fuelSavr, 0, [
                 [this.any, Dag.assign, [this.totalHerbSavr]],
             ]],
-            [this.liveHerbType, '', U.fuelType, 0, [
-                [this.any, Cat.typeUncured, []],
+            [this.liveHerbType, Cat.typeUncured(), U.fuelType, 0, [
+                [this.any, Dag.constant, []],
             ]],
             // total (cured and uncured) herb load
             [this.totalHerbLoad, 0, U.fuelLoad, 0, [
@@ -198,8 +198,8 @@ export class StandardFuelModelModule extends ModuleBase {
                 [this.catalog, Cat.savrHerb, [this.key]],
                 [this.custom, Dag.input, []],
             ]],
-            [this.totalHerbType, '', U.fuelType, 0, [
-                [this.any, Cat.typeHerb, []],
+            [this.totalHerbType, Cat.typeHerb(), U.fuelType, 0, [
+                [this.any, Dag.constant, []],
             ]],
             // live stem
             [this.liveStemLoad, 0, U.fuelLoad, 0, [
@@ -213,8 +213,8 @@ export class StandardFuelModelModule extends ModuleBase {
                 [this.catalog, Cat.savrStem, [this.key]],
                 [this.custom, Dag.input, []],
             ]],
-            [this.liveStemType, '', U.fuelType, 0, [
-                [this.any, Cat.typeStem, []],
+            [this.liveStemType, Cat.typeStem(), U.fuelType, 0, [
+                [this.any, Dag.constant, []],
             ]],
         ]
     }

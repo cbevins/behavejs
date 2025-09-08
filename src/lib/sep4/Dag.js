@@ -45,9 +45,16 @@ export class Dag {
     activeConfigs() {
         const configs = new Set()
         for(let node of this.nodeMap.values()) {
-            if (node.status !== Dag.ignored)
-                if (node.cfgopt !== '*')
+            if (node.status !== Dag.ignored) {
+                if (typeof node.cfgopt === 'undefined')
+                    throw new Error(`Node "${node.key}" configuration option is undefined.`)
+                if (node.cfgopt !== '*') {
                     configs.add(`${node.cfgkey}=${node.cfgopt}`)
+                }
+            }
+            if (node.cfgkey===null) {
+                throw new Error(`Null config key for "${node.key}"`)
+            }
         }
         configs.delete("*=*")
         return [...configs.values()].sort()

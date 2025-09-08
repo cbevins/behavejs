@@ -166,6 +166,29 @@ export class FuelElementEquations {
     return size
   }
 
+  static dummyArray(a1, a2, a3, a4, a5, s1, s2, s3, s4, s5) {
+        const a = [a1, a2, a3, a4, a5]
+        const s = [s1, s2, s3, s4, s5]
+        let tarea = 0.0
+        const scar = [0, 0, 0, 0, 0, 0]
+        for (let idx = 0; idx < 5; idx += 1) {
+            scar[s[idx]] += a[idx]
+            tarea += a[idx]
+        }
+        const scwt = [0, 0, 0, 0, 0, 0]
+        if (tarea > 0.0) {
+            for (let idx = 0; idx < 6; idx += 1) {
+                scwt[idx] = scar[idx] / tarea
+            }
+        }
+      console.log('dummyArray() returns', scwt)
+        return scwt
+  }
+  static dummyScwf(size, wtgAr) {
+    console.log('dummyScwf() called with args', size, wtgAr, 'return', wtgAr[size])
+    return wtgAr[size]
+  }
+
   static sizeClassWeightingFactor (size, swtgArray) {
     return swtgArray[size]
   }

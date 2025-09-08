@@ -1,32 +1,32 @@
 export class P {
-    static canopy    = 'site/canopy/'
+    static canopy    = 'canopy/'
     static constants = 'constants/'
-    static terrain   = 'site/terrain/'
-    static slope     = 'site/terrain/slope/'    // ratio, degrees
-    static slopeDegrees= 'site/terrain/slope/steepness/degrees'
-    static slopeRatio= 'site/terrain/slope/steepness/ratio'
-    static aspect    = 'site/terrain/aspect/'   // upslope, downslope
-    static moisture  = 'site/weather/moisture/'
-    static deadmois  = 'site/weather/moisture/dead/'    // tl1h, tl10h, tl100h
-    static livemois  = 'site/weather/moisture/live/'    // herb, stem
-    static windDir   = 'site/weather/wind/direction/'   // source, heading, upslope
-    static windSpeed = 'site/weather/wind/speed/'       // at20ft, at10m
+    static terrain   = 'terrain/'
+    static slope     = 'terrain/slope/'    // ratio, degrees
+    static slopeDegrees= 'terrain/slope/steepness/degrees'
+    static slopeRatio= 'terrain/slope/steepness/ratio'
+    static aspect    = 'terrain/aspect/'   // upslope, downslope
+    static moisture  = 'weather/moisture/'
+    static deadmois  = 'weather/moisture/dead/'    // tl1h, tl10h, tl100h
+    static livemois  = 'weather/moisture/live/'    // herb, stem
+    static windDir   = 'weather/wind/direction/'   // source, heading, upslope
+    static windSpeed = 'weather/wind/speed/'       // at20ft, at10m
 
-    static sfire     = 'site/surface/fire'
-    static cfire     = 'site/crown/fire'
+    static sfire     = 'surface/fire'
+    static cfire     = 'crown/fire'
 
-    static curing1   = 'site/surface/primary/curing/'
-    static bed1      = `site/surface/primary/bed/`
-    static dead1     = `site/surface/primary/bed/dead/`
-    static live1     = `site/surface/primary/bed/live/`
-    static model1    = `site/surface/primary/model/`
-    static standard1 = `site/surface/primary/model/standard/`
-    static chaparral1= `site/surface/primary/model/chaparral/`
-    static palmetto1 = `site/surface/primary/model/palmetto/`
-    static aspen1    = `site/surface/primary/model/aspen/`
-    static wsrf1     = 'site/surface/primary/wind/speed/reduction'
-    static midflame1 = 'site/surface/primary/wind/midflame'
-    static fire1     = `site/surface/primary/fire/`
+    static curing1   = 'surface/primary/curing/'
+    static bed1      = `surface/primary/bed/`
+    static dead1     = `surface/primary/bed/dead/`
+    static live1     = `surface/primary/bed/live/`
+    static model1    = `surface/primary/model/`
+    static standard1 = `surface/primary/model/standard/`
+    static chaparral1= `surface/primary/model/chaparral/`
+    static palmetto1 = `surface/primary/model/palmetto/`
+    static aspen1    = `surface/primary/model/aspen/`
+    static wsrf1     = 'surface/primary/wind/speed/reduction'
+    static midflame1 = 'surface/primary/wind/midflame'
+    static fire1     = `surface/primary/fire/`
 }
 
 // Defines common leaf segment keys
@@ -42,6 +42,7 @@ export class L {
     static fuelBeta = 'packing ratio'
     static fuelBopt = L.fuelBeta+'/optimum'
     static fuelBrat = L.fuelBeta+'/ratio'
+    static fuelCode = 'code'
     static fuelDens = 'fiber density'
     static fuelDepth = 'depth'
     static fuelDiam = 'cylindrical diameter'
@@ -53,10 +54,13 @@ export class L {
     static fuelEtam = 'moisture damping coefficient'
     static fuelEtas = 'mineral damping coefficient'
     static fuelHeat = 'heat of combustion'
+    static fuelKey  = 'key'
+    static fuelLabel = 'label'
     static fuelLeng = 'cylindrical length'
     static fuelLife = 'life category'
     static fuelLoad = 'ovendry fuel load'
     static fuelNet  = 'net ovendry load'
+    static fuelNumber = 'number'
     static fuelMext = 'extinction moisture content'
     static fuelMextf= 'extinction moisture content/factor'
     static fuelMois = 'moisture content'

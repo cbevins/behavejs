@@ -76,7 +76,7 @@ export class Util {
         for(let node of nodes) {
             const {key, value, units, updater, suppliers, consumers, status, dirty, cfgkey, cfgopt} = node
             str += key.padEnd(w0+2)
-            str += (''+value).padEnd(w1+2)
+            str += ('"'+value+'"').padEnd(w1+2)
             str += status.padEnd(w6+2)
             str += dirty.padEnd(w7+2)
             str += (updater.name).padEnd(w3+2)

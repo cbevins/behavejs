@@ -92,7 +92,6 @@ const nodes = [
     ...midflame1.configure(midflame1.observed),
     ...bed1.configure(bed1.std)
 ].sort()
-
 // logNodes(nodes)
 
 //------------------------------------------------------------------------------
@@ -105,7 +104,40 @@ const dag = new Dag(nodes)
 // Step 4 - select nodes of interest
 //------------------------------------------------------------------------------
 
-const select = [standard1.curedFraction, standard1.totalHerbLoad, standard1.deadHerbLoad]
+const select = [
+    P.bed1+L.fuelBeta,
+    P.bed1+L.fuelBulk,
+    
+    P.bed1+L.fuelLoad,
+    P.dead1+L.fuelLoad,
+    P.live1+L.fuelLoad,
+
+    P.bed1+L.fuelSa,
+    P.dead1+L.fuelSa,
+    P.live1+L.fuelSa,
+    
+    P.bed1+L.fuelSavr,
+    
+    P.dead1+L.fuelHeat,
+    P.live1+L.fuelHeat,
+
+    P.dead1+L.fuelSeff,
+    P.live1+L.fuelSeff,
+
+    P.dead1+L.fuelMois,
+    P.live1+L.fuelMois,
+
+    P.dead1+L.fuelNet,
+    P.live1+L.fuelNet,
+
+    P.dead1+L.fuelEtas,
+    P.live1+L.fuelEtas,
+
+    P.dead1+L.fuelEtam,
+    P.live1+L.fuelEtam,
+
+    P.bed1+L.rosNwns
+]
 dag.select(select)
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
@@ -126,8 +158,16 @@ Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 // Step 7 - Set input values
 //------------------------------------------------------------------------------
 
-dag.set(livemois.herb, 0.5)
-dag.set(standard1.key, '124')
+const fuelKey = P.standard1+L.fuelKey
+dag.set(P.standard1+L.fuelKey, '10')
+dag.set(P.deadmois+L.tl1h, 0.05)
+dag.set(P.deadmois+L.tl10h, 0.07)
+dag.set(P.deadmois+L.tl100h, 0.09)
+dag.set(P.livemois+L.herb, 0.5)
+dag.set(P.livemois+L.stem, 1.5)
+dag.set(P.slope+L.slopeRat, 0.25)
+dag.set(P.midflame1 + L.midflame, 10*88)
+Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 
 //------------------------------------------------------------------------------
 // Step 8 - Get output values
