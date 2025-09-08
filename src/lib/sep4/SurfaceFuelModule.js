@@ -7,22 +7,25 @@ export class SurfaceFuelModule extends ModuleBase {
     /**
      * 
      * @param {string} fuelBedPath Prefix for this module's fully qualified node kets,
-     *        something like `site/surface/primary/bed/`
+     *        something like `surface/primary/bed/`
      * @param {string} slope Fully qualified path to slope steepness ratio node,
-     *        something like 'site/terrain/slope/steepness/ratio'
+     *        something like 'terrain/slope/steepness/ratio'
      * @param {string} midflame Fully qualified path to the midflame wind speed,
-     *        something like 'site/surface/primary/wind/midflame'
+     *        something like 'surface/primary/wind/midflame'
+     * @param {string} windHeadUpslp Fully qualified path to the wind heading direction clockwise from upslope,
+     *        something like 'weather/wind/direction/heading/from upslope'
      * @param {string} stdPath Fully qualified path to standard fuel model
-     *        something like `site/surface/primary/model/standard/`
+     *        something like `surface/primary/model/standard/`
      * @param {string} chPath Fully qualified path to chaparral fuel model
-     *        something like `site/surface/primary/model/chaparral/`
+     *        something like `surface/primary/model/chaparral/`
      * @param {string} pgPath Fully qualified path to palmetto-gallberry fuel model
-     *        something like `site/surface/primary/model/palmetto/`
+     *        something like `surface/primary/model/palmetto/`
      * @param {string} waPath Fully qualified path to western aspen fuel model
-     *        something like `site/surface/primary/model/aspen/`
+     *        something like `surface/primary/model/aspen/`
     */
-    constructor(fuelBedPath, slope, midflame, stdPath='', chPath='', pgPath='', waPath='') {
+    constructor(fuelBedPath, slope, midflame, windHeadUpslp, stdPath='', chPath='', pgPath='', waPath='') {
         super(fuelBedPath)
+console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
 
         // configs
         this.config = 'fuel model domain'
@@ -554,6 +557,18 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Fire.firelineIntensity, [bed+L.rosUpsl, bed+L.fireRxi, bed+L.fireTaur]]]],
             [bed+L.fireFlame,   0, U.flamelen, 0, [
                 [this.any, Fire.flameLength, [bed+L.fireFli]]]],
+
+            [bed+L.rosSlope,  0, U.fireRos, 0, [
+                [this.any, Fire.maximumDirectionSlopeSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiS]]]],
+            [bed+L.rosWind,   0, U.fireRos, 0, [
+                [this.any,Fire.maximumDirectionWindSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiW]]]],
+            [bed+L.rosXcomp,  0, U.factor, 0, [
+                [this.any,Fire.maximumDirectionXComponent, [bed+L.rosWind, bed+L.rosSlope, windHeadUpslp]]]],
+            [bed+L.rosYcomp,  0, U.factor, 0, [
+                [this.any,Fire.maximumDirectionYComponent, [bed+L.rosWind, windHeadUpslp]]]],
+            [bed+L.rosHead,   0, U.factor, 0, [
+                [this.any,Fire.maximumDirectionSpreadRate, [bed+L.rosXcomp, bed+L.rosYcomp]]]],
+
         )
     }
 }

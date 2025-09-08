@@ -9,6 +9,7 @@ import { SlopeModule } from './index.js'
 import { StandardFuelModelModule } from './index.js'
 // import { SurfaceFireModule } from './index.js'
 import { SurfaceFuelModule } from './index.js'
+import { WindDirectionModule } from './index.js'
 import { WindSpeedModule } from './index.js'
 import { WindSpeedReductionModule } from './index.js'
 import { Util } from '../index.js'
@@ -48,6 +49,7 @@ const constants = new ConstantsModule(P.constants)
 const canopy = new CanopyModule(P.canopy)
 
 // Need wind speed and slope for surface fire model
+const winddir = new WindDirectionModule(P.windDir)
 const windspeed = new WindSpeedModule(P.windSpeed)
 const slope = new SlopeModule(P.slope)
 
@@ -72,6 +74,7 @@ const midflame1 = new MidflameWindSpeedModule(P.midflame1,
 const bed1 = new SurfaceFuelModule(P.bed1,
     P.slope+L.slopeRat,
     P.midflame1 + L.midflame,
+    P.windHead + L.windHeadUpsl,
     P.standard1, P.chaparral1, P.palmetto1, P.aspen1)
 
 //------------------------------------------------------------------------------
@@ -85,6 +88,7 @@ const nodes = [
     ...livemois.configure(livemois.individual),
     ...slope.configure(slope.observedRatio),
     ...windspeed.configure(windspeed.input20ft),
+    ...winddir.configure(winddir.inpHeadUpsl),
 
     ...curing1.configure(curing1.est),
     ...standard1.configure(standard1.catalog),
@@ -108,7 +112,10 @@ const select = [
     P.bed1+L.rosNwns,
     P.bed1+L.fuelPhiW,
     P.bed1+L.fuelPhiS,
-    P.bed1+L.rosUpsl
+    P.bed1+L.rosUpsl,
+    P.bed1+L.rosXcomp,
+    P.bed1+L.rosYcomp,
+    P.bed1+L.rosHead
 ]
 dag.select(select)
 // Util.logDagNodes(dag.selected(), 'Selected Nodes')
@@ -139,6 +146,7 @@ dag.set(P.livemois+L.herb, 0.5)
 dag.set(P.livemois+L.stem, 1.5)
 dag.set(P.slope+L.slopeRat, 0.25)
 dag.set(P.midflame1 + L.midflame, 10*88)
+dag.set(P.windHead + L.windHeadUpsl, 90)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 
 //------------------------------------------------------------------------------

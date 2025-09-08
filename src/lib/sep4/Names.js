@@ -9,9 +9,11 @@ export class P {
     static moisture  = 'weather/moisture/'
     static deadmois  = 'weather/moisture/dead/'    // tl1h, tl10h, tl100h
     static livemois  = 'weather/moisture/live/'    // herb, stem
-    static windDir   = 'weather/wind/direction/'   // source, heading, upslope
+    static windDir   = 'weather/wind/direction/'
+    static windHead  = 'weather/wind/direction/heading/'
+    static windSource= 'weather/wind/direction/source/'
     static windSpeed = 'weather/wind/speed/'       // at20ft, at10m
-
+    
     static sfire     = 'surface/fire'
     static cfire     = 'crown/fire'
 
@@ -119,14 +121,20 @@ export class L {
     static taur = 'residence time'
     
     static ros  = 'spread rate/'
+    static rosHead = L.ros + 'at head'
     static rosNwns = L.ros + 'no-wind no-slope'
     static rosUpsl = L.ros + 'upslope wind'
+    static rosSlope = L.ros + 'slope only'
+    static rosWind = L.ros + 'wind only'
+    static rosXcomp = L.ros + 'x component'
+    static rosYcomp = L.ros + 'y component'
 
     static weff = 'effective wind speed/'
     static weffUpsl  = L.weff + 'upslope wind'
     static weffLimit = L.weff + 'limit'
     static weffAppl  = L.weff + 'limit/applied'
     static midflame = 'wind speed at midflame'
+    static windHeadUpsl = 'from upslope'
 
     // LiveFuelCuringModule leaf nodes
     static curedObs = 'cured fraction/observed'
