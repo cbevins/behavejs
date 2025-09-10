@@ -1,38 +1,31 @@
-import { Dag, L, ModuleBase, U } from './index.js'
+import { Dag, C, P, U, ModuleBase } from './index.js'
 
 export class DeadFuelMoistureModule extends ModuleBase {
     /**
      * Creates the fuel moisture module.
-     * @param {string} path Prefix for this module's fully qualified node names ('site/weather/moisture/dead')
+     * @param {string} path Prefix for this module instance's fully qualified node names
+     * something like 'weather/' or 'station/1/' to prefix the 'moisture/dead/<node>' keys.
      */
     constructor(path) {
-        super(path)
-
-        // fully qualified node keys
-        this.dead = path + 'category'
-        this.dead1 = path + L.tl1h
-        this.dead10 = path + L.tl10h
-        this.dead100 = path + L.tl100h
+        super(path, 'DeadFuelMoistureModule')
 
         // config keys
         this.config = 'dead fuel moisture input by'
-        this.individual = 'individual'
-        this.category = 'category'
-        this.options = [this.individual, this.category]
+        this.options = [C.moisParticle, C.moisCategory]
 
         this.nodes = [
-            [this.dead, 1, U.fuelMois, 0, [
-                [this.individual, Dag.constant, []],
-                [this.category, Dag.input, []]]],
-            [this.dead1, 1, U.fuelMois, 0, [
-                [this.individual, Dag.input, []],
-                [this.category, Dag.assign, [this.dead]]]],
-            [this.dead10, 1, U.fuelMois, 0, [
-                [this.individual, Dag.input, []],
-                [this.category, Dag.assign, [this.dead]]]],
-            [this.dead100, 1, U.fuelMois, 0, [
-                [this.individual, Dag.input, []],
-                [this.category, Dag.assign, [this.dead]]]],
+            [path+P.moisDeadCat, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.constant, []],
+                [C.moisCategory, Dag.input, []]]],
+            [path+P.moisDead1, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.input, []],
+                [C.moisCategory, Dag.assign, [path+P.moisDeadCat]]]],
+            [path+P.moisDead10, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.input, []],
+                [C.moisCategory, Dag.assign, [path+P.moisDeadCat]]]],
+            [path+P.moisDead100, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.input, []],
+                [C.moisCategory, Dag.assign, [path+P.moisDeadCat]]]],
         ]
     }
 }

@@ -43,8 +43,37 @@ export class SurfaceFireEquations {
           const b = 1.0 / windB
           ews = Math.pow(a, b)
         }
-        console.log(`*** effectiveWindSpeed() phiew=${phiew}, windB=${windB}, windI=${windI} yields ${ews}`)
         return ews
+    }
+
+    /**
+     * Calculate the wind-slope coefficient (phiEw = phiW + phiS)
+     * from the individual slope (phiS) and wind (phiW) coefficients.
+     *
+     * @param phiW Rothermel (1972) wind coefficient `phiW` (ratio)
+     * @param phiS Rothermel (1972) slope coefficient `phiS` (ratio)
+     * @return Rothermel's (1972) wind-slope coefficient `phiEw` (ratio).
+     */
+    static effectiveWindSpeedCoefficient (phiW, phiS) {
+      return phiW + phiS
+    }
+
+    /**
+     * Calculate the wind-slope coefficient (phiEw = phiW + phiS)
+     * from the no-wind, no-slope spread rate and an actual spread rate.
+     *
+     * There are 3 ways to calculate the wind-slope coefficient `phiEw`:
+     * - from `phiS` and `phiW`: see effectiveWindSpeedCoefficient(phiS,phiW)
+     * - from `ros0` and `rosHead`: see effectiveWIndSpeedCoefficientInferred(ros0,rosHead)
+     * - from `ews`, `windB`, and `windK`: see phiEwFromEws(ews, windB, windK)
+     *
+     * @param ros0 No-wind, no-slope spread rate (ft+1 min-1).
+     * @param rosHead The actual spread rate (ft+1 min-1) at the fire head
+     *    (possibly under cross-slope wind conditions).
+     * @return Rothermel's (1972) wind-slope coefficient `phiEw` (ratio).
+     */
+    static effectiveWindSpeedCoefficientInferred (ros0, rosHead) {
+      return ros0 <= 0 ? 0 : rosHead / ros0 - 1
     }
 
     /**
@@ -158,36 +187,6 @@ export class SurfaceFireEquations {
 
     /**
      * Calculate the wind-slope coefficient (phiEw = phiW + phiS)
-     * from the individual slope (phiS) and wind (phiW) coefficients.
-     *
-     * @param phiW Rothermel (1972) wind coefficient `phiW` (ratio)
-     * @param phiS Rothermel (1972) slope coefficient `phiS` (ratio)
-     * @return Rothermel's (1972) wind-slope coefficient `phiEw` (ratio).
-     */
-    static phiEffectiveWind (phiW, phiS) {
-      return phiW + phiS
-    }
-
-    /**
-     * Calculate the wind-slope coefficient (phiEw = phiW + phiS)
-     * from the no-wind, no-slope spread rate and an actual spread rate.
-     *
-     * There are 3 ways to calculate the wind-slope coefficient `phiEw`:
-     * - from `phiS` and `phiW`: see phiEw(phiS,phiW)
-     * - from `ros0` and `rosHead`: see phiEwInferred(ros0,rosHead)
-     * - from `ews`, `windB`, and `windK`: see phiEwFromEws(ews, windB, windK)
-     *
-     * @param ros0 No-wind, no-slope spread rate (ft+1 min-1).
-     * @param rosHead The actual spread rate (ft+1 min-1) at the fire head
-     *    (possibly under cross-slope wind conditions).
-     * @return Rothermel's (1972) wind-slope coefficient `phiEw` (ratio).
-     */
-    static phiEffectiveWindInferred (ros0, rosHead) {
-      return ros0 <= 0 ? 0 : rosHead / ros0 - 1
-    }
-
-    /**
-     * Calculate the wind-slope coefficient (phiEw = phiW + phiS)
      * from the effective wind speed.
      *
      * There are 3 ways to calculate the wind-slope coefficient `phiEw`:
@@ -237,7 +236,7 @@ export class SurfaceFireEquations {
      * then spreadRateMaximumUpSlopeWind() == spreadRateMaximumCrossSlopeWind().
      *
      * @param ros0 No-wind, no-slope spread rate (ft+1 min-1).
-     * @param spreadDirVectorRate Additional spread reate (ft+1 min-1)
+     * @param spreadDirVectorRate Additional spread rate (ft+1 min-1)
      *    along the cross-slope vector of maximum spread.
      * @return The maximum fire spread rate (ft+1 min-1).
      */

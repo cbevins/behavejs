@@ -1,34 +1,23 @@
-import { Dag, L, ModuleBase, U } from './index.js'
+import { Dag, C, P, ModuleBase, U } from './index.js'
 
-// WindSpeedReductionModule extends the FuelBedModule (named in arg 1)
-// by linking the canopy-indiced wrf (arg2 ) and the surface fuel-induced wrf (arg 3) 
-// to derive the fuel bed's overall midflame wind reduction factor
 export class WindSpeedReductionModule extends ModuleBase {
     /**
-     * Adds wind speed reduction factor node to a fuel bed.
-     * @param {string} path Prefix for this module's fully qualified node names ('site/surface/{primary|secondary}/bed/')
-     * @param {string} cwsrf Fully qualified node name ('site/canopy/wind speed reduction factor')
-     * @param {string} fwsrf Fully qualified node name ('site/surface/{primary|secondary}/bed/fuel bed reduction factor')
+     * @param {string} path Prefix for this module instance's fully qualified node names
+     * (something like 'primary/surface/bed/') to prefix this module's 'wind speed reduction/<node>' keys.
+     * @param {string} canopyWsrf Fully qualified node name, something like 'canopy/wind speed reduction factor'.
+     * @param {string} fuelWsrf Fully qualified node name, something like 'primary/surface/bed/wind speed reduction factor'.
      */
-    constructor(path, cwsrf, fwsrf){
-        super(path)
-
-        // fully qualified node keys
-        this.mwsrf = path + L.wsrfMidf
-        // linked node keys referenced by genome()
-        this.cwsrf = cwsrf  // probably 'site/canopy/wind speed reduction factor/canopy'
-        this.fwsrf = fwsrf  // probably 'site/{primary|secondary}/bed/wind speed reduction factor/fuel'
+    constructor(path, canopyWsrf, fuelWsrf){
+        super(path, 'WindSpeedReductionModule')
 
         // config keys
         this.config = 'midflame wind speed reduction factor'
-        this.observed = 'observed'
-        this.estimated = 'estimated'
-        this.options = [this.observed, this.estimated]
+        this.options = [C.wsrfObserved, C.wsrfEstimated]
 
         this.nodes = [
-            [this.mwsrf, 1, U.fraction, 0, [
-                [this.observed, Dag.input, []],
-                [this.estimated, Math.min, [this.cwsrf, this.fwsrf]],
+            [path+P.wsrfMidflame, 1, U.fraction, 0, [
+                [C.wsrfObserved, Dag.input, []],
+                [C.wsrfEstimated, Math.min, [canopyWsrf, fuelWsrf]],
             ]],
         ]
     }

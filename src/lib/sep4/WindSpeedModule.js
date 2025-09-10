@@ -1,34 +1,27 @@
-import { Dag, L, ModuleBase, U } from './index.js'
-import { WindEquations as Wind } from '../index.js'
+import { Dag, C, P, ModuleBase, U } from './index.js'
+import { WindEquations as Wind } from './index.js'
 
 export class WindSpeedModule extends ModuleBase {
     /**
      * Creates the wind speed module nodes.
-     * @param {string} path Prefix for this module's fully qualified node names
-     *        something like 'site/weather/wind/speed/'
+     * @param {string} path Prefix for this module instance's fully qualified node names
+     * (something like 'weather/' or '') to prefix this module's 'wind/speed/<node>' keys.
      */
     constructor(path){
-        super(path)
+        super(path, 'WindSpeedModule')
 
         // configs
         this.config = 'wind speed input'
-        // config options
-        this.input20ft = 'at 20-ft'
-        this.input10m = 'at 10-m'
-        this.options = [this.input20ft, this.input10m]
-
-        // fully qualified node keys
-        this.at20ft = path + L.at20ft
-        this.at10m  = path + L.at10m
-
+        this.options = [C.wspd20ft, C.wspd10m]
+        
         this.nodes = [
-            [this.at20ft, 0, U.windSpeed, 0, [
-                [this.input20ft, Dag.input, []],
-                [this.input10m, Wind.at20ftFrom10m, [this.at10m]],
+            [path+P.wspd20ft, 0, U.windSpeed, 0, [
+                [C.wspd20ft, Dag.input, []],
+                [C.wspd10m, Wind.at20ftFrom10m, [path+P.wspd10m]],
             ]],
-            [this.at10m, 0, U.windSpeed, 0, [
-                [this.input20ft, Dag.input, []],
-                [this.input10m, Wind.at10mFrom20ft, [this.at20ft]],
+            [path+P.wspd10m, 0, U.windSpeed, 0, [
+                [C.wspd20ft, Dag.input, []],
+                [C.wspd10m, Wind.at10mFrom20ft, [path+P.wspd20ft]],
             ]],
         ]
     }

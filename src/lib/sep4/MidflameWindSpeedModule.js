@@ -1,37 +1,27 @@
 
-import { Dag, L, ModuleBase, U } from './index.js'
-import { Calc } from '../index.js'
+import { Dag, C, P, ModuleBase, U } from './index.js'
+import { Calc } from './index.js'
 
-// MidflameWindSpeedModule extends the FuelBedModule (named in arg 1)
-// by linking the wind at 20-ft (arg 2) and midflame reduction factor (arg 3)
-// to estimate the fuel bed's wind speed at midflame height
 export class MidflameWindSpeedModule extends ModuleBase {
     /**
-     * @param {string} path Prefix for this module's fully qualified node names
-     *        something like 'site/surface/primary/wind/speed/midflame'
-     * @param {string} ws20 Fully qualified name of the 20-ft wind speed node
-     *        something like 'site/weather/wind/speed/at 20-ft'
-     *        ('site/surface/{primary|secondary}/bed/wind speed reduction factor')
+     * @param {string} path Prefix for this module instance's fully qualified node names,
+     * (something like 'primary/surface/bed/') to refix this module's 'wind speed reduction factor/<node>' keys.
+     * @param {string} wspd20ft Fully qualified name of the 20-ft wind speed node,
+     * something like 'weather/wind/speed/at 20-ft'.
+     * @param {string} wsrfMidflame Fully qualified name of the midflame wind speed reduction factor,
+     * something like 'primary/surface/bed/wind speed reduction factor/midflame'.
      */
-    constructor(path, ws20, wsrf) {
-        super(path)
-
-        // fully qualified node keys
-        this.wsmid = path + L.midflame
-        // linked node keys referenced by genome()
-        this.ws20 = ws20
-        this.wsrf = wsrf
+    constructor(path, wspd20ft, wsrf) {
+        super(path, 'MidflameWindSpeedModule')
 
         // config keys
         this.config = 'wind speed at midflame'
-        this.observed = 'observed'
-        this.estimated = 'estimated'
-        this.options = [this.observed, this.estimated]
+        this.options = [C.midflameObserved, C.midflameEstimated]
 
         this.nodes = [
-            [this.wsmid, 0, U.windSpeed, 0, [
-                [this.observed, Dag.input, []],
-                [this.estimated, Calc.multiply, [this.ws20, this.wsrf]]
+            [path+P.midflame, 0, U.windSpeed, 0, [
+                [C.midflameObserved, Dag.input, []],
+                [C.midflameEstimated, Calc.multiply, [wspd20ft, wsrf]]
             ]],
         ]
     }

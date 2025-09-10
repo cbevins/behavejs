@@ -1,7 +1,8 @@
 
 export class ModuleBase {
-    constructor(path) {
+    constructor(path, module='') {
         this.path = path
+        this.module = module
         this.any = '*'
         this.nodes = []
         this.config = null
@@ -10,7 +11,7 @@ export class ModuleBase {
     
     configure(applyOption) {
         if (this.options.length && ! this.options.includes(applyOption))
-            throw new Error(`Attempt to configure "${this.path}" with invalid option "${applyOption}".`)
+            throw new Error(`Attempt to configure Module "${this.module}" instance "${this.path}" with invalid option "${applyOption}".`)
         for(let i=0; i<this.nodes.length; i++) {
             const [key, value, units, option, options] = this.nodes[i]
             let found = false
@@ -28,7 +29,7 @@ export class ModuleBase {
                 }
             }
             if (! found) {
-                throw new Error(`Module "${this.path}" node "${key}" has no matching config for "${applyOption}"`)
+                throw new Error(`Module "${this.module}" instance "${this.path}" node "${key}" has no matching config for "${applyOption}"`)
             }
             // push the configuration key onto the node record so the Dag can
             // report active configurations

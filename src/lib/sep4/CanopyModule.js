@@ -1,98 +1,75 @@
-import { Dag, L, ModuleBase, U } from './index.js'
+import { Dag, C, ModuleBase, U } from './index.js'
 import { CanopyEquations as Canopy} from '../index.js'
 
 export class CanopyModule extends ModuleBase {
     /**
      * Creates the canopy module nodes.
-     * @param {string} path Prefix for this module's fully qualified node names ('site/canopy/')
+     * @param {string} path Prefix for this module instance's fully qualified node names
+     * something like 'site/' or '' to prefix the 'canopy/' keys.
      */
     constructor(path) {
-        super(path)
-
-        // fully qualified node keys
-        this.base     = path + 'base height'
-        this.bulk     = path + L.fuelBulk
-        this.cover    = path + 'coverage'
-        this.heat     = path + L.fuelHeat
-        this.height   = path + 'total height'
-        this.hpua     = path + L.fireHpua
-        this.length   = path + 'crown length'
-        this.load     = path + L.fuelLoad
-        this.ratio    = path + 'crown ratio'
-        this.shelters = path + 'shelters fuel from wind'
-        this.vol      = path + 'volumetric fill ratio'
-        this.wsrf     = path + L.wsrfCanopy
+        super(path, 'CanopyModule')
 
         // configs
         this.config = 'canopy height input'
-        // combinations of inputs
-        this.baseHeight = 'height-base'
-        this.heightBase = this.baseHeight
-        this.ratioHeight = 'ratio-height'
-        this.heightRatio = this.ratioHeight
-        this.lengthHeight = 'height-length'
-        this.heightLength = this.lengthHeight
-        this.ratioBase = 'ratio-base'
-        this.baseRatio = this.ratioBase
-        this.ratioLength = 'ratio-length'
-        this.lengthRatio = this.ratioLength
-        this.lengthBase = 'length-base'
-        this.baseLength = this.baseLength
-
-        this.options = [
-            this.ratioHeight, this.ratioBase, this.ratioLength,
-            this.heightLength, this.heightBase, this.lengthBase]
+        this.options = [C.ratioHeight, C.ratioBase, C.ratioLength,
+            C.heightLength, C.heightBase, C.lengthBase]
 
         this.nodes = [
             // inputs or link
-            [this.cover, 0, U.fraction, 0, [[this.any, Dag.input, []]]],
-            [this.bulk, 0, U.fraction, 0, [[this.any, Dag.input, []]]],
-            [this.heat, 0, U.heat, 0, [[this.any, Dag.input, []]]],
+            [path+C.canopyCover, 0, U.fraction, 0, [[this.any, Dag.input, []]]],
+            [path+C.canopyBulk,  0, U.fraction, 0, [[this.any, Dag.input, []]]],
+            [path+C.canopyHeat,  0, U.heat, 0, [[this.any, Dag.input, []]]],
             
             // configured by 'canopy height input'
-            [this.base, 0, U.treeLeng, 0, [
-                ['ratio-height', Canopy.baseFromRatioHeight, [this.ratio, this.height]],
-                ['ratio-base', Dag.input, []],
-                ['ratio-length', Canopy.baseFromRatioLength, [this.ratio, this.length]],
-                ['height-length', Canopy.baseFromHeightLength, [this.height, this.length]],
-                ['height-base', Dag.input, []],
-                ['length-base', Dag.input, []]]
+            [path+C.canopyBase, 0, U.treeLeng, 0, [
+                [C.ratioHeight, Canopy.baseFromRatioHeight, [path+C.canopyRatio, path+C.canopyHeight]],
+                [C.ratioBase, Dag.input, []],
+                [C.ratioLength, Canopy.baseFromRatioLength, [path+C.canopyRatio, path+C.canopyLength]],
+                [C.heightLength, Canopy.baseFromHeightLength, [path+C.canopyHeight, path+C.canopyLength]],
+                [C.heightBase, Dag.input, []],
+                [C.lengthBase, Dag.input, []]]
             ],
-            [this.length, 0, U.treeLeng, 0, [
-                ['ratio-height', Canopy.lengthFromRatioHeight, [this.ratio, this.height]],
-                ['ratio-base', Canopy.lengthFromRatioBase, [this.ratio, this.base]],
-                ['ratio-length', Dag.input, []],
-                ['height-length', Dag.input, []],
-                ['height-base', Canopy.lengthFromHeightBase, [this.height, this.base]],
-                ['length-base', Dag.input, []]],
+            [path+C.canopyLength, 0, U.treeLeng, 0, [
+                [C.ratioHeight, Canopy.lengthFromRatioHeight, [path+C.canopyRatio, path+C.canopyHeight]],
+                [C.ratioBase, Canopy.lengthFromRatioBase, [path+C.canopyRatio, path+C.canopyBase]],
+                [C.ratioLength, Dag.input, []],
+                [C.heightLength, Dag.input, []],
+                [C.heightBase, Canopy.lengthFromHeightBase, [path+C.canopyHeight, path+C.canopyBase]],
+                [C.lengthBase, Dag.input, []]],
             ],
-            [this.height, 0, U.treeLeng, 0, [
-                ['ratio-height', Dag.input, []],
-                ['ratio-base', Canopy.heightFromRatioBase, [this.ratio, this.base]],
-                ['ratio-length', Canopy.heightFromRatioLength, [this.ratio, this.length]],
-                ['height-length', Dag.input, []],
-                ['height-base', Dag.input, []],
-                ['length-base', Canopy.heightFromLengthBase, [this.length, this.base]]],
+            [path+C.canopyHeight, 0, U.treeLeng, 0, [
+                [C.ratioHeight, Dag.input, []],
+                [C.ratioBase, Canopy.heightFromRatioBase, [path+C.canopyRatio, path+C.canopyBase]],
+                [C.ratioLength, Canopy.heightFromRatioLength, [path+C.canopyRatio, path+C.canopyLength]],
+                [C.heightLength, Dag.input, []],
+                [C.heightBase, Dag.input, []],
+                [C.lengthBase, Canopy.heightFromLengthBase, [path+C.canopyLength, path+C.canopyBase]]],
             ],
-            [this.ratio, 0, U.fraction, 0, [
-                ['ratio-height', Dag.input, []],
-                ['ratio-base', Dag.input, []],
-                ['ratio-length', Dag.input, []],
-                ['height-length', Canopy.ratioFromHeightLength, [this.height, this.length]],
-                ['height-base', Canopy.ratioFromHeightBase, [this.height, this.base]],
-                ['length-base', Canopy.ratioFromLengthBase, [this.length, this.base]]],
+            [path+C.canopyRatio, 0, U.fraction, 0, [
+                [C.ratioHeight, Dag.input, []],
+                [C.ratioBase, Dag.input, []],
+                [C.ratioLength, Dag.input, []],
+                [C.heightLength, Canopy.ratioFromHeightLength, [path+C.canopyHeight, path+C.canopyLength]],
+                [C.heightBase, Canopy.ratioFromHeightBase, [path+C.canopyHeight, path+C.canopyBase]],
+                [C.lengthBase, Canopy.ratioFromLengthBase, [path+C.canopyLength, path+C.canopyBase]]],
             ],
             // derived from above
-            [this.vol, 0, U.fraction, 0, [
-                [this.any, Canopy.crownFill, [this.cover, this.ratio]]]],
-            [this.load, 0, U.fuelLoad, 0, [
-                [this.any, Canopy.fuelLoad, [this.bulk, this.length]]]],
-            [this.hpua, 0, U.hpua, 0, [
-                [this.any, Canopy.heatPerUnitArea, [this.load, this.heat]]]],
-            [this.shelters, 0, U.yesno, 0, [
-                [this.any, Canopy.sheltersFuelFromWind, [this.cover, this.height, this.vol]]]],
-            [this.wsrf, 0, U.fraction, 0, [
-                [this.any, Canopy.windSpeedAdjustmentFactor, [this.cover, this.height, this.vol]]]],
+            [path+C.canopyVol, 0, U.fraction, 0, [
+                [this.any, Canopy.crownFill,
+                    [path+C.canopyCover, path+C.canopyRatio]]]],
+            [path+C.canopyLoad, 0, U.fuelLoad, 0, [
+                [this.any, Canopy.fuelLoad,
+                    [path+C.canopyBulk, path+C.canopyLength]]]],
+            [path+C.canopyHpua, 0, U.hpua, 0, [
+                [this.any, Canopy.heatPerUnitArea,
+                    [path+C.canopyLoad, path+C.canopyHeat]]]],
+            [path+C.canopyShelters, 0, U.yesno, 0, [
+                [this.any, Canopy.sheltersFuelFromWind,
+                    [path+C.canopyCover, path+C.canopyHeight, path+C.canopyVol]]]],
+            [path+C.canopyWsrf, 0, U.fraction, 0, [
+                [this.any, Canopy.windSpeedAdjustmentFactor,
+                    [path+C.canopyCover, path+C.canopyHeight, path+C.canopyVol]]]],
         ]
     }
 }

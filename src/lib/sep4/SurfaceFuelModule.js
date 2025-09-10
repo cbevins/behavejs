@@ -1,13 +1,13 @@
-import { Dag, K, L, ModuleBase, U } from './index.js'
-import { Calc, FuelElementEquations as Fuel } from '../index.js'
-import { FuelBedEquations as Bed } from '../index.js'
-import { SurfaceFireEquations as Fire } from '../index.js'
+import { Dag, C, K, L, P, ModuleBase, U } from './index.js'
+import { Calc, FuelElementEquations as Fuel } from './index.js'
+import { FuelBedEquations as Bed } from './index.js'
+import { SurfaceFireEquations as Fire } from './index.js'
 
 export class SurfaceFuelModule extends ModuleBase {
     /**
      * 
-     * @param {string} fuelBedPath Prefix for this module's fully qualified node kets,
-     *        something like `surface/primary/bed/`
+     * @param {string} path Prefix for this module's fully qualified node keys,
+     * (something like `primary/surface/`) to append this module's 'bed/<node>' node keys
      * @param {string} slope Fully qualified path to slope steepness ratio node,
      *        something like 'terrain/slope/steepness/ratio'
      * @param {string} midflame Fully qualified path to the midflame wind speed,
@@ -23,20 +23,14 @@ export class SurfaceFuelModule extends ModuleBase {
      * @param {string} waPath Fully qualified path to western aspen fuel model
      *        something like `surface/primary/model/aspen/`
     */
-    constructor(fuelBedPath, slope, midflame, windHeadUpslp, stdPath='', chPath='', pgPath='', waPath='') {
-        super(fuelBedPath)
-console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
+    constructor(path, slope, midflame, windHeadUpslp, stdPath='', chPath='', pgPath='', waPath='') {
+        super(path, 'SurfaceFuelModule')
 
         // configs
         this.config = 'fuel model domain'
-        // config options
-        this.std = 'standard'
-        this.ch = 'chaparral'
-        this.pg = 'palmetto-gallberry'
-        this.wa = 'western aspen'
-        this.options = [this.std, this.ch, this.pg, this.wa]
+        this.options = [C.fuelStd, C.fuelCh, C.fuelPg, C.fuelWa]
 
-        const bed = this.path
+        const bed = path + 'bed/'
         const dead = bed + 'dead/'
         const live = bed + 'live/'
         const d1 = dead + '1/'
@@ -63,28 +57,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d1+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/1-h/' + L.fuelType]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Type]],
             ]],
             [d1+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/1-h/' + L.fuelMois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Mois]],
             ]],
             [d1+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/1-h/' + L.fuelLoad]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Load]],
             ]],
             [d1+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/1-h/' + L.fuelSavr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Savr]],
             ]],
             [d1+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/' + L.fuelHeat]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d1+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelDens]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d1+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelStot]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d1+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelSeff]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 2
@@ -92,28 +86,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d2+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/10-h/' + L.fuelType]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Type]],
             ]],
             [d2+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/10-h/' + L.fuelMois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Mois]],
             ]],
             [d2+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/10-h/' + L.fuelLoad]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Load]],
             ]],
             [d2+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/10-h/' + L.fuelSavr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Savr]],
             ]],
             [d2+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/' + L.fuelHeat]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d2+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelDens]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d2+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelStot]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d2+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelSeff]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 3
@@ -121,28 +115,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d3+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/100-h/' + L.fuelType]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Type]],
             ]],
             [d3+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/100-h/' + L.fuelMois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Mois]],
             ]],
             [d3+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/100-h/' + L.fuelLoad]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Load]],
             ]],
             [d3+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/100-h/' + L.fuelSavr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Savr]],
             ]],
             [d3+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/' + L.fuelHeat]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d3+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelDens]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d3+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelStot]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d3+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelSeff]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 4
@@ -150,28 +144,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d4+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/herb/' + L.fuelType]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Type]],
             ]],
             [d4+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/herb/' + L.fuelMois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Mois]],
             ]],
             [d4+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/herb/' + L.fuelLoad]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Load]],
             ]],
             [d4+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/herb/' + L.fuelSavr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Savr]],
             ]],
             [d4+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [stdPath+'dead/' + L.fuelHeat]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d4+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelDens]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d4+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelStot]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d4+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelSeff]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 5
@@ -179,28 +173,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d5+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [K.fuelUnused]],
+                [C.fuelStd, Dag.assign, [K.fuelUnused]],
             ]],
             [d5+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d5+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d5+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 1
@@ -208,28 +202,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l1+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [stdPath + 'live/herb/' + L.fuelType]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Type]],
             ]],
             [l1+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'live/herb/' + L.fuelMois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Mois]],
             ]],
             [l1+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [stdPath+'live/herb/' + L.fuelLoad]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Load]],
             ]],
             [l1+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [stdPath+'live/herb/' + L.fuelSavr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Savr]],
             ]],
             [l1+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [stdPath+'live/' + L.fuelHeat]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHeat]],
             ]],
             [l1+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelDens]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l1+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelStot]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l1+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelSeff]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 2
@@ -237,28 +231,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l2+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [stdPath + 'live/stem/' + L.fuelType]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Type]],
             ]],
             [l2+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'live/stem/' + L.fuelMois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Mois]],
             ]],
             [l2+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [stdPath+'live/stem/' + L.fuelLoad]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Load]],
             ]],
             [l2+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [stdPath+'live/stem/' + L.fuelSavr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Savr]],
             ]],
             [l2+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [stdPath+'live/' + L.fuelHeat]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHeat]],
             ]],
             [l2+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelDens]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l2+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelStot]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l2+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [stdPath+ L.fuelSeff]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 3
@@ -266,28 +260,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l3+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [K.fuelUnused]],
+                [C.fuelStd, Dag.assign, [K.fuelUnused]],
             ]],
             [l3+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l3+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l3+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 4
@@ -295,28 +289,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l4+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [K.fuelUnused]],
+                [C.fuelStd, Dag.assign, [K.fuelUnused]],
             ]],
             [l4+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l4+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l4+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 5
@@ -324,28 +318,28 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l5+L.fuelType, '', U.fuelType, 0, [
-                [this.std, Dag.assign, [K.fuelUnused]],
+                [C.fuelStd, Dag.assign, [K.fuelUnused]],
             ]],
             [l5+L.fuelMois, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelDens, 0, U.fuelDens, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l5+L.fuelStot, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l5+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [this.std, Dag.assign, [K.zero]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
             ]],
         ]
 
@@ -452,7 +446,7 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
         // The following nodes only exist for the surface fire 'dead' category
         this.nodes.push(
             [dead+L.fuelMext, 0, U.fuelMois, 0, [
-                [this.std, Dag.assign, [stdPath + 'dead/' + L.fuelMext]]]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadMext]]]],
             [dead+L.fuelEfwl, 0, U.fuelEfwl, 0, [
                 [this.any, Calc.sum, [d1+L.fuelEfwl, d2+L.fuelEfwl, d3+L.fuelEfwl, d4+L.fuelEfwl, d5+L.fuelEfwl]]]],
             [dead+L.fuelEfmc, 0, U.fuelMois, 0, [
@@ -470,11 +464,11 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
         // The crown canopy fuel model mext is 0.25
 
         //----------------------------------------------------------------------
-        // Fuel bed *derived* nodes
+        // Fuel bed *derived*  and *input* nodes
         //----------------------------------------------------------------------
         this.nodes.push(
             [bed+L.fuelDepth,  0, U.fuelLeng, 0, [
-                [this.std, Dag.assign, [stdPath + L.fuelDepth]]]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDepth]]]],
             [bed+L.fuelBulk,   0, U.fuelBulk, 0, [
                 [this.any, Bed.bulkDensity, [bed+L.fuelLoad, bed+L.fuelDepth]]]],
             [bed+L.fuelLoad,   0, U.fuelLoad, 0, [
@@ -535,22 +529,26 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any, Bed.noWindNoSlopeSpreadRate, [bed+L.fuelSource, bed+L.fuelSink]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
+            [bed+L.fireTaur,   0, U.taur, 0, [
+                [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
+            [bed+L.fireHpua,   0, U.hpua, 0, [
+                [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
 
             [bed+L.fuelPhiW,   0, U.factor, 0, [
                 [this.any, Bed.phiWind, [midflame, bed+L.windB, bed+L.windK]]]],
             [bed+L.fuelPhiS,   0, U.factor, 0, [
                 [this.any, Bed.phiSlope, [slope, bed+L.fuelSlpk]]]],
+
+            // 'Step 1' nodes
             [bed+L.fuelPhiE,   0, U.factor, 0, [
-                [this.any, Fire.phiEffectiveWind, [bed+L.fuelPhiW, bed+L.fuelPhiS]]]],
-            // The following apply only to upslope wind conditions
+                [this.any, Fire.effectiveWindSpeedCoefficient, [bed+L.fuelPhiW, bed+L.fuelPhiS]]]],
             [bed+L.weffUpsl,   0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeed, [bed+L.fuelPhiE, bed+L.windB, bed+L.windI]]]],
             [bed+L.rosUpsl,    0, U.fireRos, 0, [
                 [this.any, Fire.maximumSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiE]]]],
-            [bed+L.fireTaur,   0, U.taur, 0, [
-                [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
-            [bed+L.fireHpua,   0, U.hpua, 0, [
-                [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
+
+                
+            // The following apply only to upslope wind conditions (step 1)
             [bed+L.fireLwr,    1, U.ratio, 0, [
                 [this.any, Fire.lengthToWidthRatio, [bed+L.weffUpsl]]]],
             [bed+L.fireFli,    0, U.fireFli, 0, [
@@ -570,5 +568,127 @@ console.log(`SurfaceFuelModel got wind heading key = "${windHeadUpslp}"`)
                 [this.any,Fire.maximumDirectionSpreadRate, [bed+L.rosXcomp, bed+L.rosYcomp]]]],
 
         )
+    }
+    old() {
+        return [
+            // Part 1 - fire spread rate and effective wind under no-wind, no-slope conditions
+
+            // Part 2 - *additional* fire spread rate with wind and slope
+            [`${prefix}.fire.maximumDirection.slope.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.maximumDirectionSlopeSpreadRate,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.slope.phi`
+                ]]]],
+            [`${prefix}.fire.maximumDirection.wind.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.maximumDirectionWindSpreadRate,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.wind.phi`
+                ]]]],
+            [`${prefix}.fire.maximumDirection.xComponent`, [['Factor'], [
+                [this.any, Fire.maximumDirectionXComponent,
+                    `${prefix}.fire.maximumDirection.wind.spreadRate`,
+                    `${prefix}.fire.maximumDirection.slope.spreadRate`,
+                    `${prefix}.fire.wind.heading.fromUpslope`
+                ]]]],
+            [`${prefix}.fire.maximumDirection.yComponent`, [['Factor'], [
+                [this.any, Fire.maximumDirectionYComponent,
+                    `${prefix}.fire.maximumDirection.wind.spreadRate`,
+                    `${prefix}.fire.wind.heading.fromUpslope`
+                ]]]],
+            [`${prefix}.fire.maximumDirection.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.maximumDirectionSpreadRate,
+                    `${prefix}.fire.maximumDirection.xComponent`,
+                    `${prefix}.fire.maximumDirection.yComponent`
+                ]]]],
+
+            // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
+            [`${prefix}.fire.spread.step2.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.spreadRateWithCrossSlopeWind,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.maximumDirection.spreadRate`
+                ]]]],
+            [`${prefix}.fire.spread.step2.phiEffectiveWind`, [['Factor'], [
+                [this.any, Fire.effectiveWindSpeedCoefficientInferred,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.spread.step2.spreadRate`
+                ]]]],
+            [`${prefix}.fire.spread.step2.effectiveWindSpeed`, [['WindSpeed'], [
+                [this.any, Fire.effectiveWindSpeed,
+                    `${prefix}.fire.spread.step2.phiEffectiveWind`,
+                    `${prefix}.fire.wind.factor.b`,
+                    `${prefix}.fire.wind.factor.i`
+                ]]]],
+
+            // Part 4 - fire spread rate and effective wind at the *effective wind speed limit*
+            [`${prefix}.fire.limit.effectiveWindSpeed`, [['WindSpeed'], [
+                [this.any, Fire.effectiveWindSpeedLimit,
+                    `${prefix}.fire.reactionIntensity`
+                ]]]],
+            [`${prefix}.fire.limit.windSlopeSpreadRateCoefficient`, [['Factor'], [
+                [this.any, Fire.phiEwFromEws,
+                    `${prefix}.fire.limit.effectiveWindSpeed`,
+                    `${prefix}.fire.wind.factor.b`,
+                    `${prefix}.fire.wind.factor.k`
+                ]]]],
+            [`${prefix}.fire.limit.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.maximumSpreadRate,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.limit.windSlopeSpreadRateCoefficient`
+                ]]]],
+
+            // Part 5 (was 3a) - fire spread rate and effective wind
+            // after applying Rothermel's effective wind speed limit
+            [`${prefix}.fire.spread.step3a.effectiveWindSpeed`, [['WindSpeed'], [
+                [this.any, Math.min,
+                    `${prefix}.fire.spread.step2.effectiveWindSpeed`,
+                    `${prefix}.fire.limit.effectiveWindSpeed`
+                ]]]],
+            [`${prefix}.fire.spread.step3a.phiEffectiveWind`, [['Factor'], [
+                [this.any, Math.min,
+                    `${prefix}.fire.spread.step2.phiEffectiveWind`,
+                    `${prefix}.fire.limit.windSlopeSpreadRateCoefficient`
+                ]]]],
+            [`${prefix}.fire.spread.step3a.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Math.min,
+                    `${prefix}.fire.spread.step2.spreadRate`,
+                    `${prefix}.fire.limit.spreadRate`
+                ]]]],
+
+            // Part 6 (was 3b) - fire spread rate and effective wind after applying Andrews' RoS limit
+            [`${prefix}.fire.spread.step3b.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.spreadRateWithRosLimitApplied,
+                    `${prefix}.fire.spread.step2.spreadRate`,
+                    `${prefix}.fire.spread.step2.effectiveWindSpeed`
+                ]]]],
+            [`${prefix}.fire.spread.step3b.phiEffectiveWind`, [['Factor'], [
+                [this.any, Fire.effectiveWindSpeedCoefficientInferred,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.spread.step3b.spreadRate`
+                ]]]],
+            [`${prefix}.fire.spread.step3b.effectiveWindSpeed`, [['WindSpeed'], [
+                [this.any, Fire.effectiveWindSpeed,
+                    `${prefix}.fire.spread.step3b.phiEffectiveWind`,
+                    `${prefix}.fire.wind.factor.b`,
+                    `${prefix}.fire.wind.factor.i`
+                ]]]],
+
+                // end `${prefix}.fire.spread.step4`
+            [`${prefix}.fire.spread.step4.spreadRate`, [['FireSpreadRate'], [
+                [this.any, Fire.spreadRateWithRosLimitApplied,
+                    `${prefix}.fire.spread.step3a.spreadRate`,
+                    `${prefix}.fire.spread.step3a.effectiveWindSpeed`
+                ]]]],
+            [`${prefix}.fire.spread.step4.effectiveWindSpeed`, [['WindSpeed'], [
+                [this.any, Fire.effectiveWindSpeed,
+                    `${prefix}.fire.spread.step4.phiEffectiveWind`,
+                    `${prefix}.fire.wind.factor.b`,
+                    `${prefix}.fire.wind.factor.i`
+                ]]]],
+            [`${prefix}.fire.spread.step4.phiEffectiveWind`, [['Factor'], [
+                [this.any, Fire.effectiveWindSpeedCoefficientInferred,
+                    `${prefix}.fire.noWindNoSlope.spreadRate`,
+                    `${prefix}.fire.spread.step4.spreadRate`
+                ]]]],
+            ]
     }
 }

@@ -1,18 +1,18 @@
-import { Dag, L, P } from './index.js'
+import { C, Dag, L, P } from './index.js'
 import { CanopyModule } from './index.js'
 import { ConstantsModule } from './index.js'
 import { DeadFuelMoistureModule } from './index.js'
 import { LiveFuelCuringModule } from './index.js'
 import { LiveFuelMoistureModule } from './index.js'
 import { MidflameWindSpeedModule } from './index.js'
-import { SlopeModule } from './index.js'
+import { SlopeSteepnessModule } from './index.js'
 import { StandardFuelModelModule } from './index.js'
 // import { SurfaceFireModule } from './index.js'
 import { SurfaceFuelModule } from './index.js'
 import { WindDirectionModule } from './index.js'
 import { WindSpeedModule } from './index.js'
 import { WindSpeedReductionModule } from './index.js'
-import { Util } from '../index.js'
+import { Util } from './index.js'
 
 console.log(new Date())
 
@@ -42,40 +42,49 @@ function logNodes(nodes, title='') {console.log(listNodes(nodes, title))}
 
 //------------------------------------------------------------------------------
 // Step 1 - construct a genome of all possible nodes
-// Note: only used P.* and L.* name keys in this section to avoid circular deps
+// Note: only used P.* keys in this section to avoid circular deps
 //------------------------------------------------------------------------------
 
 const constants = new ConstantsModule(P.constants)
-const canopy = new CanopyModule(P.canopy)
+const canopy = new CanopyModule('')
 
 // Need wind speed and slope for surface fire model
-const winddir = new WindDirectionModule(P.windDir)
-const windspeed = new WindSpeedModule(P.windSpeed)
-const slope = new SlopeModule(P.slope)
+const winddir = new WindDirectionModule(P.weather)
+const windspeed = new WindSpeedModule(P.weather)
+const slopeSteep = new SlopeSteepnessModule(P.terrain)
 
 // Need fuel particle moisture contents for surface fuel models
-const deadmois = new DeadFuelMoistureModule(P.deadmois)
-const livemois = new LiveFuelMoistureModule(P.livemois)
+const deadmois = new DeadFuelMoistureModule(P.weather)
+const livemois = new LiveFuelMoistureModule(P.weather)
 
 // Need a LiveFuelCuringModule for the StandardFuelModelModule
-const curing1 = new LiveFuelCuringModule(P.curing1, P.livemois+L.herb)
-const standard1 = new StandardFuelModelModule(P.standard1,
-    P.deadmois+L.tl1h, P.deadmois+L.tl10h, P.deadmois+L.tl100h,
-    P.livemois+L.herb, P.livemois+L.stem,
-    P.curing1+L.curedApp)
+const curing1 = new LiveFuelCuringModule(
+    P.standard1,                // module's parent path
+    P.weather+P.moisLiveHerb)   // live herb moisture node key
+const standard1 = new StandardFuelModelModule(
+    P.model1,                   // path to module's parent
+    P.weather+P.moisDead1,      // dead 1-h fuel moisture node key
+    P.weather+P.moisDead10,
+    P.weather+P.moisDead100,
+    P.weather+P.moisLiveHerb,
+    P.weather+P.moisLiveStem,
+    P.standard1+P.curingApplied)
 
 // Need a WindSpeedReductionModule and a MidflameWindSpeedModule for surface fire
-const wsrf1 = new WindSpeedReductionModule(P.wsrf1,
-    P.canopy+L.wsrfCanopy,
-    P.bed1+L.wsrfFuel)
-const midflame1 = new MidflameWindSpeedModule(P.midflame1,
-    P.windSpeed+L.at20ft,
-    P.wsrf1+L.wsrfMidf)
-const bed1 = new SurfaceFuelModule(P.bed1,
-    P.slope+L.slopeRat,
-    P.midflame1 + L.midflame,
-    P.windHead + L.windHeadUpsl,
-    P.standard1, P.chaparral1, P.palmetto1, P.aspen1)
+const wsrf1 = new WindSpeedReductionModule(
+    P.bed1,                 // module's parent path
+    P.canopyWsrf,           // canopy wind speed reduction factor node key
+    P.bed1+L.wsrfFuel)      // fuel bed wind speed reduction node key
+const midflame1 = new MidflameWindSpeedModule(
+    P.bed1,                 // module's parent path
+    P.weather+P.wspd20ft,   // wind speed at 20-ft node key
+    P.bed1+P.wsrfMidflame)  // wind speed reduction at midflame node key
+const bed1 = new SurfaceFuelModule(
+    P.surf1,                    // module's parent path
+    P.terrain+P.slopeRatio,     // slope steepness ratio node key
+    P.bed1+P.midflame,          // midflame wind speed node key
+    P.weather+P.wdirHeadUp,     // wind heading degrees from upslope node key
+    P.model1, P.chaparral1, P.palmetto1, P.aspen1)
 
 //------------------------------------------------------------------------------
 // Step 2 - Configure and combine all the module genomes
@@ -83,18 +92,18 @@ const bed1 = new SurfaceFuelModule(P.bed1,
 
 const nodes = [
     ...constants.configure(),
-    ...canopy.configure(canopy.heightLength),
-    ...deadmois.configure(deadmois.individual),
-    ...livemois.configure(livemois.individual),
-    ...slope.configure(slope.observedRatio),
-    ...windspeed.configure(windspeed.input20ft),
-    ...winddir.configure(winddir.inpHeadUpsl),
+    ...canopy.configure(C.heightLength),
+    ...deadmois.configure(C.moisParticle),
+    ...livemois.configure(C.moisParticle),
+    ...slopeSteep.configure(C.slopeRatio),
+    ...windspeed.configure(C.wspd20ft),
+    ...winddir.configure(C.wdirHeadUp),
 
-    ...curing1.configure(curing1.est),
-    ...standard1.configure(standard1.catalog),
-    ...wsrf1.configure(wsrf1.observed),
-    ...midflame1.configure(midflame1.observed),
-    ...bed1.configure(bed1.std)
+    ...curing1.configure(C.curingEstimated),
+    ...standard1.configure(C.stdCatalog),
+    ...wsrf1.configure(C.wsrfObserved),
+    ...midflame1.configure(C.midflameObserved),
+    ...bed1.configure(C.fuelStd)
 ].sort()
 // logNodes(nodes)
 
@@ -112,6 +121,7 @@ const select = [
     P.bed1+L.rosNwns,
     P.bed1+L.fuelPhiW,
     P.bed1+L.fuelPhiS,
+    P.bed1+L.fuelPhiE,
     P.bed1+L.rosUpsl,
     P.bed1+L.rosXcomp,
     P.bed1+L.rosYcomp,
@@ -126,6 +136,8 @@ dag.select(select)
 
 listActiveConfigs(dag)
 
+// RECONFIGURE HERE?
+
 //------------------------------------------------------------------------------
 // Step 6 - determine/confirm active inputs (informational)
 //------------------------------------------------------------------------------
@@ -137,16 +149,15 @@ Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 // Step 7 - Set input values
 //------------------------------------------------------------------------------
 
-const fuelKey = P.standard1+L.fuelKey
-dag.set(P.standard1+L.fuelKey, '10')
-dag.set(P.deadmois+L.tl1h, 0.05)
-dag.set(P.deadmois+L.tl10h, 0.07)
-dag.set(P.deadmois+L.tl100h, 0.09)
-dag.set(P.livemois+L.herb, 0.5)
-dag.set(P.livemois+L.stem, 1.5)
-dag.set(P.slope+L.slopeRat, 0.25)
-dag.set(P.midflame1 + L.midflame, 10*88)
-dag.set(P.windHead + L.windHeadUpsl, 90)
+dag.set(P.model1+P.stdKey, '10')
+dag.set(P.weather+P.moisDead1, 0.05)
+dag.set(P.weather+P.moisDead10, 0.07)
+dag.set(P.weather+P.moisDead100, 0.09)
+dag.set(P.weather+P.moisLiveHerb, 0.5)
+dag.set(P.weather+P.moisLiveStem, 1.5)
+dag.set(P.terrain+P.slopeRatio, 0.25)
+dag.set(P.bed1+P.midflame, 10*88)
+dag.set(P.weather+P.wdirHeadUp, 90)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 
 //------------------------------------------------------------------------------

@@ -1,41 +1,29 @@
-import { Dag, L, ModuleBase, U } from './index.js'
-import { FuelBedEquations as Eq } from '../index.js'
+import { Dag, C, P, U, ModuleBase } from './index.js'
+import { FuelBedEquations as Bed } from '../index.js'
 
-// LiveCuringModule provides a cured live fuel fraction
-// from either an observation (input) or estimated from a herb moisture
-// content node specified in arg2.
-// It is used only by the StandardFuelModelModule.
 export class LiveFuelCuringModule extends ModuleBase {
     /**
      * 
-     * @param {string} path Prefix for this module's fully qualified node names
-     *        something like ('site/surface/{primary|secondary}/curing/')
-     * @param {string} herbMois Fully qualified node name ('site/weather/moisture/live/herb')
+     * @param {string} path Prefix for this module instance's fully qualified node names
+     * something like 'primary/surface/model/standard/' to prefix the 'curing/<node>' keys.
+     * @param {string} herbMoisKey Fully qualified path to the herb moisture content node
+     * sonething like 'weather/moisture/live/herb'
      */
-    constructor(path, herbMois) {
-        super(path)
-
-        // fully qualified node keys
-        this.observed = path + L.curedObs
-        this.estimated = path + L.curedEst
-        this.applied = path + L.curedApp
-        // linked node keys referenced by nodes
-        this.herbMois = herbMois
+    constructor(path, herbMoisKey) {
+        super(path, 'LiveFuelCuringModule')
 
         // config keys
         this.config = 'cured live fuel fraction'
-        this.obs = 'observed'
-        this.est = 'estimated'
-        this.options = [this.obs, this.est]
+        this.options = [C.curingObserved, C.curingEstimated]
 
         this.nodes = [
-            [this.observed, 0, U.fraction, 0, [
+            [path+P.curingObserved, 0, U.fraction, 0, [
                 [this.any, Dag.input, []]]],
-            [this.estimated, 0, U.fraction, 0, [
-                [this.any, Eq.curedHerbFraction, [this.herbMois]]]],
-            [this.applied, 0, U.fraction, 0, [
-                [this.obs, Dag.assign, [this.observed]],
-                [this.est, Dag.assign, [this.estimated]],
+            [path+P.curingEstimated, 0, U.fraction, 0, [
+                [this.any, Bed.curedHerbFraction, [herbMoisKey]]]],
+            [path+P.curingApplied, 0, U.fraction, 0, [
+                [C.curingObserved, Dag.assign, [path+P.curingObserved]],
+                [C.curingEstimated, Dag.assign, [path+P.curingEstimated]],
             ]],
         ]
     }

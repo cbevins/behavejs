@@ -1,34 +1,28 @@
-import { Dag, L, ModuleBase, U } from './index.js'
+import { Dag, C, P, U, ModuleBase } from './index.js'
 
 export class LiveFuelMoistureModule extends ModuleBase {
     /**
      * Creates the fuel moisture module.
-     * @param {string} path Prefix for this module's fully qualified node names
-     *        something like 'site/weather/moisture/live'
+     * @param {string} path Prefix for this module instance's fully qualified node names
+     * something like 'weather' or 'station/1' to prefix the 'moisture/live/<node>' keys.
      */
     constructor(path){
-        super(path)
-        // fully qualified node keys
-        this.live = path + 'category'
-        this.herb = path + L.herb
-        this.stem = path + L.stem
+        super(path, 'LiveFuelMoistureModule')
         
         // config keys
         this.config = 'live fuel moisture input by'
-        this.individual = 'individual'
-        this.category = 'category'
-        this.options = [this.individual, this.category]
+        this.options = [C.moisParticle, C.moisCategory]
 
         this.nodes = [
-            [this.live, 3, U.fuelMois, 0, [
-                [this.individual, Dag.constant, []],
-                [this.category, Dag.input, []]]],
-            [this.herb, 3, U.fuelMois, 0, [
-                [this.individual, Dag.input, []],
-                [this.category, Dag.assign, [this.live]]]],
-            [this.stem, 3, U.fuelMois, 0, [
-                [this.individual, Dag.input, []],
-                [this.category, Dag.assign, [this.live]]]],
+            [path+P.moisLiveCat, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.constant, []],
+                [C.moisCategory, Dag.input, []]]],
+            [path+P.moisLiveHerb, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.input, []],
+                [C.moisCategory, Dag.assign, [path+P.moisLiveCat]]]],
+            [path+P.moisLiveStem, 0, U.fuelMois, 0, [
+                [C.moisParticle, Dag.input, []],
+                [C.moisCategory, Dag.assign, [path+P.moisLiveCat]]]],
         ]
     }
 }

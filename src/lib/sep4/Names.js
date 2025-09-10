@@ -2,6 +2,8 @@ export class P {
     static canopy    = 'canopy/'
     static constants = 'constants/'
     static terrain   = 'terrain/'
+    static weather   = 'weather/'
+
     static slope     = 'terrain/slope/'    // ratio, degrees
     static slopeDegrees= 'terrain/slope/steepness/degrees'
     static slopeRatio= 'terrain/slope/steepness/ratio'
@@ -14,23 +16,261 @@ export class P {
     static windSource= 'weather/wind/direction/source/'
     static windSpeed = 'weather/wind/speed/'       // at20ft, at10m
     
-    static sfire     = 'surface/fire'
     static cfire     = 'crown/fire'
+    static sfire     = 'weighted/surface/fire'  // 'spread rate', 'fireline intensity', 'effective wind/speed', 'effective wind/coefficient'
+    
+    static surf1     = 'primary/surface/'
+    static bed1      = 'primary/surface/bed/'
+    static dead1     = 'primary/surface/bed/dead/'
+    static dead1p1   = 'primary/surface/bed/dead/element 1/'
+    static dead1p2   = 'primary/surface/bed/dead/element 2/'
+    static dead1p3   = 'primary/surface/bed/dead/element 3/'
+    static dead1p4   = 'primary/surface/bed/dead/element 4/'
+    static dead1p5   = 'primary/surface/bed/dead/element 5/'
+    static live1     = 'primary/surface/bed/live/'
+    static live1p1   = 'primary/surface/bed/live/element 1/'
+    static live1p2   = 'primary/surface/bed/live/element 2/'
+    static live1p3   = 'primary/surface/bed/live/element 3/'
+    static live1p4   = 'primary/surface/bed/live/element 4/'
+    static live1p5   = 'primary/surface/bed/live/element 5/'
+    static model1    = 'primary/surface/model/'
+    static standard1 = `primary/surface/model/standard/`
+    static standard1dead = `primary/surface/model/standard/dead`
+    static standard1live = `primary/surface/model/standard/live`
+    static curing1   = `primary/surface/model/standard/curing/` // 'fraction/estimated', 'fraction/observed', 'fraction/applied'
+    static chaparral1= `primary/surface/model/chaparral/`
+    static palmetto1 = `primary/surface/model/palmetto/`
+    static aspen1    = `primary/surface/model/aspen/`
+    static fire1     = 'primary/surface/fire/'
+    static fire1p1   = 'primary/surface/fire/1 no-wind no-slope/'   // 'spread rate',
+    static fire1p2   = 'primary/surface/fire/2 wind-slope vector/'  // 'spread rate', 'spread rate/slope only', '.../wind only', '.../x component', '.../y component'
+    static fire1p3   = 'primary/surface/fire/3 cross-slope wind/'   // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    static fire1p4   = 'primary/surface/fire/4 effective limit/'    // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    static fire1p5   = 'primary/surface/fire/5 eff wind limit applied/'   // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    static fire1p6   = 'primary/surface/fire/6 ros limit applied/'  // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
 
-    static curing1   = 'surface/primary/curing/'
-    static bed1      = `surface/primary/bed/`
-    static dead1     = `surface/primary/bed/dead/`
-    static live1     = `surface/primary/bed/live/`
-    static model1    = `surface/primary/model/`
-    static standard1 = `surface/primary/model/standard/`
-    static chaparral1= `surface/primary/model/chaparral/`
-    static palmetto1 = `surface/primary/model/palmetto/`
-    static aspen1    = `surface/primary/model/aspen/`
-    static wsrf1     = 'surface/primary/wind/speed/reduction'
-    static midflame1 = 'surface/primary/wind/midflame'
-    static fire1     = `surface/primary/fire/`
+
+    static wind1     = 'primary/surface/wind/speed'
+    static wsrf1     = 'primary/surface/wind/speed/reduction'
+    static midflame1 = 'primary/surface/wind/speed/midflame'
+
+    //--------------------------------------------------------------------------
+    // Module Node Names
+    //--------------------------------------------------------------------------
+
+    // CanopyModule
+    static canopyCover    = 'canopy/coverage'
+    static canopyBase     = 'canopy/crown/base height'
+    static canopyLength   = 'canopy/crown/length'
+    static canopyRatio    = 'canopy/crown/ratio'
+    static canopyHeight   = 'canopy/crown/total height'
+    static canopyBulk     = 'canopy/fuel/bulk density'
+    static canopyLoad     = 'canopy/fuel/ovendry load'
+    static canopyVol      = 'canopy/fuel/volumetric fill ratio'
+    static canopyHeat     = 'canopy/fire/heat of combustion'
+    static canopyHpua     = 'canopy/fire/heat per unit area'
+    static canopyShelters = 'canopy/shelters fuel from wind'
+    static canopyWsrf     = 'canopy/wind/speed/reduction/factor'
+
+    // LiveFuelCuringModule
+    static curing          = 'curing/'
+    static curingFraction  = 'curing/fraction/'
+    static curingApplied   = 'curing/fraction/applied'
+    static curingEstimated = 'curing/fraction/estimated'
+    static curingObserved  = 'curing/fraction/observed'
+
+    // DeadFuelMoistureModule
+    static moisDead    = 'moisture/dead/'
+    static moisDeadCat = 'moisture/dead/category'
+    static moisDead1   = 'moisture/dead/1-h'
+    static moisDead10  = 'moisture/dead/10-h'
+    static moisDead100 = 'moisture/dead/100-h'
+
+    // LiveFuelMoistureModule
+    static moisLive     = 'moisture/live'
+    static moisLiveCat  = 'moisture/live/category'
+    static moisLiveHerb = 'moisture/live/herb'
+    static moisLiveStem = 'moisture/live/stem'
+
+    // MidflameWindSpeedModule
+    static mfws         = 'wind/speed/'
+    static midflame     = 'wind/speed/midflame'
+
+    // SlopeSteepnessModule
+    static slopeSteep   = 'slope/steepness'
+    static slopeDegrees = 'slope/steepness/degrees'
+    static slopeRatio   = 'slope/steepness/ratio'
+
+    // SlopeDirectionModule nodes
+    static slopeDir     = 'slope/direction'
+    static slopeUp      = 'slope/direction/up-slope'
+    static slopeDown    = 'slope/direction/down-slope'
+
+    // StandardFuelModelModule
+    static standard         = 'standard'
+    static stdCode          = 'standard/info/code'
+    static stdNumb          = 'standard/info/number'
+    static stdLabel         = 'standard/info/label'
+    static stdAuth          = 'standard/info/author'
+    static stdDens          = 'standard/fiber density'
+    static stdDepth         = 'standard/depth'
+    static stdKey           = 'standard/key'
+    static stdSeff          = 'standard/mineral content/silica-free'
+    static stdStot          = 'standard/mineral content/total'
+    static stdDeadHeat      = 'standard/dead/heat of combustion'
+    static stdDeadMext      = 'standard/dead/extinction moisture content'
+    static stdLiveHeat      = 'standard/live/heat of combustion'
+    
+    static stdDead1Load     = 'standard/dead/1-h/ovendry fuel load'
+    static stdDead1Mois     = 'standard/dead/1-h/moisture content'
+    static stdDead1Savr     = 'standard/dead/1-h/surface area-to-volume ratio'
+    static stdDead1Type     = 'standard/dead/1-h/fuel type'
+
+    static stdDead10Load    = 'standard/dead/10-h/ovendry fuel load'
+    static stdDead10Mois    = 'standard/dead/10-h/moisture content'
+    static stdDead10Savr    = 'standard/dead/10-h/surface area-to-volume ratio'
+    static stdDead10Type    = 'standard/dead/10-h/fuel type'
+    
+    static stdDead100Load   = 'standard/dead/100-h/ovendry fuel load'
+    static stdDead100Mois   = 'standard/dead/100-h/moisture content'
+    static stdDead100Savr   = 'standard/dead/100-h/surface area-to-volume ratio'
+    static stdDead100Savr   = 'standard/dead/100-h/fuel type'
+
+    static stdDeadHerbLoad  = 'standard/dead/herb/ovendry fuel load'
+    static stdDeadHerbMois  = 'standard/dead/herb/moisture content'
+    static stdDeadHerbSavr  = 'standard/dead/herb/surface area-to-volume ratio'
+    static stdDeadHerbSavr  = 'standard/dead/herb/fuel type'
+
+    static stdLiveHerbLoad  = 'standard/live/herb/ovendry fuel load'
+    static stdLiveHerbMois  = 'standard/live/herb/moisture content'
+    static stdLiveHerbSavr  = 'standard/live/herb/surface area-to-volume ratio'
+    static stdLiveHerbSavr  = 'standard/live/herb/fuel type'
+
+    static stdLiveStemLoad  = 'standard/live/stem/ovendry fuel load'
+    static stdLiveStemMois  = 'standard/live/stem/moisture content'
+    static stdLiveStemSavr  = 'standard/live/stem/surface area-to-volume ratio'
+    static stdLiveStemType  = 'standard/live/stem/fuel type'
+
+    static stdTotalHerbLoad = 'standard/total/herb/ovendry fuel load'
+    static stdTotalHerbSavr = 'standard/total/herb/surface area-to-volume ratio'
+    static stdTotalHerbSavr = 'standard/total/herb/fuel type'
+
+    // WindDirectionModule
+    static wdir       = 'wind/direction/'
+    static wdirHeadUp = 'wind/direction/heading/from up-slope'
+    static wdirFromUp = 'wind/direction/source/from up-slope'
+    static wdirHeadNo = 'wind/direction/heading/from north'
+    static wdirFromNo = 'wind/direction/source/from north'
+
+    // WindSpeedModule
+    static wspd     = 'wind/speed/'
+    static wspd20ft = 'wind/speed/at 20-ft'
+    static wspd10m  = 'wind/speed/at 10-m'
+
+    // WindSpeedReductionModule
+    static wsrf         = 'wind speed reduction factor/'
+    static wsrfCanopy   = 'wind speed reduction factor/canopy'
+    static wsrfFuel     = 'wind speed reduction factor/fuel bed'
+    static wsrfMidflame = 'wind speed reduction factor/midflame'
 }
 
+//------------------------------------------------------------------------------
+// Configuration option keys
+//------------------------------------------------------------------------------
+export class C {
+    // CanopyModule
+    static baseHeight = 'height-base'
+    static heightBase = C.baseHeight
+    static ratioHeight = 'ratio-height'
+    static heightRatio = C.ratioHeight
+    static lengthHeight = 'height-length'
+    static heightLength = C.lengthHeight
+    static ratioBase = 'ratio-base'
+    static baseRatio = C.ratioBase
+    static ratioLength = 'ratio-length'
+    static lengthRatio = C.ratioLength
+    static lengthBase = 'length-base'
+
+    // DeadFuelMoistureModule, LiveFuelMoistureModule
+    static moisCategory = 'category'
+    static moisParticle = 'particle'
+    // LiveFuelCuringModule
+    static curingEstimated = 'estimated'
+    static curingObserved  = 'observed'
+    // MidflameWindSpeedModule
+    static midflameEstimated = 'estimated'
+    static midflameObserved  = 'observed'
+    // SlopeSteepnessModule
+    static slopeDegrees = 'observed degrees'
+    static slopeRatio   = 'observed ratio of rise-to-reach'
+    static slopeMap     = 'estimated from map'
+    // StandardFuelModelModule
+    static stdCatalog = 'catalog'
+    static stdCustom  = 'custom'
+    // SurfaceFuelModule
+    static fuelStd = 'standard'
+    static fuelCh = 'chaparral'
+    static fuelPg = 'palmetto'
+    static fuelWa = 'aspen'
+    // WindDirectionModule
+    static wdirHeadUp = 'heading from up-slope'
+    static wdirFromUp = 'source from up-slope'
+    static wdirHeadNo = 'heading from north'
+    static wdirFromNo = 'source from  north'
+    // WindSpeedModule
+    static wspd20ft = 'at 20-ft'
+    static wspd10m  = 'at 10-m'
+    // WindSpeedReductionModule
+    static wsrfEstimated = 'estimated'
+    static wsrfObserved  = 'observed'
+}
+
+export const alt = [
+    'primary/surface/fire/',
+    'primary/surface/fuel/bed',
+    'primary/surface/fuel/model',
+
+    'secondary/surface/fire/',
+    
+    'weighted/surface/fire/',
+
+    // These all devoted to determining the fire spread rate and effective wind
+    // speed under various conditions
+
+    // Part 1 - fire spread rate and effective wind under no-wind, no-slope conditions
+    'fire/1 no-wind no-slope/spread rate',
+    // Part 2 - *additional* fire spread rate with wind and slope
+    'fire/2 wind-slope vector/spread rate/slope only',
+    'fire/2 wind-slope vector/spread rate/wind only',
+    'fire/2 wind-slope vector/spread rate/x component',
+    'fire/2 wind-slope vector/spread rate/y component',
+    'fire/2 wind-slope vector/spread rate/',
+    // Part 3 (was Step 2) - fire spread rate and effective wind for the cross-slope wind condition
+    'fire/3 cross-slope wind/spread rate',
+    'fire/3 cross-slope wind/effective wind/coefficient',
+    'fire/3 cross-slope wind/effective wind/speed',
+    // Part 4 - fire spread rate and effective wind at the *effective wind speed limit*
+    'fire/4 effective limit/effective wind/speed',
+    'fire/4 effective limit/effective wind/coefficient',
+    'fire/4 effective limit/spread rate',
+    // Part 5 - fire spread rate and effective wind after applying Rothermel's effective wind speed limit
+    'fire/5 effective wind limit applied/effective wind/speed',
+    'fire/5 effective wind limit applied/effective wind/coefficient',
+    'fire/5 effective wind limit applied/spread rate',
+    // Part 6 - fire spread rate and effective wind after applying Andrews' RoS limit
+    'fire/6 ros limit applied/spread rate',
+    'fire/6 ros limit applied/effective wind/speed',
+    'fire/6 ros limit applied/effective wind/coefficient',
+
+    'fuel/slope/coefficient',
+    'fuel/wind/factor/b',
+    'fuel/wind/factor/c',
+    'fuel/wind/factor/e',
+    'fuel/wind/factor/k',
+    'fuel/wind/factor/i',
+    'fuel/wind/speed/midflame',
+    'fuel/wind/speed/coefficient',
+]
 // Defines common leaf segment keys
 export class L {
     static fireFlame = 'flame length'
