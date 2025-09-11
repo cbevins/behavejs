@@ -4,55 +4,46 @@ export class P {
     static terrain   = 'terrain/'
     static weather   = 'weather/'
 
-    static slope     = 'terrain/slope/'    // ratio, degrees
-    static slopeDegrees= 'terrain/slope/steepness/degrees'
-    static slopeRatio= 'terrain/slope/steepness/ratio'
-    static aspect    = 'terrain/aspect/'   // upslope, downslope
-    static moisture  = 'weather/moisture/'
-    static deadmois  = 'weather/moisture/dead/'    // tl1h, tl10h, tl100h
-    static livemois  = 'weather/moisture/live/'    // herb, stem
-    static windDir   = 'weather/wind/direction/'
-    static windHead  = 'weather/wind/direction/heading/'
-    static windSource= 'weather/wind/direction/source/'
-    static windSpeed = 'weather/wind/speed/'       // at20ft, at10m
+    // static slope     = 'terrain/slope/'    // ratio, degrees
+    // static slopeDegrees= 'terrain/slope/steepness/degrees'
+    // static slopeRatio= 'terrain/slope/steepness/ratio'
+    // static aspect    = 'terrain/aspect/'   // upslope, downslope
+    // static moisture  = 'weather/moisture/'
+    // static deadmois  = 'weather/moisture/dead/'    // tl1h, tl10h, tl100h
+    // static livemois  = 'weather/moisture/live/'    // herb, stem
+    // static windDir   = 'weather/wind/direction/'
+    // static windHead  = 'weather/wind/direction/heading/'
+    // static windSource= 'weather/wind/direction/source/'
+    // static windSpeed = 'weather/wind/speed/'       // at20ft, at10m
     
     static cfire     = 'crown/fire'
     static sfire     = 'weighted/surface/fire'  // 'spread rate', 'fireline intensity', 'effective wind/speed', 'effective wind/coefficient'
     
     static surf1     = 'primary/surface/'
     static bed1      = 'primary/surface/bed/'
-    static dead1     = 'primary/surface/bed/dead/'
-    static dead1p1   = 'primary/surface/bed/dead/element 1/'
-    static dead1p2   = 'primary/surface/bed/dead/element 2/'
-    static dead1p3   = 'primary/surface/bed/dead/element 3/'
-    static dead1p4   = 'primary/surface/bed/dead/element 4/'
-    static dead1p5   = 'primary/surface/bed/dead/element 5/'
-    static live1     = 'primary/surface/bed/live/'
-    static live1p1   = 'primary/surface/bed/live/element 1/'
-    static live1p2   = 'primary/surface/bed/live/element 2/'
-    static live1p3   = 'primary/surface/bed/live/element 3/'
-    static live1p4   = 'primary/surface/bed/live/element 4/'
-    static live1p5   = 'primary/surface/bed/live/element 5/'
+    // static dead1     = 'primary/surface/bed/dead/'
+    // static live1     = 'primary/surface/bed/live/'
     static model1    = 'primary/surface/model/'
-    static standard1 = `primary/surface/model/standard/`
-    static standard1dead = `primary/surface/model/standard/dead`
-    static standard1live = `primary/surface/model/standard/live`
-    static curing1   = `primary/surface/model/standard/curing/` // 'fraction/estimated', 'fraction/observed', 'fraction/applied'
-    static chaparral1= `primary/surface/model/chaparral/`
-    static palmetto1 = `primary/surface/model/palmetto/`
-    static aspen1    = `primary/surface/model/aspen/`
-    static fire1     = 'primary/surface/fire/'
-    static fire1p1   = 'primary/surface/fire/1 no-wind no-slope/'   // 'spread rate',
-    static fire1p2   = 'primary/surface/fire/2 wind-slope vector/'  // 'spread rate', 'spread rate/slope only', '.../wind only', '.../x component', '.../y component'
-    static fire1p3   = 'primary/surface/fire/3 cross-slope wind/'   // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
-    static fire1p4   = 'primary/surface/fire/4 effective limit/'    // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
-    static fire1p5   = 'primary/surface/fire/5 eff wind limit applied/'   // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
-    static fire1p6   = 'primary/surface/fire/6 ros limit applied/'  // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    // static standard1 = `primary/surface/model/standard/`
+    // static standard1dead = `primary/surface/model/standard/dead`
+    // static standard1live = `primary/surface/model/standard/live`
+    // static curing1   = `primary/surface/model/standard/curing/` // 'fraction/estimated', 'fraction/observed', 'fraction/applied'
+    // static chaparral1= `primary/surface/model/chaparral/`
+    // static palmetto1 = `primary/surface/model/palmetto/`
+    // static aspen1    = `primary/surface/model/aspen/`
+    // static fire1     = 'primary/surface/fire/'
 
+    // Sub path below 'primary/surface/' or 'secondary/surface'
+    static firep1    = 'fire/1 no-wind no-slope/'       // 'spread rate',
+    static firep2    = 'fire/2 wind-slope additional/'  // 'spread rate', 'spread rate/slope only', '.../wind only', '.../x component', '.../y component'
+    static firep3    = 'fire/3 cross-slope wind/'       // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    static firep4    = 'fire/4 effective limit/'        // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    static firep5    = 'fire/5 eff wind limit applied/' // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
+    static firep6    = 'fire/6 ros limit applied/'      // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
 
-    static wind1     = 'primary/surface/wind/speed'
-    static wsrf1     = 'primary/surface/wind/speed/reduction'
-    static midflame1 = 'primary/surface/wind/speed/midflame'
+    // static wind1     = 'primary/surface/wind/speed'
+    // static wsrf1     = 'primary/surface/wind/speed/reduction'
+    // static midflame1 = 'primary/surface/wind/speed/midflame'
 
     //--------------------------------------------------------------------------
     // Module Node Names
@@ -134,17 +125,17 @@ export class P {
     static stdDead100Load   = 'standard/dead/100-h/ovendry fuel load'
     static stdDead100Mois   = 'standard/dead/100-h/moisture content'
     static stdDead100Savr   = 'standard/dead/100-h/surface area-to-volume ratio'
-    static stdDead100Savr   = 'standard/dead/100-h/fuel type'
+    static stdDead100Type   = 'standard/dead/100-h/fuel type'
 
     static stdDeadHerbLoad  = 'standard/dead/herb/ovendry fuel load'
     static stdDeadHerbMois  = 'standard/dead/herb/moisture content'
     static stdDeadHerbSavr  = 'standard/dead/herb/surface area-to-volume ratio'
-    static stdDeadHerbSavr  = 'standard/dead/herb/fuel type'
+    static stdDeadHerbType  = 'standard/dead/herb/fuel type'
 
     static stdLiveHerbLoad  = 'standard/live/herb/ovendry fuel load'
     static stdLiveHerbMois  = 'standard/live/herb/moisture content'
     static stdLiveHerbSavr  = 'standard/live/herb/surface area-to-volume ratio'
-    static stdLiveHerbSavr  = 'standard/live/herb/fuel type'
+    static stdLiveHerbType  = 'standard/live/herb/fuel type'
 
     static stdLiveStemLoad  = 'standard/live/stem/ovendry fuel load'
     static stdLiveStemMois  = 'standard/live/stem/moisture content'
@@ -153,7 +144,12 @@ export class P {
 
     static stdTotalHerbLoad = 'standard/total/herb/ovendry fuel load'
     static stdTotalHerbSavr = 'standard/total/herb/surface area-to-volume ratio'
-    static stdTotalHerbSavr = 'standard/total/herb/fuel type'
+    static stdTotalHerbType = 'standard/total/herb/fuel type'
+
+    // SurfaceFuelModule
+    static bedPhiS     = 'bed/spread rate coefficient/slope'
+    static bedPhiW     = 'bed/spread rate coefficient/wind'
+    static bedWsrfFuel = 'bed/' + P.wsrfFuel
 
     // WindDirectionModule
     static wdir       = 'wind/direction/'
@@ -279,6 +275,9 @@ export class L {
     static fireLwr  = 'length-to-with ratio'
     static fireRxi  = 'reaction intensity'
     static fireTaur = 'residence time'
+    static fireRos  = 'spread rate'
+    static firePhiE = 'effective wind/coefficient'
+    static fireWeff = 'effective wind/speed'
 
     static fuelBulk = 'bulk density'
     static fuelBeta = 'packing ratio'
@@ -364,8 +363,6 @@ export class L {
     static rosHead = L.ros + 'at head'
     static rosNwns = L.ros + 'no-wind no-slope'
     static rosUpsl = L.ros + 'upslope wind'
-    static rosSlope = L.ros + 'slope only'
-    static rosWind = L.ros + 'wind only'
     static rosXcomp = L.ros + 'x component'
     static rosYcomp = L.ros + 'y component'
 

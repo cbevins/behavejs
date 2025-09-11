@@ -15,6 +15,7 @@ export class Util {
         }
         console.log('Dag of', map.size, 'nodes has', n,'undefined supplier keys.')
     }
+    //--------------------------------------------------------------------------
 
     static getNode(map, nodeKey) {
         console.log('get', nodeKey)
@@ -22,9 +23,42 @@ export class Util {
         return {key, value, units, method, args}
     }
 
-    static listNodes(nodes, cols=4) {
-        const map = Util.nodesToMap(nodes)
-        return Util.listNodeMap(map, cols)
+    //--------------------------------------------------------------------------
+
+    static listActiveConfigs(dag) {
+        let str = '\nActive Configurations:\n'
+        for(let config of dag.activeConfigs()) {
+            const [key, opt] = config.split('=')
+            str += `  ${key}  [${opt}]\n`
+        }
+        return str
+    }
+    static logActiveConfigs(dag) { console.log(Util.listActiveConfigs(dag)) }
+
+    //--------------------------------------------------------------------------
+    // Lists/logs Genome node definitions
+    static listNodeDefs(nodes, title='') {
+        let str = `\n${title}\n`
+        for(let node of nodes) {
+            const [key, value, units, optidx, options] = node
+            str += `node="${key}" value="${value}" units="${units}" cfg=${optidx}\n`
+            for(let option of options) {
+                const [cfgOpt, updater, args] = option
+                if (!updater) throw new Error(`Node "${key}" has undefined updater`)
+                str += `        cfg=["${cfgOpt}"] updater="${updater.name}(${args.join(', ')})"\n`
+            }
+        }
+        return str + nodes.length + ' nodes'
+    }
+    static logNodeDefs(nodes, title='') {console.log(Util.listNodeDefs(nodes, title))}
+
+    //--------------------------------------------------------------------------
+
+    // Converts an array of Dag nodes into a Map
+    static nodesToMap(nodes) {
+        const map = new Map()
+        for (let node of nodes) map.set(node[0], node)
+        return map
     }
 
     static listNodeMap(map,cols=4) {
@@ -43,27 +77,25 @@ export class Util {
         return str + map.size + ' nodes'
     }
 
+    static listNodes(nodes, cols=4) {
+        const map = Util.nodesToMap(nodes)
+        return Util.listNodeMap(map, cols)
+    }
+
     static logNodes(nodes, title='', cols=4) {
         const dashes = ''.padStart(title.length, '-')
         console.log(`${dashes}\n${title}\n${dashes}`)
         console.log(Util.listNodes(nodes, cols))
     }
 
+    //--------------------------------------------------------------------------
+
     static logNode(map, key) {
         const [k, v, u, m, a] = map.get(key)
         console.log(k, v, m, a)
     }
 
-    // Converts an array of Dag nodes into a Map
-    static nodesToMap(nodes) {
-        const map = new Map()
-        for (let node of nodes) map.set(node[0], node)
-        return map
-    }
-
-    static logDagNodes(nodes, title='') {
-        console.log(Util.listDagNodes(nodes, title))
-    }
+    //--------------------------------------------------------------------------
 
     static listDagNodes(nodes, title='') {
         const w0 = nodes.reduce((w, node) => Math.max(node.key.length, w), 0)
@@ -76,7 +108,7 @@ export class Util {
         for(let node of nodes) {
             const {key, value, units, updater, suppliers, consumers, status, dirty, cfgkey, cfgopt} = node
             str += key.padEnd(w0+2)
-            str += ('"'+value+'"').padEnd(w1+2)
+            str += ('"'+value+'"').padEnd(w1+4)
             str += status.padEnd(w6+2)
             str += dirty.padEnd(w7+2)
             str += (updater.name).padEnd(w3+2)
@@ -87,4 +119,9 @@ export class Util {
         }
         return str + nodes.length + ' nodes'
     }
+    
+    static logDagNodes(nodes, title='') {
+        console.log(Util.listDagNodes(nodes, title))
+    }
+
 }

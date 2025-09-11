@@ -16,33 +16,10 @@ import { Util } from './index.js'
 
 console.log(new Date())
 
-function listActiveConfigs(dag) {
-    let str = '\nActive Configurations:\n'
-    for(let config of dag.activeConfigs()) {
-        const [key, opt] = config.split('=')
-        str += `  ${key}  [${opt}]\n`
-    }
-    console.log(str)
-}
-
-function listNodes(nodes, title='') {
-        let str = `\n${title}\n`
-        for(let node of nodes) {
-            const [key, value, units, optidx, options] = node
-            str += `${key}    ${value}    ${units}    ${optidx}\n`
-            for(let option of options) {
-                const [cfgOpt, updater, args] = option
-                str += `        ["${cfgOpt}"] ${updater.name}(${args.join(', ')})\n`
-            }
-        }
-        return str + nodes.length + ' nodes'
-    }
-
-function logNodes(nodes, title='') {console.log(listNodes(nodes, title))}
-
 //------------------------------------------------------------------------------
-// Step 1 - construct a genome of all possible nodes
-// Note: only used P.* keys in this section to avoid circular deps
+// Step 1 - construct an array of *definitions* of all possible nodes
+// including all possible configuration updaters for each node.
+// (Note: only used string keys in this section to avoid circular dependencies)
 //------------------------------------------------------------------------------
 
 const constants = new ConstantsModule(P.constants)
@@ -72,22 +49,23 @@ const standard1 = new StandardFuelModelModule(
 
 // Need a WindSpeedReductionModule and a MidflameWindSpeedModule for surface fire
 const wsrf1 = new WindSpeedReductionModule(
-    P.bed1,                 // module's parent path
-    P.canopyWsrf,           // canopy wind speed reduction factor node key
-    P.bed1+L.wsrfFuel)      // fuel bed wind speed reduction node key
+    P.surf1,                    // module's parent path
+    P.canopyWsrf,               // canopy wind speed reduction factor node key
+    P.surf1+P.wsrfFuel)         // fuel bed wind speed reduction node key
 const midflame1 = new MidflameWindSpeedModule(
-    P.bed1,                 // module's parent path
-    P.weather+P.wspd20ft,   // wind speed at 20-ft node key
-    P.bed1+P.wsrfMidflame)  // wind speed reduction at midflame node key
+    P.surf1,                    // module's parent path
+    P.weather+P.wspd20ft,       // wind speed at 20-ft node key
+    P.surf1+P.wsrfMidflame)      // wind speed reduction at midflame node key
 const bed1 = new SurfaceFuelModule(
     P.surf1,                    // module's parent path
     P.terrain+P.slopeRatio,     // slope steepness ratio node key
-    P.bed1+P.midflame,          // midflame wind speed node key
+    P.surf1+P.midflame,         // midflame wind speed node key
     P.weather+P.wdirHeadUp,     // wind heading degrees from upslope node key
     P.model1, P.chaparral1, P.palmetto1, P.aspen1)
 
 //------------------------------------------------------------------------------
-// Step 2 - Configure and combine all the module genomes
+// Step 2 - Configure node definitions into an array of Dag nodes
+// that only have a single updater method.
 //------------------------------------------------------------------------------
 
 const nodes = [
@@ -105,7 +83,7 @@ const nodes = [
     ...midflame1.configure(C.midflameObserved),
     ...bed1.configure(C.fuelStd)
 ].sort()
-// logNodes(nodes)
+// Util.logNodeDefs(nodes)
 
 //------------------------------------------------------------------------------
 // Step 3 - construct the directed acyclical graph
@@ -118,14 +96,13 @@ const dag = new Dag(nodes)
 //------------------------------------------------------------------------------
 
 const select = [
-    P.bed1+L.rosNwns,
-    P.bed1+L.fuelPhiW,
-    P.bed1+L.fuelPhiS,
-    P.bed1+L.fuelPhiE,
-    P.bed1+L.rosUpsl,
-    P.bed1+L.rosXcomp,
-    P.bed1+L.rosYcomp,
-    P.bed1+L.rosHead
+    P.surf1+P.firep1+L.fireRos,    // no-wind, no-slope
+    P.surf1+P.bedPhiS,
+    P.surf1+P.bedPhiW,
+    P.surf1+P.firep1+L.firePhiE,
+    P.surf1+P.firep2+L.rosXcomp,  // passes to only 7 digits for fm010: 0.75673013692577218, fm124: 1.9584486126230398
+    P.surf1+P.firep2+L.rosYcomp,  // passes to 15 digits for fm010: 17.856644527335789, fm124: 46.996312501163828
+    P.surf1+P.firep2+L.fireRos,   // fails: fm010: 18.551680325448835, fm124: 48.47042599399056
 ]
 dag.select(select)
 // Util.logDagNodes(dag.selected(), 'Selected Nodes')
@@ -134,7 +111,7 @@ dag.select(select)
 // Step 5 - determine/confirm active configurations (informational)
 //------------------------------------------------------------------------------
 
-listActiveConfigs(dag)
+Util.listActiveConfigs(dag)
 
 // RECONFIGURE HERE?
 
@@ -143,7 +120,6 @@ listActiveConfigs(dag)
 //------------------------------------------------------------------------------
 
 const inputs = dag.activeInputs()
-Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 
 //------------------------------------------------------------------------------
 // Step 7 - Set input values
@@ -156,7 +132,7 @@ dag.set(P.weather+P.moisDead100, 0.09)
 dag.set(P.weather+P.moisLiveHerb, 0.5)
 dag.set(P.weather+P.moisLiveStem, 1.5)
 dag.set(P.terrain+P.slopeRatio, 0.25)
-dag.set(P.bed1+P.midflame, 10*88)
+dag.set(P.surf1+P.midflame, 10*88)
 dag.set(P.weather+P.wdirHeadUp, 90)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 
@@ -167,10 +143,3 @@ Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 dag.updateAll()
 Util.logDagNodes(dag.selected(), 'Selected Node Values')
 // Util.logDagNodes(dag.nodes(), 'All Nodes')
-
-function showNode(node) {
-    console.log(`\nNode "${node.key}" has ${node.suppliers.length} suppliers:`)
-    for(let n of node.suppliers) console.log('  ', n.key, '=', n.value)
-    console.log(`Node "${node.key}" has ${node.consumers.length} consumers:`)
-    for(let n of node.consumers) console.log('  ', n.key)
-}

@@ -30,7 +30,14 @@ export class SurfaceFuelModule extends ModuleBase {
         this.config = 'fuel model domain'
         this.options = [C.fuelStd, C.fuelCh, C.fuelPg, C.fuelWa]
 
-        const bed = path + 'bed/'
+        const fire1 = path + P.firep1
+        const fire2 = path + P.firep2
+        const fire3 = path + P.firep3
+        const fire4 = path + P.firep4
+        const fire5 = path + P.firep5
+        const fire6 = path + P.firep6
+
+        const bed  = path + 'bed/'
         const dead = bed + 'dead/'
         const live = bed + 'live/'
         const d1 = dead + '1/'
@@ -86,16 +93,16 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d2+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Type]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Type]],
             ]],
             [d2+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Mois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Mois]],
             ]],
             [d2+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Load]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Load]],
             ]],
             [d2+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead2Savr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Savr]],
             ]],
             [d2+L.fuelHeat, 0, U.fuelHeat, 0, [
                 [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
@@ -115,16 +122,16 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d3+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Type]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Type]],
             ]],
             [d3+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Mois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Mois]],
             ]],
             [d3+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Load]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Load]],
             ]],
             [d3+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead3Savr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Savr]],
             ]],
             [d3+L.fuelHeat, 0, U.fuelHeat, 0, [
                 [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
@@ -144,16 +151,16 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d4+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Type]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbType]],
             ]],
             [d4+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Mois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbMois]],
             ]],
             [d4+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Load]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbLoad]],
             ]],
             [d4+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead4Savr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbSavr]],
             ]],
             [d4+L.fuelHeat, 0, U.fuelHeat, 0, [
                 [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
@@ -202,16 +209,16 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l1+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Type]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbType]],
             ]],
             [l1+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Mois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbMois]],
             ]],
             [l1+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Load]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbLoad]],
             ]],
             [l1+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive1Savr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbSavr]],
             ]],
             [l1+L.fuelHeat, 0, U.fuelHeat, 0, [
                 [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHeat]],
@@ -231,16 +238,16 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l2+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Type]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemType]],
             ]],
             [l2+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Mois]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemMois]],
             ]],
             [l2+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Load]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemLoad]],
             ]],
             [l2+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLive2Savr]],
+                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemSavr]],
             ]],
             [l2+L.fuelHeat, 0, U.fuelHeat, 0, [
                 [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHeat]],
@@ -358,7 +365,7 @@ export class SurfaceFuelModule extends ModuleBase {
             for(let p of [p1, p2, p3, p4, p5]) {
                 // Each particle has 11 derived characteristics
                 this.nodes.push(
-                    [p+L.fuelEhn, 0, U.fuelEhn, 0, [
+                    [p+L.fuelEhn, 0, U.fraction, 0, [
                         [this.any, Fuel.effectiveHeatingNumber, [p+L.fuelSavr]]]],
                     [p+L.fuelEfol, 0, U.fuelLoad, 0, [
                         [this.any, Fuel.effectiveFuelLoad, [p+L.fuelSavr, p+L.fuelLoad, p+L.fuelLife]]]],
@@ -378,7 +385,7 @@ export class SurfaceFuelModule extends ModuleBase {
                         [this.any, Fuel.surfaceAreaWeightingFactor, [p+L.fuelSa, lcat+L.fuelSa]]]],
                     [p+L.fuelVol, 0, U.fuelVol, 0, [
                         [this.any, Fuel.volume, [p+L.fuelLoad, p+L.fuelDens]]]],
-                    [p+L.fuelEfwl, 0, U.waterLoad, 0, [
+                    [p+L.fuelEfwl, 0, U.fuelLoad, 0, [
                         [this.any, Fuel.effectiveFuelWaterLoad, [p+L.fuelEfol, p+L.fuelMois]]]],
                     [p+L.fuelDiam, 0, U.fuelLeng, 0, [
                         [this.any, Fuel.cylindricalDiameter, [p+L.fuelSavr]]]],
@@ -447,7 +454,7 @@ export class SurfaceFuelModule extends ModuleBase {
         this.nodes.push(
             [dead+L.fuelMext, 0, U.fuelMois, 0, [
                 [C.fuelStd, Dag.assign, [stdPath + P.stdDeadMext]]]],
-            [dead+L.fuelEfwl, 0, U.fuelEfwl, 0, [
+            [dead+L.fuelEfwl, 0, U.fuelLoad, 0, [
                 [this.any, Calc.sum, [d1+L.fuelEfwl, d2+L.fuelEfwl, d3+L.fuelEfwl, d4+L.fuelEfwl, d5+L.fuelEfwl]]]],
             [dead+L.fuelEfmc, 0, U.fuelMois, 0, [
                 [this.any, Calc.divide, [dead+L.fuelEfwl, dead+L.fuelEfol]]]],
@@ -487,8 +494,8 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.optimumPackingRatio, [bed+L.fuelSavr]]]],
             [bed+L.fuelBrat,   0, U.ratio, 0, [
                 [this.any, Bed.packingRatioRatio, [bed+L.fuelBeta, bed+L.fuelBopt]]]],
-            [bed+L.fuelEhn,    0, U.ratio, 0, [
-                [this.any, Bed.effectiveHeatingNumber, [bed+L.fuelSavr]]]],
+            // [bed+L.fuelEhn,    0, U.ratio, 0, [
+            //     [this.any, Bed.effectiveHeatingNumber, [bed+L.fuelSavr]]]],
             [bed+L.fuelXi,     0, U.ratio, 0, [
                 [this.any, Bed.propagatingFluxRatio, [bed+L.fuelSavr, bed+L.fuelBeta]]]],
             [bed+L.fuelRxve,   0, U.factor, 0, [
@@ -519,19 +526,15 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.windK, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
-            [bed+L.fireTaur,   0, U.taur, 0, [
-                [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
-            [bed+L.fireHpua,   0, U.hpua, 0, [
+            [bed+L.fireHpua,   0, U.fireHpua, 0, [
                 [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
             [bed+L.wsrfFuel,   1, U.fraction, 0, [
                 [this.any, Bed.openWindSpeedAdjustmentFactor, [bed+L.fuelDepth]]]],
-            [bed+L.rosNwns,    0, U.fireRos, 0, [
-                [this.any, Bed.noWindNoSlopeSpreadRate, [bed+L.fuelSource, bed+L.fuelSink]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
-            [bed+L.fireTaur,   0, U.taur, 0, [
+            [bed+L.fireTaur,   0, U.fireTaur, 0, [
                 [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
-            [bed+L.fireHpua,   0, U.hpua, 0, [
+            [bed+L.fireHpua,   0, U.fireHpua, 0, [
                 [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
 
             [bed+L.fuelPhiW,   0, U.factor, 0, [
@@ -539,33 +542,34 @@ export class SurfaceFuelModule extends ModuleBase {
             [bed+L.fuelPhiS,   0, U.factor, 0, [
                 [this.any, Bed.phiSlope, [slope, bed+L.fuelSlpk]]]],
 
-            // 'Step 1' nodes
-            [bed+L.fuelPhiE,   0, U.factor, 0, [
+            // Part 1 - fire spread rate and effective wind under no-wind, no-slope conditions
+            [fire1+L.fireRos,    0, U.fireRos, 0, [
+                [this.any, Bed.noWindNoSlopeSpreadRate, [bed+L.fuelSource, bed+L.fuelSink]]]],
+            [fire1+L.firePhiE,   0, U.factor, 0, [
                 [this.any, Fire.effectiveWindSpeedCoefficient, [bed+L.fuelPhiW, bed+L.fuelPhiS]]]],
-            [bed+L.weffUpsl,   0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeed, [bed+L.fuelPhiE, bed+L.windB, bed+L.windI]]]],
-            [bed+L.rosUpsl,    0, U.fireRos, 0, [
-                [this.any, Fire.maximumSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiE]]]],
+            [fire1+L.fireWeff,   0, U.windSpeed, 0, [
+                [this.any, Fire.effectiveWindSpeed, [fire1+L.firePhiE, bed+L.windB, bed+L.windI]]]],
 
-                
+            // Part 2 - *additional* fire spread rate from wind and slope to ADD to no-wind, no-slope case
+            [fire2+L.rosSlope,  0, U.fireRos, 0, [
+                [this.any, Fire.maximumDirectionSlopeSpreadRate, [fire1+L.fireRos, bed+L.fuelPhiS]]]],
+            [fire2+L.rosWind,   0, U.fireRos, 0, [
+                [this.any, Fire.maximumDirectionWindSpreadRate, [fire1+L.fireRos, bed+L.fuelPhiW]]]],
+            [fire2+L.rosXcomp,  0, U.factor, 0, [
+                [this.any, Fire.maximumDirectionXComponent, [fire2+L.rosWind, fire2+L.rosSlope, windHeadUpslp]]]],
+            [fire2+L.rosYcomp,  0, U.factor, 0, [
+                [this.any,Fire.maximumDirectionYComponent, [fire2+L.rosWind, windHeadUpslp]]]],
+            [fire2+L.fireRos,   0, U.fireRos, 0, [
+                [this.any,Fire.maximumDirectionSpreadRate, [fire2+L.rosXcomp, fire2+L.rosYcomp]]]],
+
             // The following apply only to upslope wind conditions (step 1)
-            [bed+L.fireLwr,    1, U.ratio, 0, [
-                [this.any, Fire.lengthToWidthRatio, [bed+L.weffUpsl]]]],
-            [bed+L.fireFli,    0, U.fireFli, 0, [
-                [this.any, Fire.firelineIntensity, [bed+L.rosUpsl, bed+L.fireRxi, bed+L.fireTaur]]]],
-            [bed+L.fireFlame,   0, U.flamelen, 0, [
-                [this.any, Fire.flameLength, [bed+L.fireFli]]]],
+            // [bed+L.fireLwr,    1, U.ratio, 0, [
+            //     [this.any, Fire.lengthToWidthRatio, [bed+L.weffUpsl]]]],
+            // [bed+L.fireFli,    0, U.fireFli, 0, [
+            //     [this.any, Fire.firelineIntensity, [bed+L.rosUpsl, bed+L.fireRxi, bed+L.fireTaur]]]],
+            // [bed+L.fireFlame,   0, U.fireFlame, 0, [
+            //     [this.any, Fire.flameLength, [bed+L.fireFli]]]],
 
-            [bed+L.rosSlope,  0, U.fireRos, 0, [
-                [this.any, Fire.maximumDirectionSlopeSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiS]]]],
-            [bed+L.rosWind,   0, U.fireRos, 0, [
-                [this.any,Fire.maximumDirectionWindSpreadRate, [bed+L.rosNwns, bed+L.fuelPhiW]]]],
-            [bed+L.rosXcomp,  0, U.factor, 0, [
-                [this.any,Fire.maximumDirectionXComponent, [bed+L.rosWind, bed+L.rosSlope, windHeadUpslp]]]],
-            [bed+L.rosYcomp,  0, U.factor, 0, [
-                [this.any,Fire.maximumDirectionYComponent, [bed+L.rosWind, windHeadUpslp]]]],
-            [bed+L.rosHead,   0, U.factor, 0, [
-                [this.any,Fire.maximumDirectionSpreadRate, [bed+L.rosXcomp, bed+L.rosYcomp]]]],
 
         )
     }

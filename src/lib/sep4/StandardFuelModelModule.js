@@ -24,7 +24,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [C.stdCatalog, Dag.input, []],
                 [C.stdCustom, Dag.constant, []],
             ]],
-            [path+P.stdNumb, 0, U.fuelKey, 0, [
+            [path+P.stdNumb, 0, U.fuelNumb, 0, [
                 [C.stdCatalog, Cat.number, [path+P.stdKey]],
                 [C.stdCustom, Dag.input, []],
             ]],
@@ -32,7 +32,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [C.stdCatalog, Cat.code, [path+P.stdKey]],
                 [C.stdCustom, Dag.input, []],
             ]],
-            [path+P.stdLabel, '', U.fuelKey, 0, [
+            [path+P.stdLabel, '', U.fuelLabel, 0, [
                 [C.stdCatalog, Cat.label, [path+P.stdKey]],
                 [C.stdCustom, Dag.input, []],
             ]],
@@ -73,7 +73,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [C.stdCustom, Dag.input, []],
             ]],
             [path+P.stdDead1Type, Cat.type1(), U.fuelType, 0, [
-                [this.any, Dag.constant(), []],
+                [this.any, Dag.constant, []],
             ]],
             // 10-h dead
             [path+P.stdDead10Load, 0, U.fuelLoad, 0, [
@@ -101,7 +101,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [this.any, Cat.savr100, []],
             ]],
             [path+P.stdDead100Type, Cat.type100(), U.fuelType, 0, [
-                [this.any, Dag.constant(), []],
+                [this.any, Dag.constant, []],
             ]],
             // cured portion of total herb load
             [path+P.stdDeadHerbLoad, 0, U.fuelLoad, 0, [
