@@ -36,6 +36,7 @@ export class SurfaceFuelModule extends ModuleBase {
         const fire4 = path + P.firep4
         const fire5 = path + P.firep5
         const fire6 = path + P.firep6
+        const fire7 = path + P.firep7
 
         const bed  = path + 'bed/'
         const dead = bed + 'dead/'
@@ -50,11 +51,6 @@ export class SurfaceFuelModule extends ModuleBase {
         const l3 = live + '3/'
         const l4 = live + '4/'
         const l5 = live + '5/'
-
-        this.fuelRxi = bed + L.fireRxi
-        this.fuelNwns = bed + L.rosNwns
-        this.fuelSavr = bed + L.fuelSavr
-        this.fuelBeta = bed + L.fuelBeta
         
         //----------------------------------------------------------------------
         // Fuel bed particle input nodes (9)
@@ -563,12 +559,55 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Fire.maximumDirectionSpreadRate, [fire2+L.rosXcomp, fire2+L.rosYcomp]]]],
 
             // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
+            // NO Rothermel's limit applied (effective wind speed < 0.9 Rxi)
+            // NO Andrew's limit applied (spread rate < effective wind speed)
             [fire3+L.fireRos,   0, U.fireRos, 0, [
                 [this.any, Fire.spreadRateWithCrossSlopeWind, [fire1+L.fireRos, fire2+L.fireRos]]]],
             [fire3+L.firePhiE,  0, U.factor, 0, [
                 [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire3+L.fireRos]]]],
             [fire3+L.fireWeff,  0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeed, [fire3+L.firePhiE, bed+L.windB, bed+L.windI]]]]
+                [this.any, Fire.effectiveWindSpeed, [fire3+L.firePhiE, bed+L.windB, bed+L.windI]]]],
+
+            // Part 4 - fire spread rate and effective wind at the *effective wind speed limit*
+            [fire4+L.fireWeff, 0, U.windSpeed, 0, [
+                [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
+            [fire4+L.firePhiE, 0, U.factor, 0, [
+                [this.any, Fire.phiEwFromEws, [fire4+L.fireWeff, bed+L.windB, bed+L.windK]]]],
+            [fire4+L.fireRos,  0, U.fireRos, 0, [
+                [this.any, Fire.maximumSpreadRate, [fire1+L.fireRos, fire4+L.firePhiE]]]],
+
+            // Part 5 (was 3a) - fire spread rate and effective wind after applying Rothermel's effective wind speed limit
+            // YES Rothermel's limit applied (effective wind speed < 0.9 Rxi)
+            // NO  Andrew's limit applied (spread rate < effective wind speed)
+            [fire5+L.fireWeff, 0, U.windSpeed, 0, [
+                [this.any, Math.min, [fire3+L.fireWeff, fire4+L.fireWeff]]]],
+            [fire5+L.firePhiE, 0, U.factor, 0, [
+                [this.any, Math.min, [fire3+L.firePhiE, fire4+L.firePhiE]]]],
+            [fire5+L.fireRos,  0, U.fireRos, 0, [
+                [this.any, Math.min, [fire3+L.fireRos, fire4+L.fireRos]]]],
+
+            // Part 6 (was 3b) - fire spread rate and effective wind after applying Andrews' RoS limit
+            // NO  Rothermel's limit applied (effective wind speed < 0.9 Rxi)
+            // YES Andrew's limit applied (spread rate < effective wind speed)
+            [fire6+L.fireRos, 0, U.fireRos, 0, [
+                [this.any, Fire.spreadRateWithRosLimitApplied, [fire3+L.fireRos, fire3+L.fireWeff]]]],
+            [fire6+L.firePhiE, 0, U.factor, 0, [
+                [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire6+L.fireRos]]]],
+            [fire6+L.fireWeff, 0, U.windSpeed, 0, [
+                [this.any, Fire.effectiveWindSpeed, [fire6+L.firePhiE, bed+L.windB, bed+L.windI]]]],
+
+            // Part 7 (was 4)
+            // YES  Rothermel's limit applied (effective wind speed < 0.9 Rxi)
+            // YES Andrew's limit applied (spread rate < effective wind speed)
+            [fire7+L.fireRos, 0, U.fireRos, 0, [
+                [this.any, Fire.spreadRateWithRosLimitApplied, [fire5+L.fireRos, fire5+L.fireWeff]]]],
+            [fire7+L.firePhiE, 0, U.factor, 0, [
+                [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire7+L.fireRos]]]],
+            [fire7+L.fireWeff, 0, U.windSpeed, 0, [
+                [this.any, Fire.effectiveWindSpeed, [fire7+L.firePhiE, bed+L.windB, bed+L.windI]]]],
+
+            // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
+            
 
             // The following apply only to upslope wind conditions (step 1)
             // [bed+L.fireLwr,    1, U.ratio, 0, [
@@ -580,127 +619,5 @@ export class SurfaceFuelModule extends ModuleBase {
 
 
         )
-    }
-    old() {
-        return [
-            // Part 1 - fire spread rate and effective wind under no-wind, no-slope conditions
-
-            // Part 2 - *additional* fire spread rate with wind and slope
-            [`${prefix}.fire.maximumDirection.slope.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.maximumDirectionSlopeSpreadRate,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.slope.phi`
-                ]]]],
-            [`${prefix}.fire.maximumDirection.wind.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.maximumDirectionWindSpreadRate,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.wind.phi`
-                ]]]],
-            [`${prefix}.fire.maximumDirection.xComponent`, [['Factor'], [
-                [this.any, Fire.maximumDirectionXComponent,
-                    `${prefix}.fire.maximumDirection.wind.spreadRate`,
-                    `${prefix}.fire.maximumDirection.slope.spreadRate`,
-                    `${prefix}.fire.wind.heading.fromUpslope`
-                ]]]],
-            [`${prefix}.fire.maximumDirection.yComponent`, [['Factor'], [
-                [this.any, Fire.maximumDirectionYComponent,
-                    `${prefix}.fire.maximumDirection.wind.spreadRate`,
-                    `${prefix}.fire.wind.heading.fromUpslope`
-                ]]]],
-            [`${prefix}.fire.maximumDirection.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.maximumDirectionSpreadRate,
-                    `${prefix}.fire.maximumDirection.xComponent`,
-                    `${prefix}.fire.maximumDirection.yComponent`
-                ]]]],
-
-            // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
-            [`${prefix}.fire.spread.step2.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.spreadRateWithCrossSlopeWind,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.maximumDirection.spreadRate`
-                ]]]],
-            [`${prefix}.fire.spread.step2.phiEffectiveWind`, [['Factor'], [
-                [this.any, Fire.effectiveWindSpeedCoefficientInferred,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.spread.step2.spreadRate`
-                ]]]],
-            [`${prefix}.fire.spread.step2.effectiveWindSpeed`, [['WindSpeed'], [
-                [this.any, Fire.effectiveWindSpeed,
-                    `${prefix}.fire.spread.step2.phiEffectiveWind`,
-                    `${prefix}.fire.wind.factor.b`,
-                    `${prefix}.fire.wind.factor.i`
-                ]]]],
-
-            // Part 4 - fire spread rate and effective wind at the *effective wind speed limit*
-            [`${prefix}.fire.limit.effectiveWindSpeed`, [['WindSpeed'], [
-                [this.any, Fire.effectiveWindSpeedLimit,
-                    `${prefix}.fire.reactionIntensity`
-                ]]]],
-            [`${prefix}.fire.limit.windSlopeSpreadRateCoefficient`, [['Factor'], [
-                [this.any, Fire.phiEwFromEws,
-                    `${prefix}.fire.limit.effectiveWindSpeed`,
-                    `${prefix}.fire.wind.factor.b`,
-                    `${prefix}.fire.wind.factor.k`
-                ]]]],
-            [`${prefix}.fire.limit.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.maximumSpreadRate,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.limit.windSlopeSpreadRateCoefficient`
-                ]]]],
-
-            // Part 5 (was 3a) - fire spread rate and effective wind
-            // after applying Rothermel's effective wind speed limit
-            [`${prefix}.fire.spread.step3a.effectiveWindSpeed`, [['WindSpeed'], [
-                [this.any, Math.min,
-                    `${prefix}.fire.spread.step2.effectiveWindSpeed`,
-                    `${prefix}.fire.limit.effectiveWindSpeed`
-                ]]]],
-            [`${prefix}.fire.spread.step3a.phiEffectiveWind`, [['Factor'], [
-                [this.any, Math.min,
-                    `${prefix}.fire.spread.step2.phiEffectiveWind`,
-                    `${prefix}.fire.limit.windSlopeSpreadRateCoefficient`
-                ]]]],
-            [`${prefix}.fire.spread.step3a.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Math.min,
-                    `${prefix}.fire.spread.step2.spreadRate`,
-                    `${prefix}.fire.limit.spreadRate`
-                ]]]],
-
-            // Part 6 (was 3b) - fire spread rate and effective wind after applying Andrews' RoS limit
-            [`${prefix}.fire.spread.step3b.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.spreadRateWithRosLimitApplied,
-                    `${prefix}.fire.spread.step2.spreadRate`,
-                    `${prefix}.fire.spread.step2.effectiveWindSpeed`
-                ]]]],
-            [`${prefix}.fire.spread.step3b.phiEffectiveWind`, [['Factor'], [
-                [this.any, Fire.effectiveWindSpeedCoefficientInferred,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.spread.step3b.spreadRate`
-                ]]]],
-            [`${prefix}.fire.spread.step3b.effectiveWindSpeed`, [['WindSpeed'], [
-                [this.any, Fire.effectiveWindSpeed,
-                    `${prefix}.fire.spread.step3b.phiEffectiveWind`,
-                    `${prefix}.fire.wind.factor.b`,
-                    `${prefix}.fire.wind.factor.i`
-                ]]]],
-
-                // end `${prefix}.fire.spread.step4`
-            [`${prefix}.fire.spread.step4.spreadRate`, [['FireSpreadRate'], [
-                [this.any, Fire.spreadRateWithRosLimitApplied,
-                    `${prefix}.fire.spread.step3a.spreadRate`,
-                    `${prefix}.fire.spread.step3a.effectiveWindSpeed`
-                ]]]],
-            [`${prefix}.fire.spread.step4.effectiveWindSpeed`, [['WindSpeed'], [
-                [this.any, Fire.effectiveWindSpeed,
-                    `${prefix}.fire.spread.step4.phiEffectiveWind`,
-                    `${prefix}.fire.wind.factor.b`,
-                    `${prefix}.fire.wind.factor.i`
-                ]]]],
-            [`${prefix}.fire.spread.step4.phiEffectiveWind`, [['Factor'], [
-                [this.any, Fire.effectiveWindSpeedCoefficientInferred,
-                    `${prefix}.fire.noWindNoSlope.spreadRate`,
-                    `${prefix}.fire.spread.step4.spreadRate`
-                ]]]],
-            ]
     }
 }

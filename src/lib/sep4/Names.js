@@ -40,7 +40,8 @@ export class P {
     static firep4    = 'fire/4 effective limit/'        // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
     static firep5    = 'fire/5 eff wind limit applied/' // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
     static firep6    = 'fire/6 ros limit applied/'      // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
-
+    static firep7    = 'fire/7 both limits applied/'
+    
     // static wind1     = 'primary/surface/wind/speed'
     // static wsrf1     = 'primary/surface/wind/speed/reduction'
     // static midflame1 = 'primary/surface/wind/speed/midflame'

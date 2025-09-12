@@ -371,7 +371,6 @@ export class SurfaceFireEquations {
     static maximumDirectionXComponent (windRate, slopeRate, windHdgAzUp) {
       const radians = (windHdgAzUp * Math.PI) / 180
       const x = slopeRate + windRate * Math.cos(radians)
-      console.log('maximumDirectionXComponent wind heading is', windHdgAzUp, 'returns', x, 'cos()', Math.cos(radians))
       return x
     }
 
@@ -384,7 +383,6 @@ export class SurfaceFireEquations {
     static maximumDirectionYComponent (windRate, windHdgAzUp) {
       const radians = (windHdgAzUp * Math.PI) / 180
       const y = windRate * Math.sin(radians)
-      console.log('maximumDirectionYComponent wind heading is', windHdgAzUp, 'returns', y)
       return y
     }
 

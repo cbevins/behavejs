@@ -111,6 +111,22 @@ const select = [
     P.surf1+P.firep3+L.firePhiE,
     P.surf1+P.firep3+L.fireWeff,
     P.surf1+P.firep3+L.fireRos,
+
+    P.surf1+P.firep4+L.fireWeff,
+    P.surf1+P.firep4+L.firePhiE,
+    P.surf1+P.firep4+L.fireRos,
+
+    P.surf1+P.firep5+L.firePhiE,
+    P.surf1+P.firep5+L.fireWeff,
+    P.surf1+P.firep5+L.fireRos,
+
+    P.surf1+P.firep6+L.firePhiE,
+    P.surf1+P.firep6+L.fireWeff,
+    P.surf1+P.firep6+L.fireRos,
+
+    P.surf1+P.firep7+L.firePhiE,
+    P.surf1+P.firep7+L.fireWeff,
+    P.surf1+P.firep7+L.fireRos,
 ]
 dag.select(select)
 // Util.logDagNodes(dag.selected(), 'Selected Nodes')
