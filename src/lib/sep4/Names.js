@@ -7,7 +7,7 @@ export class P {
     // static slope     = 'terrain/slope/'    // ratio, degrees
     // static slopeDegrees= 'terrain/slope/steepness/degrees'
     // static slopeRatio= 'terrain/slope/steepness/ratio'
-    // static aspect    = 'terrain/aspect/'   // upslope, downslope
+    // static aspect    = 'terrain/aspect/'   // up-slope, downslope
     // static moisture  = 'weather/moisture/'
     // static deadmois  = 'weather/moisture/dead/'    // tl1h, tl10h, tl100h
     // static livemois  = 'weather/moisture/live/'    // herb, stem
@@ -210,6 +210,9 @@ export class C {
     static fuelCh = 'chaparral'
     static fuelPg = 'palmetto'
     static fuelWa = 'aspen'
+    // SurfaceFireModule
+    static fireLimitYes = 'applied'
+    static fireLimitNo = 'not applied'
     // WindDirectionModule
     static wdirHeadUp = 'heading from up-slope'
     static wdirFromUp = 'source from up-slope'
@@ -223,61 +226,20 @@ export class C {
     static wsrfObserved  = 'observed'
 }
 
-export const alt = [
-    'primary/surface/fire/',
-    'primary/surface/fuel/bed',
-    'primary/surface/fuel/model',
-
-    'secondary/surface/fire/',
-    
-    'weighted/surface/fire/',
-
-    // These all devoted to determining the fire spread rate and effective wind
-    // speed under various conditions
-
-    // Part 1 - fire spread rate and effective wind under no-wind, no-slope conditions
-    'fire/1 no-wind no-slope/spread rate',
-    // Part 2 - *additional* fire spread rate with wind and slope
-    'fire/2 wind-slope vector/spread rate/slope only',
-    'fire/2 wind-slope vector/spread rate/wind only',
-    'fire/2 wind-slope vector/spread rate/x component',
-    'fire/2 wind-slope vector/spread rate/y component',
-    'fire/2 wind-slope vector/spread rate/',
-    // Part 3 (was Step 2) - fire spread rate and effective wind for the cross-slope wind condition
-    'fire/3 cross-slope wind/spread rate',
-    'fire/3 cross-slope wind/effective wind/coefficient',
-    'fire/3 cross-slope wind/effective wind/speed',
-    // Part 4 - fire spread rate and effective wind at the *effective wind speed limit*
-    'fire/4 effective limit/effective wind/speed',
-    'fire/4 effective limit/effective wind/coefficient',
-    'fire/4 effective limit/spread rate',
-    // Part 5 - fire spread rate and effective wind after applying Rothermel's effective wind speed limit
-    'fire/5 effective wind limit applied/effective wind/speed',
-    'fire/5 effective wind limit applied/effective wind/coefficient',
-    'fire/5 effective wind limit applied/spread rate',
-    // Part 6 - fire spread rate and effective wind after applying Andrews' RoS limit
-    'fire/6 ros limit applied/spread rate',
-    'fire/6 ros limit applied/effective wind/speed',
-    'fire/6 ros limit applied/effective wind/coefficient',
-
-    'fuel/slope/coefficient',
-    'fuel/wind/factor/b',
-    'fuel/wind/factor/c',
-    'fuel/wind/factor/e',
-    'fuel/wind/factor/k',
-    'fuel/wind/factor/i',
-    'fuel/wind/speed/midflame',
-    'fuel/wind/speed/coefficient',
-]
 // Defines common leaf segment keys
 export class L {
     static fireFlame = 'flame length'
     static fireFli  = 'fireline intensity'
+    static fireHeadFlame = 'heading/flame length'
+    static fireHeadFli = 'heading/fireline intensity'
     static fireHeadRos = 'heading/spread rate'
-    static fireHeadUpslp = 'heading/direction/from upslope'
-    static fireHeadNorth = 'heading/direction/from north'
+    static fireHeadDirUp = 'heading/direction/from up-slope'
+    static fireHeadDirNo = 'heading/direction/from north'
     static fireHpua = 'heat per unit area'
     static fireLwr  = 'length-to-with ratio'
+    static firePhiE = 'spread rate coefficient/effective wind'
+    static firePhiS = 'spread rate coefficient/slope'
+    static firePhiW = 'spread rate coefficient/wind'
     static fireRxi  = 'reaction intensity'
     static fireTaur = 'residence time'
     static fireRos  = 'spread rate'
@@ -310,9 +272,6 @@ export class L {
     static fuelMext = 'extinction moisture content'
     static fuelMextf= 'extinction moisture content/factor'
     static fuelMois = 'moisture content'
-    static fuelPhiE = 'spread rate coefficient/effective wind'
-    static fuelPhiS = 'spread rate coefficient/slope'
-    static fuelPhiW = 'spread rate coefficient/wind'
     static fuelQig  = 'heat of pre-ignition'
     static fuelRxv  = 'reaction velocity'
     static fuelRxve  = L.fuelRxv + '/exponent'
@@ -364,21 +323,22 @@ export class L {
     static wsrfMidf = 'wind speed reduction factor/midflame'
     static taur = 'residence time'
     
+    // Surfac
     static ros  = 'spread rate/'
     static rosHead = L.ros + 'at head'
     static rosNwns = L.ros + 'no-wind no-slope'
-    static rosUpsl = L.ros + 'upslope wind'
+    static rosUpsl = L.ros + 'up-slope wind'
     static rosXcomp = L.ros + 'x component'
     static rosYcomp = L.ros + 'y component'
     static rosSlope = L.ros + 'slope only'
     static rosWind  = L.ros + 'wind only'
 
     static weff = 'effective wind speed/'
-    static weffUpsl  = L.weff + 'upslope wind'
+    static weffUpsl  = L.weff + 'up-slope wind'
     static weffLimit = L.weff + 'limit'
     static weffAppl  = L.weff + 'limit/applied'
     static midflame = 'wind speed at midflame'
-    static windHeadUpsl = 'from upslope'
+    static windHeadUpsl = 'from up-slope'
 
     // LiveFuelCuringModule leaf nodes
     static curedObs = 'cured fraction/observed'

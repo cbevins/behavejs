@@ -6,7 +6,7 @@ import { SurfaceFireEquations as Fire } from './index.js'
 export class SurfaceFuelModule extends ModuleBase {
     /**
      * 
-     * @param {string} path Prefix for this module's fully qualified node keys,
+     * @param {string} path Prefix for this module's fully qualified node names
      * (something like `primary/surface/`) to append this module's 'bed/<node>' node keys
      * @param {string} slope Fully qualified path to slope steepness ratio node,
      *        something like 'terrain/slope/steepness/ratio'
@@ -501,8 +501,6 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.reactionVelocityMaximum, [bed+L.fuelSavr15]]]],
             [bed+L.fuelRxvo,   0, U.fuelRxv, 0, [
                 [this.any, Bed.reactionVelocityOptimum, [bed+L.fuelBrat, bed+L.fuelRxvm, bed+L.fuelRxve]]]],
-            [bed+L.fuelSlpk,   0, U.factor, 0, [
-                [this.any, Bed.slopeK, [bed+L.fuelBeta]]]],
             [bed+L.fuelSavr15, 1, U.fuelSavr, 0, [
                 [this.any, Bed.savr15, [bed+L.fuelSavr]]]],
             [bed+L.fuelSink,   0, U.fuelSink, 0, [
@@ -511,122 +509,12 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.reactionIntensity, [dead+L.fireRxi, live+L.fireRxi]]]],
             [bed+L.fuelSource, 0, U.fireRxi, 0, [
                 [this.any, Bed.heatSource, [bed+L.fireRxi, bed+L.fuelXi]]]],
-            [bed+L.windB,      1, U.factor, 0, [
-                [this.any, Bed.windB, [bed+L.fuelSavr]]]],
-            [bed+L.windC,      0, U.factor, 0, [
-                [this.any, Bed.windC, [bed+L.fuelSavr]]]],
-            [bed+L.windE,      1, U.factor, 0, [
-                [this.any, Bed.windE, [bed+L.fuelSavr]]]],
-            [bed+L.windI,      0, U.factor, 0, [
-                [this.any, Bed.windI, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
-            [bed+L.windK,      0, U.factor, 0, [
-                [this.any, Bed.windK, [bed+L.fuelBrat, bed+L.windE, bed+L.windC]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
-            [bed+L.fireHpua,   0, U.fireHpua, 0, [
-                [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
             [bed+L.wsrfFuel,   1, U.fraction, 0, [
                 [this.any, Bed.openWindSpeedAdjustmentFactor, [bed+L.fuelDepth]]]],
             [bed+L.weffLimit,  0, U.windSpeed, 0, [
                 [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
-            [bed+L.fireTaur,   0, U.fireTaur, 0, [
-                [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
-            [bed+L.fireHpua,   0, U.fireHpua, 0, [
-                [this.any, Bed.heatPerUnitArea, [bed+L.fireRxi, bed+L.fireTaur]]]],
-
-            [bed+L.fuelPhiW,   0, U.factor, 0, [
-                [this.any, Bed.phiWind, [midflame, bed+L.windB, bed+L.windK]]]],
-            [bed+L.fuelPhiS,   0, U.factor, 0, [
-                [this.any, Bed.phiSlope, [slope, bed+L.fuelSlpk]]]],
-
-            // Part 1 - fire spread rate and effective wind under no-wind, no-slope conditions
-            [fire1+L.fireRos,    0, U.fireRos, 0, [
-                [this.any, Bed.noWindNoSlopeSpreadRate, [bed+L.fuelSource, bed+L.fuelSink]]]],
-            [fire1+L.firePhiE,   0, U.factor, 0, [
-                [this.any, Fire.effectiveWindSpeedCoefficient, [bed+L.fuelPhiW, bed+L.fuelPhiS]]]],
-            [fire1+L.fireWeff,   0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeed, [fire1+L.firePhiE, bed+L.windB, bed+L.windI]]]],
-
-            // Part 2 - *additional* fire spread rate from wind and slope to ADD to no-wind, no-slope case
-            [fire2+L.rosSlope,  0, U.fireRos, 0, [
-                [this.any, Fire.maximumDirectionSlopeSpreadRate, [fire1+L.fireRos, bed+L.fuelPhiS]]]],
-            [fire2+L.rosWind,   0, U.fireRos, 0, [
-                [this.any, Fire.maximumDirectionWindSpreadRate, [fire1+L.fireRos, bed+L.fuelPhiW]]]],
-            [fire2+L.rosXcomp,  0, U.factor, 0, [
-                [this.any, Fire.maximumDirectionXComponent, [fire2+L.rosWind, fire2+L.rosSlope, windHeadUpslp]]]],
-            [fire2+L.rosYcomp,  0, U.factor, 0, [
-                [this.any, Fire.maximumDirectionYComponent, [fire2+L.rosWind, windHeadUpslp]]]],
-            [fire2+L.fireRos,   0, U.fireRos, 0, [
-                [this.any, Fire.maximumDirectionSpreadRate, [fire2+L.rosXcomp, fire2+L.rosYcomp]]]],
-
-            // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
-            // NO Rothermel's limit applied (effective wind speed < 0.9 Rxi)
-            // NO Andrew's limit applied (spread rate < effective wind speed)
-            [fire3+L.fireRos,   0, U.fireRos, 0, [
-                [this.any, Fire.spreadRateWithCrossSlopeWind, [fire1+L.fireRos, fire2+L.fireRos]]]],
-            [fire3+L.firePhiE,  0, U.factor, 0, [
-                [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire3+L.fireRos]]]],
-            [fire3+L.fireWeff,  0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeed, [fire3+L.firePhiE, bed+L.windB, bed+L.windI]]]],
-
-            // Part 4 - fire spread rate and effective wind at the *effective wind speed limit*
-            [fire4+L.fireWeff, 0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
-            [fire4+L.firePhiE, 0, U.factor, 0, [
-                [this.any, Fire.phiEwFromEws, [fire4+L.fireWeff, bed+L.windB, bed+L.windK]]]],
-            [fire4+L.fireRos,  0, U.fireRos, 0, [
-                [this.any, Fire.maximumSpreadRate, [fire1+L.fireRos, fire4+L.firePhiE]]]],
-
-            // Part 5 (was 3a) - fire spread rate and effective wind after applying Rothermel's effective wind speed limit
-            // YES Rothermel's limit applied (effective wind speed < 0.9 Rxi)
-            // NO  Andrew's limit applied (spread rate < effective wind speed)
-            [fire5+L.fireWeff, 0, U.windSpeed, 0, [
-                [this.any, Math.min, [fire3+L.fireWeff, fire4+L.fireWeff]]]],
-            [fire5+L.firePhiE, 0, U.factor, 0, [
-                [this.any, Math.min, [fire3+L.firePhiE, fire4+L.firePhiE]]]],
-            [fire5+L.fireRos,  0, U.fireRos, 0, [
-                [this.any, Math.min, [fire3+L.fireRos, fire4+L.fireRos]]]],
-
-            // Part 6 (was 3b) - fire spread rate and effective wind after applying Andrews' RoS limit
-            // NO  Rothermel's limit applied (effective wind speed < 0.9 Rxi)
-            // YES Andrew's limit applied (spread rate < effective wind speed)
-            [fire6+L.fireRos, 0, U.fireRos, 0, [
-                [this.any, Fire.spreadRateWithRosLimitApplied, [fire3+L.fireRos, fire3+L.fireWeff]]]],
-            [fire6+L.firePhiE, 0, U.factor, 0, [
-                [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire6+L.fireRos]]]],
-            [fire6+L.fireWeff, 0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeed, [fire6+L.firePhiE, bed+L.windB, bed+L.windI]]]],
-
-            // Part 7 (was 4)
-            // YES  Rothermel's limit applied (effective wind speed < 0.9 Rxi)
-            // YES Andrew's limit applied (spread rate < effective wind speed)
-            [fire7+L.fireRos, 0, U.fireRos, 0, [
-                [this.any, Fire.spreadRateWithRosLimitApplied, [fire5+L.fireRos, fire5+L.fireWeff]]]],
-            [fire7+L.firePhiE, 0, U.factor, 0, [
-                [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire7+L.fireRos]]]],
-            [fire7+L.fireWeff, 0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeed, [fire7+L.firePhiE, bed+L.windB, bed+L.windI]]]],
-
-            // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
-            // [fire+L.fireHeadRos, 0, U.fireRos, 0, []]]],
-            // [fire+L.firePhiE, 0, U.factor, 0, []]]],
-            // [fire+L.fireWeff, 0, U.windSpeed, 0, []]]],
-            [fire+L.fireHeadUpslp, 0, U.compass, 0, [
-                [this.any, Fire.spreadDirectionFromUpslope, [fire2+L.rosXcomp, fire2+L.rosYcomp, fire2+L.fireRos]]]], 
-            // [fire+L.fireHeadNorth, 0, U.compass, 0, [
-            //     [this.any, Compass.sum, [upslope, fire+L.fireHeadUpslp]]]],
-
-
-            // The following apply only to upslope wind conditions (step 1)
-            // [fire+L.fireLwr,    1, U.ratio, 0, [
-            //     [this.any, Fire.lengthToWidthRatio, [fire+L.fireWeff]]]],
-            // [fire+L.fireHeadFli,    0, U.fireFli, 0, [
-            //     [this.any, Fire.firelineIntensity, [fire+L.fireHeadRos, bed+L.fireRxi, bed+L.fireTaur]]]],
-            // [fire+L.fireHeadFlame,   0, U.fireFlame, 0, [
-            //     [this.any, Fire.flameLength, [fire+L.fireHeadFli+L.fireFli]]]],
-
-
         )
-        console.log(fire+L.fireHeadUpslp)
     }
 }

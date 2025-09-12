@@ -7,7 +7,7 @@ import { LiveFuelMoistureModule } from './index.js'
 import { MidflameWindSpeedModule } from './index.js'
 import { SlopeSteepnessModule } from './index.js'
 import { StandardFuelModelModule } from './index.js'
-// import { SurfaceFireModule } from './index.js'
+import { SurfaceFireModule } from './index.js'
 import { SurfaceFuelModule } from './index.js'
 import { WindDirectionModule } from './index.js'
 import { WindSpeedModule } from './index.js'
@@ -62,7 +62,13 @@ const bed1 = new SurfaceFuelModule(
     P.surf1+P.midflame,         // midflame wind speed node key
     P.weather+P.wdirHeadUp,     // wind heading degrees from upslope node key
     P.model1, P.chaparral1, P.palmetto1, P.aspen1)
-
+const fire1 = new SurfaceFireModule(
+    P.surf1,
+    P.terrain+P.slopeRatio,     // slope steepness ratio node key
+    'UPSLOPE NOT YET IMPLEMENTED',
+    P.surf1+P.midflame,         // midflame wind speed node key
+    P.weather+P.wdirHeadUp,     // wind heading degrees from upslope node key
+)
 //------------------------------------------------------------------------------
 // Step 2 - Configure node definitions into an array of Dag nodes
 // that only have a single updater method.
@@ -81,7 +87,8 @@ const nodes = [
     ...standard1.configure(C.stdCatalog),
     ...wsrf1.configure(C.wsrfObserved),
     ...midflame1.configure(C.midflameObserved),
-    ...bed1.configure(C.fuelStd)
+    ...bed1.configure(C.fuelStd),
+    ...fire1.configure(C.fireLimitYes)
 ].sort()
 // Util.logNodeDefs(nodes)
 
@@ -96,38 +103,42 @@ const dag = new Dag(nodes)
 //------------------------------------------------------------------------------
 
 const select = [
-    P.surf1+P.firep1+L.fireRos,    // no-wind, no-slope
-    P.surf1+P.bedPhiS,
-    P.surf1+P.bedPhiW,
-    P.surf1+P.firep1+L.firePhiE,
-    P.surf1+P.firep1+L.fireWeff,
+    // P.surf1+P.firep1+L.fireRos,    // no-wind, no-slope
+    // P.surf1+P.bedPhiS,
+    // P.surf1+P.bedPhiW,
+    // P.surf1+P.firep1+L.firePhiE,
+    // P.surf1+P.firep1+L.fireWeff,
 
-    P.surf1+P.firep2+L.rosWind,
-    P.surf1+P.firep2+L.rosSlope,
-    P.surf1+P.firep2+L.rosXcomp,
-    P.surf1+P.firep2+L.rosYcomp,
-    P.surf1+P.firep2+L.fireRos,
+    // P.surf1+P.firep2+L.rosWind,
+    // P.surf1+P.firep2+L.rosSlope,
+    // P.surf1+P.firep2+L.rosXcomp,
+    // P.surf1+P.firep2+L.rosYcomp,
+    // P.surf1+P.firep2+L.fireRos,
 
-    P.surf1+P.firep3+L.firePhiE,
-    P.surf1+P.firep3+L.fireWeff,
-    P.surf1+P.firep3+L.fireRos,
+    // P.surf1+P.firep3+L.firePhiE,
+    // P.surf1+P.firep3+L.fireWeff,
+    // P.surf1+P.firep3+L.fireRos,
 
-    P.surf1+P.firep4+L.fireWeff,
-    P.surf1+P.firep4+L.firePhiE,
-    P.surf1+P.firep4+L.fireRos,
+    // P.surf1+P.firep4+L.fireWeff,
+    // P.surf1+P.firep4+L.firePhiE,
+    // P.surf1+P.firep4+L.fireRos,
 
-    P.surf1+P.firep5+L.firePhiE,
-    P.surf1+P.firep5+L.fireWeff,
-    P.surf1+P.firep5+L.fireRos,
+    // P.surf1+P.firep5+L.firePhiE,
+    // P.surf1+P.firep5+L.fireWeff,
+    // P.surf1+P.firep5+L.fireRos,
 
-    P.surf1+P.firep6+L.firePhiE,
-    P.surf1+P.firep6+L.fireWeff,
-    P.surf1+P.firep6+L.fireRos,
+    // P.surf1+P.firep6+L.firePhiE,
+    // P.surf1+P.firep6+L.fireWeff,
+    // P.surf1+P.firep6+L.fireRos,
 
-    P.surf1+P.firep7+L.firePhiE,
-    P.surf1+P.firep7+L.fireWeff,
-    P.surf1+P.firep7+L.fireRos,
-    P.surf1+P.fire+L.fireHeadUpslp, // 'primary/surface/fire/heading/direction/from upslope',
+    // P.surf1+P.firep7+L.firePhiE,
+    // P.surf1+P.firep7+L.fireWeff,
+    // P.surf1+P.firep7+L.fireRos,
+
+    P.surf1+P.fire+L.firePhiE,
+    P.surf1+P.fire+L.fireWeff,
+    P.surf1+P.fire+L.fireHeadRos,
+    P.surf1+P.fire+L.fireHeadDirUp, // 'primary/surface/fire/heading/direction/from upslope',
 ]
 dag.select(select)
 // Util.logDagNodes(dag.selected(), 'Selected Nodes')
