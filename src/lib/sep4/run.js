@@ -127,6 +127,7 @@ const select = [
     P.surf1+P.firep7+L.firePhiE,
     P.surf1+P.firep7+L.fireWeff,
     P.surf1+P.firep7+L.fireRos,
+    P.surf1+P.fire+L.fireHeadUpslp, // 'primary/surface/fire/heading/direction/from upslope',
 ]
 dag.select(select)
 // Util.logDagNodes(dag.selected(), 'Selected Nodes')

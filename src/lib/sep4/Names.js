@@ -41,7 +41,8 @@ export class P {
     static firep5    = 'fire/5 eff wind limit applied/' // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
     static firep6    = 'fire/6 ros limit applied/'      // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
     static firep7    = 'fire/7 both limits applied/'
-    
+    static fire      = 'fire/'                          // final, applied values
+
     // static wind1     = 'primary/surface/wind/speed'
     // static wsrf1     = 'primary/surface/wind/speed/reduction'
     // static midflame1 = 'primary/surface/wind/speed/midflame'
@@ -272,6 +273,9 @@ export const alt = [
 export class L {
     static fireFlame = 'flame length'
     static fireFli  = 'fireline intensity'
+    static fireHeadRos = 'heading/spread rate'
+    static fireHeadUpslp = 'heading/direction/from upslope'
+    static fireHeadNorth = 'heading/direction/from north'
     static fireHpua = 'heat per unit area'
     static fireLwr  = 'length-to-with ratio'
     static fireRxi  = 'reaction intensity'
@@ -381,7 +385,7 @@ export class L {
     static curedEst = 'cured fraction/estimated'
     static curedApp = 'cured fraction/applied'
 
-    // SLopeModule leaf nodes
+    // SlopeSteepnessModule leaf nodes
     static slopeDeg = 'steepness/degrees from horizontal'
     static slopeRat = 'steepness/rise-to-reach ratio'
 }
@@ -390,29 +394,7 @@ export class L {
 export class K {
     static fuelDeadCat = 'constants/fuel/life/dead category'
     static fuelLiveCat = 'constants/fuel/life/live category'
-
-    // static fuelStandard = 'constants/fuel/model/standard'
-    // static fuelChaparral ='constants/fuel/model/chaparral'
-    // static fuelAspen = 'constants/fuel/model/western aspen'
-    // static fuelPg = 'constants/fuel/model/palmetto-gallberry'
-
-    // static fuelDeadDown = 'constants/fuel/type/dead-down'
-    // static fuelGrass = 'constants/fuel/type/grass'
-    // static fuelDuff = 'constants/fuel/type/duff'
-    // static fuelHerb = 'constants/fuel/type/herb'
-    // static fuelStem = 'constants/fuel/type/stem'
-    // static fuelCured = 'constants/fuel/type/cured'
     static fuelUnused = 'constants/fuel/type/unused'
-
-    // static fuelDens = 'constants/fuel/fiber density'
-    // static fuelHeat = 'constants/fuel/heat of combustion'      // BTU/lb
-    // static fuelLife = 'constants/fuel/life category'           // lb/ft2
-    // static fuelLoad = 'constants/fuel/ovendry fuel load'       // lb/ft2
-    // static fuelSavr = 'constants/fuel/surface area-to-volume ratio'
-    // static fuelSeff = 'constants/fuel/silica-free mineral content'     // fraction
-    // static fuelStot = 'constants/fuel/total mineral content'     // fraction
-    // static fuelType = 'constants/fuel/fuel type'
-
     static zero = 'constants/zero'
     static one = 'constants/one'
 }

@@ -30,13 +30,14 @@ export class SurfaceFuelModule extends ModuleBase {
         this.config = 'fuel model domain'
         this.options = [C.fuelStd, C.fuelCh, C.fuelPg, C.fuelWa]
 
-        const fire1 = path + P.firep1
-        const fire2 = path + P.firep2
-        const fire3 = path + P.firep3
-        const fire4 = path + P.firep4
-        const fire5 = path + P.firep5
-        const fire6 = path + P.firep6
-        const fire7 = path + P.firep7
+        const fire1 = path + P.firep1   // 'fire/1 no-wind no-slope/'
+        const fire2 = path + P.firep2   // 'fire/2 wind-slope additional/'
+        const fire3 = path + P.firep3   // 'fire/3 cross-slope wind/'
+        const fire4 = path + P.firep4   // 'fire/4 effective limit
+        const fire5 = path + P.firep5   // 'fire/5 eff wind limit applied/'
+        const fire6 = path + P.firep6   // 'fire/6 ros limit applied/'
+        const fire7 = path + P.firep7   // 'fire/7 both limits applied/'
+        const fire  = path + P.fire     // 'fire/' final applied values
 
         const bed  = path + 'bed/'
         const dead = bed + 'dead/'
@@ -607,17 +608,25 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Fire.effectiveWindSpeed, [fire7+L.firePhiE, bed+L.windB, bed+L.windI]]]],
 
             // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
-            
+            // [fire+L.fireHeadRos, 0, U.fireRos, 0, []]]],
+            // [fire+L.firePhiE, 0, U.factor, 0, []]]],
+            // [fire+L.fireWeff, 0, U.windSpeed, 0, []]]],
+            [fire+L.fireHeadUpslp, 0, U.compass, 0, [
+                [this.any, Fire.spreadDirectionFromUpslope, [fire2+L.rosXcomp, fire2+L.rosYcomp, fire2+L.fireRos]]]], 
+            // [fire+L.fireHeadNorth, 0, U.compass, 0, [
+            //     [this.any, Compass.sum, [upslope, fire+L.fireHeadUpslp]]]],
+
 
             // The following apply only to upslope wind conditions (step 1)
-            // [bed+L.fireLwr,    1, U.ratio, 0, [
-            //     [this.any, Fire.lengthToWidthRatio, [bed+L.weffUpsl]]]],
-            // [bed+L.fireFli,    0, U.fireFli, 0, [
-            //     [this.any, Fire.firelineIntensity, [bed+L.rosUpsl, bed+L.fireRxi, bed+L.fireTaur]]]],
-            // [bed+L.fireFlame,   0, U.fireFlame, 0, [
-            //     [this.any, Fire.flameLength, [bed+L.fireFli]]]],
+            // [fire+L.fireLwr,    1, U.ratio, 0, [
+            //     [this.any, Fire.lengthToWidthRatio, [fire+L.fireWeff]]]],
+            // [fire+L.fireHeadFli,    0, U.fireFli, 0, [
+            //     [this.any, Fire.firelineIntensity, [fire+L.fireHeadRos, bed+L.fireRxi, bed+L.fireTaur]]]],
+            // [fire+L.fireHeadFlame,   0, U.fireFlame, 0, [
+            //     [this.any, Fire.flameLength, [fire+L.fireHeadFli+L.fireFli]]]],
 
 
         )
+        console.log(fire+L.fireHeadUpslp)
     }
 }
