@@ -5,6 +5,7 @@ import { DeadFuelMoistureModule } from './index.js'
 import { LiveFuelCuringModule } from './index.js'
 import { LiveFuelMoistureModule } from './index.js'
 import { MidflameWindSpeedModule } from './index.js'
+import { SlopeDirectionModule } from './index.js'
 import { SlopeSteepnessModule } from './index.js'
 import { StandardFuelModelModule } from './index.js'
 import { SurfaceFireModule } from './index.js'
@@ -26,9 +27,10 @@ const constants = new ConstantsModule(P.constants)
 const canopy = new CanopyModule('')
 
 // Need wind speed and slope for surface fire model
-const winddir = new WindDirectionModule(P.weather)
+const slopesteep = new SlopeSteepnessModule(P.terrain)
+const slopedir = new SlopeDirectionModule(P.terrain)
+const winddir = new WindDirectionModule(P.weather, P.terrain+P.slopeUp)
 const windspeed = new WindSpeedModule(P.weather)
-const slopeSteep = new SlopeSteepnessModule(P.terrain)
 
 // Need fuel particle moisture contents for surface fuel models
 const deadmois = new DeadFuelMoistureModule(P.weather)
@@ -55,19 +57,17 @@ const wsrf1 = new WindSpeedReductionModule(
 const midflame1 = new MidflameWindSpeedModule(
     P.surf1,                    // module's parent path
     P.weather+P.wspd20ft,       // wind speed at 20-ft node key
-    P.surf1+P.wsrfMidflame)      // wind speed reduction at midflame node key
+    P.surf1+P.wsrfMidflame)     // wind speed reduction at midflame node key
 const bed1 = new SurfaceFuelModule(
     P.surf1,                    // module's parent path
-    P.terrain+P.slopeRatio,     // slope steepness ratio node key
-    P.surf1+P.midflame,         // midflame wind speed node key
-    P.weather+P.wdirHeadUp,     // wind heading degrees from upslope node key
-    P.model1, P.chaparral1, P.palmetto1, P.aspen1)
+    P.model1,                   // path to a StandardFuelModelModule
+    P.chaparral1, P.palmetto1, P.aspen1)
 const fire1 = new SurfaceFireModule(
     P.surf1,
     P.terrain+P.slopeRatio,     // slope steepness ratio node key
-    'UPSLOPE NOT YET IMPLEMENTED',
+    P.terrain+P.slopeUp,        // upslope direction node key
     P.surf1+P.midflame,         // midflame wind speed node key
-    P.weather+P.wdirHeadUp,     // wind heading degrees from upslope node key
+    P.weather+P.wdirHeadFromUp  // wind heading degrees from upslope node key
 )
 //------------------------------------------------------------------------------
 // Step 2 - Configure node definitions into an array of Dag nodes
@@ -79,9 +79,10 @@ const nodes = [
     ...canopy.configure(C.heightLength),
     ...deadmois.configure(C.moisParticle),
     ...livemois.configure(C.moisParticle),
-    ...slopeSteep.configure(C.slopeRatio),
+    ...slopedir.configure(C.sdirUp),
+    ...slopesteep.configure(C.slopeRatio),
     ...windspeed.configure(C.wspd20ft),
-    ...winddir.configure(C.wdirHeadUp),
+    ...winddir.configure(C.wdirHeadFromUp),
 
     ...curing1.configure(C.curingEstimated),
     ...standard1.configure(C.stdCatalog),
@@ -169,7 +170,7 @@ dag.set(P.weather+P.moisLiveHerb, 0.5)
 dag.set(P.weather+P.moisLiveStem, 1.5)
 dag.set(P.terrain+P.slopeRatio, 0.25)
 dag.set(P.surf1+P.midflame, 10*88)
-dag.set(P.weather+P.wdirHeadUp, 90)
+dag.set(P.weather+P.wdirHeadFromUp, 90)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 
 //------------------------------------------------------------------------------

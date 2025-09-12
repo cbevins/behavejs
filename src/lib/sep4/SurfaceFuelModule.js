@@ -8,12 +8,6 @@ export class SurfaceFuelModule extends ModuleBase {
      * 
      * @param {string} path Prefix for this module's fully qualified node names
      * (something like `primary/surface/`) to append this module's 'bed/<node>' node keys
-     * @param {string} slope Fully qualified path to slope steepness ratio node,
-     *        something like 'terrain/slope/steepness/ratio'
-     * @param {string} midflame Fully qualified path to the midflame wind speed,
-     *        something like 'surface/primary/wind/midflame'
-     * @param {string} windHeadUpslp Fully qualified path to the wind heading direction clockwise from upslope,
-     *        something like 'weather/wind/direction/heading/from upslope'
      * @param {string} stdPath Fully qualified path to standard fuel model
      *        something like `surface/primary/model/standard/`
      * @param {string} chPath Fully qualified path to chaparral fuel model
@@ -23,21 +17,12 @@ export class SurfaceFuelModule extends ModuleBase {
      * @param {string} waPath Fully qualified path to western aspen fuel model
      *        something like `surface/primary/model/aspen/`
     */
-    constructor(path, slope, midflame, windHeadUpslp, stdPath='', chPath='', pgPath='', waPath='') {
+    constructor(path, stdPath='', chPath='', pgPath='', waPath='') {
         super(path, 'SurfaceFuelModule')
 
         // configs
         this.config = 'fuel model domain'
         this.options = [C.fuelStd, C.fuelCh, C.fuelPg, C.fuelWa]
-
-        const fire1 = path + P.firep1   // 'fire/1 no-wind no-slope/'
-        const fire2 = path + P.firep2   // 'fire/2 wind-slope additional/'
-        const fire3 = path + P.firep3   // 'fire/3 cross-slope wind/'
-        const fire4 = path + P.firep4   // 'fire/4 effective limit
-        const fire5 = path + P.firep5   // 'fire/5 eff wind limit applied/'
-        const fire6 = path + P.firep6   // 'fire/6 ros limit applied/'
-        const fire7 = path + P.firep7   // 'fire/7 both limits applied/'
-        const fire  = path + P.fire     // 'fire/' final applied values
 
         const bed  = path + 'bed/'
         const dead = bed + 'dead/'
@@ -509,12 +494,8 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.reactionIntensity, [dead+L.fireRxi, live+L.fireRxi]]]],
             [bed+L.fuelSource, 0, U.fireRxi, 0, [
                 [this.any, Bed.heatSource, [bed+L.fireRxi, bed+L.fuelXi]]]],
-            [bed+L.weffLimit,  0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
             [bed+L.wsrfFuel,   1, U.fraction, 0, [
                 [this.any, Bed.openWindSpeedAdjustmentFactor, [bed+L.fuelDepth]]]],
-            [bed+L.weffLimit,  0, U.windSpeed, 0, [
-                [this.any, Fire.effectiveWindSpeedLimit, [bed+L.fireRxi]]]],
         )
     }
 }

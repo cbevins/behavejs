@@ -24,7 +24,7 @@ export class P {
     // static dead1     = 'primary/surface/bed/dead/'
     // static live1     = 'primary/surface/bed/live/'
     static model1    = 'primary/surface/model/'
-    // static standard1 = `primary/surface/model/standard/`
+    static standard1 = `primary/surface/model/standard/`
     // static standard1dead = `primary/surface/model/standard/dead`
     // static standard1live = `primary/surface/model/standard/live`
     // static curing1   = `primary/surface/model/standard/curing/` // 'fraction/estimated', 'fraction/observed', 'fraction/applied'
@@ -89,15 +89,15 @@ export class P {
     static mfws         = 'wind/speed/'
     static midflame     = 'wind/speed/midflame'
 
-    // SlopeSteepnessModule
-    static slopeSteep   = 'slope/steepness'
-    static slopeDegrees = 'slope/steepness/degrees'
-    static slopeRatio   = 'slope/steepness/ratio'
-
     // SlopeDirectionModule nodes
     static slopeDir     = 'slope/direction'
     static slopeUp      = 'slope/direction/up-slope'
     static slopeDown    = 'slope/direction/down-slope'
+
+    // SlopeSteepnessModule
+    static slopeSteep   = 'slope/steepness'
+    static slopeDegrees = 'slope/steepness/degrees'
+    static slopeRatio   = 'slope/steepness/ratio'
 
     // StandardFuelModelModule
     static standard         = 'standard'
@@ -154,11 +154,11 @@ export class P {
     static bedWsrfFuel = 'bed/' + P.wsrfFuel
 
     // WindDirectionModule
-    static wdir       = 'wind/direction/'
-    static wdirHeadUp = 'wind/direction/heading/from up-slope'
-    static wdirFromUp = 'wind/direction/source/from up-slope'
-    static wdirHeadNo = 'wind/direction/heading/from north'
-    static wdirFromNo = 'wind/direction/source/from north'
+    static wdir             = 'wind/direction/'
+    static wdirHeadFromUp   = 'wind/direction/heading/from up-slope'
+    static wdirSourceFromUp = 'wind/direction/source/from up-slope'
+    static wdirHeadFromNo   = 'wind/direction/heading/from north'
+    static wdirSourceFromNo = 'wind/direction/source/from north'
 
     // WindSpeedModule
     static wspd     = 'wind/speed/'
@@ -198,6 +198,9 @@ export class C {
     // MidflameWindSpeedModule
     static midflameEstimated = 'estimated'
     static midflameObserved  = 'observed'
+    // SlopeDirectionModule
+    static sdirUp = 'up-slope'
+    static sdirDn = 'down-slope (aspect)'
     // SlopeSteepnessModule
     static slopeDegrees = 'observed degrees'
     static slopeRatio   = 'observed ratio of rise-to-reach'
@@ -214,10 +217,11 @@ export class C {
     static fireLimitYes = 'applied'
     static fireLimitNo = 'not applied'
     // WindDirectionModule
-    static wdirHeadUp = 'heading from up-slope'
-    static wdirFromUp = 'source from up-slope'
-    static wdirHeadNo = 'heading from north'
-    static wdirFromNo = 'source from  north'
+    static wdirHeadFromUp = 'heading from up-slope'
+    static wdirSourceFromNo = 'source from north'
+    static wdirBlowsUpslope = 'wind blows up-slope'
+    // static wdirHeadFromNo = 'heading from north'
+    // static wdirSourceFromUp = 'source from up-slope'
     // WindSpeedModule
     static wspd20ft = 'at 20-ft'
     static wspd10m  = 'at 10-m'

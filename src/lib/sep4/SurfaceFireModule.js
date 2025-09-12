@@ -1,5 +1,6 @@
 import { Dag, C, K, L, P, ModuleBase, U } from './index.js'
 import { Calc, FuelElementEquations as Fuel } from './index.js'
+import { CompassEquations as Compass } from './index.js'
 import { FuelBedEquations as Bed } from './index.js'
 import { SurfaceFireEquations as Fire } from './index.js'
 
@@ -14,8 +15,10 @@ export class SurfaceFireModule extends ModuleBase {
      * @param {string} upslope Fully qualified path to the upslope direction node,
      * something like 'terrain/slope/direction/up-slope'
      * @param {string} midflame Fully qualified path to the midflame wind speed,
-     * something like 'surface/primary/wind/midflame'
-    */
+     * something like 'primary/surface/wind/midflame'
+     * @param {string} wdirHeadUp Fully qualified path to wind heading direction from upslope node,
+     * something like 'wind/direction/heading/from up-slope'.
+*/
     constructor(path, slopeRatio, upslope, midflameWspd, wdirHeadUp) {
         super(path)
 
@@ -134,8 +137,8 @@ export class SurfaceFireModule extends ModuleBase {
             // Direction of maximum spread
             [fire+L.fireHeadDirUp, 0, U.compass, 0, [
                 [this.any, Fire.spreadDirectionFromUpslope, [fire2+L.rosXcomp, fire2+L.rosYcomp, fire2+L.fireRos]]]], 
-            // [fire+L.fireHeadNorth, 0, U.compass, 0, [
-            //     [this.any, Compass.sum, [upslope, fire+L.fireHeadDirUp]]]],
+            [fire+L.fireHeadDirNo, 0, U.compass, 0, [
+                [this.any, Compass.sum, [upslope, fire+L.fireHeadDirUp]]]],
 
             [fire+L.fireTaur,      0, U.fireTaur, 0, [
                 [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],
