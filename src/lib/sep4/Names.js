@@ -240,7 +240,7 @@ export class L {
     static fireHeadDirUp = 'heading/direction/from up-slope'
     static fireHeadDirNo = 'heading/direction/from north'
     static fireHpua = 'heat per unit area'
-    static fireLwr  = 'length-to-with ratio'
+    static fireLwr  = 'length-to-width ratio'
     static firePhiE = 'spread rate coefficient/effective wind'
     static firePhiS = 'spread rate coefficient/slope'
     static firePhiW = 'spread rate coefficient/wind'

@@ -5,6 +5,13 @@ import { SurfaceFireEquations as Fire } from './index.js'
 
 export class SurfaceFuelModule extends ModuleBase {
     /**
+     * The main purpose of the SurfaceFuelModule is to produce:
+     * - fuel bed packing ratio,
+     * - fuel bed characteristic surface area-to-volume ratio,
+     * - fuel bed reaction intensity, and
+     * - no-wind, no-slope spread rate
+     * From these parameters, all the fire spread rate, direction, intensity,
+     * and shape characteristcis can be determined.
      * 
      * @param {string} path Prefix for this module's fully qualified node names
      * (something like `primary/surface/`) to append this module's 'bed/<node>' node keys
