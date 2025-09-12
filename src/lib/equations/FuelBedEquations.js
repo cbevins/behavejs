@@ -404,7 +404,7 @@ export class FuelBedEquations {
      */
     static windI (betr, wnde, wndc) {
         const i = betr <= 0.0 || wndc <= 0 ? 0 : betr ** wnde / wndc
-        console.log(`***windI() betr=${betr}, wnde=${wnde}, wndc=${wndc} yields ${i}`)
+        // console.log(`***windI() betr=${betr}, wnde=${wnde}, wndc=${wndc} yields ${i}`)
         return i
     }
 

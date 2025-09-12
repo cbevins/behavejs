@@ -330,7 +330,7 @@ export class SurfaceFireEquations {
     /**
      * Calculate the slope contribution to the spread rate.
      *
-     * @param ros0 No-wind, no-wlope fire spread rate (ft+1 min-1)
+     * @param ros0 No-wind, no-slope fire spread rate (ft+1 min-1)
      * @param phiS Slope coefficient (factor)
      * @return The slope contribution to the fire spread rate (ft+1 min-1)
      */
@@ -341,7 +341,7 @@ export class SurfaceFireEquations {
     /**
      * Calculate the wind contribution to the spread rate.
      *
-     * @param ros0 No-wind, no-wlope fire spread rate (ft+1 min-1)
+     * @param ros0 No-wind, no-slope fire spread rate (ft+1 min-1)
      * @param phiW Wind coefficient (factor)
      * @return The wind contribution to the fire spread rate (ft+1 min-1)
      */
@@ -370,7 +370,9 @@ export class SurfaceFireEquations {
      */
     static maximumDirectionXComponent (windRate, slopeRate, windHdgAzUp) {
       const radians = (windHdgAzUp * Math.PI) / 180
-      return slopeRate + windRate * Math.cos(radians)
+      const x = slopeRate + windRate * Math.cos(radians)
+      console.log('maximumDirectionXComponent wind heading is', windHdgAzUp, 'returns', x, 'cos()', Math.cos(radians))
+      return x
     }
 
     /**
@@ -381,7 +383,9 @@ export class SurfaceFireEquations {
      */
     static maximumDirectionYComponent (windRate, windHdgAzUp) {
       const radians = (windHdgAzUp * Math.PI) / 180
-      return windRate * Math.sin(radians)
+      const y = windRate * Math.sin(radians)
+      console.log('maximumDirectionYComponent wind heading is', windHdgAzUp, 'returns', y)
+      return y
     }
 
     /**

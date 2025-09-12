@@ -365,6 +365,8 @@ export class L {
     static rosUpsl = L.ros + 'upslope wind'
     static rosXcomp = L.ros + 'x component'
     static rosYcomp = L.ros + 'y component'
+    static rosSlope = L.ros + 'slope only'
+    static rosWind  = L.ros + 'wind only'
 
     static weff = 'effective wind speed/'
     static weffUpsl  = L.weff + 'upslope wind'

@@ -100,9 +100,17 @@ const select = [
     P.surf1+P.bedPhiS,
     P.surf1+P.bedPhiW,
     P.surf1+P.firep1+L.firePhiE,
-    P.surf1+P.firep2+L.rosXcomp,  // passes to only 7 digits for fm010: 0.75673013692577218, fm124: 1.9584486126230398
-    P.surf1+P.firep2+L.rosYcomp,  // passes to 15 digits for fm010: 17.856644527335789, fm124: 46.996312501163828
-    P.surf1+P.firep2+L.fireRos,   // fails: fm010: 18.551680325448835, fm124: 48.47042599399056
+    P.surf1+P.firep1+L.fireWeff,
+
+    P.surf1+P.firep2+L.rosWind,
+    P.surf1+P.firep2+L.rosSlope,
+    P.surf1+P.firep2+L.rosXcomp,
+    P.surf1+P.firep2+L.rosYcomp,
+    P.surf1+P.firep2+L.fireRos,
+
+    P.surf1+P.firep3+L.firePhiE,
+    P.surf1+P.firep3+L.fireWeff,
+    P.surf1+P.firep3+L.fireRos,
 ]
 dag.select(select)
 // Util.logDagNodes(dag.selected(), 'Selected Nodes')

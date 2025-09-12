@@ -558,9 +558,17 @@ export class SurfaceFuelModule extends ModuleBase {
             [fire2+L.rosXcomp,  0, U.factor, 0, [
                 [this.any, Fire.maximumDirectionXComponent, [fire2+L.rosWind, fire2+L.rosSlope, windHeadUpslp]]]],
             [fire2+L.rosYcomp,  0, U.factor, 0, [
-                [this.any,Fire.maximumDirectionYComponent, [fire2+L.rosWind, windHeadUpslp]]]],
+                [this.any, Fire.maximumDirectionYComponent, [fire2+L.rosWind, windHeadUpslp]]]],
             [fire2+L.fireRos,   0, U.fireRos, 0, [
-                [this.any,Fire.maximumDirectionSpreadRate, [fire2+L.rosXcomp, fire2+L.rosYcomp]]]],
+                [this.any, Fire.maximumDirectionSpreadRate, [fire2+L.rosXcomp, fire2+L.rosYcomp]]]],
+
+            // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
+            [fire3+L.fireRos,   0, U.fireRos, 0, [
+                [this.any, Fire.spreadRateWithCrossSlopeWind, [fire1+L.fireRos, fire2+L.fireRos]]]],
+            [fire3+L.firePhiE,  0, U.factor, 0, [
+                [this.any, Fire.effectiveWindSpeedCoefficientInferred, [fire1+L.fireRos, fire3+L.fireRos]]]],
+            [fire3+L.fireWeff,  0, U.windSpeed, 0, [
+                [this.any, Fire.effectiveWindSpeed, [fire3+L.firePhiE, bed+L.windB, bed+L.windI]]]]
 
             // The following apply only to upslope wind conditions (step 1)
             // [bed+L.fireLwr,    1, U.ratio, 0, [
