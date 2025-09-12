@@ -1,5 +1,5 @@
-import { Dag, C, P, U, ModuleBase } from './index.js'
-import { CompassEquations as Compass} from './index.js'
+import { Dag, C, P, U, ModuleBase } from '../index.js'
+import { CompassEquations as Compass} from './indexDEP.js'
 
 export class SlopeDirectionModule extends ModuleBase {
     /**

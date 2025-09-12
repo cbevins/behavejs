@@ -1,4 +1,4 @@
-import { Dag, C, P, U, ModuleBase } from './index.js'
+import { Dag, C, P, U, ModuleBase } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 
 export class LiveFuelCuringModule extends ModuleBase {

@@ -1,7 +1,7 @@
 <script>
 	import { rxi } from '$lib/bp6/standardKeys';
-    import { Dag, L, P, Util } from '$lib/modules/index.js'
-    import { surfaceNodes } from '$lib/modules/index.js'
+    import { Dag, L, P, Util } from '$lib/modules/indexDEP.js'
+    import { surfaceNodes } from '$lib/modules/indexDEP.js'
     const configFm010Fm124 = [
         ['configure.fire.effectiveWindSpeedLimit', ['applied', 'ignored'][0]],
         ['configure.fire.firelineIntensity', ['firelineIntensity', 'flameLength'][1]],

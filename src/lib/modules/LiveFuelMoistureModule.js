@@ -1,4 +1,4 @@
-import { Dag, C, P, U, ModuleBase } from './index.js'
+import { Dag, C, P, U, ModuleBase } from '../index.js'
 
 export class LiveFuelMoistureModule extends ModuleBase {
     /**

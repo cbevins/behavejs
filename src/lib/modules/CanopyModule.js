@@ -1,4 +1,4 @@
-import { Dag, C, P, ModuleBase, U } from './index.js'
+import { Dag, C, P, ModuleBase, U } from '../index.js'
 import { CanopyEquations as Canopy} from '../index.js'
 
 export class CanopyModule extends ModuleBase {

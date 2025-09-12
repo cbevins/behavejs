@@ -1,4 +1,3 @@
-
 export class ModuleBase {
     constructor(path, module='') {
         this.path = path

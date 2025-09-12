@@ -1,6 +1,6 @@
 
-import { Dag, C, P, ModuleBase, U } from './index.js'
-import { Calc } from './index.js'
+import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { Calc } from './indexDEP.js'
 
 export class MidflameWindSpeedModule extends ModuleBase {
     /**

@@ -1,5 +1,5 @@
-import { Dag, C, P, ModuleBase, U } from './index.js'
-import { CompassEquations as Compass } from './index.js'
+import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { CompassEquations as Compass } from '../index.js'
 
 export class WindDirectionModule extends ModuleBase {
     /**

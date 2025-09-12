@@ -1,14 +1,32 @@
-// place files you want to import through the `$lib` alias in this folder.
-// export {Assert} from './Assert.js'
-export {Dag} from './equations/Dag.js'
+export {ModuleBase} from './modules/ModuleBase.js'
+export {Dag} from './dag/Dag.js'
+export {C,K,L,P} from './modules/Names.js'
+export {U} from './modules/Units.js'
 
-// Equations
+// Equation and data libraries
+export {StandardFuelModelCatalog} from './modules/StandardFuelModelCatalog.js'
+export {StandardFuelModels} from './modules/StandardFuelModels.js'
 export {Calc} from './equations/Calc.js'
 export {CanopyEquations} from './equations/CanopyEquations.js'
-export {CompassEquations as Compass} from './equations/CompassEquations.js'
-export {StandardFuelModelCatalog} from './equations/StandardFuelModelCatalog.js'
+export {CompassEquations} from './equations/CompassEquations.js'
 export {FuelBedEquations} from './equations/FuelBedEquations.js'
 export {FuelElementEquations} from './equations/FuelElementEquations.js'
 export {SurfaceFireEquations} from './equations/SurfaceFireEquations.js'
 export {Util} from './equations/Util.js'
 export {WindEquations} from './equations/WindEquations.js'
+
+// Dag Node Modules
+export {CanopyModule} from './modules/CanopyModule.js'
+export {ConstantsModule}  from './modules/ConstantsModule.js'
+export {DeadFuelMoistureModule} from './modules/DeadFuelMoistureModule.js'
+export {LiveFuelCuringModule} from './modules/LiveFuelCuringModule.js'
+export {LiveFuelMoistureModule} from './modules/LiveFuelMoistureModule.js'
+export {MidflameWindSpeedModule} from './modules/MidflameWindSpeedModule.js'
+export {SlopeDirectionModule} from './modules/SlopeDirectionModule.js'
+export {SlopeSteepnessModule} from './modules/SlopeSteepnessModule.js'
+export {StandardFuelModelModule} from './modules/StandardFuelModelModule.js'
+export {SurfaceFireModule} from './modules/SurfaceFireModule.js'
+export {SurfaceFuelModule} from './modules/SurfaceFuelModule.js'
+export {WindDirectionModule} from './modules/WindDirectionModule.js'
+export {WindSpeedModule} from './modules/WindSpeedModule.js'
+export {WindSpeedReductionModule} from './modules/WindSpeedReductionModule.js'

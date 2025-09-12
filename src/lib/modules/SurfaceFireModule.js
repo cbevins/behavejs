@@ -1,8 +1,8 @@
-import { Dag, C, K, L, P, ModuleBase, U } from './index.js'
-import { Calc, FuelElementEquations as Fuel } from './index.js'
-import { CompassEquations as Compass } from './index.js'
-import { FuelBedEquations as Bed } from './index.js'
-import { SurfaceFireEquations as Fire } from './index.js'
+import { Dag, C, K, L, P, ModuleBase, U } from '../index.js'
+import { Calc, FuelElementEquations as Fuel } from '../index.js'
+import { CompassEquations as Compass } from '../index.js'
+import { FuelBedEquations as Bed } from '../index.js'
+import { SurfaceFireEquations as Fire } from '../index.js'
 
 export class SurfaceFireModule extends ModuleBase {
     /**
