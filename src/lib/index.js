@@ -16,6 +16,7 @@ export {Util} from './equations/Util.js'
 export {WindEquations} from './equations/WindEquations.js'
 
 // Dag Node Modules
+export {BehaveModule} from './modules/BehaveModule.js'
 export {CanopyModule} from './modules/CanopyModule.js'
 export {ConstantsModule}  from './modules/ConstantsModule.js'
 export {DeadFuelMoistureModule} from './modules/DeadFuelMoistureModule.js'
