@@ -1,4 +1,4 @@
-import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { Dag, P, ModuleBase, U } from '../index.js'
 
 export class WindSpeedReductionModule extends ModuleBase {
     /**
@@ -9,16 +9,26 @@ export class WindSpeedReductionModule extends ModuleBase {
      */
     constructor(path, canopyWsrf, fuelWsrf){
         super(path, 'WindSpeedReductionModule')
-
-        // config keys
-        this.config = 'midflame wind speed reduction factor'
-        this.options = [C.wsrfObserved, C.wsrfEstimated]
-
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.wsrfMidflame, 1, U.fraction, 0, [
-                [C.wsrfObserved, Dag.input, []],
-                [C.wsrfEstimated, Math.min, [canopyWsrf, fuelWsrf]],
+                [cfg.observed, Dag.input, []],
+                [cfg.estimated, Math.min, [canopyWsrf, fuelWsrf]],
             ]],
         ]
+    }
+    setConfig() {
+        const observed = 'observed'
+        const estimated = 'estimated'
+        this.config = {
+            observed, estimated,    // individual key for outside reference
+            options: [observed, estimated],
+            prompt: 'wind speed reduction factor (from 20-ft to midflame height) is',
+            prompts: [
+                [observed, 'an input parameter'],
+                [estimated, 'estimated from fuel depth and canopy parameters'],
+            ],
+        }
+        return this.config
     }
 }

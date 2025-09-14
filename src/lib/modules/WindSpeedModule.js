@@ -1,4 +1,4 @@
-import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { Dag, P, ModuleBase, U } from '../index.js'
 import { WindEquations as Wind } from '../index.js'
 
 export class WindSpeedModule extends ModuleBase {
@@ -9,20 +9,28 @@ export class WindSpeedModule extends ModuleBase {
      */
     constructor(path){
         super(path, 'WindSpeedModule')
-
-        // configs
-        this.config = 'wind speed input'
-        this.options = [C.wspd20ft, C.wspd10m]
-        
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.wspd20ft, 0, U.windSpeed, 0, [
-                [C.wspd20ft, Dag.input, []],
-                [C.wspd10m, Wind.at20ftFrom10m, [path+P.wspd10m]],
-            ]],
+                [cfg.at20ft, Dag.input, []],
+                [cfg.at10m, Wind.at20ftFrom10m, [path+P.wspd10m]]]],
             [path+P.wspd10m, 0, U.windSpeed, 0, [
-                [C.wspd20ft, Dag.input, []],
-                [C.wspd10m, Wind.at10mFrom20ft, [path+P.wspd20ft]],
-            ]],
+                [cfg.at20ft, Dag.input, []],
+                [cfg.at10m, Wind.at10mFrom20ft, [path+P.wspd20ft]]]],
         ]
+    }
+    setConfig() {
+        const at20ft = 'at 20-ft'
+        const at10m  = 'at 10-m'
+        this.config = {
+            at20ft, at10m,    // individual key for outside reference
+            options: [at20ft, at10m],
+            prompt: 'the open wind speed is measured at',
+            prompts: [
+                [at20ft, '20-ft height'],
+                [at10m, '10-m height]']
+            ],
+        }
+        return this.config
     }
 }

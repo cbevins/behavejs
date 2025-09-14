@@ -5,7 +5,7 @@ export class ModuleBase {
         this.any = '*'
         this.nodes = []
         this.config = null
-        this.options = []
+        this.options = []   
     }
     
     configure(applyOption) {
@@ -30,9 +30,9 @@ export class ModuleBase {
             if (! found) {
                 throw new Error(`Module "${this.module}" instance "${this.path}" node "${key}" has no matching config for "${applyOption}"`)
             }
-            // push the configuration key onto the node record so the Dag can
+            // push the module name key onto the node record so the Dag can
             // report active configurations
-            this.nodes[i].push(this.config)
+            this.nodes[i].push(this.module)
         }
         return this.nodes
     }

@@ -1,4 +1,4 @@
-import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { Dag, P, ModuleBase, U } from '../index.js'
 import { StandardFuelModelCatalog as Cat } from '../index.js'
 
 export class StandardFuelModelModule extends ModuleBase {
@@ -15,34 +15,31 @@ export class StandardFuelModelModule extends ModuleBase {
      */
     constructor(path, mois1h, mois10h, mois100h, moisHerb, moisStem, curedFraction) {
         super(path, 'StandardFuelModelModule')
-        
-        // config keys
-        this.config = 'fuel source'
-        this.options = [C.stdCatalog, C.stdCustom]
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.stdKey, '', U.fuelKey, 0, [
-                [C.stdCatalog, Dag.input, []],
-                [C.stdCustom, Dag.constant, []],
+                [cfg.catalog, Dag.input, []],
+                [cfg.custom, Dag.constant, []],
             ]],
             [path+P.stdNumb, 0, U.fuelNumb, 0, [
-                [C.stdCatalog, Cat.number, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.number, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdCode, '', U.fuelCode, 0, [
-                [C.stdCatalog, Cat.code, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.code, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLabel, '', U.fuelLabel, 0, [
-                [C.stdCatalog, Cat.label, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.label, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDepth, 1, U.fuelDepth, 0, [
-                [C.stdCatalog, Cat.depth, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.depth, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDeadMext, 0.25, U.fuelMois, 0, [
-                [C.stdCatalog, Cat.mext, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.mext, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDeadHeat, 0, U.fuelHeat, 0, [
                 [this.any, Cat.heatDead, [path+P.stdKey]],
@@ -62,23 +59,23 @@ export class StandardFuelModelModule extends ModuleBase {
             ]],
             // 1-h dead
             [path+P.stdDead1Load, 0, U.fuelLoad, 0, [
-                [C.stdCatalog, Cat.load1, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.load1, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead1Mois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois1h]],
             ]],
             [path+P.stdDead1Savr, 1, U.fuelSavr, 0, [
-                [C.stdCatalog, Cat.savr1, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.savr1, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead1Type, Cat.type1(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // 10-h dead
             [path+P.stdDead10Load, 0, U.fuelLoad, 0, [
-                [C.stdCatalog, Cat.load10, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.load10, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead10Mois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois10h]],
@@ -91,8 +88,8 @@ export class StandardFuelModelModule extends ModuleBase {
             ]],
             // 100-h dead
             [path+P.stdDead100Load, 0, U.fuelLoad, 0, [
-                [C.stdCatalog, Cat.load100, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.load100, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead100Mois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois100h]],
@@ -131,31 +128,45 @@ export class StandardFuelModelModule extends ModuleBase {
             ]],
             // total (cured and uncured) herb load
             [path+P.stdTotalHerbLoad, 0, U.fuelLoad, 0, [
-                [C.stdCatalog, Cat.loadHerb, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.loadHerb, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdTotalHerbSavr, 1, U.fuelSavr, 0, [
-                [C.stdCatalog, Cat.savrHerb, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.savrHerb, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdTotalHerbType, Cat.typeHerb(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // live stem
             [path+P.stdLiveStemLoad, 0, U.fuelLoad, 0, [
-                [C.stdCatalog, Cat.loadStem, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.loadStem, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLiveStemMois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [moisStem]],
             ]],
             [path+P.stdLiveStemSavr, 1, U.fuelSavr, 0, [
-                [C.stdCatalog, Cat.savrStem, [path+P.stdKey]],
-                [C.stdCustom, Dag.input, []],
+                [cfg.catalog, Cat.savrStem, [path+P.stdKey]],
+                [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLiveStemType, Cat.typeStem(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
         ]
+    }
+    setConfig() {
+        const catalog = 'catalog'
+        const custom = 'custom'
+        this.config =  {
+            catalog, custom,       // particle key for outside reference
+            options: [catalog, custom],
+            prompt: 'standard fuel model parameters are',
+            prompts: [
+                [catalog, 'accessed by name from the fuel catalog'],
+                [custom, 'entered as custom input parameters'],
+            ],
+        }
+        return this.config
     }
 }

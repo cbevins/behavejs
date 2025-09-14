@@ -1,19 +1,11 @@
-export {ModuleBase} from './modules/ModuleBase.js'
+// Dag
 export {Dag} from './dag/Dag.js'
-export {C,K,L,P} from './modules/Names.js'
-export {U} from './modules/Units.js'
+export {dfsSort, kahnSort} from './dag/dagTopoSort.js'
 
-// Equation and data libraries
-export {StandardFuelModelCatalog} from './modules/StandardFuelModelCatalog.js'
-export {StandardFuelModels} from './modules/StandardFuelModels.js'
-export {Calc} from './equations/Calc.js'
-export {CanopyEquations} from './equations/CanopyEquations.js'
-export {CompassEquations} from './equations/CompassEquations.js'
-export {FuelBedEquations} from './equations/FuelBedEquations.js'
-export {FuelElementEquations} from './equations/FuelElementEquations.js'
-export {SurfaceFireEquations} from './equations/SurfaceFireEquations.js'
-export {Util} from './equations/Util.js'
-export {WindEquations} from './equations/WindEquations.js'
+// Module Support
+export {ModuleBase} from './modules/ModuleBase.js'
+export {K,L,P} from './modules/Names.js'
+export {U} from './modules/Units.js'
 
 // Dag Node Modules
 export {BehaveModule} from './modules/BehaveModule.js'
@@ -31,3 +23,15 @@ export {SurfaceFuelModule} from './modules/SurfaceFuelModule.js'
 export {WindDirectionModule} from './modules/WindDirectionModule.js'
 export {WindSpeedModule} from './modules/WindSpeedModule.js'
 export {WindSpeedReductionModule} from './modules/WindSpeedReductionModule.js'
+
+// Equation and data libraries
+export {Calc} from './equations/Calc.js'
+export {CanopyEquations} from './equations/CanopyEquations.js'
+export {CompassEquations} from './equations/CompassEquations.js'
+export {FuelBedEquations} from './equations/FuelBedEquations.js'
+export {FuelElementEquations} from './equations/FuelElementEquations.js'
+export {StandardFuelModels} from './modules/StandardFuelModels.js'
+export {StandardFuelModelCatalog} from './modules/StandardFuelModelCatalog.js'
+export {SurfaceFireEquations} from './equations/SurfaceFireEquations.js'
+export {Util} from './equations/Util.js'
+export {WindEquations} from './equations/WindEquations.js'

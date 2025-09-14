@@ -1,4 +1,4 @@
-import { Dag, C, P, U, ModuleBase } from '../index.js'
+import { Dag, P, U, ModuleBase } from '../index.js'
 
 export class LiveFuelMoistureModule extends ModuleBase {
     /**
@@ -8,21 +8,32 @@ export class LiveFuelMoistureModule extends ModuleBase {
      */
     constructor(path){
         super(path, 'LiveFuelMoistureModule')
-        
-        // config keys
-        this.config = 'live fuel moisture input by'
-        this.options = [C.moisParticle, C.moisCategory]
-
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.moisLiveCat, 0, U.fuelMois, 0, [
-                [C.moisParticle, Dag.constant, []],
-                [C.moisCategory, Dag.input, []]]],
+                [cfg.particle, Dag.constant, []],
+                [cfg.category, Dag.input, []]]],
             [path+P.moisLiveHerb, 0, U.fuelMois, 0, [
-                [C.moisParticle, Dag.input, []],
-                [C.moisCategory, Dag.assign, [path+P.moisLiveCat]]]],
+                [cfg.particle, Dag.input, []],
+                [cfg.category, Dag.assign, [path+P.moisLiveCat]]]],
             [path+P.moisLiveStem, 0, U.fuelMois, 0, [
-                [C.moisParticle, Dag.input, []],
-                [C.moisCategory, Dag.assign, [path+P.moisLiveCat]]]],
+                [cfg.particle, Dag.input, []],
+                [cfg.category, Dag.assign, [path+P.moisLiveCat]]]],
         ]
     }
+    setConfig() {
+        const particle = 'particle'
+        const category = 'category'
+        this.config =  {
+            particle, category,       // particle key for outside reference
+            options: [particle, category],
+            prompt: 'live fuel moisture content is entered',
+            prompts: [
+                [particle, 'individually for the herb and stem fuels'],
+                [category, 'collectively for the live category as a whole'],
+            ],
+        }
+        return this.config
+    }
+
 }

@@ -172,64 +172,6 @@ export class P {
     static wsrfMidflame = 'wind speed reduction factor/midflame'
 }
 
-//------------------------------------------------------------------------------
-// Configuration option keys
-//------------------------------------------------------------------------------
-export class C {
-    // CanopyModule
-    static baseHeight = 'height-base'
-    static heightBase = C.baseHeight
-    static ratioHeight = 'ratio-height'
-    static heightRatio = C.ratioHeight
-    static lengthHeight = 'height-length'
-    static heightLength = C.lengthHeight
-    static ratioBase = 'ratio-base'
-    static baseRatio = C.ratioBase
-    static ratioLength = 'ratio-length'
-    static lengthRatio = C.ratioLength
-    static lengthBase = 'length-base'
-
-    // DeadFuelMoistureModule, LiveFuelMoistureModule
-    static moisCategory = 'category'
-    static moisParticle = 'particle'
-    // LiveFuelCuringModule
-    static curingEstimated = 'estimated'
-    static curingObserved  = 'observed'
-    // MidflameWindSpeedModule
-    static midflameEstimated = 'estimated'
-    static midflameObserved  = 'observed'
-    // SlopeDirectionModule
-    static sdirUp = 'up-slope'
-    static sdirDn = 'down-slope (aspect)'
-    // SlopeSteepnessModule
-    static slopeDegrees = 'observed degrees'
-    static slopeRatio   = 'observed ratio of rise-to-reach'
-    static slopeMap     = 'estimated from map'
-    // StandardFuelModelModule
-    static stdCatalog = 'catalog'
-    static stdCustom  = 'custom'
-    // SurfaceFuelModule
-    static fuelStd = 'standard'
-    static fuelCh = 'chaparral'
-    static fuelPg = 'palmetto'
-    static fuelWa = 'aspen'
-    // SurfaceFireModule
-    static fireLimitYes = 'applied'
-    static fireLimitNo = 'not applied'
-    // WindDirectionModule
-    static wdirHeadFromUp = 'heading from up-slope'
-    static wdirSourceFromNo = 'source from north'
-    static wdirBlowsUpslope = 'wind blows up-slope'
-    // static wdirHeadFromNo = 'heading from north'
-    // static wdirSourceFromUp = 'source from up-slope'
-    // WindSpeedModule
-    static wspd20ft = 'at 20-ft'
-    static wspd10m  = 'at 10-m'
-    // WindSpeedReductionModule
-    static wsrfEstimated = 'estimated'
-    static wsrfObserved  = 'observed'
-}
-
 // Defines common leaf segment keys
 export class L {
     static fireFlame = 'flame length'
@@ -327,7 +269,7 @@ export class L {
     static wsrfMidf = 'wind speed reduction factor/midflame'
     static taur = 'residence time'
     
-    // Surfac
+    // Surface
     static ros  = 'spread rate/'
     static rosHead = L.ros + 'at head'
     static rosNwns = L.ros + 'no-wind no-slope'

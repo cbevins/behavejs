@@ -1,4 +1,4 @@
-import { Dag, C, K, L, P, ModuleBase, U } from '../index.js'
+import { Dag, K, L, P, ModuleBase, U } from '../index.js'
 import { Calc, FuelElementEquations as Fuel } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
@@ -26,10 +26,7 @@ export class SurfaceFuelModule extends ModuleBase {
     */
     constructor(path, stdPath='', chPath='', pgPath='', waPath='') {
         super(path, 'SurfaceFuelModule')
-
-        // configs
-        this.config = 'fuel model domain'
-        this.options = [C.fuelStd, C.fuelCh, C.fuelPg, C.fuelWa]
+        const cfg = this.setConfig()
 
         const bed  = path + 'bed/'
         const dead = bed + 'dead/'
@@ -53,28 +50,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d1+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Type]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead1Type]],
             ]],
             [d1+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Mois]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead1Mois]],
             ]],
             [d1+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Load]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead1Load]],
             ]],
             [d1+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead1Savr]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead1Savr]],
             ]],
             [d1+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d1+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d1+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d1+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 2
@@ -82,28 +79,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d2+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Type]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead10Type]],
             ]],
             [d2+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Mois]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead10Mois]],
             ]],
             [d2+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Load]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead10Load]],
             ]],
             [d2+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead10Savr]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead10Savr]],
             ]],
             [d2+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d2+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d2+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d2+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 3
@@ -111,28 +108,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d3+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Type]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead100Type]],
             ]],
             [d3+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Mois]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead100Mois]],
             ]],
             [d3+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Load]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead100Load]],
             ]],
             [d3+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDead100Savr]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDead100Savr]],
             ]],
             [d3+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d3+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d3+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d3+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 4
@@ -140,28 +137,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d4+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbType]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHerbType]],
             ]],
             [d4+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbMois]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHerbMois]],
             ]],
             [d4+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbLoad]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHerbLoad]],
             ]],
             [d4+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHerbSavr]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHerbSavr]],
             ]],
             [d4+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadHeat]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadHeat]],
             ]],
             [d4+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d4+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d4+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Dead particle 5
@@ -169,28 +166,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelDeadCat]]
             ]],
             [d5+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [K.fuelUnused]],
+                [cfg.standard, Dag.assign, [K.fuelUnused]],
             ]],
             [d5+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [d5+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [d5+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [d5+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 1
@@ -198,28 +195,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l1+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbType]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveHerbType]],
             ]],
             [l1+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbMois]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveHerbMois]],
             ]],
             [l1+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbLoad]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveHerbLoad]],
             ]],
             [l1+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHerbSavr]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveHerbSavr]],
             ]],
             [l1+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHeat]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveHeat]],
             ]],
             [l1+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l1+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l1+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 2
@@ -227,28 +224,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l2+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemType]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveStemType]],
             ]],
             [l2+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemMois]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveStemMois]],
             ]],
             [l2+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemLoad]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveStemLoad]],
             ]],
             [l2+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveStemSavr]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveStemSavr]],
             ]],
             [l2+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdLiveHeat]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdLiveHeat]],
             ]],
             [l2+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l2+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l2+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 3
@@ -256,28 +253,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l3+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [K.fuelUnused]],
+                [cfg.standard, Dag.assign, [K.fuelUnused]],
             ]],
             [l3+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l3+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l3+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l3+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 4
@@ -285,28 +282,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l4+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [K.fuelUnused]],
+                [cfg.standard, Dag.assign, [K.fuelUnused]],
             ]],
             [l4+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l4+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l4+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l4+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
 
             // Live particle 5
@@ -314,28 +311,28 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Dag.assign, [K.fuelLiveCat]]
             ]],
             [l5+L.fuelType, '', U.fuelType, 0, [
-                [C.fuelStd, Dag.assign, [K.fuelUnused]],
+                [cfg.standard, Dag.assign, [K.fuelUnused]],
             ]],
             [l5+L.fuelMois, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelLoad, 0, U.fuelLoad, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelSavr, 1, U.fuelSavr, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelHeat, 0, U.fuelHeat, 0, [
-                [C.fuelStd, Dag.assign, [K.zero]],
+                [cfg.standard, Dag.assign, [K.zero]],
             ]],
             [l5+L.fuelDens, 0, U.fuelDens, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDens]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDens]],
             ]],
             [l5+L.fuelStot, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdStot]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdStot]],
             ]],
             [l5+L.fuelSeff, 0, U.fuelFrac, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdSeff]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
         ]
 
@@ -442,7 +439,7 @@ export class SurfaceFuelModule extends ModuleBase {
         // The following nodes only exist for the surface fire 'dead' category
         this.nodes.push(
             [dead+L.fuelMext, 0, U.fuelMois, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDeadMext]]]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadMext]]]],
             [dead+L.fuelEfwl, 0, U.fuelLoad, 0, [
                 [this.any, Calc.sum, [d1+L.fuelEfwl, d2+L.fuelEfwl, d3+L.fuelEfwl, d4+L.fuelEfwl, d5+L.fuelEfwl]]]],
             [dead+L.fuelEfmc, 0, U.fuelMois, 0, [
@@ -464,7 +461,7 @@ export class SurfaceFuelModule extends ModuleBase {
         //----------------------------------------------------------------------
         this.nodes.push(
             [bed+L.fuelDepth,  0, U.fuelLeng, 0, [
-                [C.fuelStd, Dag.assign, [stdPath + P.stdDepth]]]],
+                [cfg.standard, Dag.assign, [stdPath + P.stdDepth]]]],
             [bed+L.fuelBulk,   0, U.fuelBulk, 0, [
                 [this.any, Bed.bulkDensity, [bed+L.fuelLoad, bed+L.fuelDepth]]]],
             [bed+L.fuelLoad,   0, U.fuelLoad, 0, [
@@ -505,4 +502,23 @@ export class SurfaceFuelModule extends ModuleBase {
                 [this.any, Bed.openWindSpeedAdjustmentFactor, [bed+L.fuelDepth]]]],
         )
     }
+    setConfig() {
+        const standard  = 'standard'
+        const chaparral = 'chaparral'
+        const palmetto  = 'palmetto'
+        const aspen     = 'aspen'
+        this.config =  {
+            standard, chaparral, palmetto, aspen,       // particle key for outside reference
+            options: [standard, chaparral, palmetto, aspen],
+            prompt: 'fuel parametrs are provided by the',
+            prompts: [
+                [standard, 'standard fire behavior fuel models'],
+                [chaparral, 'Philpot & Rothermel chaparral fuel model'],
+                [palmetto, 'Albini and Hough palmetto-gallberry fuel model'],
+                [aspen, 'the Brown and Simmerman western aspen fuel model']
+            ],
+        }
+        return this.config
+    }
+
 }

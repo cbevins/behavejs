@@ -1,4 +1,4 @@
-import { C, Dag, L, P } from '../index.js'
+import { Dag, L, P } from '../index.js'
 import { BehaveModule } from '../index.js'
 import { Util } from '../index.js'
 
@@ -15,37 +15,6 @@ const dag = new Dag(behave.nodes)
 
 // Step 4 - select nodes of interest
 const select = [
-    // P.surf1+P.firep1+L.fireRos,    // no-wind, no-slope
-    // P.surf1+P.bedPhiS,
-    // P.surf1+P.bedPhiW,
-    // P.surf1+P.firep1+L.firePhiE,
-    // P.surf1+P.firep1+L.fireWeff,
-
-    // P.surf1+P.firep2+L.rosWind,
-    // P.surf1+P.firep2+L.rosSlope,
-    // P.surf1+P.firep2+L.rosXcomp,
-    // P.surf1+P.firep2+L.rosYcomp,
-    // P.surf1+P.firep2+L.fireRos,
-
-    // P.surf1+P.firep3+L.firePhiE,
-    // P.surf1+P.firep3+L.fireWeff,
-    // P.surf1+P.firep3+L.fireRos,
-
-    // P.surf1+P.firep4+L.fireWeff,
-    // P.surf1+P.firep4+L.firePhiE,
-    // P.surf1+P.firep4+L.fireRos,
-
-    // P.surf1+P.firep5+L.firePhiE,
-    // P.surf1+P.firep5+L.fireWeff,
-    // P.surf1+P.firep5+L.fireRos,
-
-    // P.surf1+P.firep6+L.firePhiE,
-    // P.surf1+P.firep6+L.fireWeff,
-    // P.surf1+P.firep6+L.fireRos,
-
-    // P.surf1+P.firep7+L.firePhiE,
-    // P.surf1+P.firep7+L.fireWeff,
-    // P.surf1+P.firep7+L.fireRos,
 
     P.surf1+P.fire+L.firePhiE,
     P.surf1+P.fire+L.fireWeff,

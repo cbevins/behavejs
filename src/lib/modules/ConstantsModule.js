@@ -2,7 +2,7 @@ import { Dag, K, ModuleBase, U } from '../index.js'
 
 export class ConstantsModule extends ModuleBase {
     constructor(path) {
-        super(path)
+        super(path, 'ConstantsModule')
         this.config = 'constants'
         this.options = []
 

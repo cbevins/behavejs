@@ -1,4 +1,4 @@
-import { C, Dag, L, ModuleBase, P } from '../index.js'
+import { Dag, L, ModuleBase, P } from '../index.js'
 import { CanopyModule } from '../index.js'
 import { ConstantsModule } from '../index.js'
 import { DeadFuelMoistureModule } from '../index.js'
@@ -76,20 +76,20 @@ export class BehaveModule extends ModuleBase {
         
         this.nodes = [
             ...constants.configure(),
-            ...canopy.configure(C.heightLength),
-            ...deadmois.configure(C.moisParticle),
-            ...livemois.configure(C.moisParticle),
-            ...slopedir.configure(C.sdirUp),
-            ...slopesteep.configure(C.slopeRatio),
-            ...windspeed.configure(C.wspd20ft),
-            ...winddir.configure(C.wdirHeadFromUp),
+            ...canopy.configure(canopy.config.heightLength),
+            ...deadmois.configure(deadmois.config.particle),
+            ...livemois.configure(livemois.config.particle),
+            ...slopedir.configure(slopedir.config.upslope),
+            ...slopesteep.configure(slopesteep.config.ratio),
+            ...windspeed.configure(windspeed.config.at20ft),
+            ...winddir.configure(winddir.config.headingFromUpslope),
         
-            ...curing1.configure(C.curingEstimated),
-            ...standard1.configure(C.stdCatalog),
-            ...wsrf1.configure(C.wsrfObserved),
-            ...midflame1.configure(C.midflameObserved),
-            ...bed1.configure(C.fuelStd),
-            ...fire1.configure(C.fireLimitYes)
+            ...curing1.configure(curing1.config.estimated),
+            ...standard1.configure(standard1.config.catalog),
+            ...wsrf1.configure(wsrf1.config.observed),
+            ...midflame1.configure(midflame1.config.observed),
+            ...bed1.configure(bed1.config.standard),
+            ...fire1.configure(fire1.config.applied)
         ].sort()
     }
 }

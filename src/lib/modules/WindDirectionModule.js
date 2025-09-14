@@ -1,4 +1,4 @@
-import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { Dag, P, ModuleBase, U } from '../index.js'
 import { CompassEquations as Compass } from '../index.js'
 
 export class WindDirectionModule extends ModuleBase {
@@ -10,29 +10,41 @@ export class WindDirectionModule extends ModuleBase {
      */
     constructor(path, upslope){
         super(path, 'WindDirectionModule')
-
-        // configs
-        this.config = 'wind direction input'
-        this.options = [C.wdirHeadFromUp, C.wdirSourceFromNo, C.wdirBlowsUpslope]
-
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.wdirHeadFromUp, 0, U.compass, 0, [
-                [C.wdirHeadFromUp,   Dag.input, []],
-                [C.wdirSourceFromNo, Compass.diff, [path+P.wdirHeadFromNo, 'site.slope.direction.upslope']],
-                [C.wdirBlowsUpslope, Dag.fixed, 0]]],
+                [cfg.headingFromUpslope,   Dag.input, []],
+                [cfg.sourceFromNorth, Compass.diff, [path+P.wdirHeadFromNo, 'site.slope.direction.upslope']],
+                [cfg.upslope, Dag.fixed, 0]]],
 
             [path+P.wdirSourceFromNo, 0, U.compass, 0, [
-                [C.wdirHeadFromUp, Compass.opposite, [path+P.wdirHeadFromNo]],
-                [C.wdirSourceFromNo, Dag.input, []],
-                [C.wdirBlowsUpslope, Compass.opposite, ['site.slope.direction.upslope']]]],
+                [cfg.headingFromUpslope, Compass.opposite, [path+P.wdirHeadFromNo]],
+                [cfg.sourceFromNorth, Dag.input, []],
+                [cfg.upslope, Compass.opposite, ['site.slope.direction.upslope']]]],
 
             [path+P.wdirSourceFromUp, 0, U.compass, 0, [
                 [this.any, Compass.opposite, [path+P.wdirHeadFromUp]]]],
 
             [path+P.wdirHeadFromNo, 0, U.compass, 0, [
-                [C.wdirHeadFromUp, Compass.sum, [path+P.wdirHeadFromUp, upslope]],
-                [C.wdirSourceFromNo, Compass.opposite, [path+P.wdirSourceFromNo]],
-                [C.wdirBlowsUpslope, Dag.assign, [upslope]]]],
+                [cfg.headingFromUpslope, Compass.sum, [path+P.wdirHeadFromUp, upslope]],
+                [cfg.sourceFromNorth, Compass.opposite, [path+P.wdirSourceFromNo]],
+                [cfg.upslope, Dag.assign, [upslope]]]],
         ]
+    }
+    setConfig() {
+        const headingFromUpslope = 'heading from up-slope'
+        const sourceFromNorth = 'source from north'
+        const upslope = 'upslope'
+        this.config = {
+            headingFromUpslope, sourceFromNorth,    // individual key for outside reference
+            options: [upslope, headingFromUpslope, sourceFromNorth],
+            prompt: 'the wind direction is specified as',
+            prompts: [
+                [upslope, 'always up-slope'],
+                [headingFromUpslope, 'heading degrees from up-slope'],
+                [sourceFromNorth, 'source degrees from north'],
+            ],
+        }
+        return this.config
     }
 }

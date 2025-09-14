@@ -1,5 +1,5 @@
-import { Dag, C, K, L, P, ModuleBase, U } from '../index.js'
-import { Calc, FuelElementEquations as Fuel } from '../index.js'
+import { Dag, L, P, ModuleBase, U } from '../index.js'
+import { FuelElementEquations as Fuel } from '../index.js'
 import { CompassEquations as Compass } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
@@ -20,11 +20,8 @@ export class SurfaceFireModule extends ModuleBase {
      * something like 'wind/direction/heading/from up-slope'.
 */
     constructor(path, slopeRatio, upslope, midflameWspd, wdirHeadUp) {
-        super(path)
-
-        // configs
-        this.config = 'apply effective wind speed limit'
-        this.options = [C.fireLimitYes, C.fireLimitNo]
+        super(path, 'SurfaceFireModule')
+        const cfg = this.setConfig()
 
         const fire1 = path + P.firep1   // 'fire/1 no-wind no-slope/'
         const fire2 = path + P.firep2   // 'fire/2 wind-slope additional/'
@@ -125,14 +122,14 @@ export class SurfaceFireModule extends ModuleBase {
 
             // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
             [fire+L.fireHeadRos, 0, U.fireRos, 0, [
-                [C.fireLimitYes, Dag.assign, [fire7+L.fireRos]],
-                [C.fireLimitNo, Dag.assign, [fire6+L.fireRos]]]],
+                [cfg.applied, Dag.assign, [fire7+L.fireRos]],
+                [cfg.notApplied, Dag.assign, [fire6+L.fireRos]]]],
             [fire+L.firePhiE, 0, U.factor, 0, [
-                [C.fireLimitYes, Dag.assign, [fire7+L.firePhiE]],
-                [C.fireLimitNo, Dag.assign, [fire6+L.firePhiE]]]],
+                [cfg.applied, Dag.assign, [fire7+L.firePhiE]],
+                [cfg.notApplied, Dag.assign, [fire6+L.firePhiE]]]],
             [fire+L.fireWeff, 0, U.windSpeed, 0, [
-                [C.fireLimitYes, Dag.assign, [fire7+L.fireWeff]],
-                [C.fireLimitNo, Dag.assign, [fire6+L.fireWeff]]]],
+                [cfg.applied, Dag.assign, [fire7+L.fireWeff]],
+                [cfg.notApplied, Dag.assign, [fire6+L.fireWeff]]]],
 
             // Direction of maximum spread
             [fire+L.fireHeadDirUp, 0, U.compass, 0, [
@@ -151,5 +148,19 @@ export class SurfaceFireModule extends ModuleBase {
             [fire+L.fireHeadFlame, 0, U.fireFlame, 0, [
                 [this.any, Fire.flameLength, [fire+L.fireHeadFli]]]],
         ]
+    }
+    setConfig() {
+        const applied = 'applied'
+        const notApplied = 'not applied'
+        this.config =  {
+            applied, notApplied,       // particle key for outside reference
+            options: [applied, notApplied],
+            prompt: 'effective wind speed limit is',
+            prompts: [
+                [applied, applied],
+                [notApplied, notApplied],
+            ],
+        }
+        return this.config
     }
 }

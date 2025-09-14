@@ -1,5 +1,5 @@
 
-import { Dag, C, P, ModuleBase, U } from '../index.js'
+import { Dag, P, ModuleBase, U } from '../index.js'
 import { Calc } from '../index.js'
 
 export class MidflameWindSpeedModule extends ModuleBase {
@@ -13,16 +13,26 @@ export class MidflameWindSpeedModule extends ModuleBase {
      */
     constructor(path, wspd20ft, wsrf) {
         super(path, 'MidflameWindSpeedModule')
-
-        // config keys
-        this.config = 'wind speed at midflame'
-        this.options = [C.midflameObserved, C.midflameEstimated]
-
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.midflame, 0, U.windSpeed, 0, [
-                [C.midflameObserved, Dag.input, []],
-                [C.midflameEstimated, Calc.multiply, [wspd20ft, wsrf]]
-            ]],
+                [cfg.observed, Dag.input, []],
+                [cfg.estimated, Calc.multiply, [wspd20ft, wsrf]]
+            ]]
         ]
+    }
+    setConfig() {
+        const observed = 'observed'
+        const estimated = 'estimated'
+        this.config = {
+            observed, estimated,    // individual key for outside reference
+            options: [observed, estimated],
+            prompt: 'wind speed at midflame height is',
+            prompts: [
+                [observed, 'input parameter'],
+                [estimated, 'estimated from 20-ft wind speed and a reduction factor'],
+            ],
+        }
+        return this.config
     }
 }

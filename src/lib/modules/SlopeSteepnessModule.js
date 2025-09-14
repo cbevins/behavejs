@@ -1,4 +1,4 @@
-import { Dag, C, P, U, ModuleBase } from '../index.js'
+import { Dag, P, U, ModuleBase } from '../index.js'
 import { CompassEquations as Compass} from '../index.js'
 
 export class SlopeSteepnessModule extends ModuleBase {
@@ -9,17 +9,30 @@ export class SlopeSteepnessModule extends ModuleBase {
      */
     constructor(path) {
         super(path, 'SlopeSteepnessModule')
-
-        this.config = 'slope steepness is'
-        this.options = [C.slopeRatio, C.slopeDegrees, C.slopeMap]
-
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.slopeRatio, 0, U.ratio, 0, [
-                [C.slopeRatio, Dag.input, []],
-                [C.slopeDegrees, Compass.slopeRatio, [path+P.slopeDegrees]]]],
+                [cfg.ratio, Dag.input, []],
+                [cfg.degrees, Compass.slopeRatio, [path+P.slopeDegrees]]]],
             [path+P.slopeDegrees, 0, U.degrees, 0, [
-                [C.slopeRatio, Compass.slopeDegrees, [path+P.slopeRatio]],
-                [C.slopeDegrees, Dag.input, []]]],
+                [cfg.ratio, Compass.slopeDegrees, [path+P.slopeRatio]],
+                [cfg.degrees, Dag.input, []]]],
         ]
+    }
+    setConfig() {
+        const ratio = 'observed ratio of rise-to-reach'
+        const degrees = 'degrees'
+        const map = 'map'
+        this.config = {
+            ratio, degrees, map,    // individual key for outside reference
+            options: [ratio, degrees, map],
+            prompt: 'slope steepness is specified as',
+            prompts: [
+                [ratio, 'ratio of vertical rise to horizontal reach'],
+                [degrees, 'degrees'],
+                [map, 'estimated from map parameters']
+            ],
+        }
+        return this.config
     }
 }

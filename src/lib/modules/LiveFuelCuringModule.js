@@ -1,4 +1,4 @@
-import { Dag, C, P, U, ModuleBase } from '../index.js'
+import { Dag, P, U, ModuleBase } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 
 export class LiveFuelCuringModule extends ModuleBase {
@@ -11,20 +11,30 @@ export class LiveFuelCuringModule extends ModuleBase {
      */
     constructor(path, herbMoisKey) {
         super(path, 'LiveFuelCuringModule')
-
-        // config keys
-        this.config = 'cured live fuel fraction'
-        this.options = [C.curingObserved, C.curingEstimated]
-
+        const cfg = this.setConfig()
         this.nodes = [
             [path+P.curingObserved, 0, U.fraction, 0, [
                 [this.any, Dag.input, []]]],
             [path+P.curingEstimated, 0, U.fraction, 0, [
                 [this.any, Bed.curedHerbFraction, [herbMoisKey]]]],
             [path+P.curingApplied, 0, U.fraction, 0, [
-                [C.curingObserved, Dag.assign, [path+P.curingObserved]],
-                [C.curingEstimated, Dag.assign, [path+P.curingEstimated]],
+                [cfg.observed, Dag.assign, [path+P.curingObserved]],
+                [cfg.estimated, Dag.assign, [path+P.curingEstimated]],
             ]],
         ]
+    }
+    setConfig() {
+        const observed = 'observed'
+        const estimated = 'estimated'
+        this.config = {
+            observed, estimated,    // individual key for outside reference
+            options: [observed, estimated],
+            prompt: 'live fuel curing fraction is',
+            prompts: [
+                [observed, 'input parameter'],
+                [estimated, 'estimated from herb moisture content'],
+            ],
+        }
+        return this.config
     }
 }
