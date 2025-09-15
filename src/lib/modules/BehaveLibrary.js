@@ -1,3 +1,4 @@
+import { Dag as Dag } from '../index.js'
 import { Calc as Calc } from '../index.js'
 import { CanopyEquations as Canopy } from '../index.js'
 import { CompassEquations as Compass } from '../index.js'
@@ -6,8 +7,10 @@ import { FuelElementEquations as FuelElement } from '../index.js'
 import { StandardFuelModelCatalog as Standard } from '../index.js'
 import { SurfaceFireEquations as SurfaceFire } from '../index.js'
 import { WindEquations as Wind } from '../index.js'
-export class BehaveEquations  {
+
+export class BehaveLibrary {
     static arithmeticMeanSpreadRate = SurfaceFire.arithmeticMeanSpreadRate
+    static assign = Dag.assign
     static bulkDensity = FuelBed.bulkDensity
     static canopyBaseFromHeightLength = Canopy.canopyBaseFromHeightLength
     static canopyBaseFromRatioHeight = Canopy.canopyBaseFromRatioHeight
@@ -19,7 +22,6 @@ export class BehaveEquations  {
     static canopyHeightFromRatioLength = Canopy.canopyHeightFromRatioLength
     static canopySheltersFuelFromWind = Canopy.canopySheltersFuelFromWind
     static canopyWindSpeedAdjustmentFactor = Canopy.canopyWindSpeedAdjustmentFactor
-    static code = Standard.code
     static compassConstrain = Compass.compassConstrain
     static compassDegreesFromRadians = Compass.compassDegreesFromRadians
     static compassDiff = Compass.compassDiff
@@ -30,6 +32,7 @@ export class BehaveEquations  {
     static compassSlopeRatio = Compass.compassSlopeRatio
     static compassSlopeRatioMap = Compass.compassSlopeRatioMap
     static compassSum = Compass.compassSum
+    static constant = Dag.constant
     static crownFill = Canopy.crownFill
     static crownLengthFromHeightBase = Canopy.crownLengthFromHeightBase
     static crownLengthFromRatioBase = Canopy.crownLengthFromRatioBase
@@ -41,8 +44,6 @@ export class BehaveEquations  {
     static curedHerbLoad = FuelElement.curedHerbLoad
     static cylindricalDiameter = FuelElement.cylindricalDiameter
     static cylindricalLength = FuelElement.cylindricalLength
-    static dens = Standard.dens
-    static depth = Standard.depth
     static divide = Calc.divide
     static dryFuelReactionIntensity = FuelBed.dryFuelReactionIntensity
     static effectiveFuelLoad = FuelElement.effectiveFuelLoad
@@ -61,44 +62,28 @@ export class BehaveEquations  {
     static firelineIntensityFromFlameLength = SurfaceFire.firelineIntensityFromFlameLength
     static flameLength = SurfaceFire.flameLength
     static fraction = Calc.fraction
-    static getData = Standard.getData
-    static getMap = Standard.getMap
-    static getObj = Standard.getObj
     static greaterThan = Calc.greaterThan
     static harmonicMeanSpreadRate = SurfaceFire.harmonicMeanSpreadRate
-    static has = Standard.has
-    static heatDead = Standard.heatDead
-    static heatLive = Standard.heatLive
     static heatOfPreignition = FuelElement.heatOfPreignition
     static heatPerUnitArea = FuelBed.heatPerUnitArea
     static heatSink = FuelBed.heatSink
     static heatSource = FuelBed.heatSource
-    static key = Standard.key
-    static label = Standard.label
+    static input = Dag.input
     static lengthToWidthRatio = SurfaceFire.lengthToWidthRatio
     static liveFuelExtinctionMoistureContent = FuelBed.liveFuelExtinctionMoistureContent
     static liveFuelExtinctionMoistureContentFactor = FuelBed.liveFuelExtinctionMoistureContentFactor
-    static load1 = Standard.load1
-    static load10 = Standard.load10
-    static load100 = Standard.load100
-    static loadCured = Standard.loadCured
-    static loadHerb = Standard.loadHerb
-    static loadStem = Standard.loadStem
-    static loadUncured = Standard.loadUncured
     static maximumDirectionSlopeSpreadRate = SurfaceFire.maximumDirectionSlopeSpreadRate
     static maximumDirectionSpreadRate = SurfaceFire.maximumDirectionSpreadRate
     static maximumDirectionWindSpreadRate = SurfaceFire.maximumDirectionWindSpreadRate
     static maximumDirectionXComponent = SurfaceFire.maximumDirectionXComponent
     static maximumDirectionYComponent = SurfaceFire.maximumDirectionYComponent
     static maximumSpreadRate = SurfaceFire.maximumSpreadRate
-    static mext = Standard.mext
     static midflameTo20ftRatio = Wind.midflameTo20ftRatio
     static mineralDamping = FuelBed.mineralDamping
     static moistureDamping = FuelBed.moistureDamping
     static multiply = Calc.multiply
     static netOvendryLoad = FuelElement.netOvendryLoad
     static noWindNoSlopeSpreadRate = FuelBed.noWindNoSlopeSpreadRate
-    static number = Standard.number
     static openWindSpeedAdjustmentFactor = FuelBed.openWindSpeedAdjustmentFactor
     static optimumPackingRatio = FuelBed.optimumPackingRatio
     static or = Calc.or
@@ -115,16 +100,10 @@ export class BehaveEquations  {
     static reactionVelocityExponent = FuelBed.reactionVelocityExponent
     static reactionVelocityMaximum = FuelBed.reactionVelocityMaximum
     static reactionVelocityOptimum = FuelBed.reactionVelocityOptimum
-    static savr1 = Standard.savr1
-    static savr10 = Standard.savr10
-    static savr100 = Standard.savr100
     static savr15 = FuelBed.savr15
-    static savrHerb = Standard.savrHerb
-    static savrStem = Standard.savrStem
     static scorchHeight = SurfaceFire.scorchHeight
     static scorchHtFromFlame = SurfaceFire.scorchHtFromFlame
     static secondaryCoverage = FuelBed.secondaryCoverage
-    static seff = Standard.seff
     static shelteredMidflameTo20ftRatio = Wind.shelteredMidflameTo20ftRatio
     static sizeClass = FuelElement.sizeClass
     static sizeClassWeightingFactor = FuelElement.sizeClassWeightingFactor
@@ -134,19 +113,45 @@ export class BehaveEquations  {
     static spreadRateFinal = SurfaceFire.spreadRateFinal
     static spreadRateWithCrossSlopeWind = SurfaceFire.spreadRateWithCrossSlopeWind
     static spreadRateWithRosLimitApplied = SurfaceFire.spreadRateWithRosLimitApplied
-    static stot = Standard.stot
+    static standardCode = Standard.standardCode
+    static standardDens = Standard.standardDens
+    static standardDepth = Standard.standardDepth
+    static standardGetData = Standard.standardGetData
+    static standardGetMap = Standard.standardGetMap
+    static standardGetObj = Standard.standardGetObj
+    static standardHas = Standard.standardHas
+    static standardHeatDead = Standard.standardHeatDead
+    static standardHeatLive = Standard.standardHeatLive
+    static standardKey = Standard.standardKey
+    static standardLabel = Standard.standardLabel
+    static standardLoad1 = Standard.standardLoad1
+    static standardLoad10 = Standard.standardLoad10
+    static standardLoad100 = Standard.standardLoad100
+    static standardLoadCured = Standard.standardLoadCured
+    static standardLoadHerb = Standard.standardLoadHerb
+    static standardLoadStem = Standard.standardLoadStem
+    static standardLoadUncured = Standard.standardLoadUncured
+    static standardMext = Standard.standardMext
+    static standardNumber = Standard.standardNumber
+    static standardSavr1 = Standard.standardSavr1
+    static standardSavr10 = Standard.standardSavr10
+    static standardSavr100 = Standard.standardSavr100
+    static standardSavrHerb = Standard.standardSavrHerb
+    static standardSavrStem = Standard.standardSavrStem
+    static standardSeff = Standard.standardSeff
+    static standardStot = Standard.standardStot
+    static standardType1 = Standard.standardType1
+    static standardType10 = Standard.standardType10
+    static standardType100 = Standard.standardType100
+    static standardTypeCured = Standard.standardTypeCured
+    static standardTypeHerb = Standard.standardTypeHerb
+    static standardTypeStem = Standard.standardTypeStem
+    static standardTypeUncured = Standard.standardTypeUncured
     static subtract = Calc.subtract
     static sum = Calc.sum
     static sumOfProducts = Calc.sumOfProducts
     static surfaceArea = FuelElement.surfaceArea
     static surfaceAreaWeightingFactor = FuelElement.surfaceAreaWeightingFactor
-    static type1 = Standard.type1
-    static type10 = Standard.type10
-    static type100 = Standard.type100
-    static typeCured = Standard.typeCured
-    static typeHerb = Standard.typeHerb
-    static typeStem = Standard.typeStem
-    static typeUncured = Standard.typeUncured
     static uncuredHerbLoad = FuelElement.uncuredHerbLoad
     static unshelteredMidflameTo20ftRatio = Wind.unshelteredMidflameTo20ftRatio
     static volume = FuelElement.volume

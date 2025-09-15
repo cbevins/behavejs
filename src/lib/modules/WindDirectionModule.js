@@ -36,7 +36,7 @@ export class WindDirectionModule extends ModuleBase {
         const sourceFromNorth = 'source from north'
         const upslope = 'upslope'
         this.config = {
-            headingFromUpslope, sourceFromNorth,    // individual key for outside reference
+            headingFromUpslope, sourceFromNorth, upslope,    // individual key for outside reference
             options: [upslope, headingFromUpslope, sourceFromNorth],
             prompt: 'the wind direction is specified as',
             prompts: [

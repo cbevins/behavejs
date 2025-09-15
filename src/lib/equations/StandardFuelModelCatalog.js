@@ -4,24 +4,24 @@ export class StandardFuelModelCatalog {
     static fuelMap = new Map()
 
     // Returns the fuel model data **array**
-    static getData(alias) {
+    static standardGetData(alias) {
         const key = (typeof alias === 'string') ? alias.toLowerCase() : alias
-        const map = StandardFuelModelCatalog.getMap() // ensure it exists!
+        const map = StandardFuelModelCatalog.standardGetMap() // ensure it exists!
         return map.get(key)
     }
 
     // Returns a fuel model data **object**
-    static getObj(alias) {
+    static standardGetObj(alias) {
         const [number, code, label, depth, mext, load1, load10, load100,
             loadHerb, loadStem, savr1, savrHerb, savrStem, heatDead, heatLive]
-        = StandardFuelModelCatalog.getData(alias)
+        = StandardFuelModelCatalog.standardGetData(alias)
         return {number, code, label, depth, mext, load1, load10, load100,
             loadHerb, loadStem, savr1, savrHerb, savrStem, heatDead, heatLive}
     }
 
     // Returns the fuel map, *after* first building it if necessary
-    // Always called by this.getData() and this.getObj()
-    static getMap() {
+    // Always called by this.standardGetData() and this.standardGetObj()
+    static standardGetMap() {
         if (! StandardFuelModelCatalog.fuelMap.size) {
             for(let m of StandardFuelModels) {
                 StandardFuelModelCatalog.fuelMap.set(m[0], m)      // numeric key
@@ -33,40 +33,40 @@ export class StandardFuelModelCatalog {
     }
 
     // Returns TRUE if the fuel model number or code exists in the map
-    static has(alias) {
+    static standardHas(alias) {
         const key = (typeof alias === 'string') ? alias.toLowerCase() : alias
-        const map = StandardFuelModelCatalog.getMap() // ensure it exists!
+        const map = StandardFuelModelCatalog.standardGetMap() // ensure it exists!
         return map.has(key)
     }
 
-    static code(alias) { return StandardFuelModelCatalog.getObj(alias).code }
-    static depth(alias) { return StandardFuelModelCatalog.getObj(alias).depth }
-    static dens() { return 32 }
-    static heatDead(alias) { return StandardFuelModelCatalog.getObj(alias).heatDead }
-    static heatLive(alias) { return StandardFuelModelCatalog.getObj(alias).heatLive }
-    static key(alias) { return StandardFuelModelCatalog.getObj(alias).key }
-    static label(alias) { return StandardFuelModelCatalog.getObj(alias).label }
-    static load1(alias) { return StandardFuelModelCatalog.getObj(alias).load1 }
-    static load10(alias) { return StandardFuelModelCatalog.getObj(alias).load10 }
-    static load100(alias) { return StandardFuelModelCatalog.getObj(alias).load100 }
-    static loadHerb(alias) { return StandardFuelModelCatalog.getObj(alias).loadHerb }
-    static loadStem(alias) { return StandardFuelModelCatalog.getObj(alias).loadStem }
-    static loadCured(alias, curedFraction) { return StandardFuelModelCatalog.getObj(alias).loadHerb * curedFraction}
-    static loadUncured(alias, curedFraction) { return StandardFuelModelCatalog.getObj(alias).loadHerb * (1-curedFraction) }
-    static mext(alias) { return StandardFuelModelCatalog.getObj(alias).mext }
-    static number(alias) { return StandardFuelModelCatalog.getObj(alias).number }
-    static savr1(alias) { return StandardFuelModelCatalog.getObj(alias).savr1 }
-    static savr10() { return 109 }
-    static savr100() { return 30 }
-    static savrHerb(alias) { return StandardFuelModelCatalog.getObj(alias).savrHerb }
-    static savrStem(alias) { return StandardFuelModelCatalog.getObj(alias).savrStem }
-    static seff() { return 0.01 }
-    static stot() { return 0.0555 }
-    static type1() { return 'dead & down' }
-    static type10() { return 'dead & down' }
-    static type100() { return 'dead & down' }
-    static typeCured() { return 'cured herb' }
-    static typeHerb() { return 'herb' }
-    static typeStem() { return 'stem' }
-    static typeUncured() { return 'uncured herb' }
+    static standardCode(alias) { return StandardFuelModelCatalog.standardGetObj(alias).code }
+    static standardDepth(alias) { return StandardFuelModelCatalog.standardGetObj(alias).depth }
+    static standardDens() { return 32 }
+    static standardHeatDead(alias) { return StandardFuelModelCatalog.standardGetObj(alias).heatDead }
+    static standardHeatLive(alias) { return StandardFuelModelCatalog.standardGetObj(alias).heatLive }
+    static standardKey(alias) { return StandardFuelModelCatalog.standardGetObj(alias).key }
+    static standardLabel(alias) { return StandardFuelModelCatalog.standardGetObj(alias).label }
+    static standardLoad1(alias) { return StandardFuelModelCatalog.standardGetObj(alias).load1 }
+    static standardLoad10(alias) { return StandardFuelModelCatalog.standardGetObj(alias).load10 }
+    static standardLoad100(alias) { return StandardFuelModelCatalog.standardGetObj(alias).load100 }
+    static standardLoadHerb(alias) { return StandardFuelModelCatalog.standardGetObj(alias).loadHerb }
+    static standardLoadStem(alias) { return StandardFuelModelCatalog.standardGetObj(alias).loadStem }
+    static standardLoadCured(alias, curedFraction) { return StandardFuelModelCatalog.standardGetObj(alias).loadHerb * curedFraction}
+    static standardLoadUncured(alias, curedFraction) { return StandardFuelModelCatalog.standardGetObj(alias).loadHerb * (1-curedFraction) }
+    static standardMext(alias) { return StandardFuelModelCatalog.standardGetObj(alias).mext }
+    static standardNumber(alias) { return StandardFuelModelCatalog.standardGetObj(alias).number }
+    static standardSavr1(alias) { return StandardFuelModelCatalog.standardGetObj(alias).savr1 }
+    static standardSavr10() { return 109 }
+    static standardSavr100() { return 30 }
+    static standardSavrHerb(alias) { return StandardFuelModelCatalog.standardGetObj(alias).savrHerb }
+    static standardSavrStem(alias) { return StandardFuelModelCatalog.standardGetObj(alias).savrStem }
+    static standardSeff() { return 0.01 }
+    static standardStot() { return 0.0555 }
+    static standardType1() { return 'dead & down' }
+    static standardType10() { return 'dead & down' }
+    static standardType100() { return 'dead & down' }
+    static standardTypeCured() { return 'cured herb' }
+    static standardTypeHerb() { return 'herb' }
+    static standardTypeStem() { return 'stem' }
+    static standardTypeUncured() { return 'uncured herb' }
 }

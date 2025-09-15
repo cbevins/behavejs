@@ -22,87 +22,87 @@ export class StandardFuelModelModule extends ModuleBase {
                 [cfg.custom, Dag.constant, []],
             ]],
             [path+P.stdNumb, 0, U.fuelNumb, 0, [
-                [cfg.catalog, Cat.number, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardNumber, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdCode, '', U.fuelCode, 0, [
-                [cfg.catalog, Cat.code, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardCode, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLabel, '', U.fuelLabel, 0, [
-                [cfg.catalog, Cat.label, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardLabel, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDepth, 1, U.fuelDepth, 0, [
-                [cfg.catalog, Cat.depth, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardDepth, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDeadMext, 0.25, U.fuelMois, 0, [
-                [cfg.catalog, Cat.mext, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardMext, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDeadHeat, 0, U.fuelHeat, 0, [
-                [this.any, Cat.heatDead, [path+P.stdKey]],
+                [this.any, Cat.standardHeatDead, [path+P.stdKey]],
             ]],
             [path+P.stdLiveHeat, 0, U.fuelHeat, 0, [
-                [this.any, Cat.heatLive, [path+P.stdKey]],
+                [this.any, Cat.standardHeatLive, [path+P.stdKey]],
             ]],
             // common to all particles (path+P.stdKey arg is ignored)
             [path+P.stdDens, 0, U.fuelDens, 0, [
-                [this.any, Cat.dens, [path+P.stdKey]],
+                [this.any, Cat.standardDens, [path+P.stdKey]],
             ]],
             [path+P.stdSeff, 0, U.fuelSeff, 0, [
-                [this.any, Cat.seff, [path+P.stdKey]],
+                [this.any, Cat.standardSeff, [path+P.stdKey]],
             ]],
             [path+P.stdStot, 0, U.fuelStot, 0, [
-                [this.any, Cat.stot, [path+P.stdKey]],
+                [this.any, Cat.standardStot, [path+P.stdKey]],
             ]],
             // 1-h dead
             [path+P.stdDead1Load, 0, U.fuelLoad, 0, [
-                [cfg.catalog, Cat.load1, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardLoad1, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead1Mois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois1h]],
             ]],
             [path+P.stdDead1Savr, 1, U.fuelSavr, 0, [
-                [cfg.catalog, Cat.savr1, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardSavr1, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdDead1Type, Cat.type1(), U.fuelType, 0, [
+            [path+P.stdDead1Type, Cat.standardType1(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // 10-h dead
             [path+P.stdDead10Load, 0, U.fuelLoad, 0, [
-                [cfg.catalog, Cat.load10, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardLoad10, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead10Mois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois10h]],
             ]],
             [path+P.stdDead10Savr, 1, U.fuelSavr, 0, [
-                [this.any, Cat.savr10, []],
+                [this.any, Cat.standardSavr10, []],
             ]],
-            [path+P.stdDead10Type, Cat.type10(), U.fuelType, 0, [
+            [path+P.stdDead10Type, Cat.standardType10(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // 100-h dead
             [path+P.stdDead100Load, 0, U.fuelLoad, 0, [
-                [cfg.catalog, Cat.load100, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardLoad100, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead100Mois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois100h]],
             ]],
             [path+P.stdDead100Savr, 1, U.fuelSavr, 0, [
-                [this.any, Cat.savr100, []],
+                [this.any, Cat.standardSavr100, []],
             ]],
-            [path+P.stdDead100Type, Cat.type100(), U.fuelType, 0, [
+            [path+P.stdDead100Type, Cat.standardType100(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // cured portion of total herb load
             [path+P.stdDeadHerbLoad, 0, U.fuelLoad, 0, [
-                [this.any, Cat.loadCured, [path+P.stdKey, curedFraction]],
+                [this.any, Cat.standardLoadCured, [path+P.stdKey, curedFraction]],
             ]],
             [path+P.stdDeadHerbMois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [mois1h]],
@@ -110,12 +110,12 @@ export class StandardFuelModelModule extends ModuleBase {
             [path+P.stdDeadHerbSavr, 1, U.fuelSavr, 0, [
                 [this.any, Dag.assign, [path+P.stdTotalHerbSavr]],
             ]],
-            [path+P.stdDeadHerbType, Cat.typeCured(), U.fuelType, 0, [
+            [path+P.stdDeadHerbType, Cat.standardTypeCured(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // uncured portion of total herb load
             [path+P.stdLiveHerbLoad, 0, U.fuelLoad, 0, [
-                [this.any, Cat.loadUncured, [path+P.stdKey, curedFraction]],
+                [this.any, Cat.standardLoadUncured, [path+P.stdKey, curedFraction]],
             ]],
             [path+P.stdLiveHerbMois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [moisHerb]],
@@ -123,34 +123,34 @@ export class StandardFuelModelModule extends ModuleBase {
             [path+P.stdLiveHerbSavr, 1, U.fuelSavr, 0, [
                 [this.any, Dag.assign, [path+P.stdTotalHerbSavr]],
             ]],
-            [path+P.stdLiveHerbType, Cat.typeUncured(), U.fuelType, 0, [
+            [path+P.stdLiveHerbType, Cat.standardTypeUncured(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // total (cured and uncured) herb load
             [path+P.stdTotalHerbLoad, 0, U.fuelLoad, 0, [
-                [cfg.catalog, Cat.loadHerb, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardLoadHerb, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdTotalHerbSavr, 1, U.fuelSavr, 0, [
-                [cfg.catalog, Cat.savrHerb, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardSavrHerb, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdTotalHerbType, Cat.typeHerb(), U.fuelType, 0, [
+            [path+P.stdTotalHerbType, Cat.standardTypeHerb(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
             // live stem
             [path+P.stdLiveStemLoad, 0, U.fuelLoad, 0, [
-                [cfg.catalog, Cat.loadStem, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardLoadStem, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLiveStemMois, 0, U.fuelMois, 0, [
                 [this.any, Dag.assign, [moisStem]],
             ]],
             [path+P.stdLiveStemSavr, 1, U.fuelSavr, 0, [
-                [cfg.catalog, Cat.savrStem, [path+P.stdKey]],
+                [cfg.catalog, Cat.standardSavrStem, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdLiveStemType, Cat.typeStem(), U.fuelType, 0, [
+            [path+P.stdLiveStemType, Cat.standardTypeStem(), U.fuelType, 0, [
                 [this.any, Dag.constant, []],
             ]],
         ]

@@ -25,7 +25,6 @@ export {WindSpeedModule} from './modules/WindSpeedModule.js'
 export {WindSpeedReductionModule} from './modules/WindSpeedReductionModule.js'
 
 // Equation and data libraries
-export {BehaveLibrary} from './equations/BehaveLibrary.js'
 export {Calc} from './equations/Calc.js'
 export {CanopyEquations} from './equations/CanopyEquations.js'
 export {CompassEquations} from './equations/CompassEquations.js'
