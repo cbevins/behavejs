@@ -47,6 +47,16 @@ export class Paths {
     static midflameSelf  = 'wind/speed/'
     static midflame      = 'midflame'
 
+    // SlopeDirectionModule
+    static slopeDirSelf = 'slope/direction/'
+    static slopeUp      = 'up-slope'
+    static slopeDown    = 'down-slope'
+
+    // SlopeSteepnessModule
+    static slopeSteepSelf = 'slope/steepness/'
+    static slopeDegrees   = 'degrees'
+    static slopeRatio     = 'ratio'
+
     // WindDirectionModule
     static wdirSelf         = 'wind/direction/'
     static wdirHeadFromUp   = 'heading/from up-slope'

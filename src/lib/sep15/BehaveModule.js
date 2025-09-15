@@ -8,6 +8,10 @@ import {LiveFuelCuringModule} from './LiveFuelCuringModule.js'
 import {LiveFuelCuringConfig} from './LiveFuelCuringConfig.js'
 import {LiveFuelMoistureModule} from './LiveFuelMoistureModule.js'
 import {LiveFuelMoistureConfig} from './LiveFuelMoistureConfig.js'
+import {SlopeDirectionModule} from './SlopeDirectionModule.js'
+import {SlopeDirectionConfig} from './SlopeDirectionConfig.js'
+import {SlopeSteepnessModule} from './SlopeSteepnessModule.js'
+import {SlopeSteepnessConfig} from './SlopeSteepnessConfig.js'
 import {WindDirectionModule} from './WindDirectionModule.js'
 import {WindDirectionConfig} from './WindDirectionConfig.js'
 import {WindSpeedModule} from './WindSpeedModule.js'
@@ -22,6 +26,10 @@ export class BehaveModule {
         const deadmoisMod = new DeadFuelMoistureModule('weather/', deadmoisCfg)
         const livemoisCfg = new LiveFuelMoistureConfig('liveFuelMoistureInputs')
         const livemoisMod = new LiveFuelMoistureModule('weather/', livemoisCfg)
+        const slpdirCfg = new SlopeDirectionConfig('slopeDirectionInputs')
+        const slpdirMod = new SlopeDirectionModule('terrain/', slpdirCfg)
+        const slpsteepCfg = new SlopeSteepnessConfig('slopeSteepnessInputs')
+        const slpsteepMod = new SlopeSteepnessModule('terrain/', slpsteepCfg)
         const windspdCfg = new WindSpeedConfig('windSpeedInputs')
         const windspdMod = new WindSpeedModule('weather/', windspdCfg)
         const winddirCfg = new WindSpeedConfig('windDiretcionInputs')
@@ -38,6 +46,8 @@ export class BehaveModule {
             ...curingMod.nodes,
             ...windspdMod.nodes,
             ...winddirMod.nodes,
+            ...slpsteepMod.nodes,
+            ...slpdirMod.nodes,
         ]
     }
 }
