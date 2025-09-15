@@ -1,4 +1,5 @@
 import { Dag, P, ModuleBase, U } from '../index.js'
+import { FuelBedEquations as Bed } from '../index.js'
 
 export class WindSpeedReductionModule extends ModuleBase {
     /**
@@ -7,13 +8,13 @@ export class WindSpeedReductionModule extends ModuleBase {
      * @param {string} canopyWsrf Fully qualified node name, something like 'canopy/wind speed reduction factor'.
      * @param {string} fuelWsrf Fully qualified node name, something like 'primary/surface/bed/wind speed reduction factor'.
      */
-    constructor(path, canopyWsrf, fuelWsrf){
+    constructor(path, canopyShelters, canopyWsrf, fuelWsrf){
         super(path, 'WindSpeedReductionModule')
         const cfg = this.setConfig()
         this.nodes = [
             [path+P.wsrfMidflame, 1, U.fraction, 0, [
                 [cfg.observed, Dag.input, []],
-                [cfg.estimated, Math.min, [canopyWsrf, fuelWsrf]],
+                [cfg.estimated, Bed.windSpeedAdjustmentFactor, [canopyShelters, canopyWsrf, fuelWsrf]],
             ]],
         ]
     }

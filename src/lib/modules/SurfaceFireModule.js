@@ -50,9 +50,9 @@ export class SurfaceFireModule extends ModuleBase {
 
             // Part 1 - No-wind, no-slope fire spread rate and effective wind
             [fire1+L.firePhiW,   0, U.factor, 0, [
-                [this.any, Bed.phiWind, [midflameWspd, fire+L.windB, fire+L.windK]]]],
+                [this.any, Fire.phiWind, [midflameWspd, fire+L.windB, fire+L.windK]]]],
             [fire1+L.firePhiS,   0, U.factor, 0, [
-                [this.any, Bed.phiSlope, [slopeRatio, fire+L.fuelSlpk]]]],
+                [this.any, Fire.phiSlope, [slopeRatio, fire+L.fuelSlpk]]]],
             [fire1+L.fireRos,    0, U.fireRos, 0, [
                 [this.any, Bed.noWindNoSlopeSpreadRate, [bed+L.fuelSource, bed+L.fuelSink]]]],
             [fire1+L.firePhiE,   0, U.factor, 0, [
@@ -135,7 +135,7 @@ export class SurfaceFireModule extends ModuleBase {
             [fire+L.fireHeadDirUp, 0, U.compass, 0, [
                 [this.any, Fire.spreadDirectionFromUpslope, [fire2+L.rosXcomp, fire2+L.rosYcomp, fire2+L.fireRos]]]], 
             [fire+L.fireHeadDirNo, 0, U.compass, 0, [
-                [this.any, Compass.sum, [upslope, fire+L.fireHeadDirUp]]]],
+                [this.any, Compass.compassSum, [upslope, fire+L.fireHeadDirUp]]]],
 
             [fire+L.fireTaur,      0, U.fireTaur, 0, [
                 [this.any, Bed.fireResidenceTime, [bed+L.fuelSavr]]]],

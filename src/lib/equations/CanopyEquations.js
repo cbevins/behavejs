@@ -14,67 +14,67 @@ export class CanopyEquations {
     }
 
     // Canopy base height
-    static baseFromRatioHeight(ratio, height) {
+    static canopyBaseFromRatioHeight(ratio, height) {
       return height * Calc.positive((1 - ratio))
     }
-    static baseFromRatioLength(ratio, length) {
+    static canopyBaseFromRatioLength(ratio, length) {
       return Calc.positive(Calc.divide(length, ratio) - length)
     }
-    static baseFromHeightLength(height, length) {
+    static canopyBaseFromHeightLength(height, length) {
       return Calc.positive(height - length)
     }
 
     // Canopy fuel load
-    static fuelLoad (bulk, length) {
+    static canopyFuelLoad (bulk, length) {
       return Calc.positive(bulk * length)
     }
 
     // Canopy heat per unit area
-    static heatPerUnitArea (load, heat) {
+    static canopyHeatPerUnitArea (load, heat) {
       return Calc.positive(load * heat)
     }
 
     // Canopy total height
-    static heightFromLengthBase(length, base) {
+    static canopyHeightFromLengthBase(length, base) {
       return length + base
     }
-    static heightFromRatioBase(ratio, base) {
+    static canopyHeightFromRatioBase(ratio, base) {
       return Calc.divide(base, Calc.positive((1 - ratio))) // OK
     }
-    static heightFromRatioLength(ratio, length) {
+    static canopyHeightFromRatioLength(ratio, length) {
       return Calc.divide(length, ratio)
     }
 
     // Canopy crown length
-    static lengthFromRatioHeight(ratio, height) {
+    static crownLengthFromRatioHeight(ratio, height) {
       return Calc.positive(ratio * height)
     }
-    static lengthFromRatioBase(ratio, base) {
+    static crownLengthFromRatioBase(ratio, base) {
       const height = Calc.divide(base, Calc.positive((1 - ratio)))
       return Calc.positive(height - base)
     }
-    static lengthFromHeightBase(height, base) {
+    static crownLengthFromHeightBase(height, base) {
       return Calc.positive(height - base)
     }
 
     // Canopy ratio
-    static ratioFromHeightLength(height, length) {
+    static crownRatioFromHeightLength(height, length) {
       return Calc.fraction(Calc.divide(length, height))
     }
-    static ratioFromHeightBase(height, base) {
+    static crownRatioFromHeightBase(height, base) {
       return Calc.fraction(Calc.divide(Calc.positive((height-base)), height))
     }
-    static ratioFromLengthBase(length, base) {
+    static crownRatioFromLengthBase(length, base) {
       return Calc.fraction(Calc.divide(length, (length+base)))
     } 
 
     // Returns true if canopy effectively shelters the fuel from wind
-    static sheltersFuelFromWind (canopyCoverFraction, canopyTotalHeight, canopyFillFraction) {
+    static canopySheltersFuelFromWind (canopyCoverFraction, canopyTotalHeight, canopyFillFraction) {
       return canopyCoverFraction >= 0.01 && canopyFillFraction >= 0.05 && canopyTotalHeight >= 6
     }
 
     // Canopy-induced midflame windspeed adjustment factor
-    static windSpeedAdjustmentFactor (cover, ht, fill) {
+    static canopyWindSpeedAdjustmentFactor (cover, ht, fill) {
       const waf = (CanopyEquations.sheltersFuelFromWind(cover, ht, fill))
         ? 0.555 / (Math.sqrt(fill * ht) * Math.log((20 + 0.36 * ht) / (0.13 * ht)))
         : 1

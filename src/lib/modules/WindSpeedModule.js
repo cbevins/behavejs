@@ -13,10 +13,10 @@ export class WindSpeedModule extends ModuleBase {
         this.nodes = [
             [path+P.wspd20ft, 0, U.windSpeed, 0, [
                 [cfg.at20ft, Dag.input, []],
-                [cfg.at10m, Wind.at20ftFrom10m, [path+P.wspd10m]]]],
+                [cfg.at10m, Wind.windSpeedAt20ftFrom10m, [path+P.wspd10m]]]],
             [path+P.wspd10m, 0, U.windSpeed, 0, [
                 [cfg.at20ft, Dag.input, []],
-                [cfg.at10m, Wind.at10mFrom20ft, [path+P.wspd20ft]]]],
+                [cfg.at10m, Wind.windSpeedAt10mFrom20ft, [path+P.wspd20ft]]]],
         ]
     }
     setConfig() {

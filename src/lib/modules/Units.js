@@ -1,5 +1,6 @@
 // Defines all the units-of-measure keys
 export class U {
+    static bool     = 'boolean'
     static compass  = 'degrees'
     static degrees  = 'degrees'                                 // [0..360]
     static factor   = 'factor units'                            // any number

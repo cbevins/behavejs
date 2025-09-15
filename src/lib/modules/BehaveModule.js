@@ -52,6 +52,7 @@ export class BehaveModule extends ModuleBase {
         // Need a WindSpeedReductionModule and a MidflameWindSpeedModule for surface fire
         const wsrf1 = new WindSpeedReductionModule(
             P.surf1,                    // module's parent path
+            P.canopyShelters,           // canopy shelters fuel bed from wind
             P.canopyWsrf,               // canopy wind speed reduction factor node key
             P.surf1+P.wsrfFuel)         // fuel bed wind speed reduction node key
         const midflame1 = new MidflameWindSpeedModule(

@@ -1,6 +1,6 @@
 /**
  * @file Compass functions as implemented by BehavePlus v6.
- * @copyright 2021 Systems for Environmental Management
+ * @copyright 2025 Systems for Environmental Management
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  */
@@ -11,9 +11,9 @@ export class CompassEquations {
    * Constrain compass degrees to the azimuth range [0 <= degrees < 360].
    *
    * @param {float} degrees The compass azimuth (degrees).
-   * @return float The compass azimuth constrained to the range [0 <= azimuth < 360] degrees.
+   * @return float The compass azimuth compassConstrained to the range [0 <= azimuth < 360] degrees.
    */
-  static constrain (degrees) {
+  static compassConstrain (degrees) {
     while (degrees >= 360) {
       degrees -= 360
     }
@@ -29,12 +29,12 @@ export class CompassEquations {
    * @param {float} radians Compass azimuth expressed in radians.
    * @return float Compass azimuth expressed in degrees.
    */
-  static degrees (radians) {
+  static compassDegreesFromRadians (radians) {
     return (radians * 180) / Math.PI
   }
 
-  static diff (x, y) {
-    return constrain(x - y)
+  static compassDiff (x, y) {
+    return CompassEquations.compassConstrain(x - y)
   }
 
   /**
@@ -43,8 +43,8 @@ export class CompassEquations {
    * @param {float} deg A compass azimuth (degrees).
    * @return float The opposite compass azimuth from dgrees.
    */
-  static opposite (degrees) {
-    return constrain(degrees - 180)
+  static compassOpposite (degrees) {
+    return CompassEquations.compassConstrain(degrees - 180)
   }
 
   /**
@@ -53,7 +53,7 @@ export class CompassEquations {
    * @param {float} degrees  Compass azimuth (degrees clockwise from north).
    * @return float The compass azimuth expressed in radians.
    */
-  static radians (degrees) {
+  static compassRadiansFromDegrees (degrees) {
     return (degrees * Math.PI) / 180
   }
 
@@ -63,9 +63,9 @@ export class CompassEquations {
    * @param {float} ratio Ratio of the slope vertical rise / horizontal reach (fraction).
    * @return float Slope steepness expressed in degrees.
    */
-  static slopeDegrees (ratio) {
+  static compassSlopeDegrees (ratio) {
     const radians = Math.atan(ratio)
-    return degrees(radians)
+    return CompassEquations.compassDegreesFromRadians(radians)
   }
 
   /**
@@ -77,9 +77,9 @@ export class CompassEquations {
    * @param {float} mapDistance Map distance covered in the measurement
    * @return float Slope steepness degrees
    */
-  static slopeDegreesMap (mapScale, contourInterval, contours, mapDistance) {
-    const ratio = slopeRatioMap(mapScale, contourInterval, contours, mapDistance)
-    return slopeDegrees(ratio)
+  static compassSlopeDegreesMap (mapScale, contourInterval, contours, mapDistance) {
+    const ratio = CompassEquations.slopeRatioMap(mapScale, contourInterval, contours, mapDistance)
+    return CompassEquations.compassSlopeDegrees(ratio)
   }
 
   /**
@@ -88,8 +88,8 @@ export class CompassEquations {
    * @param {float} degrees  Slope steepness in degrees.
    * @return float Slope vertical rise / horizontal reach ratio (fraction).
    */
-  static slopeRatio (degrees) {
-    const rad = radians(constrain(degrees))
+  static compassSlopeRatio (degrees) {
+    const rad = CompassEquations.compassRadiansFromDegrees(CompassEquations.compassConstrain(degrees))
     return Math.tan(rad)
   }
 
@@ -103,13 +103,13 @@ export class CompassEquations {
    *
    * @return float Slope steepness ratio
    */
-  static slopeRatioMap (mapScale, contourInterval, contours, mapDistance) {
+  static compassSlopeRatioMap (mapScale, contourInterval, contours, mapDistance) {
     const reach = Math.max(0, mapScale * mapDistance)
     const rise = Math.max(0, contours * contourInterval)
     return reach <= 0 ? 0 : rise / reach
   }
 
-  static sum (x, y) {
-    return constrain(x + y)
+  static compassSum (x, y) {
+    return CompassEquations.compassConstrain(x + y)
   }
 }

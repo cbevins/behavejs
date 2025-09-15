@@ -13,9 +13,9 @@ export class SlopeDirectionModule extends ModuleBase {
         this.nodes = [
             [path+P.slopeUp, 0, U.compass, 0, [
                 [cfg.upslope, Dag.input, []],
-                [cfg.downslope, Compass.opposite, [path+P.slopeDown]]]],
+                [cfg.downslope, Compass.compassOpposite, [path+P.slopeDown]]]],
             [path+P.slopeDown, 0, U.degrees, 0, [
-                [cfg.upslope, Compass.opposite, [path+P.slopeUp]],
+                [cfg.upslope, Compass.compassOpposite, [path+P.slopeUp]],
                 [cfg.downslope, Dag.input, []]]],
         ]
     }

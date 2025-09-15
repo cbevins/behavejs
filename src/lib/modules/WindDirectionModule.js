@@ -13,21 +13,21 @@ export class WindDirectionModule extends ModuleBase {
         const cfg = this.setConfig()
         this.nodes = [
             [path+P.wdirHeadFromUp, 0, U.compass, 0, [
-                [cfg.headingFromUpslope,   Dag.input, []],
-                [cfg.sourceFromNorth, Compass.diff, [path+P.wdirHeadFromNo, 'site.slope.direction.upslope']],
-                [cfg.upslope, Dag.fixed, 0]]],
+                [cfg.headingFromUpslope, Dag.input, []],
+                [cfg.sourceFromNorth, Compass.compassDiff, [path+P.wdirHeadFromNo, upslope]],
+                [cfg.upslope, Dag.constant, []]]],
 
             [path+P.wdirSourceFromNo, 0, U.compass, 0, [
-                [cfg.headingFromUpslope, Compass.opposite, [path+P.wdirHeadFromNo]],
+                [cfg.headingFromUpslope, Compass.compassOpposite, [path+P.wdirHeadFromNo]],
                 [cfg.sourceFromNorth, Dag.input, []],
-                [cfg.upslope, Compass.opposite, ['site.slope.direction.upslope']]]],
+                [cfg.upslope, Compass.compassOpposite, [upslope]]]],
 
             [path+P.wdirSourceFromUp, 0, U.compass, 0, [
-                [this.any, Compass.opposite, [path+P.wdirHeadFromUp]]]],
+                [this.any, Compass.compassOpposite, [path+P.wdirHeadFromUp]]]],
 
             [path+P.wdirHeadFromNo, 0, U.compass, 0, [
-                [cfg.headingFromUpslope, Compass.sum, [path+P.wdirHeadFromUp, upslope]],
-                [cfg.sourceFromNorth, Compass.opposite, [path+P.wdirSourceFromNo]],
+                [cfg.headingFromUpslope, Compass.compassSum, [path+P.wdirHeadFromUp, upslope]],
+                [cfg.sourceFromNorth, Compass.compassOpposite, [path+P.wdirSourceFromNo]],
                 [cfg.upslope, Dag.assign, [upslope]]]],
         ]
     }

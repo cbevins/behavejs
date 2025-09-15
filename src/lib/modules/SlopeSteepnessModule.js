@@ -13,9 +13,9 @@ export class SlopeSteepnessModule extends ModuleBase {
         this.nodes = [
             [path+P.slopeRatio, 0, U.ratio, 0, [
                 [cfg.ratio, Dag.input, []],
-                [cfg.degrees, Compass.slopeRatio, [path+P.slopeDegrees]]]],
+                [cfg.degrees, Compass.compassSlopeRatio, [path+P.slopeDegrees]]]],
             [path+P.slopeDegrees, 0, U.degrees, 0, [
-                [cfg.ratio, Compass.slopeDegrees, [path+P.slopeRatio]],
+                [cfg.ratio, Compass.compassSlopeDegrees, [path+P.slopeRatio]],
                 [cfg.degrees, Dag.input, []]]],
         ]
     }

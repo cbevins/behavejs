@@ -176,7 +176,7 @@ export class FuelBedEquations {
      * @param slopeK Fuel Bed slope factor.
      * @return The fire spread rate slope coefficient (ratio).
      */
-    static phiSlope (slopeRatio, slopeK) {
+    static phiSlopeDUP (slopeRatio, slopeK) {
         const phis = slopeK * slopeRatio * slopeRatio
         // console.log(`***phiSlope() slopeRatio=${slopeRatio}, slopeK=${slopeK} yields ${phis}`)
         return phis
@@ -191,7 +191,7 @@ export class FuelBedEquations {
      * @param windK Fuel Bed wind factor `K`.
      * @return The fire spread rate wind coefficient (ratio).
      */
-    static phiWind (midflameWind, windB, windK) {
+    static phiWindDUP (midflameWind, windB, windK) {
         const phiw = midflameWind <= 0 ? 0 : windK * Math.pow(midflameWind, windB)
         // console.log(`***phiWind() midws=${midflameWind}, windB=${windB}, windK=${windK} yields ${phiw}`)
         return phiw
@@ -426,10 +426,6 @@ export class FuelBedEquations {
         // console.log(`***windK() betr=${betr} wnde=${wnde} wndc=${wndc} yields ${k}`)
         return k
     }
-
-    //--------------------------------------------------------------------------
-    // UNUSED SO FAR ...
-    //--------------------------------------------------------------------------
 
     static windSpeedAdjustmentFactor (fuelSheltered, shelteredWaf, openWaf) {
         return fuelSheltered ? Math.min(shelteredWaf, openWaf) : openWaf

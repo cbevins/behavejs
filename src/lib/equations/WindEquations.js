@@ -7,29 +7,29 @@
 import {Calc} from './Calc.js'
 
 export class WindEquations {
-    static at10mFrom20ft (at20ft) {
+    static windSpeedAt10mFrom20ft (at20ft) {
         return 1.13 * at20ft
     }
 
-    static at10mFromMidflame (atMidflame, midflameTo20ftRatio) {
+    static windSpeedAt10mFromMidflame (atMidflame, midflameTo20ftRatio) {
         const at20ft = WindEquations.at20ftFromMidflame(atMidflame, midflameTo20ftRatio)
         return at10mFrom20ft(at20ft)
     }
 
-    static at20ftFrom10m (at10m) {
+    static windSpeedAt20ftFrom10m (at10m) {
         return at10m / 1.13
     }
 
-    static at20ftFromMidflame (atMidflame, midflameTo20ftRatio) {
+    static windSpeedAt20ftFromMidflame (atMidflame, midflameTo20ftRatio) {
         return Calc.divide(atMidflame, midflameTo20ftRatio)
     }
 
-    static atMidflameFrom10m (at10m, midflameTo20ftRatio) {
+    static windSpeedAtMidflameFrom10m (at10m, midflameTo20ftRatio) {
         const at20ft = WindEquations.at20ftFrom10m(at10m)
         return WindEquations.atMidflameFrom20ft(at20ft, midflameTo20ftRatio)
     }
 
-    static atMidflameFrom20ft (at20ft, midflameTo20ftRatio) {
+    static windSpeedAtMidflameFrom20ft (at20ft, midflameTo20ftRatio) {
         return at20ft * midflameTo20ftRatio
     }
 
@@ -48,32 +48,4 @@ export class WindEquations {
         const depth = Math.min(6, Math.max(fuelDepth, 0.1))
         return 1.83 / Math.log((20 + 0.36 * depth) / (0.13 * depth))
     }
-
-    //----------------------------------------------------------------------------
-    // WInd speed reduction factor methods
-    //----------------------------------------------------------------------------
-    
-    // Returns true if canopy effectively shelters the fuel from wind
-    static sheltersFuelFromWind (cover, ht, fill) {
-        return cover >= 0.01 && fill >= 0.05 && ht >= 6
-    }
-
-    // Canopy induced midflame windspeed adjustment factor
-    static canopyWindSpeedAdjustmentFactor (cover, ht, fill) {
-        let waf = 1
-        if (WindEquations.sheltersFuelFromWind(cover, ht, fill)) {
-        waf = 0.555 / (Math.sqrt(fill * ht) * Math.log((20 + 0.36 * ht) / (0.13 * ht)))
-        }
-        return Calc.fraction(waf)
-    }
-
-    static openWindSpeedAdjustmentFactor (fuelDepth) {
-        const f = Math.min(6, Math.max(fuelDepth, 0.1))
-        return 1.83 / Math.log((20 + 0.36 * f) / (0.13 * f))
-    }
-
-    static windSpeedAdjustmentFactor (fuelSheltered, shelteredWaf, openWaf) {
-        return fuelSheltered ? Math.min(shelteredWaf, openWaf) : openWaf
-    }
-
 }
