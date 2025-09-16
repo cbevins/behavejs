@@ -17,7 +17,7 @@ export class StandardFuelModelModule extends ModuleBase {
      * @param {string} curedFraction Fully qualified path to cured herb fraction node
      */
     constructor(prefix, cfg, mois1h, mois10h, mois100h, moisHerb, moisStem, curedFraction) {
-        super(prefix,  P.standardSelf, 'StandardFuelModelModule', cfg)
+        super(prefix,  P.stdSelf, P.stdMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.stdKey, '', U.fuelKey, cfg.key, [

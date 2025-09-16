@@ -11,7 +11,7 @@ export class WindSpeedModule extends ModuleBase {
      * @param {Config} cfg Config reference
      */
     constructor(prefix, cfg){
-        super(prefix, P.wspdSelf, 'WindSpeedModule', cfg)
+        super(prefix, P.wspdSelf, P.wspdMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.wspd20ft, 0, U.windSpeed, cfg.key, [
