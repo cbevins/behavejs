@@ -13,7 +13,7 @@ export class WindDirectionModule extends ModuleBase {
      */
     constructor(prefix, cfg, upslope){
         super(prefix, P.wdirSelf, 'WindDirectionModule', cfg)
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
             [path+P.wdirHeadFromUp, 0, U.compass, cfg.key, [
                 [cfg.headingFromUpslope, Dag.input, []],

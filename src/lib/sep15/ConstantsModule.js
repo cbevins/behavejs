@@ -5,7 +5,7 @@ import { ModuleBase } from './ModuleBase.js'
 export class ConstantsModule extends ModuleBase {
     constructor(prefix) {
         super(prefix, 'constants/', 'ConstantsModule')
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
             [path+P.fuelDeadCat, 'dead', U.fuelLife, '', [['', Dag.constant, []]]],
             [path+P.fuelLiveCat, 'live', U.fuelLife, '', [['', Dag.constant, []]]],

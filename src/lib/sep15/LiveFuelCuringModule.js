@@ -14,7 +14,7 @@ export class LiveFuelCuringModule extends ModuleBase {
      */
     constructor(prefix, cfg, herbMoisKey) {
         super(prefix, P.curingSelf, 'LiveFuelCuringModule', cfg)
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
             [path+P.curingObserved, 0, U.fraction, '', [
                 ['', Dag.input, []]]],

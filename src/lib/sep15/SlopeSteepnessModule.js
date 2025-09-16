@@ -12,7 +12,7 @@ export class SlopeSteepnessModule extends ModuleBase {
      */
     constructor(prefix, cfg) {
         super(prefix, P.slopeSteepSelf, 'SlopeSteepnessModule', cfg)
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
             [path+P.slopeRatio, 0, U.ratio, cfg.key, [
                 [cfg.ratio, Dag.input, []],

@@ -12,12 +12,12 @@ export class WindSpeedModule extends ModuleBase {
      */
     constructor(prefix, cfg){
         super(prefix, P.wspdSelf, 'WindSpeedModule', cfg)
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
-            [path+P.wspd20ft, 0, U.windSpeed, this.cfg.key, [
+            [path+P.wspd20ft, 0, U.windSpeed, cfg.key, [
                 [cfg.at20ft, Dag.input, []],
                 [cfg.at10m, Wind.windSpeedAt20ftFrom10m, [path+P.wspd10m]]]],
-            [path+P.wspd10m, 0, U.windSpeed, this.cfg.key, [
+            [path+P.wspd10m, 0, U.windSpeed, cfg.key, [
                 [cfg.at20ft, Dag.input, []],
                 [cfg.at10m, Wind.windSpeedAt10mFrom20ft, [path+P.wspd20ft]]]],
         ]

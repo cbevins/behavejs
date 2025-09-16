@@ -12,12 +12,12 @@ export class SlopeDirectionModule extends ModuleBase {
      */
     constructor(prefix, cfg) {
         super(prefix, P.slopeDirSelf, 'SlopeDirectionModule', cfg)
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
-            [path+P.slopeUp, 0, U.compass, this.cfg.key, [
+            [path+P.slopeUp, 0, U.compass, cfg.key, [
                 [cfg.upslope, Dag.input, []],
                 [cfg.downslope, Compass.compassOpposite, [path+P.slopeDown]]]],
-            [path+P.slopeDown, 0, U.degrees, this.cfg.key, [
+            [path+P.slopeDown, 0, U.degrees, cfg.key, [
                 [cfg.upslope, Compass.compassOpposite, [path+P.slopeUp]],
                 [cfg.downslope, Dag.input, []]]],
         ]

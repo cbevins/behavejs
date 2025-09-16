@@ -12,8 +12,7 @@ export class CanopyModule extends ModuleBase {
      */
     constructor(prefix, cfg) {
         super(prefix, P.canopySelf, 'CanopyModule', cfg)
-        
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
             // input parameters (or linked)
             [path+P.canopyCover, 0, U.fraction, '', [['', Dag.input, []]]],

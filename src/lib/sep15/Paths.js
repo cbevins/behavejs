@@ -38,7 +38,7 @@ export class Paths {
     static curingObserved  = 'fraction/observed'
 
     // LiveFuelMoistureModule
-    static moisLiveSelf = 'moisture/live'
+    static moisLiveSelf = 'moisture/live/'
     static moisLiveCat  = 'category'
     static moisLiveHerb = 'herb'
     static moisLiveStem = 'stem'
@@ -69,4 +69,9 @@ export class Paths {
     static wspd20ft = 'at 20-ft'
     static wspd10m  = 'at 10-m'
 
+    // WindSpeedReductionModule
+    static wsrfSelf     = 'wind/speed/reduction factor/'
+    static wsrfCanopy   = 'canopy'
+    static wsrfFuel     = 'fuel bed'
+    static wsrfMidflame = 'midflame'
 }

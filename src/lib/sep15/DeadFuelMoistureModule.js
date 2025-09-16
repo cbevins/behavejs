@@ -11,7 +11,7 @@ export class DeadFuelMoistureModule extends ModuleBase {
      */
     constructor(prefix, cfg) {
         super(prefix, P.moisDeadSelf, 'DeadFuelMoistureModule', cfg)
-        const path = prefix + this.self
+        const path = this.path
         this.nodes = [
             [path+P.moisDeadCat, 0, U.fuelMois, cfg.key, [
                 [cfg.particle, Dag.constant, []],

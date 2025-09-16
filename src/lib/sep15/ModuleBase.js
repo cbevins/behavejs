@@ -8,9 +8,10 @@ export class ModuleBase {
      */
     constructor(prefix, self='', module='', cfg=null) {
         this.prefix = prefix
-        this.self = self
+        this.self   = self
         this.module = module
-        this.cfg = cfg
-        this.nodes = []
+        this.cfg    = cfg
+        this.path   = prefix + self
+        this.nodes  = []
     }
 }

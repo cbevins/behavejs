@@ -1,4 +1,4 @@
-export class MidflameWIndSpeedConfig {
+export class MidflameWindSpeedConfig {
     constructor(key) {
         this.key = key
         // keys for outside reference

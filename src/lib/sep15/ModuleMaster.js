@@ -87,23 +87,23 @@ export const ModuleMaster = [
         {cfgval: "particle", updater: Lib.input, args: []},
         {cfgval: "category", updater: Lib.assign, args: ["weather/moisture/dead/category"]},
     ]},
-    {key: "weather/moisture/livecategory", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
+    {key: "weather/moisture/live/category", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
         {cfgval: "particle", updater: Lib.constant, args: []},
         {cfgval: "category", updater: Lib.input, args: []},
     ]},
-    {key: "weather/moisture/liveherb", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
+    {key: "weather/moisture/live/herb", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
         {cfgval: "particle", updater: Lib.input, args: []},
-        {cfgval: "category", updater: Lib.assign, args: ["weather/moisture/livecategory"]},
+        {cfgval: "category", updater: Lib.assign, args: ["weather/moisture/live/category"]},
     ]},
-    {key: "weather/moisture/livestem", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
+    {key: "weather/moisture/live/stem", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
         {cfgval: "particle", updater: Lib.input, args: []},
-        {cfgval: "category", updater: Lib.assign, args: ["weather/moisture/livecategory"]},
+        {cfgval: "category", updater: Lib.assign, args: ["weather/moisture/live/category"]},
     ]},
     {key: "weather/curing/fraction/observed", value: 0, units: "fraction units", cfgkey: "", options: [
         {cfgval: "", updater: Lib.input, args: []},
     ]},
     {key: "weather/curing/fraction/estimated", value: 0, units: "fraction units", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.curedHerbFraction, args: ["weather/moisture/liveherb"]},
+        {cfgval: "", updater: Lib.curedHerbFraction, args: ["weather/moisture/live/herb"]},
     ]},
     {key: "weather/curing/fraction/applied", value: 0, units: "fraction units", cfgkey: "liveFuelMoistureInputs", options: [
         {cfgval: "observed", updater: Lib.assign, args: ["weather/curing/fraction/observed"]},
