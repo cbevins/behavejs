@@ -10,7 +10,7 @@ export class LiveFuelMoistureModule extends ModuleBase {
      * @param {Config} cfg Config reference
      */
     constructor(prefix, cfg){
-        super(prefix, P.moisLiveSelf, 'LiveFuelMoistureModule', cfg)
+        super(prefix, P.moisLiveSelf, P.moisLiveMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.moisLiveCat, 0, U.fuelMois, cfg.key, [

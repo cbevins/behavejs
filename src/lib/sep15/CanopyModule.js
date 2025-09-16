@@ -11,7 +11,7 @@ export class CanopyModule extends ModuleBase {
      * @param {Config} cfg Config reference
      */
     constructor(prefix, cfg) {
-        super(prefix, P.canopySelf, 'CanopyModule', cfg)
+        super(prefix, P.canopySelf, P.canopyMod, cfg)
         const path = this.path
         this.nodes = [
             // input parameters (or linked)

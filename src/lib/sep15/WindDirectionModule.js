@@ -12,7 +12,7 @@ export class WindDirectionModule extends ModuleBase {
      * something like 'terrain/slope/direction/up-slope'
      */
     constructor(prefix, cfg, upslope){
-        super(prefix, P.wdirSelf, 'WindDirectionModule', cfg)
+        super(prefix, P.wdirSelf, P.wdirMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.wdirHeadFromUp, 0, U.compass, cfg.key, [

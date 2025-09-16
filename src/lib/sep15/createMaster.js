@@ -4,10 +4,11 @@ import {BehaveModule} from './BehaveModule.js'
 function jstr(str) { return JSON.stringify(str) }
 
 function createMaster(nodes) {
-    let str = 'import { BehaveLibrary as Lib } from "../modules/BehaveLibrary.js"\n'
-    str += 'export const ModuleMaster = [\n'
+    let str = 'import { BehaveLibrary as Lib } from "../modules/BehaveLibrary.js"\n\n'
+    str += 'export const BehaveMaster = new Map([\n'
     for(let node of nodes) {
         const [key, value, units, cfgkey, options] = node
+        str += `[${jstr(key)},\n`
         str += `    {key: ${jstr(key)}, `
         str += `value: ${jstr(value)}, `
         str += `units: ${jstr(units)}, `
@@ -17,10 +18,10 @@ function createMaster(nodes) {
             const [cfgval, method, args] = option
             str += `        {cfgval: ${jstr(cfgval)}, updater: Lib.${method.name}, args: ${jstr(args)}},\n`
         }
-        str += `    ]},\n`
+        str += `    ]}],\n`
     }
-    str += ']\n'
-    fs.writeFile('./ModuleMaster.js', str, function (err) {
+    str += '])\n'
+    fs.writeFile('./BehaveMaster.js', str, function (err) {
         if (err) throw err
     })
     

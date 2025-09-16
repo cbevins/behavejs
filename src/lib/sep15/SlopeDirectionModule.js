@@ -11,7 +11,7 @@ export class SlopeDirectionModule extends ModuleBase {
      * @param {Config} cfg Config reference
      */
     constructor(prefix, cfg) {
-        super(prefix, P.slopeDirSelf, 'SlopeDirectionModule', cfg)
+        super(prefix, P.slopeDirSelf, P.slopeDirMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.slopeUp, 0, U.compass, cfg.key, [

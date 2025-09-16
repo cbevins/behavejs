@@ -2,6 +2,7 @@ export class Paths {
     
     // CanopyModule
     static canopySelf     = 'canopy/'
+    static canopyMod      = 'CanopyModule'
     static canopyCover    = 'coverage'
     static canopyBase     = 'crown/base height'
     static canopyLength   = 'crown/length'
@@ -17,13 +18,15 @@ export class Paths {
 
     // ConstantsModule
     static constantsSelf = 'constants/'
-    static fuelDeadCat   = 'fuel/life/dead category'
-    static fuelLiveCat   = 'fuel/life/live category'
-    static fuelUnused    = 'fuel/type/unused'
-    static zero          = 'zero'
-    static one           = 'one'
+    static constantsMod  = 'ConstantsModule'
+    static fuelDeadCat   = 'constants/fuel/life/dead category'
+    static fuelLiveCat   = 'constants/fuel/life/live category'
+    static fuelUnused    = 'constants/fuel/type/unused'
+    static zero          = 'constants/zero'
+    static one           = 'constants/one'
 
     // DeadFuelMoistureModule
+    static moisDeadMod  = 'DeadFuelMoistureModule'
     static moisDeadSelf = 'moisture/dead/'
     static moisDeadCat  = 'category'
     static moisDead1    = '1-h'
@@ -31,6 +34,7 @@ export class Paths {
     static moisDead100  = '100-h'
 
     // LiveFuelCuringModule
+    static curingMod       = 'LiveFuelCuringModule'
     static curingSelf      = 'curing/'
     static curingFraction  = 'fraction/'
     static curingApplied   = 'fraction/applied'
@@ -38,21 +42,25 @@ export class Paths {
     static curingObserved  = 'fraction/observed'
 
     // LiveFuelMoistureModule
+    static moisLiveMod  = 'LiveFuelMoistureModule'
     static moisLiveSelf = 'moisture/live/'
     static moisLiveCat  = 'category'
     static moisLiveHerb = 'herb'
     static moisLiveStem = 'stem'
 
     // MidflameWindSpeedModule
+    static midflameMod   = 'MidflameWindSpeedModule'
     static midflameSelf  = 'wind/speed/'
     static midflame      = 'midflame'
 
     // SlopeDirectionModule
+    static slopeDirMod  = 'SlopeDirectionModule'
     static slopeDirSelf = 'slope/direction/'
     static slopeUp      = 'up-slope'
     static slopeDown    = 'down-slope'
 
     // SlopeSteepnessModule
+    static slopeSteepMod  = 'SlopeSteepnessModule'
     static slopeSteepSelf = 'slope/steepness/'
     static slopeDegrees   = 'degrees'
     static slopeRatio     = 'ratio'

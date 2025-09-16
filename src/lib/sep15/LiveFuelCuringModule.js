@@ -13,7 +13,7 @@ export class LiveFuelCuringModule extends ModuleBase {
      * sonething like 'weather/moisture/live/herb'
      */
     constructor(prefix, cfg, herbMoisKey) {
-        super(prefix, P.curingSelf, 'LiveFuelCuringModule', cfg)
+        super(prefix, P.curingSelf, P.curingMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.curingObserved, 0, U.fraction, '', [

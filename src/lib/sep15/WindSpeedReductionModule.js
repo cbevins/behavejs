@@ -13,7 +13,7 @@ export class WindSpeedReductionModule extends ModuleBase {
      * @param {string} fuelWsrf Fully qualified node name, something like 'primary/surface/bed/wind speed reduction factor'.
      */
     constructor(prefix, cfg, canopyShelters, canopyWsrf, fuelWsrf){
-        super(prefix, P.wsrfSelf, 'WindSpeedReductionModule', cfg)
+        super(prefix, P.wsrfSelf, P.wsrfMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.wsrfMidflame, 1, U.fraction, cfg.key, [

@@ -4,8 +4,8 @@ import { ModuleBase } from './ModuleBase.js'
 
 export class ConstantsModule extends ModuleBase {
     constructor(prefix) {
-        super(prefix, 'constants/', 'ConstantsModule')
-        const path = this.path
+        super(prefix, P.constantsSelf, P.constantsMod)
+        const path = this.prefix
         this.nodes = [
             [path+P.fuelDeadCat, 'dead', U.fuelLife, '', [['', Dag.constant, []]]],
             [path+P.fuelLiveCat, 'live', U.fuelLife, '', [['', Dag.constant, []]]],

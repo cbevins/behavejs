@@ -73,8 +73,9 @@ export class BehaveModule {
         const windAt20ftNode = windspdMod.path + P.wspd20ft
 
         // WindDirectionModule produces 1 node referenced by the SurfaceFireModule
-        const winddirCfg = new WindSpeedConfig('windDiretcionInputs')
-        const winddirMod = new WindSpeedModule('weather/', winddirCfg)
+        // and references 1 node from the SlopeDirectionModule
+        const winddirCfg = new WindDirectionConfig('windDirectionInputs')
+        const winddirMod = new WindDirectionModule('weather/', winddirCfg, upslopeDirNode)
         const wdirUpNode = winddirMod.path + P.wdirSourceFromUp
 
         // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
@@ -132,5 +133,19 @@ export class BehaveModule {
             ...midflameMod1.nodes,
             ...fireMod1.nodes,
         ]
+
+        // Check for duplicate node keys
+        const map = new Map()
+        for(let node of this.nodes) {
+            const key = node[0]
+            if (map.has(key)) {
+                const old = map.get(key)
+                console.log(`Key ${key} previously defined`)
+                console.log('OLD:', old)
+                console.log('NEW:', node)
+            } else {
+                map.set(key, node)
+            }
+        }
     }
 }
