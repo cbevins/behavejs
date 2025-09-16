@@ -1,5 +1,20 @@
 import { BehaveLibrary as Lib } from "../modules/BehaveLibrary.js"
 export const ModuleMaster = [
+    {key: "constants/fuel/life/dead category", value: "dead", units: "fuel life categories", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.constant, args: []},
+    ]},
+    {key: "constants/fuel/life/live category", value: "live", units: "fuel life categories", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.constant, args: []},
+    ]},
+    {key: "constants/zero", value: 0, units: "", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.constant, args: []},
+    ]},
+    {key: "constants/one", value: 1, units: "", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.constant, args: []},
+    ]},
+    {key: "constants/fuel/type/unused", value: "unused", units: "fuel type", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.constant, args: []},
+    ]},
     {key: "canopy/coverage", value: 0, units: "fraction units", cfgkey: "", options: [
         {cfgval: "", updater: Lib.input, args: []},
     ]},
@@ -56,21 +71,6 @@ export const ModuleMaster = [
     {key: "canopy/wind/speed/reduction/factor", value: 0, units: "fraction units", cfgkey: "", options: [
         {cfgval: "", updater: Lib.canopyWindSpeedAdjustmentFactor, args: ["canopy/coverage","canopy/crown/total height","canopy/fuel/volumetric fill ratio"]},
     ]},
-    {key: "constants/fuel/life/dead category", value: "dead", units: "fuel life categories", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.constant, args: []},
-    ]},
-    {key: "constants/fuel/life/live category", value: "live", units: "fuel life categories", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.constant, args: []},
-    ]},
-    {key: "constants/zero", value: 0, units: "", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.constant, args: []},
-    ]},
-    {key: "constants/one", value: 1, units: "", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.constant, args: []},
-    ]},
-    {key: "constants/fuel/type/unused", value: "unused", units: "fuel type", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.constant, args: []},
-    ]},
     {key: "weather/moisture/dead/category", value: 0, units: "fuel moisture content units", cfgkey: "deadFuelMoistureInputs", options: [
         {cfgval: "particle", updater: Lib.constant, args: []},
         {cfgval: "category", updater: Lib.input, args: []},
@@ -98,16 +98,6 @@ export const ModuleMaster = [
     {key: "weather/moisture/live/stem", value: 0, units: "fuel moisture content units", cfgkey: "liveFuelMoistureInputs", options: [
         {cfgval: "particle", updater: Lib.input, args: []},
         {cfgval: "category", updater: Lib.assign, args: ["weather/moisture/live/category"]},
-    ]},
-    {key: "weather/curing/fraction/observed", value: 0, units: "fraction units", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.input, args: []},
-    ]},
-    {key: "weather/curing/fraction/estimated", value: 0, units: "fraction units", cfgkey: "", options: [
-        {cfgval: "", updater: Lib.curedHerbFraction, args: ["weather/moisture/live/herb"]},
-    ]},
-    {key: "weather/curing/fraction/applied", value: 0, units: "fraction units", cfgkey: "liveFuelMoistureInputs", options: [
-        {cfgval: "observed", updater: Lib.assign, args: ["weather/curing/fraction/observed"]},
-        {cfgval: "estimated", updater: Lib.assign, args: ["weather/curing/fraction/estimated"]},
     ]},
     {key: "weather/wind/speed/at 20-ft", value: 0, units: "wind speed units", cfgkey: "windSpeedInputs", options: [
         {cfgval: "at 20-ft", updater: Lib.input, args: []},
@@ -140,5 +130,15 @@ export const ModuleMaster = [
     {key: "terrain/slope/direction/down-slope", value: 0, units: "degrees", cfgkey: "slopeDirectionInputs", options: [
         {cfgval: "up-slope", updater: Lib.compassOpposite, args: ["terrain/slope/direction/up-slope"]},
         {cfgval: "down-slope", updater: Lib.input, args: []},
+    ]},
+    {key: "weather/curing/fraction/observed", value: 0, units: "fraction units", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.input, args: []},
+    ]},
+    {key: "weather/curing/fraction/estimated", value: 0, units: "fraction units", cfgkey: "", options: [
+        {cfgval: "", updater: Lib.curedHerbFraction, args: ["weather/moisture/live/herb"]},
+    ]},
+    {key: "weather/curing/fraction/applied", value: 0, units: "fraction units", cfgkey: "liveFuelMoistureInputs", options: [
+        {cfgval: "observed", updater: Lib.assign, args: ["weather/curing/fraction/observed"]},
+        {cfgval: "estimated", updater: Lib.assign, args: ["weather/curing/fraction/estimated"]},
     ]},
 ]

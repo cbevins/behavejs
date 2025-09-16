@@ -57,6 +57,56 @@ export class Paths {
     static slopeDegrees   = 'degrees'
     static slopeRatio     = 'ratio'
 
+    // StandardFuelModelModule
+    static standardSelf     = 'standard/'
+    static stdCode          = 'info/code'
+    static stdNumb          = 'info/number'
+    static stdLabel         = 'info/label'
+    static stdAuth          = 'info/author'
+    
+    static stdDens          = 'fiber density'
+    static stdDepth         = 'depth'
+    static stdKey           = 'key'
+    static stdSeff          = 'mineral content/silica-free'
+    static stdStot          = 'mineral content/total'
+    static stdDeadHeat      = 'dead/heat of combustion'
+    static stdDeadMext      = 'dead/extinction moisture content'
+    static stdLiveHeat      = 'live/heat of combustion'
+    
+    static stdDead1Load     = 'dead/1-h/ovendry fuel load'
+    static stdDead1Mois     = 'dead/1-h/moisture content'
+    static stdDead1Savr     = 'dead/1-h/surface area-to-volume ratio'
+    static stdDead1Type     = 'dead/1-h/fuel type'
+
+    static stdDead10Load    = 'dead/10-h/ovendry fuel load'
+    static stdDead10Mois    = 'dead/10-h/moisture content'
+    static stdDead10Savr    = 'dead/10-h/surface area-to-volume ratio'
+    static stdDead10Type    = 'dead/10-h/fuel type'
+    
+    static stdDead100Load   = 'dead/100-h/ovendry fuel load'
+    static stdDead100Mois   = 'dead/100-h/moisture content'
+    static stdDead100Savr   = 'dead/100-h/surface area-to-volume ratio'
+    static stdDead100Type   = 'dead/100-h/fuel type'
+
+    static stdDeadHerbLoad  = 'dead/herb/ovendry fuel load'
+    static stdDeadHerbMois  = 'dead/herb/moisture content'
+    static stdDeadHerbSavr  = 'dead/herb/surface area-to-volume ratio'
+    static stdDeadHerbType  = 'dead/herb/fuel type'
+
+    static stdLiveHerbLoad  = 'live/herb/ovendry fuel load'
+    static stdLiveHerbMois  = 'live/herb/moisture content'
+    static stdLiveHerbSavr  = 'live/herb/surface area-to-volume ratio'
+    static stdLiveHerbType  = 'live/herb/fuel type'
+
+    static stdLiveStemLoad  = 'live/stem/ovendry fuel load'
+    static stdLiveStemMois  = 'live/stem/moisture content'
+    static stdLiveStemSavr  = 'live/stem/surface area-to-volume ratio'
+    static stdLiveStemType  = 'live/stem/fuel type'
+
+    static stdTotalHerbLoad = 'total/herb/ovendry fuel load'
+    static stdTotalHerbSavr = 'total/herb/surface area-to-volume ratio'
+    static stdTotalHerbType = 'total/herb/fuel type'
+
     // WindDirectionModule
     static wdirSelf         = 'wind/direction/'
     static wdirHeadFromUp   = 'heading/from up-slope'
