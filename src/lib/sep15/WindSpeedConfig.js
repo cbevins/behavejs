@@ -10,5 +10,6 @@ export class WindSpeedConfig {
             [this.at20ft, '20-ft height'],
             [this.at10m, '10-m height]']
         ]
+        this.value = this.options[0]
     }
 }

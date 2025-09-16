@@ -10,5 +10,6 @@ export class DeadFuelMoistureConfig {
             [this.particle, 'individually for the 1-h, 10-h, and 100-h time-lag fuels'],
             [this.category, 'collectively for the dead category as a whole'],
         ]
+        this.value = this.options[0]
     }
 }

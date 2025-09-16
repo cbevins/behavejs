@@ -14,5 +14,6 @@ export class WindSpeedReductionConfig {
             [this.observed, 'an input parameter'],
             [this.estimated, 'estimated from fuel depth and canopy parameters'],
         ]
+        this.value = this.options[0]
     }
 }

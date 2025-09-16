@@ -10,5 +10,6 @@ export class LiveFuelMoistureConfig {
             [this.particle, 'individually for the herb and stem fuels'],
             [this.category, 'collectively for the live category as a whole'],
         ]
+        this.value = this.options[0]
     }
 }

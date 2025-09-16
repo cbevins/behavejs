@@ -10,5 +10,6 @@ export class LiveFuelCuringConfig {
             [this.observed, 'input parameter'],
             [this.estimated, 'estimated from herb moisture content'],
         ]
+        this.value = this.options[0]
     }
 }

@@ -10,5 +10,6 @@ export class MidflameWindSpeedConfig {
             [this.observed, 'input parameter'],
             [this.estimated, 'estimated from 20-ft wind speed and a reduction factor'],
         ]
+        this.value = this.options[0]
     }
 }

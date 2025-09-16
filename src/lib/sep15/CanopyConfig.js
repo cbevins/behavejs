@@ -26,5 +26,6 @@ export class CanopyConfig {
             [this.ratioLength, 'crown length and crown ratio'],
             [this.lengthBase, 'crown length and base height'],
         ]
+        this.value = this.options[0]
     }
 }

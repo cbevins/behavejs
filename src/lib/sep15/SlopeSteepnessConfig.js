@@ -12,5 +12,6 @@ export class SlopeSteepnessConfig {
             [this.degrees, 'degrees'],
             [this.map, 'estimated from map parameters']
         ]
+        this.value = this.options[0]
     }
 }

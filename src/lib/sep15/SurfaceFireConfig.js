@@ -10,5 +10,6 @@ constructor(key) {
             [this.applied, 'applied'],
             [this.notApplied, 'not applied'],
         ]
+        this.value = this.options[0]
     }
 }

@@ -12,5 +12,6 @@ export class WindDirectionConfig {
             [this.headingFromUpslope, 'heading degrees from up-slope'],
             [this.sourceFromNorth, 'source degrees from north'],
         ]
+        this.value = this.options[0]
     }
 }

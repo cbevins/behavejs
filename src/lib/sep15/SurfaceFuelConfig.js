@@ -14,5 +14,6 @@ export class SurfaceFuelConfig {
             [this.palmetto, 'Albini and Hough palmetto-gallberry fuel model'],
             [this.aspen, 'the Brown and Simmerman western aspen fuel model']
         ]
+        this.value = this.options[0]
     }
 }

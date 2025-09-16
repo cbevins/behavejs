@@ -10,5 +10,6 @@ export class SlopeDirectionConfig {
             [this.upslope, 'up-slope direction'],
             [this.downslope, 'down-slope direction (aspect)'],
         ]
+        this.value = this.options[0]
     }
 }

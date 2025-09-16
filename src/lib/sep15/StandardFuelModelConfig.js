@@ -10,5 +10,6 @@ export class StandardFuelModelConfig {
             [this.catalog, 'accessed by name from the fuel catalog'],
             [this.custom, 'entered as custom input parameters'],
         ]
+        this.value = this.options[0]
     }
 }
