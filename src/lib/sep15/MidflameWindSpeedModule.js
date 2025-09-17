@@ -1,6 +1,7 @@
-import { Dag, U } from '../index.js'
-import { Paths as P} from './Paths.js'
+import { Dag } from './Dag.js'
 import { ModuleBase } from './ModuleBase.js'
+import { Paths as P} from './Paths.js'
+import { Units as U} from './Units.js'
 import { Calc } from '../index.js'
 
 export class MidflameWindSpeedModule extends ModuleBase {
