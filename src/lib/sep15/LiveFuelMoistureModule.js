@@ -13,13 +13,13 @@ export class LiveFuelMoistureModule extends ModuleBase {
         super(prefix, P.moisLiveSelf, P.moisLiveMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.moisLiveCat, 0, U.fuelMois, cfg.key, [
+            [path+P.moisLiveCat, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.constant, []],
                 [cfg.category, Dag.input, []]]],
-            [path+P.moisLiveHerb, 0, U.fuelMois, cfg.key, [
+            [path+P.moisLiveHerb, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.input, []],
                 [cfg.category, Dag.assign, [path+P.moisLiveCat]]]],
-            [path+P.moisLiveStem, 0, U.fuelMois, cfg.key, [
+            [path+P.moisLiveStem, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.input, []],
                 [cfg.category, Dag.assign, [path+P.moisLiveCat]]]],
         ]

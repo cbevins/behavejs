@@ -15,12 +15,12 @@ export class WindDirectionModule extends ModuleBase {
         super(prefix, P.wdirSelf, P.wdirMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.wdirHeadFromUp, 0, U.compass, cfg.key, [
+            [path+P.wdirHeadFromUp, 0, U.compass, cfg, [
                 [cfg.headingFromUpslope, Dag.input, []],
                 [cfg.sourceFromNorth, Compass.compassDiff, [path+P.wdirHeadFromNo, upslope]],
                 [cfg.upslope, Dag.constant, []]]],
 
-            [path+P.wdirSourceFromNo, 0, U.compass, cfg.key, [
+            [path+P.wdirSourceFromNo, 0, U.compass, cfg, [
                 [cfg.headingFromUpslope, Compass.compassOpposite, [path+P.wdirHeadFromNo]],
                 [cfg.sourceFromNorth, Dag.input, []],
                 [cfg.upslope, Compass.compassOpposite, [upslope]]]],
@@ -28,7 +28,7 @@ export class WindDirectionModule extends ModuleBase {
             [path+P.wdirSourceFromUp, 0, U.compass, '', [
                 ['', Compass.compassOpposite, [path+P.wdirHeadFromUp]]]],
 
-            [path+P.wdirHeadFromNo, 0, U.compass, cfg.key, [
+            [path+P.wdirHeadFromNo, 0, U.compass, cfg, [
                 [cfg.headingFromUpslope, Compass.compassSum, [path+P.wdirHeadFromUp, upslope]],
                 [cfg.sourceFromNorth, Compass.compassOpposite, [path+P.wdirSourceFromNo]],
                 [cfg.upslope, Dag.assign, [upslope]]]],

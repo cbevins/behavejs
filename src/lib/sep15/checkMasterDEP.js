@@ -1,4 +1,4 @@
-import {BehaveMaster} from './BehaveMaster.js'
+import {BehaveMaster} from './BehaveMasterDEP.js'
 function checkNodeKeys(map) {
     console.log(`BehaveMaster has ${map.size} nodes.`)
     let unknowns = 0

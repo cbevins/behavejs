@@ -17,7 +17,7 @@ export class MidflameWindSpeedModule extends ModuleBase {
         super(prefix, P.midflameSelf, P.midflameMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.midflame, 0, U.windSpeed, cfg.key, [
+            [path+P.midflame, 0, U.windSpeed, cfg, [
                 [cfg.observed, Dag.input, []],
                 [cfg.estimated, Calc.multiply, [wspd20ft, wsrfMidflame]]
             ]]

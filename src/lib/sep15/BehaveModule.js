@@ -28,24 +28,28 @@ import {WindSpeedReductionModule} from './WindSpeedReductionModule.js'
 import {WindSpeedReductionConfig} from './WindSpeedReductionConfig.js'
 
 export class BehaveModule {
-    // NOTE: If a site has 2 fuel models, it may have 2 different midflame
-    // windspeeds (dure to fuel depth difference),
-    // but both fuel share the same terrain, weather, moisture, and curing parms.
     constructor() {
+        this._buildNodeMap()
+    }
+    _buildNodeMap() {
+        this.nodeMap = new Map()
         // Define each Module's nodes and store names of shared nodes
 
         // CanopyModule produces 2 nodes referenced by the WindSpeedReductionModule
         // and ??? nodes by the CanopyFireModule
         const canopyCfg = new CanopyConfig('canopyHeightInputs')
         const canopyMod = new CanopyModule('', canopyCfg)
+        // this._addModuleNodes([...canopyMod])
         const canopySheltersNode = canopyMod.path + P.canopyShelters
         const canopyWsrfNode = canopyMod.path + P.canopyWsrf
 
         const constantsMod = new ConstantsModule('')
+        // this._addModuleNodes(constantsMod)
 
         // DeadFuelMoistureModel produces 3 nodes referenced used by the StandardFuelModelModule
         const deadmoisCfg = new DeadFuelMoistureConfig('deadFuelMoistureInputs')
         const deadmoisMod = new DeadFuelMoistureModule('weather/', deadmoisCfg)
+        // this._addModuleNodes(deadmoisMod)
         const mois1hNode = deadmoisMod.path + P.moisDead1
         const mois10hNode = deadmoisMod.path + P.moisDead10
         const mois100hNode = deadmoisMod.path + P.moisDead100
@@ -54,98 +58,144 @@ export class BehaveModule {
         // and 1 of them is also referenced by the LiveFuelCuringModule
         const livemoisCfg = new LiveFuelMoistureConfig('liveFuelMoistureInputs')
         const livemoisMod = new LiveFuelMoistureModule('weather/', livemoisCfg)
-        const moisHerbNode = livemoisMod.path + P.moisLiveHerb
+        // this._addModuleNodes(livemoisMod)
+        const moisHerbNode = livemoisMod.path + P.moisLiveHerb  // Referenced by LiveFuelCuringModule
         const moisStemNode = livemoisMod.path + P.moisLiveStem
 
         // SlopeDirectionModule produces 1 node referenced by the SurfaceFireModule
         const slpdirCfg = new SlopeDirectionConfig('slopeDirectionInputs')
         const slpdirMod = new SlopeDirectionModule('terrain/', slpdirCfg)
+        // this._addModuleNodes(slpdirMod)
         const upslopeDirNode = slpdirMod.path + P.slopeUp
 
         // SlopeSteepnessModule produces 1 node referenced by the SurfaceFireModule
         const slpsteepCfg = new SlopeSteepnessConfig('slopeSteepnessInputs')
         const slpsteepMod = new SlopeSteepnessModule('terrain/', slpsteepCfg)
+        // this._addModuleNodes(slpsteepMod)
         const slopeRatioNode = slpsteepMod.path + P.slopeRatio
 
         // WindSpeedModule produces 1 node referenced by the MidflameWindSpeedModule
         const windspdCfg = new WindSpeedConfig('windSpeedInputs')
         const windspdMod = new WindSpeedModule('weather/', windspdCfg)
+        // this._addModuleNodes(windspdMod)
         const windAt20ftNode = windspdMod.path + P.wspd20ft
 
         // WindDirectionModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the SlopeDirectionModule
         const winddirCfg = new WindDirectionConfig('windDirectionInputs')
-        const winddirMod = new WindDirectionModule('weather/', winddirCfg, upslopeDirNode)
+        const winddirMod = new WindDirectionModule('weather/', winddirCfg,
+            upslopeDirNode)
+        // this._addModuleNodes(winddirMod)
         const wdirUpNode = winddirMod.path + P.wdirSourceFromUp
 
         // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
         // and references 1 node produced by the LiveFuelMoistureModule
         const curingCfg = new LiveFuelCuringConfig('liveFuelMoistureInputs')
-        const curingMod = new LiveFuelCuringModule('weather/', curingCfg, moisHerbNode)
+        const curingMod = new LiveFuelCuringModule('weather/', curingCfg,
+            moisHerbNode)
+        // this._addModuleNodes(curingMod)
         const curedNode = curingMod.path + P.curingApplied
+
+        // NOTE: If a site has primary and secondary fuels,
+        // it may have 2 different midflame windspeeds (due to bed depth differences),
+        // but both fuel share the same terrain, weather, moisture, and curing parms.
 
         // StandardFuelModelModule produces lots of nodes referenced by the SurfaceFuelModule,
         // and references 3 nodes from the DeadFuelMoistureModule, 2 nodes from the
         // LiveFuelMoistureModule, and 1 node from the LiveFuelCuringModule.
+        // Need separate primary and secondary instances as they may use different fuel models
         const stdCfg1 = new StandardFuelModelConfig('primaryStandardModelInputs')
         const stdMod1 = new StandardFuelModelModule('primary/model/', stdCfg1,
             mois1hNode, mois10hNode, mois100hNode, moisHerbNode, moisStemNode, curedNode)
+        // this._addModuleNodes(stdMod1)
 
         // SurfaceFuelModule produces
+        // Need separate primary and secondary instances  as they may use different fuel model domains
         const bedCfg1 = new SurfaceFuelConfig('primarySurfaceFuelDomain')
-        const bedMod1 = new SurfaceFuelModule('primary/', bedCfg1, stdMod1.path, '', '', '')
-        const wsrfFuelNode1 = bedMod1.path + P.fuelWsrf
+        const bedMod1 = new SurfaceFuelModule('primary/', bedCfg1,
+            stdMod1.path, '', '', '')
+        // this._addModuleNodes(bedMod1)
+        const bedWsrfNode1 = bedMod1.path + P.fuelWsrf
 
         // WindSpeedReductionModule produces 1 node referenced by the MidflameWindSpeedModule
         // and references 2 nodes from the CanopyModule and 1 node from the SurfaceFuelModule.
+        // Need separate primary and secondary instances since this module requires fuel bed depth
         const wsrfCfg = new WindSpeedReductionConfig('windSpeedReductionInputs')
         const wsrfMod1 = new WindSpeedReductionModule('primary/', wsrfCfg,
-            canopySheltersNode, canopyWsrfNode, wsrfFuelNode1)
+            canopySheltersNode, canopyWsrfNode, bedWsrfNode1)
+        // this._addModuleNodes(wsrfMod1)
         const wsrfFactorNode1 = wsrfMod1.path + P.wsrfMidflame
 
         // MidflameWindSpeedModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the WindSpeedModule and 1 node from the WindSpeedReductionModule
+        // Need separate primary and secondary instances since this module requires fuel bed wsrf
         const midflameCfg = new MidflameWindSpeedConfig('midflameInputs')
         const midflameMod1 = new MidflameWindSpeedModule('primary/', midflameCfg,
             windAt20ftNode, wsrfFactorNode1)
+        // this._addModuleNodes(midflameMod1)
         const midflameNode1 = midflameMod1.path + P.midflame
 
         // SurfaceFireModule
-        const fireCfg1 = new SurfaceFireConfig('primarySurfaceFireLimit')
-        const fireMod1 = new SurfaceFireModule('primary/', fireCfg1, bedMod1.path,
-            slopeRatioNode, upslopeDirNode, midflameNode1, wdirUpNode)
-
-        this.nodes = [
-            // independent modules (have no shared nodes as input)
+        const fireCfg = new SurfaceFireConfig('primarySurfaceFireLimit')
+        const fireMod1 = new SurfaceFireModule('primary/', fireCfg,
+            bedMod1.path, slopeRatioNode, upslopeDirNode, midflameNode1, wdirUpNode)
+        // this._addModuleNodes(fireMod1)
+        
+        this._addModuleNodes([
+            // independent modules requiring no shared nodes as input
             ...constantsMod.nodes,
             ...canopyMod.nodes,
             ...deadmoisMod.nodes,
             ...livemoisMod.nodes,
             ...windspdMod.nodes,
-            ...winddirMod.nodes,
             ...slpsteepMod.nodes,
             ...slpdirMod.nodes,
-
+            // independent modules requiring shared nodes as input
+            ...winddirMod.nodes,
+            // SurfaceModule modules
             ...curingMod.nodes,
             ...stdMod1.nodes,
             ...bedMod1.nodes,
             ...wsrfMod1.nodes,
             ...midflameMod1.nodes,
             ...fireMod1.nodes,
+        ])
+        this.configs = [
+            canopyCfg,
+            deadmoisCfg,
+            livemoisCfg,
+            windspdCfg,
+            slpsteepCfg,
+            slpdirCfg,
+            winddirCfg,
+            curingCfg,
+            stdCfg1,
+            bedCfg1,
+            wsrfCfg,
+            midflameCfg,
+            fireCfg,
         ]
-
-        // Check for duplicate node keys
-        const map = new Map()
-        for(let node of this.nodes) {
-            const key = node[0]
-            if (map.has(key)) {
-                const old = map.get(key)
-                console.log(`Key ${key} previously defined`)
-                console.log('OLD:', old)
-                console.log('NEW:', node)
-            } else {
-                map.set(key, node)
+    }
+    _addModuleNodes(nodeDefs) {
+        for(let nodeDef of nodeDefs) {
+            // Create a dagNode from the Module node definition
+            const [key, value, units, cfg, options] = nodeDef
+            const dagNode = {key, value, units, cfg, options: []}
+            for(let option of options) {
+                const [value, updater, args] = option
+                dagNode.options.push({value, updater, suppliers: [...args]})
             }
+            // Add it to the map, reporting any overwrites
+            if (this.nodeMap.has(key)) {
+                const prev = this.nodeMap.get(key)
+                console.log(`Node ${key} was previously defined`)
+                console.log('Previous:', prev)
+                console.log('Current:', dagNode)
+            }
+            this.nodeMap.set(key, dagNode)
         }
+    }
+    configure() {
+
     }
 }

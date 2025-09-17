@@ -13,16 +13,16 @@ export class DeadFuelMoistureModule extends ModuleBase {
         super(prefix, P.moisDeadSelf, P.moisDeadMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.moisDeadCat, 0, U.fuelMois, cfg.key, [
+            [path+P.moisDeadCat, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.constant, []],
                 [cfg.category, Dag.input, []]]],
-            [path+P.moisDead1, 0, U.fuelMois, cfg.key, [
+            [path+P.moisDead1, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.input, []],
                 [cfg.category, Dag.assign, [path+P.moisDeadCat]]]],
-            [path+P.moisDead10, 0, U.fuelMois, cfg.key, [
+            [path+P.moisDead10, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.input, []],
                 [cfg.category, Dag.assign, [path+P.moisDeadCat]]]],
-            [path+P.moisDead100, 0, U.fuelMois, cfg.key, [
+            [path+P.moisDead100, 0, U.fuelMois, cfg, [
                 [cfg.particle, Dag.input, []],
                 [cfg.category, Dag.assign, [path+P.moisDeadCat]]]],
         ]

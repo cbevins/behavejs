@@ -14,10 +14,10 @@ export class WindSpeedModule extends ModuleBase {
         super(prefix, P.wspdSelf, P.wspdMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.wspd20ft, 0, U.windSpeed, cfg.key, [
+            [path+P.wspd20ft, 0, U.windSpeed, cfg, [
                 [cfg.at20ft, Dag.input, []],
                 [cfg.at10m, Wind.windSpeedAt20ftFrom10m, [path+P.wspd10m]]]],
-            [path+P.wspd10m, 0, U.windSpeed, cfg.key, [
+            [path+P.wspd10m, 0, U.windSpeed, cfg, [
                 [cfg.at20ft, Dag.input, []],
                 [cfg.at10m, Wind.windSpeedAt10mFrom20ft, [path+P.wspd20ft]]]],
         ]

@@ -134,6 +134,26 @@ export const BehaveMaster = new Map([
         {cfgval: "at 20-ft", updater: Lib.input, args: []},
         {cfgval: "at 10-m", updater: Lib.windSpeedAt10mFrom20ft, args: ["weather/wind/speed/at 20-ft"]},
     ]}],
+["terrain/slope/steepness/ratio",
+    {key: "terrain/slope/steepness/ratio", value: 0, units: "ratio units", cfgkey: "slopeSteepnessInputs", options: [
+        {cfgval: "observed ratio of rise-to-reach", updater: Lib.input, args: []},
+        {cfgval: "degrees", updater: Lib.compassSlopeRatio, args: ["terrain/slope/steepness/degrees"]},
+    ]}],
+["terrain/slope/steepness/degrees",
+    {key: "terrain/slope/steepness/degrees", value: 0, units: "degrees", cfgkey: "slopeSteepnessInputs", options: [
+        {cfgval: "observed ratio of rise-to-reach", updater: Lib.compassSlopeDegrees, args: ["terrain/slope/steepness/ratio"]},
+        {cfgval: "degrees", updater: Lib.input, args: []},
+    ]}],
+["terrain/slope/direction/up-slope",
+    {key: "terrain/slope/direction/up-slope", value: 0, units: "degrees", cfgkey: "slopeDirectionInputs", options: [
+        {cfgval: "up-slope", updater: Lib.input, args: []},
+        {cfgval: "down-slope", updater: Lib.compassOpposite, args: ["terrain/slope/direction/down-slope"]},
+    ]}],
+["terrain/slope/direction/down-slope",
+    {key: "terrain/slope/direction/down-slope", value: 0, units: "degrees", cfgkey: "slopeDirectionInputs", options: [
+        {cfgval: "up-slope", updater: Lib.compassOpposite, args: ["terrain/slope/direction/up-slope"]},
+        {cfgval: "down-slope", updater: Lib.input, args: []},
+    ]}],
 ["weather/wind/direction/heading/from up-slope",
     {key: "weather/wind/direction/heading/from up-slope", value: 0, units: "degrees", cfgkey: "windDirectionInputs", options: [
         {cfgval: "heading from up-slope", updater: Lib.input, args: []},
@@ -155,26 +175,6 @@ export const BehaveMaster = new Map([
         {cfgval: "heading from up-slope", updater: Lib.compassSum, args: ["weather/wind/direction/heading/from up-slope","terrain/slope/direction/up-slope"]},
         {cfgval: "source from north", updater: Lib.compassOpposite, args: ["weather/wind/direction/source/from north"]},
         {cfgval: "upslope", updater: Lib.assign, args: ["terrain/slope/direction/up-slope"]},
-    ]}],
-["terrain/slope/steepness/ratio",
-    {key: "terrain/slope/steepness/ratio", value: 0, units: "ratio units", cfgkey: "slopeSteepnessInputs", options: [
-        {cfgval: "observed ratio of rise-to-reach", updater: Lib.input, args: []},
-        {cfgval: "degrees", updater: Lib.compassSlopeRatio, args: ["terrain/slope/steepness/degrees"]},
-    ]}],
-["terrain/slope/steepness/degrees",
-    {key: "terrain/slope/steepness/degrees", value: 0, units: "degrees", cfgkey: "slopeSteepnessInputs", options: [
-        {cfgval: "observed ratio of rise-to-reach", updater: Lib.compassSlopeDegrees, args: ["terrain/slope/steepness/ratio"]},
-        {cfgval: "degrees", updater: Lib.input, args: []},
-    ]}],
-["terrain/slope/direction/up-slope",
-    {key: "terrain/slope/direction/up-slope", value: 0, units: "degrees", cfgkey: "slopeDirectionInputs", options: [
-        {cfgval: "up-slope", updater: Lib.input, args: []},
-        {cfgval: "down-slope", updater: Lib.compassOpposite, args: ["terrain/slope/direction/down-slope"]},
-    ]}],
-["terrain/slope/direction/down-slope",
-    {key: "terrain/slope/direction/down-slope", value: 0, units: "degrees", cfgkey: "slopeDirectionInputs", options: [
-        {cfgval: "up-slope", updater: Lib.compassOpposite, args: ["terrain/slope/direction/up-slope"]},
-        {cfgval: "down-slope", updater: Lib.input, args: []},
     ]}],
 ["weather/curing/fraction/observed",
     {key: "weather/curing/fraction/observed", value: 0, units: "fraction units", cfgkey: "", options: [

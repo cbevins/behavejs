@@ -20,27 +20,27 @@ export class StandardFuelModelModule extends ModuleBase {
         super(prefix,  P.stdSelf, P.stdMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.stdKey, '', U.fuelKey, cfg.key, [
+            [path+P.stdKey, '', U.fuelKey, cfg, [
                 [cfg.catalog, Dag.input, []],
                 [cfg.custom, Dag.constant, []],
             ]],
-            [path+P.stdNumb, 0, U.fuelNumb, cfg.key, [
+            [path+P.stdNumb, 0, U.fuelNumb, cfg, [
                 [cfg.catalog, Cat.standardNumber, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdCode, '', U.fuelCode, cfg.key, [
+            [path+P.stdCode, '', U.fuelCode, cfg, [
                 [cfg.catalog, Cat.standardCode, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdLabel, '', U.fuelLabel, cfg.key, [
+            [path+P.stdLabel, '', U.fuelLabel, cfg, [
                 [cfg.catalog, Cat.standardLabel, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdDepth, 1, U.fuelDepth, cfg.key, [
+            [path+P.stdDepth, 1, U.fuelDepth, cfg, [
                 [cfg.catalog, Cat.standardDepth, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdDeadMext, 0.25, U.fuelMois, cfg.key, [
+            [path+P.stdDeadMext, 0.25, U.fuelMois, cfg, [
                 [cfg.catalog, Cat.standardMext, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
@@ -61,14 +61,14 @@ export class StandardFuelModelModule extends ModuleBase {
                 ['', Cat.standardStot, [path+P.stdKey]],
             ]],
             // 1-h dead
-            [path+P.stdDead1Load, 0, U.fuelLoad, cfg.key, [
+            [path+P.stdDead1Load, 0, U.fuelLoad, cfg, [
                 [cfg.catalog, Cat.standardLoad1, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead1Mois, 0, U.fuelMois, '', [
                 ['', Dag.assign, [mois1h]],
             ]],
-            [path+P.stdDead1Savr, 1, U.fuelSavr, cfg.key, [
+            [path+P.stdDead1Savr, 1, U.fuelSavr, cfg, [
                 [cfg.catalog, Cat.standardSavr1, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
@@ -76,7 +76,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 ['', Dag.constant, []],
             ]],
             // 10-h dead
-            [path+P.stdDead10Load, 0, U.fuelLoad, cfg.key, [
+            [path+P.stdDead10Load, 0, U.fuelLoad, cfg, [
                 [cfg.catalog, Cat.standardLoad10, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
@@ -90,7 +90,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 ['', Dag.constant, []],
             ]],
             // 100-h dead
-            [path+P.stdDead100Load, 0, U.fuelLoad, cfg.key, [
+            [path+P.stdDead100Load, 0, U.fuelLoad, cfg, [
                 [cfg.catalog, Cat.standardLoad100, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
@@ -130,11 +130,11 @@ export class StandardFuelModelModule extends ModuleBase {
                 ['', Dag.constant, []],
             ]],
             // total (cured and uncured) herb load
-            [path+P.stdTotalHerbLoad, 0, U.fuelLoad, cfg.key, [
+            [path+P.stdTotalHerbLoad, 0, U.fuelLoad, cfg, [
                 [cfg.catalog, Cat.standardLoadHerb, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
-            [path+P.stdTotalHerbSavr, 1, U.fuelSavr, cfg.key, [
+            [path+P.stdTotalHerbSavr, 1, U.fuelSavr, cfg, [
                 [cfg.catalog, Cat.standardSavrHerb, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
@@ -142,14 +142,14 @@ export class StandardFuelModelModule extends ModuleBase {
                 ['', Dag.constant, []],
             ]],
             // live stem
-            [path+P.stdLiveStemLoad, 0, U.fuelLoad, cfg.key, [
+            [path+P.stdLiveStemLoad, 0, U.fuelLoad, cfg, [
                 [cfg.catalog, Cat.standardLoadStem, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLiveStemMois, 0, U.fuelMois, '', [
                 ['', Dag.assign, [moisStem]],
             ]],
-            [path+P.stdLiveStemSavr, 1, U.fuelSavr, cfg.key, [
+            [path+P.stdLiveStemSavr, 1, U.fuelSavr, cfg, [
                 [cfg.catalog, Cat.standardSavrStem, [path+P.stdKey]],
                 [cfg.custom, Dag.input, []],
             ]],

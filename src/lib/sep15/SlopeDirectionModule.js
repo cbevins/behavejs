@@ -14,10 +14,10 @@ export class SlopeDirectionModule extends ModuleBase {
         super(prefix, P.slopeDirSelf, P.slopeDirMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.slopeUp, 0, U.compass, cfg.key, [
+            [path+P.slopeUp, 0, U.compass, cfg, [
                 [cfg.upslope, Dag.input, []],
                 [cfg.downslope, Compass.compassOpposite, [path+P.slopeDown]]]],
-            [path+P.slopeDown, 0, U.degrees, cfg.key, [
+            [path+P.slopeDown, 0, U.degrees, cfg, [
                 [cfg.upslope, Compass.compassOpposite, [path+P.slopeUp]],
                 [cfg.downslope, Dag.input, []]]],
         ]

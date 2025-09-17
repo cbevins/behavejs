@@ -20,7 +20,7 @@ export class CanopyModule extends ModuleBase {
             [path+P.canopyHeat,  0, U.fuelHeat, '', [['', Dag.input, []]]],
             
             // configured by 'canopy height input'
-            [path+P.canopyBase, 0, U.treeLeng, cfg.key, [
+            [path+P.canopyBase, 0, U.treeLeng, cfg, [
                 [cfg.ratioHeight, Lib.canopyBaseFromRatioHeight, [path+P.canopyRatio, path+P.canopyHeight]],
                 [cfg.ratioBase, Dag.input, []],
                 [cfg.ratioLength, Lib.canopyBaseFromRatioLength, [path+P.canopyRatio, path+P.canopyLength]],
@@ -28,7 +28,7 @@ export class CanopyModule extends ModuleBase {
                 [cfg.heightBase, Dag.input, []],
                 [cfg.lengthBase, Dag.input, []]]
             ],
-            [path+P.canopyLength, 0, U.treeLeng, cfg.key, [
+            [path+P.canopyLength, 0, U.treeLeng, cfg, [
                 [cfg.ratioHeight, Lib.crownLengthFromRatioHeight, [path+P.canopyRatio, path+P.canopyHeight]],
                 [cfg.ratioBase, Lib.crownLengthFromRatioBase, [path+P.canopyRatio, path+P.canopyBase]],
                 [cfg.ratioLength, Dag.input, []],
@@ -36,7 +36,7 @@ export class CanopyModule extends ModuleBase {
                 [cfg.heightBase, Lib.crownLengthFromHeightBase, [path+P.canopyHeight, path+P.canopyBase]],
                 [cfg.lengthBase, Dag.input, []]],
             ],
-            [path+P.canopyHeight, 0, U.treeLeng, cfg.key, [
+            [path+P.canopyHeight, 0, U.treeLeng, cfg, [
                 [cfg.ratioHeight, Dag.input, []],
                 [cfg.ratioBase, Lib.canopyHeightFromRatioBase, [path+P.canopyRatio, path+P.canopyBase]],
                 [cfg.ratioLength, Lib.canopyHeightFromRatioLength, [path+P.canopyRatio, path+P.canopyLength]],
@@ -44,7 +44,7 @@ export class CanopyModule extends ModuleBase {
                 [cfg.heightBase, Dag.input, []],
                 [cfg.lengthBase, Lib.canopyHeightFromLengthBase, [path+P.canopyLength, path+P.canopyBase]]],
             ],
-            [path+P.canopyRatio, 0, U.fraction, cfg.key, [
+            [path+P.canopyRatio, 0, U.fraction, cfg, [
                 [cfg.ratioHeight, Dag.input, []],
                 [cfg.ratioBase, Dag.input, []],
                 [cfg.ratioLength, Dag.input, []],

@@ -124,13 +124,13 @@ export class SurfaceFireModule extends ModuleBase {
                 ['', Fire.effectiveWindSpeed, [fire7+P.firePhiE, fire+P.fireWindB, fire+P.fireWindI]]]],
 
             // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
-            [fire+P.fireHeadRos, 0, U.fireRos, cfg.key, [
+            [fire+P.fireHeadRos, 0, U.fireRos, cfg, [
                 [cfg.applied, Dag.assign, [fire7+P.fireRos]],
                 [cfg.notApplied, Dag.assign, [fire6+P.fireRos]]]],
-            [fire+P.firePhiE, 0, U.factor, cfg.key, [
+            [fire+P.firePhiE, 0, U.factor, cfg, [
                 [cfg.applied, Dag.assign, [fire7+P.firePhiE]],
                 [cfg.notApplied, Dag.assign, [fire6+P.firePhiE]]]],
-            [fire+P.fireWeff, 0, U.windSpeed, cfg.key, [
+            [fire+P.fireWeff, 0, U.windSpeed, cfg, [
                 [cfg.applied, Dag.assign, [fire7+P.fireWeff]],
                 [cfg.notApplied, Dag.assign, [fire6+P.fireWeff]]]],
 

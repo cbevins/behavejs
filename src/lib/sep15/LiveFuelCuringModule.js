@@ -20,7 +20,7 @@ export class LiveFuelCuringModule extends ModuleBase {
                 ['', Dag.input, []]]],
             [path+P.curingEstimated, 0, U.fraction, '', [
                 ['', Bed.curedHerbFraction, [herbMoisKey]]]],
-            [path+P.curingApplied, 0, U.fraction, cfg.key, [
+            [path+P.curingApplied, 0, U.fraction, cfg, [
                 [cfg.observed, Dag.assign, [path+P.curingObserved]],
                 [cfg.estimated, Dag.assign, [path+P.curingEstimated]],
             ]],
