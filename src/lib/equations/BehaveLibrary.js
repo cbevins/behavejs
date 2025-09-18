@@ -1,12 +1,12 @@
 import { Dag as Dag } from '../index.js'
-import { Calc as Calc } from '../index.js'
-import { CanopyEquations as Canopy } from '../index.js'
-import { CompassEquations as Compass } from '../index.js'
-import { FuelBedEquations as FuelBed } from '../index.js'
-import { FuelElementEquations as FuelElement } from '../index.js'
-import { StandardFuelModelCatalog as Standard } from '../index.js'
-import { SurfaceFireEquations as SurfaceFire } from '../index.js'
-import { WindEquations as Wind } from '../index.js'
+import { Calc as Calc } from './Calc.js'
+import { CanopyEquations as Canopy } from './CanopyEquations.js'
+import { CompassEquations as Compass } from './CompassEquations.js'
+import { FuelBedEquations as FuelBed } from './FuelBedEquations.js'
+import { FuelElementEquations as FuelElement } from './FuelElementEquations.js'
+import { StandardFuelModelCatalog as Standard } from './StandardFuelModelCatalog.js'
+import { SurfaceFireEquations as SurfaceFire } from './SurfaceFireEquations.js'
+import { WindEquations as Wind } from './ WindEquations.js'
 
 export class BehaveLibrary {
     static arithmeticMeanSpreadRate = SurfaceFire.arithmeticMeanSpreadRate

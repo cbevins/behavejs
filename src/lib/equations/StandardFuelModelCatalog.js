@@ -1,4 +1,4 @@
-import { StandardFuelModels } from '../index.js'
+import { StandardFuelModels } from './StandardFuelModels.js'
 
 export class StandardFuelModelCatalog {
     static fuelMap = new Map()

@@ -1,4 +1,4 @@
-import { Dag } from './Dag.js'
+import { Dag } from '../index.js'
 import { ModuleBase } from './ModuleBase.js'
 import { Paths as P} from './Paths.js'
 import { Units as U} from './Units.js'

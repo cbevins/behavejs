@@ -6,12 +6,12 @@
  *
  * It also includes a few of the fundamental Byram and Thomas equations for
  * fireline intensity, flame length, and scorch height.  All equations
- * relating to fire elliptical growth are in BpxLibFireEllipse.
+ * relating to fire elliptical growth are in FireEllipseEquations.
  *
  * All algorithms in this class are implemented as pure static methods,
  * returning a single property.
  *
- * @copyright 2021 Systems for Environmental Management
+ * @copyright 2025 Systems for Environmental Management
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
  **/

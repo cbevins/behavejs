@@ -1,7 +1,6 @@
-const _node = {key: '', value: null, units: null, cfg: null, options: [],
-    updater: null, suppliers: [], consumers: [], dirty: '', status: ''}
-const _nodeOption = {value: '', updater: null, suppliers: []}
-    
+const _dagnode = {key: '', value: null, units: '', cfgkey: '', cfgopt: '',
+    updater: null, suppliers: [], consumers: [], status: null, dirty: false}
+
 const _tracker = {clean: 0, constant: 0, input: 0, assign: 0, calc: 0, stack: []}
 
 /**
@@ -18,14 +17,12 @@ const _tracker = {clean: 0, constant: 0, input: 0, assign: 0, calc: 0, stack: []
 export class Dag {
     constructor(nodeDefs, desc='') {
         this.desc = desc
-        this.activeInputsSet = new Set()    // Set of all ACTIVE input nodes
-        this.allInputsSet = new Set()       // Set of current configuration all possible input nodes
-        this.nodeMap = new Map()            // Map of DagNode key => reference
-        this.selectSet = new Set()          // Set of references to all 'selected' nodes
+        this.activeInputsSet = new Set()// Set of all ACTIVE input nodes
+        this.allInputsSet = new Set()   // Set of all possible input nodes
+        this.nodeMap = null             // Map of DagNode key => reference
+        this.selectSet = new Set()      // Set of references to all 'selected' nodes
         this.tracker = {..._tracker}
-        this._1_buildNodeMap(nodeDefs)
-        this._2_resolveSuppliers()
-        this.configure()
+        this.reset(nodeDefs)
     }
 
     // DagNode.updater method for DagNodes whose values are directly assigned from other nodes
@@ -44,38 +41,26 @@ export class Dag {
     static selected = 'SELECTED'// a 'selected' node that is a supplier to at least one other selected node
     static leaf     = 'LEAF'    // a 'selected' node that supplies no other selected nodes
 
-    // Returns an array of config objects
+    // Returns an array of config key strings
     activeConfigs() {
         const configs = new Set()
         for(let node of this.nodeMap.values()) {
-            if (node.status !== Dag.ignored && node.cfg) {
-                configs.add(node.cfg)
+            if (node.status !== Dag.ignored) {
+                if (typeof node.cfgopt === 'undefined')
+                    throw new Error(`Node "${node.key}" configuration option is undefined.`)
+                if (node.cfgopt !== '*') {
+                    configs.add(`${node.cfgkey}=${node.cfgopt}`)
+                }
+            }
+            if (node.cfgkey===null) {
+                throw new Error(`Null config key for "${node.key}"`)
             }
         }
-        return [...configs]
+        configs.delete("*=*")
+        return [...configs.values()].sort()
     }
-
-    activeNodes() {
-        const active = []
-        for(let node of this.nodeMap.values())
-            if (node.status !== Dag.ignored) active.push(node)
-        return active
-    }
-    activeNodesByKey() { return this.activeNodes().sort((a, b) => a.key.localeCompare(b.key))}
 
     activeInputs() { return [...this.activeInputsSet] }
-    activeInputsByKey() { return this.activeInputs().sort((a, b) => a.key.localeCompare(b.key))}
-
-    allInputs() { return [...this.allInputsSet] }
-    allInputsByKey() { return this.allInputs().sort((a, b) => a.key.localeCompare(b.key))}
-
-    configure() {
-        this._3_reconfigure()
-        this._4_updateConsumers()
-        this._5_updateAllInputsSet()
-        this._initNodes()
-        return this
-    }
 
     // Returns the DagNode value.
     // If the DagNode is dirty, get() is recursively called on all its suppliers,
@@ -97,7 +82,16 @@ export class Dag {
     }
 
     nodes() { return  [...this.nodeMap.values()] }
-    nodesByKey() { return this.nodes().sort((a, b) => a.key.localeCompare(b.key))}
+
+    reset(nodeDefs) {
+        this._1_createNodeMap(nodeDefs)
+        this._2_checkSupplierKeys()
+        this._3_initSupplierRefs()
+        this._4_initConsumerRefs()
+        this._5_initAllInputsSet()
+        this._initNodes()
+        return this
+    }
 
     // Called by client after Dag.reset() to set one or more DagNodes as 'selections'.
     // 'refOrKeyArray' may be an array of, or a single of, DagNode keys or references
@@ -118,7 +112,6 @@ export class Dag {
     }
 
     selected() { return [...this.selectSet] }
-    selectedByKey() { return this.selected().sort((a, b) => a.key.localeCompare(b.key))}
 
     // Sets the DagNode value and propagates the dirty flags to its downstream consumers.
     // Only works for INPUT DagNodes and if value is different from current value.
@@ -136,85 +129,59 @@ export class Dag {
 
     //--------------------------------------------------------------------------
 
-    // Converts each node definition into a Dag node object and stores it in this.nodeMap
-    _1_buildNodeMap(nodeDefs) {
-        for(let nodeDef of nodeDefs) {
-            // Create a dagNode from the Module node definition
-            const [key, value, units, cfg, options] = nodeDef
-            const dagNode = {key, value, units, cfg, options: []}
-            for(let option of options) {
-                const [value, updater, args] = option
-                dagNode.options.push({value, updater, suppliers: [...args]})
-            }
-            const active = options[0]
-            // Add it to the map, reporting any overwrites
-            if (this.nodeMap.has(key)) {
-                const prev = this.nodeMap.get(key)
-                console.log(`Node ${key} was previously defined`)
-                console.log('Previous:', prev)
-                console.log('Current:', dagNode)
-            }
-            this.nodeMap.set(key, dagNode)
+    // Converts genome node arrays to dag node objects
+    _1_createNodeMap(nodeDefs) {
+        this.nodeMap = new Map()
+        for (let node of nodeDefs) {
+            const [key, value, units, optidx, options, cfgkey] = node
+            const [cfgopt, updater, suppliers] = options[optidx]
+            const entry = {key, value, units, cfgkey, cfgopt, updater, suppliers,
+                consumers: [], status: null, dirty: false}
+            this.nodeMap.set(key, entry)
         }
     }
-    // For each node, converts in-place all its option suppliers into node references
-    _2_resolveSuppliers() {
+
+    _2_checkSupplierKeys() {
+        let n = 0
         for(let node of this.nodeMap.values()) {
-            const {key, options} = node
-            for(let i=0; i<options.length; i++) {
-                const suppliers = options[i].suppliers
-                for(let j=0; j<suppliers.length; j++) {
-                    const supkey = suppliers[j]
-                    if (!this.nodeMap.has(supkey))
-                        throw new Error(`Node "${key}" option ${i} supplier ${j} "${supkey}" is an invalid node key.`)
-                    // console.log(`Node "${key} option ${i} arg ${j} key="${supkey}"`)
-                    node.options[i].suppliers[j] = this.nodeMap.get(supkey)
+            for(let supkey of node.suppliers) {
+                if(! this.nodeMap.has(supkey)) {
+                    console.log(`*** Node "${node.key}" option "${node.cfgopt}" supplier "${supkey}" has no node instance.`)
+                    n++
                 }
             }
         }
+        if (n) throw new Error(`Dag of ${this.nodeMap.size} nodes has ${n} supplier references to nonexistent nodes.`)
+        return this
     }
-    // Applies current config settings to all nodes
-    _3_reconfigure() {
+
+    // Converts (in-place) any supplier elements that are keys into references
+    _3_initSupplierRefs() {
         for(let node of this.nodeMap.values()) {
-            // Determine the node's current active configuration
-            let active = node.options[0]    // Use first (or only) option by default
-            if(node.cfg) { // if configurable...
-                let found = false
-                for(let i=0; i<node.options.length; i++) {
-                    const optval = node.options[i].value
-                    if ( optval === node.cfg.value ) {//|| optval === node.cfg.any) {
-                        active = node.options[i]
-                        found = true
-                        break
-                    }
-                }
-                if(!found) {
-                    let str = `Node "${node.key}" has no matching option for config "${node.cfg.key}" = "${node.cfg.value}"\n`
-                    throw new Error(str)
-                }
+            for (let i=0; i<node.suppliers.length; i++) {
+                // console.log('resolve node', node.key, 'supplier', i, node.suppliers[i])
+                node.suppliers[i] = this.nodeRef(node.suppliers[i], '_initSupplierRefs()')
             }
-            // Set the node's Dag properties
-            node.updater = active.updater
-            node.suppliers = active.suppliers
+        }
+        return this
+    }
+
+    // Assigns each dag node's 'consumers'
+    _4_initConsumerRefs() {
+        for(let node of this.nodeMap.values())
             node.consumers = []
-            node.dirty = Dag.dirty
-            node.status = Dag.ignored
-        }
-    }
-    // For each node, constructs an array of references to all its consumer nodes
-    _4_updateConsumers() {
         for(let node of this.nodeMap.values()) {
             // console.log('checking', node.suppliers.length, 'suppliers for', node.key)
-            // console.log(node.key, node.options)
             for(let supplier of node.suppliers) {
                 // console.log('....supplier is', supplier.key)
                 supplier.consumers.push(node)
             }
         }
+        return this
     }
 
-    // Creates the this.allInputsSet of all the current configuration possible input nodes , whether active or not
-    _5_updateAllInputsSet() {
+    // Creates the this.allInputsSet of all possible input nodes, whether active or not
+    _5_initAllInputsSet() {
         this.allInputsSet = new Set()
         for(let node of this.nodeMap.values()) {
             if (!node.updater) // Any node without an updater() must be a Dag input
@@ -318,4 +285,5 @@ export class Dag {
         this._propagateDirtyToConsumers(node)
         return node.value
     }
+
 }

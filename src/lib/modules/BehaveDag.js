@@ -2,7 +2,7 @@
  * BehaveModule assembles the node definitions of all Modules comprising the
  * Behave Fire Behavior Modeling System into a Dag.
  */
-import {Dag} from './Dag.js'
+import {Dag} from '../index.js'
 import {Paths as P} from './Paths.js'
 import {CanopyModule} from './CanopyModule.js'
 import {CanopyConfig} from './CanopyConfig.js'
@@ -32,7 +32,7 @@ import {WindSpeedConfig} from './WindSpeedConfig.js'
 import {WindSpeedReductionModule} from './WindSpeedReductionModule.js'
 import {WindSpeedReductionConfig} from './WindSpeedReductionConfig.js'
 
-export class BehaveModule {
+export class BehaveDag {
     constructor() {
         this.configMap = new Map()
         this._createDag()

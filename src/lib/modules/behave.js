@@ -1,4 +1,4 @@
-import { BehaveModule } from "./BehaveModule.js"
+import { BehaveModule } from "./BehaveDag.js"
 
 // Step 1 - create the Behave Dag
 const behave = new BehaveModule()
