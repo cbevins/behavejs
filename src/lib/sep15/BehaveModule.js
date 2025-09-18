@@ -36,7 +36,6 @@ export class BehaveModule {
     constructor() {
         this.configMap = new Map()
         this._createDag()
-        this.dag.configure()
     }
 
     _createDag() {
@@ -44,7 +43,7 @@ export class BehaveModule {
 
         // CanopyModule produces 2 nodes referenced by the WindSpeedReductionModule
         // and ??? nodes by the CanopyFireModule
-        const canopyCfg = new CanopyConfig()
+        const canopyCfg = this._addCfg(new CanopyConfig())
         const canopyMod = new CanopyModule('', canopyCfg)
         const canopySheltersNode = canopyMod.path + P.canopyShelters
         const canopyWsrfNode = canopyMod.path + P.canopyWsrf
@@ -52,7 +51,7 @@ export class BehaveModule {
         const constantsMod = new ConstantsModule('')
 
         // DeadFuelMoistureModel produces 3 nodes referenced used by the StandardFuelModelModule
-        const deadmoisCfg = new DeadFuelMoistureConfig()
+        const deadmoisCfg = this._addCfg(new DeadFuelMoistureConfig())
         const deadmoisMod = new DeadFuelMoistureModule('weather/', deadmoisCfg)
         const mois1hNode = deadmoisMod.path + P.moisDead1
         const mois10hNode = deadmoisMod.path + P.moisDead10
@@ -60,36 +59,36 @@ export class BehaveModule {
 
         // LiveFuelMoistureModel produces 2 node referenced by the StandardFuelModelModule
         // and 1 of them is also referenced by the LiveFuelCuringModule
-        const livemoisCfg = new LiveFuelMoistureConfig()
+        const livemoisCfg = this._addCfg(new LiveFuelMoistureConfig())
         const livemoisMod = new LiveFuelMoistureModule('weather/', livemoisCfg)
         const moisHerbNode = livemoisMod.path + P.moisLiveHerb  // Referenced by LiveFuelCuringModule
         const moisStemNode = livemoisMod.path + P.moisLiveStem
 
         // SlopeDirectionModule produces 1 node referenced by the SurfaceFireModule
-        const slpdirCfg = new SlopeDirectionConfig()
+        const slpdirCfg = this._addCfg(new SlopeDirectionConfig())
         const slpdirMod = new SlopeDirectionModule('terrain/', slpdirCfg)
         const upslopeDirNode = slpdirMod.path + P.slopeUp
 
         // SlopeSteepnessModule produces 1 node referenced by the SurfaceFireModule
-        const slpsteepCfg = new SlopeSteepnessConfig()
+        const slpsteepCfg = this._addCfg(new SlopeSteepnessConfig())
         const slpsteepMod = new SlopeSteepnessModule('terrain/', slpsteepCfg)
         const slopeRatioNode = slpsteepMod.path + P.slopeRatio
 
         // WindSpeedModule produces 1 node referenced by the MidflameWindSpeedModule
-        const windspdCfg = new WindSpeedConfig()
+        const windspdCfg = this._addCfg(new WindSpeedConfig())
         const windspdMod = new WindSpeedModule('weather/', windspdCfg)
         const windAt20ftNode = windspdMod.path + P.wspd20ft
 
         // WindDirectionModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the SlopeDirectionModule
-        const winddirCfg = new WindDirectionConfig()
+        const winddirCfg = this._addCfg(new WindDirectionConfig())
         const winddirMod = new WindDirectionModule('weather/', winddirCfg,
             upslopeDirNode)
         const wdirUpNode = winddirMod.path + P.wdirSourceFromUp
 
         // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
         // and references 1 node produced by the LiveFuelMoistureModule
-        const curingCfg = new LiveFuelCuringConfig()
+        const curingCfg = this._addCfg(new LiveFuelCuringConfig())
         const curingMod = new LiveFuelCuringModule('weather/', curingCfg,
             moisHerbNode)
         const curedNode = curingMod.path + P.curingApplied
@@ -102,13 +101,13 @@ export class BehaveModule {
         // and references 3 nodes from the DeadFuelMoistureModule, 2 nodes from the
         // LiveFuelMoistureModule, and 1 node from the LiveFuelCuringModule.
         // Need separate primary and secondary instances as they may use different fuel models
-        const stdCfg1 = new PrimaryStandardFuelModelConfig()
+        const stdCfg1 = this._addCfg(new PrimaryStandardFuelModelConfig())
         const stdMod1 = new StandardFuelModelModule('primary/model/', stdCfg1,
             mois1hNode, mois10hNode, mois100hNode, moisHerbNode, moisStemNode, curedNode)
 
         // SurfaceFuelModule produces
         // Need separate primary and secondary instances as they may use different fuel model domains
-        const bedCfg1 = new PrimarySurfaceFuelConfig()
+        const bedCfg1 = this._addCfg(new PrimarySurfaceFuelConfig())
         const bedMod1 = new SurfaceFuelModule('primary/', bedCfg1,
             stdMod1.path, '', '', '')
         const bedWsrfNode1 = bedMod1.path + P.fuelWsrf
@@ -116,7 +115,7 @@ export class BehaveModule {
         // WindSpeedReductionModule produces 1 node referenced by the MidflameWindSpeedModule
         // and references 2 nodes from the CanopyModule and 1 node from the SurfaceFuelModule.
         // Need separate primary and secondary instances since this module requires fuel bed depth
-        const wsrfCfg = new WindSpeedReductionConfig()  // Primary and secondary use the same Config instance
+        const wsrfCfg = this._addCfg(new WindSpeedReductionConfig())  // Primary and secondary use the same Config instance
         const wsrfMod1 = new WindSpeedReductionModule('primary/', wsrfCfg,
             canopySheltersNode, canopyWsrfNode, bedWsrfNode1)
         const wsrfFactorNode1 = wsrfMod1.path + P.wsrfMidflame
@@ -124,13 +123,13 @@ export class BehaveModule {
         // MidflameWindSpeedModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the WindSpeedModule and 1 node from the WindSpeedReductionModule
         // Need separate primary and secondary instances since this module requires fuel bed wsrf
-        const midflameCfg = new MidflameWindSpeedConfig()  // Primary and secondary use the same Config instance
+        const midflameCfg = this._addCfg(new MidflameWindSpeedConfig())  // Primary and secondary use the same Config instance
         const midflameMod1 = new MidflameWindSpeedModule('primary/', midflameCfg,
             windAt20ftNode, wsrfFactorNode1)
         const midflameNode1 = midflameMod1.path + P.midflame
 
         // SurfaceFireModule
-        const fireCfg = new SurfaceFireConfig()
+        const fireCfg = this._addCfg(new SurfaceFireConfig())
         const fireMod1 = new SurfaceFireModule('primary/', fireCfg,
             bedMod1.path, slopeRatioNode, upslopeDirNode, midflameNode1, wdirUpNode)
         
@@ -154,36 +153,41 @@ export class BehaveModule {
             ...midflameMod1.nodes,
             ...fireMod1.nodes,
         ].sort((a, b) => { return a.key - b.key }), 'Behave')
-
-        // Also build the config map
-        this.configMap = new Map([
-            [canopyCfg.key, canopyCfg],
-            [deadmoisCfg.key, deadmoisCfg],
-            [livemoisCfg.key, livemoisCfg],
-            [windspdCfg.key, windspdCfg],
-            [slpsteepCfg.key, slpsteepCfg],
-            [slpdirCfg.key, slpdirCfg],
-            [winddirCfg.key, winddirCfg],
-            [curingCfg.key, curingCfg],
-            [stdCfg1.key, stdCfg1],
-            [bedCfg1.key, bedCfg1],
-            [wsrfCfg.key, wsrfCfg],
-            [midflameCfg.key, midflameCfg],
-            [fireCfg.key, fireCfg],
-        ])
     }
 
-    // Reconfigure a Dag nodeMap from current Node cfg references
+    _addCfg(cfg) {
+        this.configMap.set(cfg.key, cfg)
+        return cfg
+    }
+
+    // Reconfigures a Dag nodeMap from current Node cfg references
     // Client accesses this method by calling:
     //      setConfig([[key, value],[key, value]...])
     // which updates this.configMap with the passed values, then calls this method.
     //
     setConfig(items) {
-        for(let item of items) {
+        if (!Array.isArray(items))
+            throw new Error(`setConfig() arg must be an array of [key,value] arrays`)
+        for(let i=0; i<items.length; i++) {
+            const item = items[i]
+            if (!Array.isArray(item) || item.length !==2)
+                throw new Error(`setConfig() arg array element ${i} must be an array of [key,value]`)
             const [key, value] = item
-            const cfg = this.configMap.get(key)
-            cfg.value = value
+            if (this.configMap.has(key)) {
+                const cfg = this.configMap.get(key)
+                cfg.value = value
+            } else {
+                console.log(`WARNING FROM setConfig(): config key ${key} has not been defined`)
+            }
         }
         this.dag.configure()
+    }
+    
+    // Creates a nice array string to pass to setConfig()
+    listConfigArray() {
+        for(let cfg of this.configMap.values()) {
+            const {key, options, prompt, prompts, value} = cfg
+            console.log(JSON.stringify([key, options]))
+        }
     }
 }

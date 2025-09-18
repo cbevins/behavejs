@@ -174,18 +174,23 @@ export class Dag {
         }
     }
     // Applies current config settings to all nodes
-    _3_reconfigure(debug=false) {
+    _3_reconfigure() {
         for(let node of this.nodeMap.values()) {
             // Determine the node's current active configuration
             let active = node.options[0]    // Use first (or only) option by default
             if(node.cfg) { // if configurable...
-                for(let i=1; i<node.options.length; i++) {
-                    if (node.options[i].value === node.cfg.value) {
+                let found = false
+                for(let i=0; i<node.options.length; i++) {
+                    const optval = node.options[i].value
+                    if ( optval === node.cfg.value ) {//|| optval === node.cfg.any) {
                         active = node.options[i]
-                        // Report non-default configurations
-                        if(debug) console.log(`Node "${key}" cfg "${cfg.key}"==="${cfg.value}" at option ${i}`)
+                        found = true
                         break
                     }
+                }
+                if(!found) {
+                    let str = `Node "${node.key}" has no matching option for config "${node.cfg.key}" = "${node.cfg.value}"\n`
+                    throw new Error(str)
                 }
             }
             // Set the node's Dag properties
