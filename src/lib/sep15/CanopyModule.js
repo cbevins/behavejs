@@ -16,9 +16,9 @@ export class CanopyModule extends ModuleBase {
         const path = this.path
         this.nodes = [
             // input parameters (or linked)
-            [path+P.canopyCover, 0, U.fraction, '', [['', Dag.input, []]]],
-            [path+P.canopyBulk,  0, U.fraction, '', [['', Dag.input, []]]],
-            [path+P.canopyHeat,  0, U.fuelHeat, '', [['', Dag.input, []]]],
+            [path+P.canopyCover, 0, U.fraction, null, [['', Dag.input, []]]],
+            [path+P.canopyBulk,  0, U.fraction, null, [['', Dag.input, []]]],
+            [path+P.canopyHeat,  0, U.fuelHeat, null, [['', Dag.input, []]]],
             
             // configured by 'canopy height input'
             [path+P.canopyBase, 0, U.treeLeng, cfg, [
@@ -54,19 +54,19 @@ export class CanopyModule extends ModuleBase {
                 [cfg.lengthBase, Lib.crownRatioFromLengthBase, [path+P.canopyLength, path+P.canopyBase]]],
             ],
             // derived from above
-            [path+P.canopyVol, 0, U.fraction, '', [
+            [path+P.canopyVol, 0, U.fraction, null, [
                 ['', Lib.crownFill,
                     [path+P.canopyCover, path+P.canopyRatio]]]],
-            [path+P.canopyLoad, 0, U.fuelLoad, '', [
+            [path+P.canopyLoad, 0, U.fuelLoad, null, [
                 ['', Lib.canopyFuelLoad,
                     [path+P.canopyBulk, path+P.canopyLength]]]],
-            [path+P.canopyHpua, 0, U.fireHpua, '', [
+            [path+P.canopyHpua, 0, U.fireHpua, null, [
                 ['', Lib.canopyHeatPerUnitArea,
                     [path+P.canopyLoad, path+P.canopyHeat]]]],
-            [path+P.canopyShelters, 0, U.bool, '', [
+            [path+P.canopyShelters, 0, U.bool, null, [
                 ['', Lib.canopySheltersFuelFromWind,
                     [path+P.canopyCover, path+P.canopyHeight, path+P.canopyVol]]]],
-            [path+P.canopyWsrf, 0, U.fraction, '', [
+            [path+P.canopyWsrf, 0, U.fraction, null, [
                 ['', Lib.canopyWindSpeedAdjustmentFactor,
                     [path+P.canopyCover, path+P.canopyHeight, path+P.canopyVol]]]],
         ]

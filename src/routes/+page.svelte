@@ -1,131 +1,129 @@
 <script>
-	import { rxi } from '$lib/bp6/standardKeys';
-    import { Dag, L, P, Util } from '$lib/modules/indexDEP.js'
-    import { surfaceNodes } from '$lib/modules/indexDEP.js'
-    const configFm010Fm124 = [
-        ['configure.fire.effectiveWindSpeedLimit', ['applied', 'ignored'][0]],
-        ['configure.fire.firelineIntensity', ['firelineIntensity', 'flameLength'][1]],
-        ['configure.fire.lengthToWidthRatio', ['lengthToWidthRatio', 'effectiveWindSpeed'][0]],
-        ['configure.fire.weightingMethod', ['arithmetic', 'expected', 'harmonic'][2]],
-        ['configure.fire.vector', ['fromHead', 'fromUpslope', 'fromNorth'][2]],
-        ['configure.fuel.chaparralTotalLoad', ['input', 'estimated'][0]],
-        ['configure.fuel.curedHerbFraction', ['input', 'estimated'][1]],
-        ['configure.fuel.moisture', ['individual', 'liveCategory', 'category', 'catalog'][0]],
-        ['configure.fuel.primary', ['catalog', 'behave', 'chaparral', 'palmettoGallberry', 'westernAspen'][0]],
-        ['configure.fuel.secondary', ['none', 'catalog', 'behave', 'chaparral', 'palmettoGallberry', 'westernAspen'][1]],
-        ['configure.fuel.windSpeedAdjustmentFactor', ['input', 'estimated'][0]],
-        ['configure.slope.steepness', ['ratio', 'degrees', 'map'][0]],
-        ['configure.wind.direction', ['sourceFromNorth', 'headingFromUpslope', 'upslope'][0]],
-        ['configure.wind.speed', ['at10m', 'at20ft', 'atMidflame'][2]]
-    ]
+    import { BehaveModule } from '$lib/sep15/BehaveModule.js'
+    // Step 1 - create the Behave Dag
+    const behave = new BehaveModule()
+    const dag = behave.dag
+    // Reconfigure
+    behave.setConfig([
+        ['deadFuelMoistureInputs', 'particle'],
+        ['effectiveWindSpeedLimit', 'applied'],
+        ['liveFuelCuringInputs', 'estimated'],
+        ['liveFuelMoistureInputs', 'particle'],
+        ['midflameInputs', 'observed'],
+        ['primaryStandardModelInputs', 'catalog'],
+        ['primarySurfaceFuelDomain', 'standard'],
+        ['slopeDirectionInputs', 'up-slope'],
+        ['windDirectionInputs', 'source from north'],
+    ])
+    // Step 2 - select outputs
+    const bulk = dag.nodeRef('primary/bed/bulk density')
+    const rosHead = dag.nodeRef('primary/fire/heading/spread rate')
+    dag.select(rosHead)
+    const activeConfigs = dag.activeConfigs()
+    // Step 3 - set inputs
+    const key = dag.nodeRef('primary/model/standard/key')
+    const cured = dag.nodeRef('weather/curing/fraction/observed')
+    const midflame = dag.nodeRef('primary/wind/speed/midflame')
+    const slopeRatio = dag.nodeRef('terrain/slope/steepness/ratio')
+    const curing = dag.nodeRef('weather/curing/fraction/observed')
+    const mois1 = dag.nodeRef('weather/moisture/dead/1-h')
+    const mois10 = dag.nodeRef('weather/moisture/dead/10-h')
+    const mois100 = dag.nodeRef('weather/moisture/dead/100-h')
+    const moisHerb = dag.nodeRef('weather/moisture/live/herb')
+    const moisStem = dag.nodeRef('weather/moisture/live/stem')
+    const windFromNorth = dag.nodeRef('weather/wind/direction/source/from north')
+    const upslopeDir = dag.nodeRef('terrain/slope/direction/up-slope')
+    dag.set(key, '10')
+    dag.set(cured, 0.5)
+    dag.set(midflame, 880)
+    dag.set(mois1, 0.05)
+    dag.set(mois10, 0.07)
+    dag.set(mois100, 0.09)
+    dag.set(moisHerb, 0.5)
+    dag.set(moisStem, 1.5)
+    dag.set(slopeRatio, 0.25)
+    dag.set(upslopeDir, 0)
+    dag.set(windFromNorth, 270)
 
-    const inputFm010Fm124 = [
-        ['site.fire.time.sinceIgnition', [60]],
-        ['site.fire.vector.fromNorth', [45]],
-        ['site.map.scale', [24000]],
-        ['site.moisture.dead.tl1h', [0.05]],
-        ['site.moisture.dead.tl10h', [0.07]],
-        ['site.moisture.dead.tl100h', [0.09]],
-        ['site.moisture.dead.category', [0.05]],
-        ['site.moisture.live.herb', [0.5]],
-        ['site.moisture.live.stem', [1.5]],
-        ['site.moisture.live.category', [1.5]],
-        ['site.slope.direction.aspect', [180]],
-        ['site.slope.steepness.ratio', [0.25]],
-        ['site.temperature.air', [95]],
-        ['site.terrain.spotSourceLocation', ['ridgeTop']],
-        ['site.terrain.ridgeValleyDistance', [5000]],
-        ['site.terrain.ridgeValleyElevation', [1000]],
-        ['site.wind.direction.source.fromNorth', [270]],
-        ['site.windSpeedAdjustmentFactor', [0.5]],
-        ['site.wind.speed.atMidflame', [880]],
-        ['surface.primary.fuel.model.catalogKey', ['10']],
-        ['surface.secondary.fuel.model.catalogKey', ['124']],
-        ['surface.weighted.fire.primaryCover', [0.6]]
-    ]
-
-    const nodeDefs = surfaceNodes()
-    const nodeDefsMap = Util.nodesToMap(nodeDefs)
-    const dag = new Dag(nodeDefsMap)
-
-    const selected= [
-        P.fuel1+L.fmdepth,
-        P.bed1+L.load,
-        P.bed1+L.savr,
-        P.bed1+L.bulk,
-        P.bed1+L.beta,
-        P.bed1+L.bopt,
-        P.bed1+L.bratio,
-        P.bed1+L.ehn,
-        P.bed1+L.qig,
-        P.bed1+L.rxve,
-        P.bed1+L.rxvm,
-        P.bed1+L.rxvo,
-        P.bed1+L.xi,
-        P.dead1+L.etam,
-        P.dead1+L.etas,
-        P.fire1+L.rxi,
-        P.fire1+L.hsink,
-        P.fire1+L.hsrc,
-        P.bed1+L.wmid,
-        P.bed1+L.wndb,
-        P.bed1+L.wndc,
-        P.bed1+L.wnde,
-        P.bed1+L.wndk,
-        P.bed1+L.wndi,
-        P.bed1+L.phiw,
-        P.bed1+L.phis,
-        P.bed1+L.phie,
-        P.fire1+L.ros0,
-        P.fire1+L.weff1,
-        P.fire1+L.rosmax]
-    dag.select(selected)
-
-    const alias = '10'
-    dag.set(P.fuel1+L.fmalias, alias)
-    dag.set(P.moisture+L.m1, 0.05)
-    dag.set(P.moisture+L.m10, 0.07)
-    dag.set(P.moisture+L.m100, 0.09)
-    dag.set(P.moisture+L.mherb, 0.5)
-    dag.set(P.moisture+L.mstem, 1.5)
-    dag.set(P.slope+L.srat, 0.25)
-    dag.set(P.windmid1+L.wmid, 10*88)
-
-
-    const depth = dag.get(P.fuel1+L.fmdepth)
-    const rosmax = dag.get(P.fire1+L.rosmax)
+    // Step 4 - get updated values of selected nodes
+    dag.get(rosHead)
 </script>
 
 <div class='mx-4 my-4'>
 <h1 class='text-2xl font-bold>'>BehaveJS - {new Date()}</h1>
 
+{@render nodeTable('Selected Nodes', dag.selectedByKey())}
+{@render nodeTable('Active Inputs Nodes', dag.activeInputsByKey())}
+<!-- {@render nodeTable('Active Nodes', dag.activeNodesByKey())} -->
+{@render nodeTable('All Input Nodes', dag.activeInputsByKey())}
+{@render configTable('Active Configurations', activeConfigs)}
+{@render nodeTable('All Nodes', dag.nodesByKey())}
+
+<!-- nodeTable Snippet -->
+{#snippet nodeRow(content)}
+    <td class='px-2 py-2 border border-gray-300'>{content}</td>
+{/snippet}
+{#snippet nodeHeader(content)}
+    <td class='font-bold px-2 py-2 border border-gray-300'>{content}</td>
+{/snippet}
 {#snippet nodeTable(title, nodeArray)}
 <h2 class='mt-4 text-base font-bold'>{title} ({nodeArray.length})</h2>
 <table class='table-auto text-sm'>
     <thead>
         <tr>
-            <td class='font-bold px-2 py-2 border border-gray-300'>Key</td>
-            <td class='font-bold px-2 py-2 border border-gray-300'>Value</td>
-            <td class='font-bold px-2 py-2 border border-gray-300'>Status</td>
-            <td class='font-bold px-2 py-2 border border-gray-300'>Dirty</td>
-            <td class='font-bold px-2 py-2 border border-gray-300'>Updater</td>
+            {@render nodeHeader('Numb')}
+            {@render nodeHeader('Key')}
+            {@render nodeHeader('Value')}
+            {@render nodeHeader('Status')}
+            {@render nodeHeader('Dirty')}
+            {@render nodeHeader('Updater')}
         </tr>
     </thead>
     <tbody>
-        {#each nodeArray as node}
+        {#each nodeArray as node, n}
         <tr>
-            <td class='px-2 py-2 border border-gray-300'>{node.key}</td>
-            <td class='px-2 py-2 border border-gray-300'>{node.value}</td>
-            <td class='px-2 py-2 border border-gray-300'>{node.status}</td>
-            <td class='px-2 py-2 border border-gray-300'>{node.dirty}</td>
-            <td class='px-2 py-2 border border-gray-300'>{node.updater.name}</td>
+            {@render nodeRow(n+1)}
+            {@render nodeRow(node.key)}
+            {@render nodeRow(node.value)}
+            {@render nodeRow(node.status)}
+            {@render nodeRow(node.dirty)}
+            {@render nodeRow(node.updater.name)}
         </tr>
         {/each}
     </tbody>
 </table>
 {/snippet}
+<!-- END nodeTable Snippet -->
 
-{@render nodeTable('Selected Nodes', dag.selected())}
-{@render nodeTable('Active Input Nodes', dag.activeInputs())}
-{@render nodeTable('All Nodes', dag.nodes)}
+
+<!-- configTable Snippet -->
+{#snippet configRow(content)}
+    <td class='px-2 py-2 border border-gray-300'>{content}</td>
+{/snippet}
+{#snippet configHeader(content)}
+    <td class='font-bold px-2 py-2 border border-gray-300'>{content}</td>
+{/snippet}
+{#snippet configTable(title, configArray)}
+<h2 class='mt-4 text-base font-bold'>{title} ({configArray.length})</h2>
+<table class='table-auto text-sm'>
+    <thead>
+        <tr>
+            {@render configHeader('Numb')}
+            {@render configHeader('Key')}
+            {@render configHeader('Value')}
+        </tr>
+    </thead>
+    <tbody>
+        {#each configArray as cfg, n}
+        <tr>
+            {@render configRow(n+1)}
+            {@render configRow(cfg.key)}
+            {@render configRow(cfg.value)}
+        </tr>
+        {/each}
+    </tbody>
+</table>
+{/snippet}
+<!-- END configTable Snippet -->
+
 </div>

@@ -1,3 +1,8 @@
+/**
+ * BehaveModule assembles the node definitions of all Modules comprising the
+ * Behave Fire Behavior Modeling System into a Dag.
+ */
+import { Dag } from './Dag.js'
 import {Paths as P} from './Paths.js'
 import {CanopyModule} from './CanopyModule.js'
 import {CanopyConfig} from './CanopyConfig.js'
@@ -29,13 +34,13 @@ import {WindSpeedReductionConfig} from './WindSpeedReductionConfig.js'
 
 export class BehaveModule {
     constructor() {
-        this.nodeMap = new Map()
         this.configMap = new Map()
-        this._buildNodeMap()
+        this._createDag()
+        this.dag.configure()
     }
-    _buildNodeMap() {
-        this.nodeMap = new Map()
-        // Define each Module's nodes and store names of shared nodes
+
+    _createDag() {
+        // Get each Module's node defs and store names of shared nodes
 
         // CanopyModule produces 2 nodes referenced by the WindSpeedReductionModule
         // and ??? nodes by the CanopyFireModule
@@ -84,7 +89,7 @@ export class BehaveModule {
 
         // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
         // and references 1 node produced by the LiveFuelMoistureModule
-        const curingCfg = new LiveFuelCuringConfig('liveFuelMoistureInputs')
+        const curingCfg = new LiveFuelCuringConfig('liveFuelCuringInputs')
         const curingMod = new LiveFuelCuringModule('weather/', curingCfg,
             moisHerbNode)
         const curedNode = curingMod.path + P.curingApplied
@@ -125,11 +130,12 @@ export class BehaveModule {
         const midflameNode1 = midflameMod1.path + P.midflame
 
         // SurfaceFireModule
-        const fireCfg = new SurfaceFireConfig('primarySurfaceFireLimit')
+        const fireCfg = new SurfaceFireConfig('effectiveWindSpeedLimit')
         const fireMod1 = new SurfaceFireModule('primary/', fireCfg,
             bedMod1.path, slopeRatioNode, upslopeDirNode, midflameNode1, wdirUpNode)
         
-        this._createNodeMap([
+        // Create the this.dag from here so we can garbage collect the nodeDefs
+        this.dag = new Dag([
             // independent modules requiring no shared nodes as input
             ...constantsMod.nodes,
             ...canopyMod.nodes,
@@ -147,7 +153,9 @@ export class BehaveModule {
             ...wsrfMod1.nodes,
             ...midflameMod1.nodes,
             ...fireMod1.nodes,
-        ])
+        ].sort((a, b) => { return a.key - b.key }), 'Behave')
+
+        // Also build the config map
         this.configMap = new Map([
             [canopyCfg.key, canopyCfg],
             [deadmoisCfg.key, deadmoisCfg],
@@ -164,30 +172,18 @@ export class BehaveModule {
             [fireCfg.key, fireCfg],
         ])
     }
-    _createNodeMap(nodeDefs) {
-        for(let nodeDef of nodeDefs) {
-            // Create a dagNode from the Module node definition
-            const [key, value, units, cfg, options] = nodeDef
-            const dagNode = {key, value, units, cfg, options: []}
-            for(let option of options) {
-                const [value, updater, args] = option
-                dagNode.options.push({value, updater, suppliers: [...args]})
-            }
-            // Add it to the map, reporting any overwrites
-            if (this.nodeMap.has(key)) {
-                const prev = this.nodeMap.get(key)
-                console.log(`Node ${key} was previously defined`)
-                console.log('Previous:', prev)
-                console.log('Current:', dagNode)
-            }
-            this.nodeMap.set(key, dagNode)
-        }
-    }
-    configure() {
-        for(let node of this.nodes()) {
-        }
-    }
-    configs() { return  [...this.configMap.values()] }
-    nodes() { return  [...this.nodeMap.values()] }
 
+    // Reconfigure a Dag nodeMap from current Node cfg references
+    // Client accesses this method by calling:
+    //      setConfig([[key, value],[key, value]...])
+    // which updates this.configMap with the passed values, then calls this method.
+    //
+    setConfig(items) {
+        for(let item of items) {
+            const [key, value] = item
+            const cfg = this.configMap.get(key)
+            cfg.value = value
+        }
+        this.dag.configure()
+    }
 }

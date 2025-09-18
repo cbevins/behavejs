@@ -26,7 +26,7 @@ export class WindDirectionModule extends ModuleBase {
                 [cfg.sourceFromNorth, Dag.input, []],
                 [cfg.upslope, Compass.compassOpposite, [upslope]]]],
 
-            [path+P.wdirSourceFromUp, 0, U.compass, '', [
+            [path+P.wdirSourceFromUp, 0, U.compass, null, [
                 ['', Compass.compassOpposite, [path+P.wdirHeadFromUp]]]],
 
             [path+P.wdirHeadFromNo, 0, U.compass, cfg, [

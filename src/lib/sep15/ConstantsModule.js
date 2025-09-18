@@ -8,11 +8,11 @@ export class ConstantsModule extends ModuleBase {
         super(prefix, P.constantsSelf, P.constantsMod)
         const path = this.prefix
         this.nodes = [
-            [path+P.fuelDeadCat, 'dead', U.fuelLife, '', [['', Dag.constant, []]]],
-            [path+P.fuelLiveCat, 'live', U.fuelLife, '', [['', Dag.constant, []]]],
-            [path+P.zero, 0, '', '', [['', Dag.constant, []]]],
-            [path+P.one, 1, '', '', [['', Dag.constant, []]]],
-            [path+P.fuelUnused, 'unused', U.fuelType, '', [['', Dag.constant, []]]],
+            [path+P.fuelDeadCat, 'dead', U.fuelLife, null, [['', Dag.constant, []]]],
+            [path+P.fuelLiveCat, 'live', U.fuelLife, null, [['', Dag.constant, []]]],
+            [path+P.zero, 0, '', null, [['', Dag.constant, []]]],
+            [path+P.one, 1, '', null, [['', Dag.constant, []]]],
+            [path+P.fuelUnused, 'unused', U.fuelType, null, [['', Dag.constant, []]]],
         ]
     }
 }
