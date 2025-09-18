@@ -1,8 +1,9 @@
-export class SlopeSteepnessConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class SlopeSteepnessConfig extends ConfigBase {
+    constructor(key='slope/steepness/input') {
+        super(key)
         // keys for outside reference
-        this.ratio = 'observed ratio of rise-to-reach'
+        this.ratio = 'ratio'
         this.degrees = 'degrees'
         this.map = 'map'
         this.options = [this.ratio, this.degrees, this.map]

@@ -1,6 +1,7 @@
-export class CanopyConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class CanopyConfig extends ConfigBase {
+    constructor(key='canopy/height/inputs') {
+        super(key)
         // keys for outside reference
         this.baseHeight   = 'height-base'
         this.heightBase   = this.baseHeight

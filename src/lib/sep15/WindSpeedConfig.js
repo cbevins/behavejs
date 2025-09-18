@@ -1,6 +1,7 @@
-export class WindSpeedConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class WindSpeedConfig extends ConfigBase {
+    constructor(key='wind/speed/input') {
+        super(key)
         // keys for outside reference
         this.at20ft = 'at 20-ft'
         this.at10m  = 'at 10-m'

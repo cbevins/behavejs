@@ -2,7 +2,7 @@
  * BehaveModule assembles the node definitions of all Modules comprising the
  * Behave Fire Behavior Modeling System into a Dag.
  */
-import { Dag } from './Dag.js'
+import {Dag} from './Dag.js'
 import {Paths as P} from './Paths.js'
 import {CanopyModule} from './CanopyModule.js'
 import {CanopyConfig} from './CanopyConfig.js'
@@ -22,9 +22,9 @@ import {SlopeSteepnessConfig} from './SlopeSteepnessConfig.js'
 import {SurfaceFireModule} from './SurfaceFireModule.js'
 import {SurfaceFireConfig} from './SurfaceFireConfig.js'
 import {StandardFuelModelModule} from './StandardFuelModelModule.js'
-import {StandardFuelModelConfig} from './StandardFuelModelConfig.js'
+import {PrimaryStandardFuelModelConfig, SecondaryStandardFuelModelConfig} from './StandardFuelModelConfig.js'
 import {SurfaceFuelModule} from './SurfaceFuelModule.js'
-import {SurfaceFuelConfig} from './SurfaceFuelConfig.js'
+import {PrimarySurfaceFuelConfig, SecondarySurfaceFuelConfig} from './SurfaceFuelConfig.js'
 import {WindDirectionModule} from './WindDirectionModule.js'
 import {WindDirectionConfig} from './WindDirectionConfig.js'
 import {WindSpeedModule} from './WindSpeedModule.js'
@@ -44,7 +44,7 @@ export class BehaveModule {
 
         // CanopyModule produces 2 nodes referenced by the WindSpeedReductionModule
         // and ??? nodes by the CanopyFireModule
-        const canopyCfg = new CanopyConfig('canopyHeightInputs')
+        const canopyCfg = new CanopyConfig()
         const canopyMod = new CanopyModule('', canopyCfg)
         const canopySheltersNode = canopyMod.path + P.canopyShelters
         const canopyWsrfNode = canopyMod.path + P.canopyWsrf
@@ -52,7 +52,7 @@ export class BehaveModule {
         const constantsMod = new ConstantsModule('')
 
         // DeadFuelMoistureModel produces 3 nodes referenced used by the StandardFuelModelModule
-        const deadmoisCfg = new DeadFuelMoistureConfig('deadFuelMoistureInputs')
+        const deadmoisCfg = new DeadFuelMoistureConfig()
         const deadmoisMod = new DeadFuelMoistureModule('weather/', deadmoisCfg)
         const mois1hNode = deadmoisMod.path + P.moisDead1
         const mois10hNode = deadmoisMod.path + P.moisDead10
@@ -60,36 +60,36 @@ export class BehaveModule {
 
         // LiveFuelMoistureModel produces 2 node referenced by the StandardFuelModelModule
         // and 1 of them is also referenced by the LiveFuelCuringModule
-        const livemoisCfg = new LiveFuelMoistureConfig('liveFuelMoistureInputs')
+        const livemoisCfg = new LiveFuelMoistureConfig()
         const livemoisMod = new LiveFuelMoistureModule('weather/', livemoisCfg)
         const moisHerbNode = livemoisMod.path + P.moisLiveHerb  // Referenced by LiveFuelCuringModule
         const moisStemNode = livemoisMod.path + P.moisLiveStem
 
         // SlopeDirectionModule produces 1 node referenced by the SurfaceFireModule
-        const slpdirCfg = new SlopeDirectionConfig('slopeDirectionInputs')
+        const slpdirCfg = new SlopeDirectionConfig()
         const slpdirMod = new SlopeDirectionModule('terrain/', slpdirCfg)
         const upslopeDirNode = slpdirMod.path + P.slopeUp
 
         // SlopeSteepnessModule produces 1 node referenced by the SurfaceFireModule
-        const slpsteepCfg = new SlopeSteepnessConfig('slopeSteepnessInputs')
+        const slpsteepCfg = new SlopeSteepnessConfig()
         const slpsteepMod = new SlopeSteepnessModule('terrain/', slpsteepCfg)
         const slopeRatioNode = slpsteepMod.path + P.slopeRatio
 
         // WindSpeedModule produces 1 node referenced by the MidflameWindSpeedModule
-        const windspdCfg = new WindSpeedConfig('windSpeedInputs')
+        const windspdCfg = new WindSpeedConfig()
         const windspdMod = new WindSpeedModule('weather/', windspdCfg)
         const windAt20ftNode = windspdMod.path + P.wspd20ft
 
         // WindDirectionModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the SlopeDirectionModule
-        const winddirCfg = new WindDirectionConfig('windDirectionInputs')
+        const winddirCfg = new WindDirectionConfig()
         const winddirMod = new WindDirectionModule('weather/', winddirCfg,
             upslopeDirNode)
         const wdirUpNode = winddirMod.path + P.wdirSourceFromUp
 
         // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
         // and references 1 node produced by the LiveFuelMoistureModule
-        const curingCfg = new LiveFuelCuringConfig('liveFuelCuringInputs')
+        const curingCfg = new LiveFuelCuringConfig()
         const curingMod = new LiveFuelCuringModule('weather/', curingCfg,
             moisHerbNode)
         const curedNode = curingMod.path + P.curingApplied
@@ -102,13 +102,13 @@ export class BehaveModule {
         // and references 3 nodes from the DeadFuelMoistureModule, 2 nodes from the
         // LiveFuelMoistureModule, and 1 node from the LiveFuelCuringModule.
         // Need separate primary and secondary instances as they may use different fuel models
-        const stdCfg1 = new StandardFuelModelConfig('primaryStandardModelInputs')
+        const stdCfg1 = new PrimaryStandardFuelModelConfig()
         const stdMod1 = new StandardFuelModelModule('primary/model/', stdCfg1,
             mois1hNode, mois10hNode, mois100hNode, moisHerbNode, moisStemNode, curedNode)
 
         // SurfaceFuelModule produces
-        // Need separate primary and secondary instances  as they may use different fuel model domains
-        const bedCfg1 = new SurfaceFuelConfig('primarySurfaceFuelDomain')
+        // Need separate primary and secondary instances as they may use different fuel model domains
+        const bedCfg1 = new PrimarySurfaceFuelConfig()
         const bedMod1 = new SurfaceFuelModule('primary/', bedCfg1,
             stdMod1.path, '', '', '')
         const bedWsrfNode1 = bedMod1.path + P.fuelWsrf
@@ -116,7 +116,7 @@ export class BehaveModule {
         // WindSpeedReductionModule produces 1 node referenced by the MidflameWindSpeedModule
         // and references 2 nodes from the CanopyModule and 1 node from the SurfaceFuelModule.
         // Need separate primary and secondary instances since this module requires fuel bed depth
-        const wsrfCfg = new WindSpeedReductionConfig('windSpeedReductionInputs')
+        const wsrfCfg = new WindSpeedReductionConfig()  // Primary and secondary use the same Config instance
         const wsrfMod1 = new WindSpeedReductionModule('primary/', wsrfCfg,
             canopySheltersNode, canopyWsrfNode, bedWsrfNode1)
         const wsrfFactorNode1 = wsrfMod1.path + P.wsrfMidflame
@@ -124,13 +124,13 @@ export class BehaveModule {
         // MidflameWindSpeedModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the WindSpeedModule and 1 node from the WindSpeedReductionModule
         // Need separate primary and secondary instances since this module requires fuel bed wsrf
-        const midflameCfg = new MidflameWindSpeedConfig('midflameInputs')
+        const midflameCfg = new MidflameWindSpeedConfig()  // Primary and secondary use the same Config instance
         const midflameMod1 = new MidflameWindSpeedModule('primary/', midflameCfg,
             windAt20ftNode, wsrfFactorNode1)
         const midflameNode1 = midflameMod1.path + P.midflame
 
         // SurfaceFireModule
-        const fireCfg = new SurfaceFireConfig('effectiveWindSpeedLimit')
+        const fireCfg = new SurfaceFireConfig()
         const fireMod1 = new SurfaceFireModule('primary/', fireCfg,
             bedMod1.path, slopeRatioNode, upslopeDirNode, midflameNode1, wdirUpNode)
         

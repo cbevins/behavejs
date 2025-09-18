@@ -1,4 +1,4 @@
-import { BehaveLibrary as Lib } from "../modules/BehaveLibrary.js"
+import { BehaveLibrary as Lib } from "../modulesDEP/BehaveLibrary.js"
 
 export const BehaveMaster = new Map([
 ["constants/fuel/life/dead category",

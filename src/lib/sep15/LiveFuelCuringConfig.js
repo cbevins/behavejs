@@ -1,14 +1,16 @@
-export class LiveFuelCuringConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class LiveFuelCuringConfig extends ConfigBase {
+    constructor(key='fuel/curing fraction/parameter') {
+        super(key)
         // keys for outside reference
-        this.observed = 'observed'
+        this.input = 'input'
+        this.observed = 'input' // for backwards compatability
         this.estimated = 'estimated'
-        this.options = [this.observed, this.estimated]
+        this.options = [this.input, this.estimated]
         this.prompt = 'live fuel curing fraction is'
         this.prompts = [
-            [this.observed, 'input parameter'],
-            [this.estimated, 'estimated from herb moisture content'],
+            [this.input, 'an input parameter'],
+            [this.estimated, 'estimated from live herb moisture content'],
         ]
         this.value = this.options[0]
     }

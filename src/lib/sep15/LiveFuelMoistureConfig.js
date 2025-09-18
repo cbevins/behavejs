@@ -1,6 +1,7 @@
-export class LiveFuelMoistureConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class LiveFuelMoistureConfig extends ConfigBase {
+    constructor(key='moisture/live/inputs') {
+        super(key)
         // keys for outside reference
         this.particle = 'particle'
         this.category = 'category'

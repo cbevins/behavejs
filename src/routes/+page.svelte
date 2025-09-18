@@ -1,19 +1,24 @@
 <script>
     import { BehaveModule } from '$lib/sep15/BehaveModule.js'
+
     // Step 1 - create the Behave Dag
     const behave = new BehaveModule()
     const dag = behave.dag
     // Reconfigure
     behave.setConfig([
-        ['deadFuelMoistureInputs', 'particle'],
-        ['effectiveWindSpeedLimit', 'applied'],
-        ['liveFuelCuringInputs', 'estimated'],
-        ['liveFuelMoistureInputs', 'particle'],
-        ['midflameInputs', 'observed'],
-        ['primaryStandardModelInputs', 'catalog'],
-        ['primarySurfaceFuelDomain', 'standard'],
-        ['slopeDirectionInputs', 'up-slope'],
-        ['windDirectionInputs', 'source from north'],
+        ['canopy/height/inputs', [['height-base','ratio-height','height-length','ratio-base','ratio-length','length-base'][0]]],
+        ['fire/effective wind speed limit', [['applied', 'not applied'][0]]],
+        ['fuel/curing fraction/parameter', [['input','estimated'][0]]],
+        ['midflame/wind speed/parameter', [['input','estimated'][0]]],
+        ['midflame/wind speed reduction/parameter',[['input','estimated'][0]]],
+        ['moisture/dead/inputs',  [['particle', 'category'][0]]],
+        ['moisture/live/inputs',  [['particle', 'category'][0]]],
+        ['primary/fuel/domain',   [['standard', 'chaparral', 'palmetto', 'aspen'][0]]],
+        ['primary/standard model/input', [['catalog', 'custom'][0]]],
+        ['slope/direction/input', [['up-slope', 'down-slope'][0]]],
+        ['slope/steepness/input', [['ratio', 'degrees', 'map'][0]]],
+        ['wind/speed/input',      [['at 20-ft', 'at 10-m'][0]]],
+        ['wind/direction/input',  [['source from north', 'heading from up-slope', 'up-slope'][0]]],
     ])
     // Step 2 - select outputs
     const bulk = dag.nodeRef('primary/bed/bulk density')

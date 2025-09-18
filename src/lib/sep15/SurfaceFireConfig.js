@@ -1,6 +1,7 @@
-export class SurfaceFireConfig {
-constructor(key) {
-    this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class SurfaceFireConfig extends ConfigBase {
+    constructor(key='fire/effective wind speed limit') {
+        super(key)
     // keys for outside reference
     this.applied = 'applied'
     this.notApplied = 'not applied'

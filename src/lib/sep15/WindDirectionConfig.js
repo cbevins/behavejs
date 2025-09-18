@@ -1,15 +1,16 @@
-export class WindDirectionConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class WindDirectionConfig extends ConfigBase {
+    constructor(key='wind/direction/input') {
+        super(key)
         // keys for outside reference
         this.headingFromUpslope = 'heading from up-slope'
         this.sourceFromNorth = 'source from north'
-        this.upslope = 'upslope'
+        this.upslope = 'up-slope'
         this.options = [this.sourceFromNorth, this.headingFromUpslope, this.upslope]
         this.prompt = 'the wind direction is specified as'
         this.prompts = [
             [this.headingFromUpslope, 'heading degrees from up-slope'],
-            [this.upslope, 'always up-slope'],
+            [this.upslope, 'always blows up-slope'],
             [this.sourceFromNorth, 'source degrees from north'],
         ]
         this.value = this.options[0]

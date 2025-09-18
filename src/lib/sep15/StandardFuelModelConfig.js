@@ -1,9 +1,10 @@
-export class StandardFuelModelConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class StandardFuelModelConfig extends ConfigBase {
+    constructor(key='') {
+        super(key)
         // keys for outside reference
         this.catalog = 'catalog'
-        this.custom = 'custom'
+        this.custom  = 'custom'
         this.options = [this.catalog, this.custom]
         this.prompt = 'standard fuel model parameters are'
         this.prompts = [
@@ -11,5 +12,17 @@ export class StandardFuelModelConfig {
             [this.custom, 'entered as custom input parameters'],
         ]
         this.value = this.options[0]
+    }
+}
+export class PrimaryStandardFuelModelConfig extends StandardFuelModelConfig {
+    constructor(key='primary/standard model/input') {
+        super(key, false)
+        this.prompt = 'Primary ' + this.prompt
+    }
+}
+export class SecondaryStandardFuelModelConfig extends StandardFuelModelConfig {
+    constructor(key='secondary/standard model/input') {
+        super(key, true)
+        this.prompt = 'Secondary ' + this.prompt
     }
 }

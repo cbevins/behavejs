@@ -1,6 +1,7 @@
-export class DeadFuelMoistureConfig {
-    constructor(key) {
-        this.key = key
+import { ConfigBase } from './ConfigBase.js'
+export class DeadFuelMoistureConfig extends ConfigBase {
+    constructor(key='moisture/dead/inputs') {
+        super(key)
         // keys for outside reference
         this.particle = 'particle'
         this.category = 'category'
