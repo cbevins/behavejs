@@ -84,7 +84,7 @@ export class BehaveDag {
         const winddirCfg = this._addCfg(new WindDirectionConfig())
         const winddirMod = new WindDirectionModule('weather/', winddirCfg,
             upslopeDirNode)
-        const wdirUpNode = winddirMod.path + P.wdirSourceFromUp
+        const wdirUpNode = winddirMod.path + P.wdirHeadFromUp
 
         // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
         // and references 1 node produced by the LiveFuelMoistureModule

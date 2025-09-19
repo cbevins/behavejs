@@ -59,6 +59,7 @@ export class Dag {
         }
         return [...configs]
     }
+    activeConfigsByKey() { return this.activeConfigs().sort((a, b) => a.key.localeCompare(b.key))}
 
     activeNodes() {
         const active = []
@@ -104,13 +105,17 @@ export class Dag {
     nodes() { return  [...this.nodeMap.values()] }
     nodesByKey() { return this.nodes().sort((a, b) => a.key.localeCompare(b.key))}
 
-    // Called by client declare one or more DagNodes as 'selections'.
-    // 'refOrKeyArray' may be an array or singl arg of DagNode keys or references
-    select(refOrKeyArray) {
-        const ar = Array.isArray(refOrKeyArray) ? refOrKeyArray : [refOrKeyArray]
+    /**
+     * Called by client to declare one or more DagNodes as 'selections'.
+     * @param {*} whatever One more node keys or references, where each arg may
+     * be a scalar string or an array fo strings (It will be flattened out for you).
+     * @returns 
+     */
+    select(whatever) {
         this._initNodes()   // set all nodes to Dag.dirty and Dag.ignored
         this.selectSet = new Set()
-        for(let refOrKey of ar) {
+        const args = [...arguments].flat()
+        for(let refOrKey of args) {
             const node = this.nodeRef(refOrKey, 'select()')
             this.selectSet.add(node)  // add/replace this to the Set() of selected nodes
             this._propagateActiveToSuppliers(node)
@@ -121,7 +126,6 @@ export class Dag {
         this._initActiveInputsSet()
         return this
     }
-
     selected() { return [...this.selectSet] }
     selectedByKey() { return this.selected().sort((a, b) => a.key.localeCompare(b.key))}
 

@@ -5,7 +5,8 @@
     const behave = new BehaveDag()
     const dag = behave.dag
     console.log('REFRESHED :', new Date())
-    // Reconfigure
+
+    // Step 2 - configure the DAG
     behave.setConfig([
         ["canopy/height/inputs", ["height-base","ratio-height","height-length","ratio-base","ratio-length","length-base"][0]],
         ["fire/effective wind speed limit", ["applied","not applied"][0]],
@@ -16,13 +17,12 @@
         ["moisture/live/inputs", ["particle","category"][0]],
         ["primary/standard model/input", ["catalog","custom"][0]],
         ["primary/fuel/domain", ["standard","chaparral","palmetto","aspen"][0]],
-        ["slope/direction/input", ["up-slope","down-slope"][0]],
+        ["slope/direction/input", ["up-slope","down-slope"][1]],
         ["slope/steepness/input", ["ratio","degrees","map"][0]],
         ["wind/speed/input", ["at 20-ft","at 10-m"][0]],
         ["wind/direction/input", ["source from north","heading from up-slope","up-slope"][0]],
     ])
-
-    const laterMaybe = [
+    const futureConfigs = [
         // Future Surface fire
         ["secondary/standard model/input", ["catalog","custom"][0]],
         ["secondary/fuel/domain", ["standard","chaparral","palmetto","aspen"][0]],
@@ -38,26 +38,32 @@
         ['fire/vector/input', ['from head', 'from up-slope', 'from north'][2]],
     ]
 
-    // Step 2 - select outputs
-    const bulk = dag.nodeRef('primary/bed/bulk density')
+    // Step 3 - select outputs
+    const bulk    = dag.nodeRef('primary/bed/bulk density')
+    const cured   = dag.nodeRef('weather/curing/fraction/applied')
     const rosHead = dag.nodeRef('primary/fire/heading/spread rate')
-    dag.select(rosHead)
-    const activeConfigs = dag.activeConfigs()
+    const rosDirUp  = dag.nodeRef('primary/fire/heading/direction/from up-slope')
+    const rosDirNo  = dag.nodeRef('primary/fire/heading/direction/from north')
+    // Can mix and match node keys and references, as scalaras or arrays
+    dag.select(bulk, [cured, 'primary/fire/heading/spread rate'], rosDirUp, rosDirNo)
+
+    // Step 3 - get active configurations and inputs
+    const activeConfigs = dag.activeConfigsByKey()
+
     // Step 3 - set inputs
-    const key = dag.nodeRef('primary/model/standard/key')
-    const cured = dag.nodeRef('weather/curing/fraction/observed')
-    const midflame = dag.nodeRef('primary/wind/speed/midflame')
+    const key        = dag.nodeRef('primary/model/standard/key')
+    const midflame   = dag.nodeRef('primary/wind/speed/midflame')
+    const aspect     = dag.nodeRef('terrain/slope/direction/down-slope')
+    const upslope    = dag.nodeRef('terrain/slope/direction/up-slope')
     const slopeRatio = dag.nodeRef('terrain/slope/steepness/ratio')
-    const curing = dag.nodeRef('weather/curing/fraction/observed')
-    const mois1 = dag.nodeRef('weather/moisture/dead/1-h')
-    const mois10 = dag.nodeRef('weather/moisture/dead/10-h')
-    const mois100 = dag.nodeRef('weather/moisture/dead/100-h')
-    const moisHerb = dag.nodeRef('weather/moisture/live/herb')
-    const moisStem = dag.nodeRef('weather/moisture/live/stem')
+    const mois1      = dag.nodeRef('weather/moisture/dead/1-h')
+    const mois10     = dag.nodeRef('weather/moisture/dead/10-h')
+    const mois100    = dag.nodeRef('weather/moisture/dead/100-h')
+    const moisHerb   = dag.nodeRef('weather/moisture/live/herb')
+    const moisStem   = dag.nodeRef('weather/moisture/live/stem')
     const windFromNorth = dag.nodeRef('weather/wind/direction/source/from north')
-    const upslopeDir = dag.nodeRef('terrain/slope/direction/up-slope')
+    const windHeadUpslp = dag.nodeRef('weather/wind/direction/heading/from up-slope')
     dag.set(key, '10')
-    dag.set(cured, 0.5)
     dag.set(midflame, 880)
     dag.set(mois1, 0.05)
     dag.set(mois10, 0.07)
@@ -65,11 +71,11 @@
     dag.set(moisHerb, 0.5)
     dag.set(moisStem, 1.5)
     dag.set(slopeRatio, 0.25)
-    dag.set(upslopeDir, 0)
+    dag.set(aspect, 180)
     dag.set(windFromNorth, 270)
 
     // Step 4 - get updated values of selected nodes
-    dag.get(rosHead)
+    dag.updateAll()
 </script>
 
 <div class='mx-4 my-4'>
@@ -79,7 +85,7 @@
 {@render nodeTable('Active Inputs Nodes', dag.activeInputsByKey())}
 <!-- {@render nodeTable('Active Nodes', dag.activeNodesByKey())} -->
 {@render nodeTable('All Input Nodes', dag.activeInputsByKey())}
-{@render configTable('Active Configurations', activeConfigs)}
+{@render configTable('Active Configurations', dag.activeConfigsByKey())}
 {@render nodeTable('All Nodes', dag.nodesByKey())}
 
 <!-- nodeTable Snippet -->

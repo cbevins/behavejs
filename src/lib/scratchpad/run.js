@@ -1,6 +1,9 @@
-import { Dag, L, P } from '../index.js'
-import { BehaveModule } from '../index.js'
+import { BehaveModule } from "./BehaveDag.js"
 import { Util } from '../index.js'
+
+// Step 1 - create the Behave Dag
+const behave = new BehaveModule()
+const dag = behave.dag
 
 console.log(new Date())
 

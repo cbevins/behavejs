@@ -9,9 +9,9 @@ export class WindDirectionConfig extends ConfigBase {
         this.options = [this.sourceFromNorth, this.headingFromUpslope, this.upslope]
         this.prompt = 'the wind direction is specified as'
         this.prompts = [
+            [this.sourceFromNorth, 'source degrees from north'],
             [this.headingFromUpslope, 'heading degrees from up-slope'],
             [this.upslope, 'always blows up-slope'],
-            [this.sourceFromNorth, 'source degrees from north'],
         ]
         this.value = this.options[0]
     }
