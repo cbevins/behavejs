@@ -1,14 +1,14 @@
 <script>
 	import { Paths as P } from '$lib/index.js'
-    import { BehaveDag } from '$lib/index.js'
+    import { Wfms } from '$lib/index.js'
 
     // Step 1 - create the Behave Dag
-    const behave = new BehaveDag()
-    const dag = behave.dag
+    const wfms = new Wfms()
+    const dag = wfms.dag
     console.log('REFRESHED :', new Date())
 
     // Step 2 - configure the DAG
-    behave.setConfig([
+    wfms.setConfig([
         [P.cfgCanopy,       ["height-base","ratio-height","height-length",
                             "ratio-base","ratio-length","length-base"][0]],
         [P.cfgEffWind,      ["applied","not applied"][0]],
@@ -66,7 +66,8 @@
 </script>
 
 <div class='mx-4 my-4'>
-<h1 class='text-2xl font-bold>'>BehaveJS - {new Date()}</h1>
+<h1 class='text-2xl font-bold>'>Wildland Fire Modeling System</h1>
+<h1 class='text-lg font-bold>'>{new Date()}</h1>
 
 {@render nodeTable('Selected Nodes', dag.selectedByKey())}
 {@render nodeTable('Active Inputs Nodes', dag.activeInputsByKey())}

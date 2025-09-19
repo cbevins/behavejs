@@ -3,7 +3,7 @@ export {Dag} from './dag/Dag.js'
 export {dfsSort, kahnSort} from './dag/dagTopoSort.js'
 
 // Dag Node Modules
-export {BehaveDag} from './modules/BehaveDag.js'
+export {Wfms} from './modules/Wfms.js'
 export {Paths} from './modules/Paths.js'
 export {Units} from './modules/Units.js'
 

@@ -3,7 +3,7 @@ import { ModuleBase } from './ModuleBase.js'
 import { Paths as P} from './Paths.js'
 import { Units as U} from './Units.js'
 import { FuelElementEquations as Fuel } from '../index.js'
-import { CompassEquations as Compass } from '../index.js'
+import { Calc, CompassEquations as Compass } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
 
@@ -135,6 +135,11 @@ export class SurfaceFireModule extends ModuleBase {
                 [cfg.applied, Dag.assign, [fire7+P.fireWeff]],
                 [cfg.notApplied, Dag.assign, [fire6+P.fireWeff]]]],
 
+            [fire+P.fireWeffLim, 0, U.windSpeed, null, [
+                ['', Dag.assign, [fire4+P.fireWeff]]]],
+            [fire+P.fireWeffX, false, U.bool, null, [
+                ['', Calc.greaterThan, [fire3+P.fireWeff, fire4+P.fireWeff]]]],
+
             // Direction of maximum spread
             [fire+P.fireHeadDirUp, 0, U.compass, null, [
                 ['', Fire.spreadDirectionFromUpslope, [fire2+P.fireRosXcomp, fire2+P.fireRosYcomp, fire2+P.fireRos]]]], 
@@ -151,6 +156,10 @@ export class SurfaceFireModule extends ModuleBase {
                 ['', Fire.firelineIntensity, [fire+P.fireHeadRos, bed+P.fireRxi, fire+P.fireTaur]]]],
             [fire+P.fireHeadFlame, 0, U.fireFlame, null, [
                 ['', Fire.flameLength, [fire+P.fireHeadFli]]]],
+            [fire+P.fireMidf, 0, U.windSpeed, null, [
+                ['', Dag.assign, [midflameWspd]]]],
+            [fire+P.fireRxi, 0, U.fireRxi, null, [
+                ['', Dag.assign, [bed+P.fireRxi]]]]
         ]
     }
 }

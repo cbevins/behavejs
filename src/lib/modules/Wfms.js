@@ -1,5 +1,6 @@
 /**
- * BehaveModule assembles the node definitions of all Modules comprising the
+ * Wfms is the Wildland Fire Modeling System for Javascript.
+ * It assembles the node definitions of all Modules comprising the
  * Behave Fire Behavior Modeling System into a Dag.
  */
 import {Dag} from '../index.js'
@@ -21,6 +22,8 @@ import {SlopeSteepnessModule} from './SlopeSteepnessModule.js'
 import {SlopeSteepnessConfig} from './SlopeSteepnessConfig.js'
 import {SurfaceFireModule} from './SurfaceFireModule.js'
 import {SurfaceFireConfig} from './SurfaceFireConfig.js'
+import {SurfaceFireWtgModule} from './SurfaceFireWtgModule.js'
+import {SurfaceFireWtgConfig} from './SurfaceFireWtgConfig.js'
 import {StandardFuelModelModule} from './StandardFuelModelModule.js'
 import {PrimaryStandardFuelModelConfig, SecondaryStandardFuelModelConfig} from './StandardFuelModelConfig.js'
 import {SurfaceFuelModule} from './SurfaceFuelModule.js'
@@ -32,7 +35,7 @@ import {WindSpeedConfig} from './WindSpeedConfig.js'
 import {WindSpeedReductionModule} from './WindSpeedReductionModule.js'
 import {WindSpeedReductionConfig} from './WindSpeedReductionConfig.js'
 
-export class BehaveDag {
+export class Wfms {
     constructor() {
         this.configMap = new Map()
         this._createDag()
@@ -105,12 +108,21 @@ export class BehaveDag {
         const stdMod1 = new StandardFuelModelModule('primary/model/', stdCfg1,
             mois1hNode, mois10hNode, mois100hNode, moisHerbNode, moisStemNode, curedNode)
 
+        const stdCfg2 = this._addCfg(new SecondaryStandardFuelModelConfig())
+        const stdMod2 = new StandardFuelModelModule('secondary/model/', stdCfg2,
+            mois1hNode, mois10hNode, mois100hNode, moisHerbNode, moisStemNode, curedNode)
+
         // SurfaceFuelModule produces
         // Need separate primary and secondary instances as they may use different fuel model domains
         const bedCfg1 = this._addCfg(new PrimarySurfaceFuelConfig())
         const bedMod1 = new SurfaceFuelModule('primary/', bedCfg1,
             stdMod1.path, '', '', '')
         const bedWsrfNode1 = bedMod1.path + P.fuelWsrf
+
+        const bedCfg2 = this._addCfg(new PrimarySurfaceFuelConfig())
+        const bedMod2 = new SurfaceFuelModule('secondary/', bedCfg2,
+            stdMod2.path, '', '', '')
+        const bedWsrfNode2 = bedMod2.path + P.fuelWsrf
 
         // WindSpeedReductionModule produces 1 node referenced by the MidflameWindSpeedModule
         // and references 2 nodes from the CanopyModule and 1 node from the SurfaceFuelModule.
@@ -120,6 +132,10 @@ export class BehaveDag {
             canopySheltersNode, canopyWsrfNode, bedWsrfNode1)
         const wsrfFactorNode1 = wsrfMod1.path + P.wsrfMidflame
 
+        const wsrfMod2 = new WindSpeedReductionModule('secondary/', wsrfCfg,
+            canopySheltersNode, canopyWsrfNode, bedWsrfNode1)
+        const wsrfFactorNode2 = wsrfMod2.path + P.wsrfMidflame
+        
         // MidflameWindSpeedModule produces 1 node referenced by the SurfaceFireModule
         // and references 1 node from the WindSpeedModule and 1 node from the WindSpeedReductionModule
         // Need separate primary and secondary instances since this module requires fuel bed wsrf
@@ -128,11 +144,22 @@ export class BehaveDag {
             windAt20ftNode, wsrfFactorNode1)
         const midflameNode1 = midflameMod1.path + P.midflame
 
+        const midflameMod2 = new MidflameWindSpeedModule('secondary/', midflameCfg,
+            windAt20ftNode, wsrfFactorNode2)
+        const midflameNode2 = midflameMod2.path + P.midflame
+
         // SurfaceFireModule
         const fireCfg = this._addCfg(new SurfaceFireConfig())
         const fireMod1 = new SurfaceFireModule('primary/', fireCfg,
             bedMod1.path, slopeRatioNode, upslopeDirNode, midflameNode1, wdirUpNode)
-        
+        const fireMod2 = new SurfaceFireModule('secondary/', fireCfg,
+            bedMod2.path, slopeRatioNode, upslopeDirNode, midflameNode2, wdirUpNode)
+
+        // SurfaceFireWtgModule
+        const wtgCfg = this._addCfg(new SurfaceFireWtgConfig())
+        const wtgMod = new SurfaceFireWtgModule('surface/', wtgCfg,
+            fireMod1.path, fireMod2.path)
+        console.log(fireMod1.path, fireMod2.path)            
         // Create the this.dag from here so we can garbage collect the nodeDefs
         this.dag = new Dag([
             // independent modules requiring no shared nodes as input
@@ -152,7 +179,20 @@ export class BehaveDag {
             ...wsrfMod1.nodes,
             ...midflameMod1.nodes,
             ...fireMod1.nodes,
+            // ...stdMod2.nodes,
+            // ...bedMod2.nodes,
+            // ...wsrfMod2.nodes,
+            // ...midflameMod2.nodes,
+            // ...fireMod2.nodes,
         ].sort((a, b) => { return a.key - b.key }), 'Behave')
+
+        const mods = [
+            constantsMod, canopyMod, curingMod, deadmoisMod, livemoisMod,
+            slpsteepMod, slpdirMod, winddirMod, windspdMod,
+            stdMod1, bedMod1, wsrfMod1, midflameMod1, fireMod1,
+            stdMod2, bedMod2, wsrfMod2, midflameMod2, fireMod2,
+        ]
+        // for(let mod of mods) console.log(mod.path, mod.nodes.length)
     }
 
     _addCfg(cfg) {
@@ -164,7 +204,6 @@ export class BehaveDag {
     // Client accesses this method by calling:
     //      setConfig([[key, value],[key, value]...])
     // which updates this.configMap with the passed values, then calls this method.
-    //
     setConfig(items) {
         if (!Array.isArray(items))
             throw new Error(`setConfig() arg must be an array of [key,value] arrays`)

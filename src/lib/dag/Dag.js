@@ -157,7 +157,14 @@ export class Dag {
                 const [value, updater, args] = option
                 dagNode.options.push({value, updater, suppliers: [...args]})
             }
-            const active = options[0]
+            
+            // Ensure cfg integrity
+            if (cfg === null && options.length>1)
+                throw new Error(`Node "${key}" has no config but multiple options.`)
+            // Disable the following until we add more fuel domains
+            // if (cfg !== null && options.length<2)
+            //     throw new Error(`Node "${key}" has a config but only 1 option.`)
+
             // Add it to the map, reporting any overwrites
             if (this.nodeMap.has(key)) {
                 const prev = this.nodeMap.get(key)
@@ -189,11 +196,11 @@ export class Dag {
         for(let node of this.nodeMap.values()) {
             // Determine the node's current active configuration
             let active = node.options[0]    // Use first (or only) option by default
-            if(node.cfg) { // if configurable...
+            if(node.cfg && node.options.length>1) { // if configurable and more than 1 option...
                 let found = false
                 for(let i=0; i<node.options.length; i++) {
                     const optval = node.options[i].value
-                    if ( optval === node.cfg.value ) {//|| optval === node.cfg.any) {
+                    if ( optval === node.cfg.value || optval === node.cfg.any) {
                         active = node.options[i]
                         found = true
                         break

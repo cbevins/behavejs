@@ -1,4 +1,4 @@
-import { BehaveModule } from "./BehaveDag.js"
+import { BehaveModule } from "./Wfms.js"
 
 // Step 1 - create the Behave Dag
 const behave = new BehaveModule()
