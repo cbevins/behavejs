@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class WindSpeedConfig extends ConfigBase {
-    constructor(key='wind/speed/input') {
+    constructor(key=Paths.cfgWindSpeed) {
         super(key)
         // keys for outside reference
         this.at20ft = 'at 20-ft'

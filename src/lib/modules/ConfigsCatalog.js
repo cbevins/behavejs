@@ -1,3 +1,4 @@
+import {Paths} from './Paths.js'
 export class ConfigsCatalog {
     // inputs: midflame wind speed, wind from north, upslope dir, steepness ratio,
     // all 5 moistures and a fuel catalog key

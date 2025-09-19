@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class WindDirectionConfig extends ConfigBase {
-    constructor(key='wind/direction/input') {
+    constructor(key=Paths.cfgWindDir) {
         super(key)
         // keys for outside reference
         this.headingFromUpslope = 'heading from up-slope'

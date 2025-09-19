@@ -1,5 +1,34 @@
 export class Paths {
-    
+    // Configs
+    static cfgCanopy      = 'canopy/height/inputs'
+    static cfgFireInputs  = 'ellipse/fire/inputs'    // ['input', 'surface'] (ros, fli, fl, lwr, ews, dir)
+    static cfgEffWind     = 'surface/fire/effective wind speed limit'
+    static cfgChapInput1  = 'primary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
+    static cfgChapInput2  = 'secondary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
+    static cfgCured       = 'surface/fuel/curing fraction/parameter'
+    static cfgMidflame    = 'surface/midflame/wind speed/parameter'
+    static cfgWsrf        = 'surface/midflame/wind speed reduction/parameter'
+    static cfgMoisDead    = 'surface/moisture/dead/inputs'
+    static cfgMoisLive    = 'surface/moisture/live/inputs'
+    static cfgFuelDomain1 = 'surface/primary/fuel/domain'
+    static cfgFuelDomain2 = 'surface/secondary/fuel/domain'
+    static cfgStdInput1   = 'surface/primary/standard model/input'
+    static cfgStdInput2   = 'surface/secondary/standard model/input'
+    static cfgSurfFuels   = 'surface/weighting/fuels'    // = ['one', 'two']'
+    static cfgSurfWtg     = 'surface/weighting/method'   // = ['arithmetic', 'harmonic']'
+    static cfgSlopeDir    = 'terrain/slope/direction/input'
+    static cfgSlopeSteep  = 'terrain/slope/steepness/input'
+    static cfgWindDir     = 'weather/wind/direction/input'
+    static cfgWindSpeed   = 'weather/wind/speed/input'
+
+    // Fire Ellipse model
+    static cfgLwr = 'ellipse/length-to-width ratio/parameter' // ['input', 'estimated'][0]],
+    static cfgFli = 'ellipse/fireline intensity/parameter'    // ['fireline intensity', 'flame length'][1]],
+    static cfgVector = 'ellipse/vector/input'    // ['from head', 'from up-slope', 'from north'][2]],
+    // Fire Growth links with Surface Fire: 'input' is unlinked,
+    // 'surface' uses surface fire direction, spread rate, fli, lwr, and eff wind
+    static cfgEffLink = 'ellipse/parameters'  // ['input', 'surface'][0]],
+
     // CanopyModule
     static canopySelf     = 'canopy/'
     static canopyMod      = 'CanopyModule'

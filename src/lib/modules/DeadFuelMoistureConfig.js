@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class DeadFuelMoistureConfig extends ConfigBase {
-    constructor(key='moisture/dead/inputs') {
+    constructor(key=Paths.cfgMoisDead) {
         super(key)
         // keys for outside reference
         this.particle = 'particle'

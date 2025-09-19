@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class LiveFuelCuringConfig extends ConfigBase {
-    constructor(key='fuel/curing fraction/parameter') {
+    constructor(key=Paths.cfgCured) {
         super(key)
         // keys for outside reference
         this.input = 'input'

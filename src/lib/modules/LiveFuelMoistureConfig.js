@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class LiveFuelMoistureConfig extends ConfigBase {
-    constructor(key='moisture/live/inputs') {
+    constructor(key=Paths.cfgMoisLive) {
         super(key)
         // keys for outside reference
         this.particle = 'particle'

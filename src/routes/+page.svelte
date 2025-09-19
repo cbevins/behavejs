@@ -1,4 +1,5 @@
 <script>
+	import { Paths as P } from '$lib/index.js'
     import { BehaveDag } from '$lib/index.js'
 
     // Step 1 - create the Behave Dag
@@ -8,35 +9,21 @@
 
     // Step 2 - configure the DAG
     behave.setConfig([
-        ["canopy/height/inputs", ["height-base","ratio-height","height-length","ratio-base","ratio-length","length-base"][0]],
-        ["fire/effective wind speed limit", ["applied","not applied"][0]],
-        ["fuel/curing fraction/parameter", ["input","estimated"][1]],
-        ["midflame/wind speed reduction/parameter", ["input","estimated"][0]],
-        ["midflame/wind speed/parameter", ["input","estimated"][0]],
-        ["moisture/dead/inputs", ["particle","category"][0]],
-        ["moisture/live/inputs", ["particle","category"][0]],
-        ["primary/standard model/input", ["catalog","custom"][0]],
-        ["primary/fuel/domain", ["standard","chaparral","palmetto","aspen"][0]],
-        ["slope/direction/input", ["up-slope","down-slope"][1]],
-        ["slope/steepness/input", ["ratio","degrees","map"][0]],
-        ["wind/speed/input", ["at 20-ft","at 10-m"][0]],
-        ["wind/direction/input", ["source from north","heading from up-slope","up-slope"][0]],
+        [P.cfgCanopy,       ["height-base","ratio-height","height-length",
+                            "ratio-base","ratio-length","length-base"][0]],
+        [P.cfgEffWind,      ["applied","not applied"][0]],
+        [P.cfgCured,        ["input","estimated"][1]],
+        [P.cfgWsrf,         ["input","estimated"][0]],
+        [P.cfgWindSpeed,    ["input","estimated"][0]],
+        [P.cfgMoisDead,     ["particle","category"][0]],
+        [P.cfgMoisLive,     ["particle","category"][0]],
+        [P.cfgStdInput1,    ["catalog","custom"][0]],
+        [P.cfgFuelDomain1,  ["standard","chaparral","palmetto","aspen"][0]],
+        [P.cfgSlopeDir,     ["up-slope","down-slope"][1]],
+        [P.cfgSlopeSteep,   ["ratio","degrees","map"][0]],
+        [P.cfgWindSpeed,    ["at 20-ft","at 10-m"][0]],
+        [P.cfgWindDir,      ["source from north","heading from up-slope","up-slope"][0]],
     ])
-    const futureConfigs = [
-        // Future Surface fire
-        ["secondary/standard model/input", ["catalog","custom"][0]],
-        ["secondary/fuel/domain", ["standard","chaparral","palmetto","aspen"][0]],
-        ['fire/weighting method', ['arithmetic', 'harmonic', 'maximum', 'expected'][1]],
-        ['primary/chaparral/total load/parameter', ['input', 'estimated'][0]],
-        // Fire Growth links with Surface Fire: 'input' is unlinked, 'estimated' is linked
-        ['fire/length-to-width ratio/parameter', ['input', 'estimated'][0]],
-        ['fire/effective wind speed/parameter', ['input', 'estimated'][0]],
-        ['fire/head/spread rate/parameter', ['input', 'estimated'][0]],
-        ['fire/head/direction/parameter', ['input', 'estimated'][0]],
-        ['fire/head/fireline intensity', ['input', 'estimated'][0]]
-        ['fire/fireline intensity/parameter', ['fireline intensity', 'flame length'][1]],
-        ['fire/vector/input', ['from head', 'from up-slope', 'from north'][2]],
-    ]
 
     // Step 3 - select outputs
     const bulk    = dag.nodeRef('primary/bed/bulk density')
@@ -140,6 +127,7 @@
             {@render configHeader('Numb')}
             {@render configHeader('Key')}
             {@render configHeader('Value')}
+            {@render configHeader('Options')}
         </tr>
     </thead>
     <tbody>
@@ -148,6 +136,7 @@
             {@render configRow(n+1)}
             {@render configRow(cfg.key)}
             {@render configRow(cfg.value)}
+            {@render configRow(cfg.options.join(', '))}
         </tr>
         {/each}
     </tbody>

@@ -313,7 +313,6 @@ export class SurfaceFireEquations {
      * @return The direction of maximum fire spread (degrees from upslope)
      */
     static spreadDirectionFromUpslope (xComp, yComp, rosv) {
-      console.log('Fire.spreadDirectionFromUpslope(', xComp, yComp, rosv)
       const pi = Math.PI
       const al = rosv <= 0 ? 0 : Math.asin(Math.abs(yComp) / rosv)
       const radians =

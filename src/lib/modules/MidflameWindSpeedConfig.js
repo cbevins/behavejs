@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class MidflameWindSpeedConfig extends ConfigBase {
-    constructor(key='midflame/wind speed/parameter') {
+    constructor(key=Paths.cfgMidflame) {
         super(key)
         // keys for outside reference
         this.input = 'input'

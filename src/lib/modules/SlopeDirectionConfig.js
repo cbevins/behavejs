@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class SlopeDirectionConfig extends ConfigBase {
-    constructor(key='slope/direction/input') {
+    constructor(key=Paths.cfgSlopeDir) {
         super(key)
         // keys for outside reference
         this.upslope = 'up-slope'

@@ -1,6 +1,8 @@
 import { ConfigBase } from './ConfigBase.js'
+import {Paths} from './Paths.js'
+
 export class SurfaceFireConfig extends ConfigBase {
-    constructor(key='fire/effective wind speed limit') {
+    constructor(key=Paths.cfgEffWind) {
         super(key)
     // keys for outside reference
     this.applied = 'applied'
