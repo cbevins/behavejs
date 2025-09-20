@@ -9,6 +9,7 @@
 
     // Step 2 - configure the DAG
     wfms.setConfig([
+        [P.cfgSurfWtg,      ['primary', 'harmonic', 'arithmetic'][1]],
         [P.cfgCanopy,       ["height-base","ratio-height","height-length",
                             "ratio-base","ratio-length","length-base"][0]],
         [P.cfgEffWind,      ["applied","not applied"][0]],
@@ -21,7 +22,6 @@
         [P.cfgStdInput2,    ["catalog","custom"][0]],
         [P.cfgFuelDomain1,  ["standard","chaparral","palmetto","aspen"][0]],
         [P.cfgFuelDomain2,  ["standard","chaparral","palmetto","aspen"][0]],
-        [P.cfgSurfWtg,      ['primary', 'harmonic', 'arithmetic'][1]],
         [P.cfgSlopeDir,     ["up-slope","down-slope"][1]],
         [P.cfgSlopeSteep,   ["ratio","degrees","map"][0]],
         [P.cfgWindSpeed,    ["at 20-ft","at 10-m"][0]],
@@ -84,7 +84,7 @@
     const flW = dag.nodeRef('surface/fire/heading/flame length')
 
     // Can mix and match node keys and references, as scalars or arrays
-    dag.select(ros1, ros2, rosW)
+    dag.select(ros1, ros2, rosA, rosH, rosW)
 
     // Step 3 - get active configurations and inputs
     const activeConfigs = dag.activeConfigsByKey()
@@ -93,7 +93,8 @@
     const key1       = dag.nodeRef('primary/model/standard/key')
     const key2       = dag.nodeRef('secondary/model/standard/key')
     const cover1     = dag.nodeRef('surface/fire/cover/primary')
-    const midflame   = dag.nodeRef('primary/wind/speed/midflame')
+    const midflame1  = dag.nodeRef('primary/wind/speed/midflame')
+    const midflame2  = dag.nodeRef('secondary/wind/speed/midflame')
     const aspect     = dag.nodeRef('terrain/slope/direction/down-slope')
     const upslope    = dag.nodeRef('terrain/slope/direction/up-slope')
     const slopeRatio = dag.nodeRef('terrain/slope/steepness/ratio')
@@ -107,7 +108,8 @@
     dag.set(key1, '10')
     dag.set(key2, '124')
     dag.set(cover1, 0.6)
-    dag.set(midflame, 880)
+    dag.set(midflame1, 880)
+    dag.set(midflame2, 880)
     dag.set(mois1, 0.05)
     dag.set(mois10, 0.07)
     dag.set(mois100, 0.09)
