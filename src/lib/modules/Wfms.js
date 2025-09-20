@@ -119,7 +119,7 @@ export class Wfms {
             stdMod1.path, '', '', '')
         const bedWsrfNode1 = bedMod1.path + P.fuelWsrf
 
-        const bedCfg2 = this._addCfg(new PrimarySurfaceFuelConfig())
+        const bedCfg2 = this._addCfg(new SecondarySurfaceFuelConfig())
         const bedMod2 = new SurfaceFuelModule('secondary/', bedCfg2,
             stdMod2.path, '', '', '')
         const bedWsrfNode2 = bedMod2.path + P.fuelWsrf
@@ -159,7 +159,7 @@ export class Wfms {
         const wtgCfg = this._addCfg(new SurfaceFireWtgConfig())
         const wtgMod = new SurfaceFireWtgModule('surface/', wtgCfg,
             fireMod1.path, fireMod2.path)
-        console.log(fireMod1.path, fireMod2.path)            
+        
         // Create the this.dag from here so we can garbage collect the nodeDefs
         this.dag = new Dag([
             // independent modules requiring no shared nodes as input
@@ -179,11 +179,12 @@ export class Wfms {
             ...wsrfMod1.nodes,
             ...midflameMod1.nodes,
             ...fireMod1.nodes,
-            // ...stdMod2.nodes,
-            // ...bedMod2.nodes,
-            // ...wsrfMod2.nodes,
-            // ...midflameMod2.nodes,
-            // ...fireMod2.nodes,
+            ...stdMod2.nodes,
+            ...bedMod2.nodes,
+            ...wsrfMod2.nodes,
+            ...midflameMod2.nodes,
+            ...fireMod2.nodes,
+            ...wtgMod.nodes,
         ].sort((a, b) => { return a.key - b.key }), 'Behave')
 
         const mods = [

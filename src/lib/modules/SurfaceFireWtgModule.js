@@ -22,7 +22,7 @@ export class SurfaceFireWtgModule extends ModuleBase {
      * something like `secondary/fire'
      */
     constructor(prefix, cfg, fire1Path, fire2Path){
-        super(prefix, P.wdirSelf, P.wdirMod, cfg)
+        super(prefix, P.wtgSelf, P.wtgMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.wtgCover1, 1, U.fraction, cfg, [
@@ -70,20 +70,20 @@ export class SurfaceFireWtgModule extends ModuleBase {
                 [cfg.any, Math.min, [fire1Path+P.fireWeffLim, fire2Path+P.fireWeffLim]]]],
 
             // Arithmetic and harmonic means
-            [path+P.fireHeadRosA, 0, U.fireRos, cfg, [
+            [path+P.wtgRosArith, 0, U.fireRos, cfg, [
                 [cfg.primary, Dag.assign, [fire1Path+P.fireHeadRos]],
                 [cfg.any, Fire.arithmeticMeanSpreadRate, [
                     path+P.wtgCover1, fire1Path+P.fireHeadRos, fire2Path+P.fireHeadRos]]]],
-            [path+P.fireHeadRosH, 0, U.fireRos, cfg, [
+            [path+P.wtgRosHarm, 0, U.fireRos, cfg, [
                 [cfg.primary, Dag.assign, [fire1Path+P.fireHeadRos]],
                 [cfg.any, Fire.harmonicMeanSpreadRate, [
                     path+P.wtgCover1, fire1Path+P.fireHeadRos, fire2Path+P.fireHeadRos]]]],
-                    
+
             // Final
             [path+P.fireHeadRos, 0, U.fireRos, cfg, [
                 [cfg.primary, Dag.assign, [fire1Path+P.fireHeadRos]],
-                [cfg.harmonic, Dag.assign, [path+P.fireHeadRosH]],
-                [cfg.arithmetic, Dag.assign, [path+P.fireHeadRosA]]]]
+                [cfg.harmonic, Dag.assign, [path+P.wtgRosHarm]],
+                [cfg.arithmetic, Dag.assign, [path+P.wtgRosArith]]]]
             ]
         }
     }

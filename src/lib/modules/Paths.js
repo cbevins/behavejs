@@ -1,10 +1,7 @@
 export class Paths {
     // Configs
     static cfgCanopy      = 'canopy/height/inputs'
-    static cfgFireInputs  = 'ellipse/fire/inputs'    // ['input', 'surface'] (ros, fli, fl, lwr, ews, dir)
     static cfgEffWind     = 'surface/fire/effective wind speed limit'
-    static cfgChapInput1  = 'primary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
-    static cfgChapInput2  = 'secondary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
     static cfgCured       = 'surface/fuel/curing fraction/parameter'
     static cfgMidflame    = 'surface/midflame/wind speed/parameter'
     static cfgWsrf        = 'surface/midflame/wind speed reduction/parameter'
@@ -14,11 +11,15 @@ export class Paths {
     static cfgFuelDomain2 = 'surface/secondary/fuel/domain'
     static cfgStdInput1   = 'surface/primary/standard model/input'
     static cfgStdInput2   = 'surface/secondary/standard model/input'
-    static cfgSurfWtg     = 'surface/weighting/method'   // = ['primary', 'arithmetic', 'harmonic']'
+    static cfgSurfWtg     = 'surface/weighting/method'   // = ['primary', 'harmonic', 'arithmetic']'
     static cfgSlopeDir    = 'terrain/slope/direction/input'
     static cfgSlopeSteep  = 'terrain/slope/steepness/input'
     static cfgWindDir     = 'weather/wind/direction/input'
     static cfgWindSpeed   = 'weather/wind/speed/input'
+    // Not yet implemented
+    static cfgFireInputs  = 'ellipse/fire/inputs'    // ['input', 'surface'] (ros, fli, fl, lwr, ews, dir)
+    static cfgChapInput1  = 'primary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
+    static cfgChapInput2  = 'secondary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
 
     // Fire Ellipse model
     static cfgLwr = 'ellipse/length-to-width ratio/parameter' // ['input', 'estimated'][0]],
@@ -185,9 +186,11 @@ export class Paths {
 
     // SurfaceFireWtgModule
     static wtgMod    = 'SurfaceFireWtgModule'
-    static wtgSelf   = 'weighted/fire/'
+    static wtgSelf   = 'fire/'
     static wtgCover1 = 'cover/primary'
     static wtgCover2 = 'cover/secondary'
+    static wtgRosArith = 'spread rate/arithmetic mean'
+    static wtgRosHarm = 'spread rate/harmonic mean'
 
     // SurfaceFuelModel
     static fueldMod  = 'SurfaceFuelBedModule'
