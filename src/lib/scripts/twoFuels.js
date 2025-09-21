@@ -1,7 +1,6 @@
 import { WfmsTwoFuels, Util } from '../index.js'
 
 const wfms = new WfmsTwoFuels()
-const activeConfigs = wfms.activeConfigsByKey()
 
 // We can change the WfmsTwoFuels default inputs      
 wfms.set(wfms.key1, '10')
