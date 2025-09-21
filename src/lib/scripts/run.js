@@ -1,6 +1,5 @@
-<script>
-	import { Paths as P } from '$lib/index.js'
-    import { Wfms } from '$lib/index.js'
+	import { Paths as P } from '../index.js'
+    import { Wfms, Util } from '../index.js'
 
     // Step 1 - create the Behave Dag
     const wfms = new Wfms()
@@ -85,9 +84,13 @@
 
     // Can mix and match node keys and references, as scalars or arrays
     dag.select(ros1, ros2, rosA, rosH, rosW)
+    // Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
     // Step 3 - get active configurations and inputs
     const activeConfigs = dag.activeConfigsByKey()
+    Util.listActiveConfigs(dag)
+
+    const inputs = dag.activeInputs()
 
     // Step 3 - set inputs
     const key1       = dag.nodeRef('primary/model/standard/key')
@@ -119,113 +122,9 @@
     dag.set(aspect, 180)
     dag.set(windFromNorth, 270)
 
-const inputFm010Fm124 = [
-    ['site.fire.time.sinceIgnition', [60]],
-    ['site.fire.vector.fromNorth', [45]],
-    ['site.map.scale', [24000]],
-    ['site.moisture.dead.tl1h', [0.05]],
-    ['site.moisture.dead.tl10h', [0.07]],
-    ['site.moisture.dead.tl100h', [0.09]],
-    ['site.moisture.dead.category', [0.05]],
-    ['site.moisture.live.herb', [0.5]],
-    ['site.moisture.live.stem', [1.5]],
-    ['site.moisture.live.category', [1.5]],
-    ['site.slope.direction.aspect', [180]],
-    ['site.slope.steepness.ratio', [0.25]],
-    ['site.temperature.air', [95]],
-    ['site.terrain.spotSourceLocation', ['ridgeTop']],
-    ['site.terrain.ridgeValleyDistance', [5000]],
-    ['site.terrain.ridgeValleyElevation', [1000]],
-    ['site.wind.direction.source.fromNorth', [270]],
-    ['site.windSpeedAdjustmentFactor', [0.5]],
-    ['site.wind.speed.atMidflame', [880]],
-    ['surface.primary.fuel.model.catalogKey', ['10']],
-    ['surface.secondary.fuel.model.catalogKey', ['124']],
-    ['surface.weighted.fire.primaryCover', [0.6]]
-]
+    Util.logDagNodes(dag.activeInputs(), 'Active Input Values')
 
-    // Step 4 - get updated values of selected nodes
-    dag.updateAll()
-</script>
-
-<div class='mx-4 my-4'>
-<h1 class='text-2xl font-bold>'>Wildland Fire Modeling System</h1>
-<h2 class='text-lg font-bold>'>{new Date()}</h2>
-
-{@render nodeTable('Selected Nodes', dag.selectedByKey())}
-{@render nodeTable('Active Inputs Nodes', dag.activeInputsByKey())}
-<!-- {@render nodeTable('Active Nodes', dag.activeNodesByKey())} -->
-{@render nodeTable('All Input Nodes', dag.activeInputsByKey())}
-{@render configTable('Active Configurations', dag.activeConfigsByKey())}
-{@render nodeTable('All Nodes', dag.nodesByKey())}
-
-<!-- nodeTable Snippet -->
-{#snippet nodeRow(content)}
-    <td class='px-2 py-2 border border-gray-300'>{content}</td>
-{/snippet}
-{#snippet nodeHeader(content)}
-    <td class='font-bold px-2 py-2 border border-gray-300'>{content}</td>
-{/snippet}
-{#snippet nodeTable(title, nodeArray)}
-<h2 class='mt-4 text-base font-bold'>{title} ({nodeArray.length})</h2>
-<table class='table-auto text-sm'>
-    <thead>
-        <tr>
-            {@render nodeHeader('Numb')}
-            {@render nodeHeader('Key')}
-            {@render nodeHeader('Value')}
-            {@render nodeHeader('Status')}
-            {@render nodeHeader('Dirty')}
-            {@render nodeHeader('Updater')}
-        </tr>
-    </thead>
-    <tbody>
-        {#each nodeArray as node, n}
-        <tr>
-            {@render nodeRow(n+1)}
-            {@render nodeRow(node.key)}
-            {@render nodeRow(node.value)}
-            {@render nodeRow(node.status)}
-            {@render nodeRow(node.dirty)}
-            {@render nodeRow(node.updater.name)}
-        </tr>
-        {/each}
-    </tbody>
-</table>
-{/snippet}
-<!-- END nodeTable Snippet -->
-
-
-<!-- configTable Snippet -->
-{#snippet configRow(content)}
-    <td class='px-2 py-2 border border-gray-300'>{content}</td>
-{/snippet}
-{#snippet configHeader(content)}
-    <td class='font-bold px-2 py-2 border border-gray-300'>{content}</td>
-{/snippet}
-{#snippet configTable(title, configArray)}
-<h2 class='mt-4 text-base font-bold'>{title} ({configArray.length})</h2>
-<table class='table-auto text-sm'>
-    <thead>
-        <tr>
-            {@render configHeader('Numb')}
-            {@render configHeader('Key')}
-            {@render configHeader('Value')}
-            {@render configHeader('Options')}
-        </tr>
-    </thead>
-    <tbody>
-        {#each configArray as cfg, n}
-        <tr>
-            {@render configRow(n+1)}
-            {@render configRow(cfg.key)}
-            {@render configRow(cfg.value)}
-            {@render configRow(cfg.options.join(', '))}
-        </tr>
-        {/each}
-    </tbody>
-</table>
-{/snippet}
-<!-- END configTable Snippet -->
-
-</div>
+// Step 8 - Get output values
+dag.updateAll() // or call get(nodeKey) on a selected node
+Util.logDagNodes(dag.selected(), 'Selected Node Values')
+// Util.logDagNodes(dag.nodes(), 'All Nodes')
