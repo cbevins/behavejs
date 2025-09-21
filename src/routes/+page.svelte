@@ -5,7 +5,7 @@
     // Step 1 - create the Behave Dag
     const wfms = new Wfms()
     const dag = wfms.dag
-    console.log('REFRESHED :', new Date())
+    console.log('REFRESH :', new Date())
 
     // Step 2 - configure the DAG
     wfms.setConfig([

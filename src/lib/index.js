@@ -18,3 +18,7 @@ export {StandardFuelModelCatalog} from './equations/StandardFuelModelCatalog.js'
 export {SurfaceFireEquations} from './equations/SurfaceFireEquations.js'
 export {Util} from './equations/Util.js'
 export {WindEquations} from './equations/WindEquations.js'
+
+// WFMS Configurations
+export {WfmsConfig} from './configs/WfmsConfig.js'
+export {WfmsTwoFuels} from './configs/WfmsTwoFuels.js'

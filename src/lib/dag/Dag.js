@@ -2,7 +2,7 @@
 
 // This is what a "node" object looks like
 const _node = {key: '', value: null, units: null, cfg: null, options: [],
-    updater: null, suppliers: [], consumers: [], dirty: '', status: ''}
+    updater: null, suppliers: [], consumers: [], dirty: '', status: '', cfgval: ''}
 // This is what the node.options array objects look like
 const _nodeOption = {value: '', updater: null, suppliers: []}
 
@@ -215,6 +215,7 @@ export class Dag {
             node.updater = active.updater
             node.suppliers = active.suppliers
             node.consumers = []
+            node.cfgval = active.value
             node.dirty = Dag.dirty
             node.status = Dag.ignored
         }

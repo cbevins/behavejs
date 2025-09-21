@@ -41,6 +41,38 @@ export class Wfms {
         this._createDag()
     }
 
+    //--------------------------------------------------------------------------
+    // Public methods
+    //--------------------------------------------------------------------------
+
+    configs() { return this.configMap.values() }
+
+    // Reconfigures a Dag nodeMap from current Node cfg references
+    // Client accesses this method by calling:
+    //      setConfig([[key, value],[key, value]...])
+    // which updates this.configMap with the passed values, then calls this method.
+    setConfig(items) {
+        if (!Array.isArray(items))
+            throw new Error(`setConfig() arg must be an array of [key,value] arrays`)
+        for(let i=0; i<items.length; i++) {
+            const item = items[i]
+            if (!Array.isArray(item) || item.length !==2)
+                throw new Error(`setConfig() arg array element ${i} must be an array of [key,value]`)
+            const [key, value] = item
+            if (this.configMap.has(key)) {
+                const cfg = this.configMap.get(key)
+                cfg.value = value
+            } else {
+                console.log(`WARNING FROM setConfig(): config key ${key} has not been defined`)
+            }
+        }
+        this.dag.configure()
+    }
+
+    //--------------------------------------------------------------------------
+    // Private methods
+    //--------------------------------------------------------------------------
+
     _createDag() {
         // Get each Module's node defs and store names of shared nodes
 
@@ -199,35 +231,5 @@ export class Wfms {
     _addCfg(cfg) {
         this.configMap.set(cfg.key, cfg)
         return cfg
-    }
-
-    // Reconfigures a Dag nodeMap from current Node cfg references
-    // Client accesses this method by calling:
-    //      setConfig([[key, value],[key, value]...])
-    // which updates this.configMap with the passed values, then calls this method.
-    setConfig(items) {
-        if (!Array.isArray(items))
-            throw new Error(`setConfig() arg must be an array of [key,value] arrays`)
-        for(let i=0; i<items.length; i++) {
-            const item = items[i]
-            if (!Array.isArray(item) || item.length !==2)
-                throw new Error(`setConfig() arg array element ${i} must be an array of [key,value]`)
-            const [key, value] = item
-            if (this.configMap.has(key)) {
-                const cfg = this.configMap.get(key)
-                cfg.value = value
-            } else {
-                console.log(`WARNING FROM setConfig(): config key ${key} has not been defined`)
-            }
-        }
-        this.dag.configure()
-    }
-    
-    // Creates a nice array string to pass to setConfig()
-    listConfigArray() {
-        for(let cfg of this.configMap.values()) {
-            const {key, options, prompt, prompts, value} = cfg
-            console.log(JSON.stringify([key, options]))
-        }
     }
 }
