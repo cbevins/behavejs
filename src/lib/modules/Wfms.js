@@ -10,6 +10,9 @@ import {CanopyConfig} from './CanopyConfig.js'
 import {ConstantsModule} from './ConstantsModule.js'
 import {DeadFuelMoistureModule} from './DeadFuelMoistureModule.js'
 import {DeadFuelMoistureConfig} from './DeadFuelMoistureConfig.js'
+import {FireEllipseConfig} from './FireEllipseConfig.js'
+import {FireEllipseModule} from './FireEllipseModule.js'
+import {FireVectorConfig} from './FireVectorConfig.js'
 import {LiveFuelCuringModule} from './LiveFuelCuringModule.js'
 import {LiveFuelCuringConfig} from './LiveFuelCuringConfig.js'
 import {LiveFuelMoistureModule} from './LiveFuelMoistureModule.js'
@@ -83,6 +86,8 @@ export class Wfms {
         const canopySheltersNode = canopyMod.path + P.canopyShelters
         const canopyWsrfNode = canopyMod.path + P.canopyWsrf
 
+        // ConstantsModule provides a 'zero' and a 'one' and some fuel types
+        // to which other nodes can bind
         const constantsMod = new ConstantsModule('')
 
         // DeadFuelMoistureModel produces 3 nodes referenced used by the StandardFuelModelModule
@@ -103,7 +108,7 @@ export class Wfms {
         const slpdirCfg = this._addCfg(new SlopeDirectionConfig())
         const slpdirMod = new SlopeDirectionModule('terrain/', slpdirCfg)
         const upslopeDirNode = slpdirMod.path + P.slopeUp
-
+        console.log('UPSLOPEDIRNODE', upslopeDirNode)
         // SlopeSteepnessModule produces 1 node referenced by the SurfaceFireModule
         const slpsteepCfg = this._addCfg(new SlopeSteepnessConfig())
         const slpsteepMod = new SlopeSteepnessModule('terrain/', slpsteepCfg)
@@ -191,7 +196,15 @@ export class Wfms {
         const wtgCfg = this._addCfg(new SurfaceFireWtgConfig())
         const wtgMod = new SurfaceFireWtgModule('surface/', wtgCfg,
             fireMod1.path, fireMod2.path)
-        
+
+        // FireEllipseModule
+        const ellipseCfg = this._addCfg(new FireEllipseConfig())
+        const vectorCfg = this._addCfg(new FireVectorConfig())
+        const ellipseMod = new FireEllipseModule('', ellipseCfg, vectorCfg,
+            wtgMod.path, canopyMod.path, upslopeDirNode, 'time/fire/ignition/elapsed',
+            'weather/temperature/ambient air', 'map/scale')
+
+
         // Create the this.dag from here so we can garbage collect the nodeDefs
         this.dag = new Dag([
             // independent modules requiring no shared nodes as input

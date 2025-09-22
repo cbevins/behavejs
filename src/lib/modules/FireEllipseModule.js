@@ -11,18 +11,29 @@ import { Units as U} from './Units.js'
 import { Calc, CompassEquations as Compass } from '../index.js'
 import { FireEllipseEquations as FireEllipse } from '../index.js'
 import { SurfaceFireEquations as SurfaceFire } from '../index.js'
-import { TreeMortalityEquations as TreeMortality } from '../index.js'
+
+// Mortailty is currently not implemented!
+// import { TreeMortalityEquations as TreeMortality } from '../index.js'
+
+// NOTE: Need to implement MapModule, TemperatureModule, TimeModule, MortalityModule
 
 export class FireEllipseModule extends ModuleBase {
     /**
      * Creates the fuel moisture module.
      * @param {string} prefix Prefix for this module instance's fully qualified node names
      * something like 'fire/' or '' to prefix the 'ellipse/<node>' keys.
-     * @param {Config} cfg Config reference to  FireEllipseConfig.js
+     * @param {Config} cfg Config reference to FireEllipseConfig.js
      */
-    constructor(prefix, cfg, cfgVectors, surfPath) {
+    constructor(prefix, cfg, cfgVectors, surfPath, canopyPath,
+        upslopeNode, elapsedNode, airTempNode, mapScaleNode) {
         super(prefix, P.ellipseSelf, P.ellipseMod, cfg)
         const path = this.path  // ellipseSelf
+
+        let str = `${this.module} prefix="${prefix}" self="${this.self}"\n`
+        str += `    surface path="${surfPath}",\n    canopy path="${canopyPath}"\n`
+        str += `    upslopeNode=${upslopeNode}"\n    elapsedTimeNode="${elapsedNode}"\n`
+        str += `    airTempNode="${airTempNode}"\n    mapScaleNode="${mapScaleNode}"`
+        console.log(str)
 
         this.surfaceLinkNodes = [
             [path+P.axisLwr, U.ratio, cfg, [
@@ -38,7 +49,7 @@ export class FireEllipseModule extends ModuleBase {
                 [cfg.observed, Dag.input, []]]],
 
             [path+P.fireHeadDirUp, U.compass, cfg, [
-                [cfg.surface, Dag.assign, [surfpath+P.fireHeadDirUp]],
+                [cfg.surface, Dag.assign, [surfPath+P.fireHeadDirUp]],
                 [cfg.observed, Dag.input, []]]],
 
             // Midflame wind speed is used by scorch height
@@ -65,7 +76,7 @@ export class FireEllipseModule extends ModuleBase {
                     path+P.headingFromNorth]],
                 [cfgVectors.fromUpslope, Compass.sum, [
                     path+P.vectorFromUpslope,
-                    'site.slope.direction.upslope']]]],
+                    upslopeNode]]]],
 
             [path+P.vectorFromUpslope, U.compass, cfgVectors, [
                 [cfgVectors.fromUpslope, Dag.input, []],
@@ -74,10 +85,10 @@ export class FireEllipseModule extends ModuleBase {
                     path+P.headingFromUpslope]],
                 [cfgVectors.fromNorth, Compass.diff, [
                     path+P.vectorFromNorth,
-                    'site.slope.direction.upslope']],
+                    upslopeNode]],
                 [cfgVectors.any, Compass.diff, [
                     path+P.vectorFromNorth,
-                    'site.slope.direction.upslope']]]]
+                    upslopeNode]]]]
         ]
 
         this.nodes = [
@@ -114,13 +125,13 @@ export class FireEllipseModule extends ModuleBase {
 
             [path+P.sizeArea, U.fireArea, null, [
                 ['', FireEllipse.area, [
-                    path+'size.length',
+                    path+P.sizeLength,
                     path+P.axisLwr]]]],
 
             [path+P.sizeLength, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.axisMajRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.sizePerim, U.fireDist, null, [
                 ['', FireEllipse.perimeter, [
@@ -130,34 +141,34 @@ export class FireEllipseModule extends ModuleBase {
             [path+P.sizeWidth, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.axisMinRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             // end path+'size'
             [path+P.mapArea, U.mapArea, null, [
                 ['', FireEllipse.mapArea, [
                     path+P.sizeArea,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.mapLength, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.sizeLength,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.mapPerim, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.sizePerim,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.mapWidth, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.sizeWwidth,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             // end path+'map'
             [path+P.backDist, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.backRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.backFli, U.fireFli, null, [
                 ['', FireEllipse.fliAtAzimuth, [
@@ -172,7 +183,7 @@ export class FireEllipseModule extends ModuleBase {
             [path+P.backMap, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.backDist,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.backRos, U.fireRos, null, [
                 ['', FireEllipse.backingSpreadRate, [
@@ -183,21 +194,21 @@ export class FireEllipseModule extends ModuleBase {
                 ['', SurfaceFire.scorchHeight, [
                     path+P.backFli,
                     path+P.fireMidf,
-                    'site.temperature.air']]]],
+                    airTempNode]]]],
 
-            [path+P.backMort, U.fraction, null, [
-                ['', TreeMortality.mortalityRate, [
-                    'site.canopy.tree.species.fofem6.code',
-                    'site.canopy.tree.dbh',
-                    'site.canopy.crown.totalHeight',
-                    'site.canopy.crown.baseHeight',
-                    path+P.backScorch]]]],
+            // [path+P.backMort, U.fraction, null, [
+            //     ['', TreeMortality.mortalityRate, [
+            //         'site.canopy.tree.species.fofem6.code',
+            //         'site.canopy.tree.dbh',
+            //         'site.canopy.crown.totalHeight',
+            //         'site.canopy.crown.baseHeight',
+            //         path+P.backScorch]]]],
 
             // end path+'back'
             [path+P.flankDist, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.flankRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.flankFli, U.fireFli, null, [
                 ['', FireEllipse.fliAtAzimuth, [
@@ -212,7 +223,7 @@ export class FireEllipseModule extends ModuleBase {
             [path+P.flankMap, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.flankDist,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.flankRos, U.fireRos, null, [
                 ['', FireEllipse.flankingSpreadRate, [
@@ -222,46 +233,46 @@ export class FireEllipseModule extends ModuleBase {
                 ['', SurfaceFire.scorchHeight, [
                     path+P.flankFli,
                     path+P.fireMidf,
-                    'site.temperature.air']]]],
+                    airTempNode]]]],
 
-            [path+P.flankMort, U.fraction, null, [
-                ['', TreeMortality.mortalityRate, [
-                    'site.canopy.tree.species.fofem6.code',
-                    'site.canopy.tree.dbh',
-                    'site.canopy.crown.totalHeight',
-                    'site.canopy.crown.baseHeight',
-                    path+P.flankScorch]]]],
+            // [path+P.flankMort, U.fraction, null, [
+            //     ['', TreeMortality.mortalityRate, [
+            //         'site.canopy.tree.species.fofem6.code',
+            //         'site.canopy.tree.dbh',
+            //         'site.canopy.crown.totalHeight',
+            //         'site.canopy.crown.baseHeight',
+            //         path+P.flankScorch]]]],
 
             // end path+'flank'
             [path+P.headDist, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.headRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.headMap, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.headDist,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.headScorch, U.fireScorch, null, [
                 ['', SurfaceFire.scorchHeight, [
                     path+P.headFli,
                     path+P.fireMidf,
-                    'site.temperature.air']]]],
+                    airTempNode]]]],
 
-            [path+P.headMort, U.fraction, null, [
-                ['', TreeMortality.mortalityRate, [
-                    'site.canopy.tree.species.fofem6.code',
-                    'site.canopy.tree.dbh',
-                    'site.canopy.crown.totalHeight',
-                    'site.canopy.crown.baseHeight',
-                    path+P.headScorch]]]],
+            // [path+P.headMort, U.fraction, null, [
+            //     ['', TreeMortality.mortalityRate, [
+            //         'site.canopy.tree.species.fofem6.code',
+            //         'site.canopy.tree.dbh',
+            //         'site.canopy.crown.totalHeight',
+            //         'site.canopy.crown.baseHeight',
+            //         path+P.headScorch]]]],
 
             // end path+'head'
             [path+P.psiDist, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.psiRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.psiFli, U.fireFli, null, [
                 ['', FireEllipse.fliAtAzimuth, [
@@ -276,7 +287,7 @@ export class FireEllipseModule extends ModuleBase {
             [path+P.psiMap, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.psiDist,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.psiRos, U.fireRos, null, [
                 ['', FireEllipse.psiSpreadRate, [
@@ -289,21 +300,21 @@ export class FireEllipseModule extends ModuleBase {
                 ['', SurfaceFire.scorchHeight, [
                     path+P.psiFli,
                     path+P.fireMidf,
-                    'site.temperature.air']]]],
+                    airTempNode]]]],
 
-            [path+P.psiMort, U.fraction, null, [
-                ['', TreeMortality.mortalityRate, [
-                    'site.canopy.tree.species.fofem6.code',
-                    'site.canopy.tree.dbh',
-                    'site.canopy.crown.totalHeight',
-                    'site.canopy.crown.baseHeight',
-                    path+P.psiScorch]]]],
+            // [path+P.psiMort, U.fraction, null, [
+            //     ['', TreeMortality.mortalityRate, [
+            //         'site.canopy.tree.species.fofem6.code',
+            //         'site.canopy.tree.dbh',
+            //         'site.canopy.crown.totalHeight',
+            //         'site.canopy.crown.baseHeight',
+            //         path+P.psiScorch]]]],
 
             // end pathPsi
             [path+P.beta5Dist, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.beta5Ros,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.beta5Fli, U.fireFli, null, [
                 ['', FireEllipse.fliAtAzimuth, [
@@ -318,7 +329,7 @@ export class FireEllipseModule extends ModuleBase {
             [path+P.beta5Map, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.beta5Dist,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.beta5Ros, U.fireRos, null, [
                 ['', Dag.assign, [path+P.betaRos]]]],
@@ -327,21 +338,21 @@ export class FireEllipseModule extends ModuleBase {
                 ['', SurfaceFire.scorchHeight, [
                     path+P.beta5Fli,
                     path+P.fireMidf,
-                    'site.temperature.air']]]],
+                    airTempNode]]]],
 
-            [path+P.beta5Mort, U.fraction, null, [
-                ['', TreeMortality.mortalityRate, [
-                    'site.canopy.tree.species.fofem6.code',
-                    'site.canopy.tree.dbh',
-                    'site.canopy.crown.totalHeight',
-                    'site.canopy.crown.baseHeight',
-                    path+P.beta5Scorch]]]],
+            // [path+P.beta5Mort, U.fraction, null, [
+            //     ['', TreeMortality.mortalityRate, [
+            //         'site.canopy.tree.species.fofem6.code',
+            //         'site.canopy.tree.dbh',
+            //         'site.canopy.crown.totalHeight',
+            //         'site.canopy.crown.baseHeight',
+            //         path+P.beta5Scorch]]]],
 
             // end path+P.beta5+''
             [path+P.betaDist, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
                     path+P.betaRos,
-                    'site.fire.time.sinceIgnition']]]],
+                    elapsedNode]]]],
 
             [path+P.betaFli, U.fireFli, null, [
                 ['', FireEllipse.fliAtAzimuth, [
@@ -356,7 +367,7 @@ export class FireEllipseModule extends ModuleBase {
             [path+P.betaMap, U.mapDist, null, [
                 ['', Calc.divide, [
                     path+P.betaDist,
-                    'site.map.scale']]]],
+                    mapScaleNode]]]],
 
             [path+P.betaRos, U.fireRos, null, [
                 ['', FireEllipse.betaSpreadRate, [
@@ -368,15 +379,15 @@ export class FireEllipseModule extends ModuleBase {
                 ['', SurfaceFire.scorchHeight, [
                     path+P.betaFli,
                     path+P.fireMidf,
-                    'site.temperature.air']]]],
+                    airTempNode]]]],
 
-            [path+P.betaMort, U.fraction, null, [
-                ['', TreeMortality.mortalityRate, [
-                    'site.canopy.tree.species.fofem6.code',
-                    'site.canopy.tree.dbh',
-                    'site.canopy.crown.totalHeight',
-                    'site.canopy.crown.baseHeight',
-                    path+P.betaScorch]]]],
+            // [path+P.betaMort, U.fraction, null, [
+            //     ['', TreeMortality.mortalityRate, [
+            //         'site.canopy.tree.species.fofem6.code',
+            //         'site.canopy.tree.dbh',
+            //         'site.canopy.crown.totalHeight',
+            //         'site.canopy.crown.baseHeight',
+            //         path+P.betaScorch]]]],
 
             [path+P.betaTheta, U.compass, null, [
                 ['', FireEllipse.thetaFromBeta, [
@@ -401,7 +412,7 @@ export class FireEllipseModule extends ModuleBase {
             // end path+'beta'
             [path+P.headingFromNorth, U.compass, null, [
                 ['', Compass.sum, [
-                    'site.slope.direction.upslope',
+                    upslopeNode,
                     path+P.headingFromUpslope]]]],
         ]
     }
