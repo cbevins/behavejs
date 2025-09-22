@@ -12,6 +12,7 @@ export class WfmsConfig {
         this.wfms = new Wfms()
         this.dag  = this.wfms.dag
         this._assignCommonNodeReferences()
+        this.wfms.setConfig(this.fireMapConfig())
     }
 
     //--------------------------------------------------------------------------
@@ -123,15 +124,29 @@ export class WfmsConfig {
         this.windHeadUpslp  = dag.nodeRef('weather/wind/direction/heading/from up-slope')
     }
 
-    standardConfig() {
+    // The 'fire map' configuration is meant to implement a common use case of
+    // predicting fire behavior from map and weather data streams such as
+    // LANDFIRE fuel and site parameters and WIMS/NOAA moisture/weather parameters.
+    // Therefore, the configuration specifies
+    // - a single surface standard fuel model identified by key,
+    // - all 5 moisture contents as input parameters
+    // - live moisture curing is derived from herb fuel moisture
+    // - wind speed at 2-ft and direction is source from north
+    // - slope direction is the aspect and steepness is ratio
+    // - wind speed reduction factor and midflame wind speed are derived from 20-ft wind
+    // - canopy inputs are total height and base height
+
+    fireMapConfig() {
         return [
-            [P.cfgSurfWtg,      ['primary', 'harmonic', 'arithmetic'][1]],
+            [P.cfgSurfWtg,      ['primary', 'harmonic', 'arithmetic'][0]],
             [P.cfgCanopy,       ["height-base","ratio-height","height-length",
                                 "ratio-base","ratio-length","length-base"][0]],
             [P.cfgEffWind,      ["applied","not applied"][0]],
+            [P.cfgEllipse,      ["surface", "observed"][0]],
+            [P.cfgVector,       ["fire head", "up-slope", "north"][0]],
             [P.cfgCured,        ["input","estimated"][1]],
-            [P.cfgWsrf,         ["input","estimated"][0]],
-            [P.cfgMidflame,     ["input","estimated"][0]],
+            [P.cfgWsrf,         ["input","estimated"][1]],
+            [P.cfgMidflame,     ["input","estimated"][1]],
             [P.cfgMoisDead,     ["particle","category"][0]],
             [P.cfgMoisLive,     ["particle","category"][0]],
             [P.cfgStdInput1,    ["catalog","custom"][0]],

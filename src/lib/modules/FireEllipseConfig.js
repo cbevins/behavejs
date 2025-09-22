@@ -5,13 +5,13 @@ export class FireEllipseConfig extends ConfigBase {
     constructor(key=Paths.cfgEllipse) {
         super(key)
         // keys for outside reference
-        this.observed = 'observed'
         this.surface  = 'surface'
-        this.options = [this.observed, this.surface]
+        this.observed = 'observed'
+        this.options = [this.surface, this.observed]
         this.prompt = 'the required 5 fire behavior inputs are'
         this.prompts = [
+            [this.surface, 'estimated using the Surface Fire Module'],
             [this.observed, 'input parameters'],
-            [this.estimated, 'estimated using the Surface Fire Module'],
         ]
         this.value = this.options[0]
         this.notes = [
