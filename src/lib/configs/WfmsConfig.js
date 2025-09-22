@@ -95,7 +95,7 @@ export class WfmsConfig {
         
         this.hpua1 = dag.nodeRef('primary/fire/heat per unit area')
         this.hpua2 = dag.nodeRef('secondary/fire/heat per unit area')
-        this.houaW = dag.nodeRef('surface/fire/heat per unit area')
+        this.hpuaW = dag.nodeRef('surface/fire/heat per unit area')
 
         this.fli1 = dag.nodeRef('primary/fire/heading/fireline intensity')
         this.fli2 = dag.nodeRef('secondary/fire/heading/fireline intensity')

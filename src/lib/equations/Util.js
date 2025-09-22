@@ -39,7 +39,8 @@ export class Util {
             str += (updater.name).padEnd(w3+2)
             str += (''+suppliers.length).padStart(4)
             str += (''+consumers.length).padStart(4)
-            str += `  "${cfg.key}" = "${cfgval}"`
+            const k = (! cfg || cfg==='') ? 'none' : cfg.key
+            str += `  "${k}" = "${cfgval}"`
             str += '\n'
         }
         return str + nodes.length + ' nodes'

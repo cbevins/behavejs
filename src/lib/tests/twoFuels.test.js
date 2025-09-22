@@ -81,8 +81,8 @@ describe('Two fuel models', () => {
         expect(wfms.ewsW.value).precision(ews.fm010, ews.prec)
     })
 
-    // The fireline intensity, reaction itensity, flame length, heat per unit area,
-    // and scorch height are all bound to the MAXIMUM of the two fuels,
+    // The fireline intensity, reaction itensity, flame length, and heat per unit area
+    // are all bound to the MAXIMUM of the two fuels,
     // In this case, its fm124:
     it('primary, secondary, and weighted fireline intensity agrees with BehavePlus V6', () => {
         expect(wfms.fli1.value).precision(fli.fm010, fli.prec)
