@@ -42,12 +42,21 @@ export class WfmsTwoFuels extends WfmsConfig {
             this.dirUp1,
             this.dirUp2,
             this.dirUpW,
+            this.ews1,
+            this.ews2,
+            this.ewsW,
             this.lwr1,
             this.lwr2,
             this.lwrW,
             this.fli1,
             this.fli2,
             this.fliW,
+            this.ewsl1,
+            this.ewsl2,
+            this.ewslW,
+            this.ewsx1,
+            this.ewsx2,
+            this.ewsxW,
         )
     }
 
