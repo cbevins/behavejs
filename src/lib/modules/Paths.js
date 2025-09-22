@@ -2,6 +2,8 @@ export class Paths {
     // Configs
     static cfgCanopy      = 'canopy/height/inputs'
     static cfgEffWind     = 'surface/fire/effective wind speed limit'
+    static cfgEllipse     = 'ellipse/fire/inputs'
+    static cfgVectors     = 'ellipse/fire/vectors'
     static cfgCured       = 'surface/fuel/curing fraction/parameter'
     static cfgMidflame    = 'surface/midflame/wind speed/parameter'
     static cfgWsrf        = 'surface/midflame/wind speed reduction/parameter'
@@ -17,7 +19,6 @@ export class Paths {
     static cfgWindDir     = 'weather/wind/direction/input'
     static cfgWindSpeed   = 'weather/wind/speed/input'
     // Not yet implemented
-    static cfgFireInputs  = 'ellipse/fire/inputs'    // ['input', 'surface'] (ros, fli, fl, lwr, ews, dir)
     static cfgChapInput1  = 'primary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
     static cfgChapInput2  = 'secondary/chaparral/total load/parameter'   // ['input', 'estimated'][0]],
 
@@ -61,6 +62,79 @@ export class Paths {
     static moisDead1    = '1-h'
     static moisDead10   = '10-h'
     static moisDead100  = '100-h'
+
+    // FireEllipseModule
+    static ellipseMod  = 'FireEllipseModule'
+    static ellipseSelf = 'ellipse/'
+    static ellEccent   = 'eccentricity'
+
+    static axisLw     = 'axis/length-to-width ratio'
+    static axisFRos   = 'axis/f/spread rate'
+    static axisGRos   = 'axis/g/spread rate'
+    static axisHRos   = 'axis/h/spread rate'
+    static axisMajRos = 'axis/major/spread rate'
+    static axisMinRos = 'axis/minor/spread rate'
+
+    static headDist  = 'heading/distance'
+    static headMap   = 'heading/map distance'
+    static headRos   = 'heading/spread rate'
+    static headFlame = 'heading/flame length'
+    static headFli   = 'heading/fireline intensity'
+    static headScorch= 'heading/scorch height'
+    static headMort  = 'heading/tree mortality'
+
+    static backDist    = 'backing/distance'
+    static backMap     = 'backing/map distance'
+    static backRos     = 'backing/spread rate'
+    static backFlame   = 'backing/flame length'
+    static backFli     = 'backing/fireline intensity'
+    static backScorch  = 'backing/scorch height'
+    static backMort    = 'backing/tree mortality'
+
+    static flankDist   = 'flanking/distance'
+    static flankMap    = 'flanking/map distance'
+    static flankRos    = 'flanking/spread rate'
+    static flankFlame  = 'flanking/flame length'
+    static flankFli    = 'flanking/fireline intensity'
+    static flankScorch = 'flanking/scorch height'
+    static flankMort   = 'flanking/tree mortality'
+
+    static betaDist   = 'beta/distance'
+    static betaMap    = 'beta/map distance'
+    static betaRos    = 'beta/spread rate'
+    static betaFlame  = 'beta/flame length'
+    static betaFli    = 'beta/fireline intensity'
+    static betaScorch = 'beta/scorch height'
+    static betaMort   = 'beta/tree mortality'
+    static betaPsi    = 'beta/psi/degrees'
+    static betaPsiRos = 'beta/psi/spread rate'
+    static betaTheta  = 'beta/theta/degrees'
+
+    static beta5Dist  = 'beta5/distance'
+    static beta5Map   = 'beta5/map distance'
+    static beta5Ros   = 'beta5/spread rate'
+    static beta5Flame = 'beta5/flame length'
+    static beta5Fli   = 'beta5/fireline intensity'
+    static beta5Scorch= 'beta5/scorch height'
+    static beta5Mort  = 'beta5/tree mortality'
+
+    static psiDist    = 'psi/distance'
+    static psiMap     = 'psi/map distance'
+    static psiRos     = 'psi/spread rate'
+    static psiFlame   = 'psi/flame length'
+    static psiFli     = 'psi/fireline intensity'
+    static psiSh      = 'psi/scorch height'
+    static psiMort    = 'psi/tree mortality'
+
+    static sizeArea   = 'size/area'
+    static sizeLength = 'size/length'
+    static sizePerim  = 'size/perimeter'
+    static sizeWidth  = 'size/width'
+
+    static mapArea   = 'map/area'
+    static mapLength = 'map/length'
+    static mapPerim  = 'map/perimeter'
+    static mapWidth  = 'map/width'
 
     // LiveFuelCuringModule
     static curingMod       = 'LiveFuelCuringModule'

@@ -24,6 +24,13 @@ export class SurfaceFireWtgModule extends ModuleBase {
     constructor(prefix, cfg, fire1Path, fire2Path){
         super(prefix, P.wtgSelf, P.wtgMod, cfg)
         const path = this.path
+        // NOTE that the FireEllipseModule links to the following nodes:
+        // path+P.fireHeadRos
+        // path+P.fireHeadDirUp
+        // path+P.fireLwr
+        // path+P.fireMidf (used for scorch height)
+        // path+P.fireHeadFlame    
+
         this.nodes = [
             [path+P.wtgCover1, 1, U.fraction, cfg, [
                 [cfg.primary, Dag.assign, [P.one]],
@@ -64,6 +71,7 @@ export class SurfaceFireWtgModule extends ModuleBase {
             [path+P.fireWeffX, false, U.bool, cfg, [
                 [cfg.primary, Dag.assign, [fire1Path+P.fireWeffX]],
                 [cfg.any, Calc.or, [fire1Path+P.fireWeffX, fire2Path+P.fireWeffX]]]],
+            
             // The effective wind speed limit is the minimum of either
             [path+P.fireWeffLim, 0, U.windSpeed, cfg, [
                 [cfg.primary, Dag.assign, [fire1Path+P.fireHeadFlame]],

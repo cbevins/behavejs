@@ -55,39 +55,89 @@ dag.set('weather/moisture/dead/10-h', tl10h)
 dag.set('weather/moisture/dead/100-h', tl100h)
 dag.set('weather/moisture/live/stem', stem)
 
-const start = new Date()
-let n = 0
-// Fuel model affects all other inputs, so it the deepest
-for(let fuel of fuels) {
-    dag.set('primary/model/standard/key', fuel)
-    // Herb moisture affects fuel loads, so it is next
-    for(let herb of herbs) {
-        dag.set('weather/moisture/live/herb', herb)
-        // Dead moisture alters some of the fuel particle properties, so it is next
-        for(let tl1h of tl1hs) {
-            dag.set('weather/moisture/dead/1-h', tl1h)
-            // Wind speed and direction are next
-            for(let wspd of windSpeeds) {
-                dag.set('primary/wind/speed/midflame', wspd)
-                for(let windDir of windDirs) {
-                    dag.set('weather/wind/direction/heading/from up-slope', windDir)
-                    for(let slope of slopes) {
-                        dag.set('terrain/slope/steepness/ratio', slope)
-                        dag.updateAll()
-                        n++
+// Run 1: 2,151
+// Run 2: 2,251
+// Run 3: 2,314
+function optimal() {
+    const start = new Date()
+    let n = 0
+    // Fuel model affects all other inputs, so it the deepest
+    for(let fuel of fuels) {
+        dag.set('primary/model/standard/key', fuel)
+        // Herb moisture affects fuel loads, so it is next
+        for(let herb of herbs) {
+            dag.set('weather/moisture/live/herb', herb)
+            // Dead moisture alters some of the fuel particle properties, so it is next
+            for(let tl1h of tl1hs) {
+                dag.set('weather/moisture/dead/1-h', tl1h)
+                // Wind speed and direction are next
+                for(let wspd of windSpeeds) {
+                    dag.set('primary/wind/speed/midflame', wspd)
+                    for(let windDir of windDirs) {
+                        dag.set('weather/wind/direction/heading/from up-slope', windDir)
+                        for(let slope of slopes) {
+                            dag.set('terrain/slope/steepness/ratio', slope)
+                            dag.updateAll()
+                            n++
+                        }
                     }
                 }
             }
         }
     }
+    const elapsed = new Date() - start
+    console.log(`${n} iterations in ${elapsed} msecs`)
 }
 
-const elapsed = new Date() - start
-console.log(`${n} iterations in ${elapsed} msecs`)
-
-// Run 1: 2,151
-// Run 2: 2,251
-// Run 3: 2,314
-
+function randomFloat(min=0, max=1, dec=9) {
+  return (Math.random() * (max - min) + min).toFixed(dec)
+}
+function randomInt(min, max) {
+  min = Math.ceil(min); // Ensure min is an integer
+  max = Math.floor(max); // Ensure max is an integer
+  return Math.floor(Math.random() * (max - min) + min)
+}
+function mockData(n) {
+    const data = []
+    for(let i=0; i<n; i++) {
+        const fuel = fuels[randomInt(0, fuels.length-1)]
+        const tl1h = randomFloat(0, 0.2, 2)
+        const herb = randomFloat(0.5, 3, 2)
+        const wspd = randomFloat(0, 20, 0)
+        const wdir = randomFloat(0, 360, 0)
+        const slope = randomFloat(0, 2, 2)
+        data.push({fuel, tl1h, herb, wspd, wdir, slope})
+    }
+    return data
+}
+// Replicates an application that processes map-based site info, that is,
+// the fuel and weather inputs are in random order.
+//
+// This simulates a 1000 x 1000 grid map
+// Sample run times (s): 26.045  26.627 26.433 26.889
+// Note that LANDFIRE has a 30-m cell size, so
+// 30,000 meters = 18.641136 miles per grid side, or 347.49 sq miles
+// 1 mile = 1609.34 m, or 53.64 cells
+// 54 x 54 cells is 2916 cells, so about 2.8 seconds per square mile
+function mapBased() {
+    const data = mockData(1000)
+    const start = new Date()
+    let n = 0
+    for(let i=0; i<1000; i++) {
+        for(let datum of data) {
+            dag.set('primary/model/standard/key', datum.fuel)
+            dag.set('weather/moisture/live/herb', datum.herb)
+            dag.set('weather/moisture/dead/1-h', datum.tl1h)
+            dag.set('primary/wind/speed/midflame', datum.wspd)
+            dag.set('weather/wind/direction/heading/from up-slope', datum.wdir)
+            dag.set('terrain/slope/steepness/ratio', datum.slope)
+            dag.updateAll()
+            n++
+        }
+    }
+    const elapsed = new Date() - start
+    console.log(`${n} iterations in ${elapsed} msecs`)
+}
+mapBased()
 // Util.logDagNodes(dag.activeInputsByKey(), 'Active Inputs')
 // Util.logDagNodes(dag.selected(), 'Final Results')
