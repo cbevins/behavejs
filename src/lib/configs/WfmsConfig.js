@@ -66,7 +66,7 @@ export class WfmsConfig {
         this.dirNoW = dag.nodeRef('surface/fire/heading/direction/from north')
         
         this.dirUp1 = dag.nodeRef('primary/fire/heading/direction/from up-slope')
-        this.dirUp2 = dag.nodeRef('primary/fire/heading/direction/from up-slope')
+        this.dirUp2 = dag.nodeRef('secondary/fire/heading/direction/from up-slope')
         this.dirUpW = dag.nodeRef('surface/fire/heading/direction/from up-slope')
 
         this.lwr1 = dag.nodeRef('primary/fire/length-to-width ratio')

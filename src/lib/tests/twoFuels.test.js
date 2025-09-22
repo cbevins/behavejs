@@ -1,0 +1,81 @@
+import { describe, it, expect } from 'vitest'
+import { WfmsTwoFuels } from '../index.js'
+
+expect.extend({
+    precision(received, expected, n) {
+        const { isNot } = this
+        let e = (''+expected)
+        const chars = Math.min(n, e.length)
+        e = e.substring(0, chars)
+        const r = (''+received).substring(0, chars)
+        return {
+            // do not alter your "pass" based on isNot. Vitest does it for you
+            pass: r === e,
+            message: () => `"${received}" ${isNot ? ' matches' : ' does not match'} "${e}" to ${chars} places`
+        }
+    }
+})
+
+// Results from BehavePlus V6
+const ros = { fm010: 18.551680325448835, fm124: 48.47042599399056, prec: 11 }
+const dirUp = { fm010: 87.573367385837855, fm124: 87.613728665173383, prec: 11 }
+const lwr = { fm010: 3.5015680219321221, fm124: 3.501581941, prec: 10 }
+const rxi = { fm010: 5794.6954002291168, fm124: 12976.692888496578, prec: 12 }
+const ews = { fm010: 880.55194372010692, fm124: 880.5568433322004, prec: 12 }
+const ewsl = { fm010: 5215.2258602062057, fm124: 11679.02359964692, prec: 12 }
+const ewslx = { fm010: false, fm124: false }
+const hpua = { fm010: 1261.1929372603729, fm124: 12976.692888496578 * 0.23541979977677915, prec: 12}
+const fli = { fm010: 389.95413667947145, fm124: 2467.928645, prec: 11 }
+const flame = { fm010: 6.9996889013229229, fm124: 16.35631663, prec: 11 }
+// const scorch = { fm010: 39.580182, fm124: 215.682771, prec: 8 }
+
+const cover1 = 0.6
+const ros1 = ros.fm010
+const ros2 = ros.fm124
+ros.harm = 1 / (cover1 / ros1 + (1 - cover1) / ros2)
+ros.arith = cover1 * ros1 + (1 - cover1) * ros2
+// Get our results
+const wfms = new WfmsTwoFuels()
+wfms.set(wfms.key1, '10')
+wfms.set(wfms.key2, '124')
+wfms.set(wfms.cover1, 0.6)
+wfms.set(wfms.midflame1, 880)
+wfms.set(wfms.midflame2, 880)
+wfms.set(wfms.mois1, 0.05)
+wfms.set(wfms.mois10, 0.07)
+wfms.set(wfms.mois100, 0.09)
+wfms.set(wfms.moisHerb, 0.5)
+wfms.set(wfms.moisStem, 1.5)
+wfms.set(wfms.slopeRatio, 0.25)
+wfms.set(wfms.aspect, 180)
+wfms.set(wfms.windFromNorth, 270)
+wfms.updateAll()
+
+describe('Two fuel models', () => {
+    
+    it('primary, secondary, and weighted RoS agrees with BehavePlus V6', () => {
+        expect(wfms.ros1.value).precision(ros.fm010, ros.prec)
+        expect(wfms.ros2.value).precision(ros.fm124, ros.prec)
+        expect(wfms.rosH.value).precision(ros.harm, ros.prec)
+        expect(wfms.rosA.value).precision(ros.arith, ros.prec)
+        expect(wfms.rosW.value).precision(ros.harm, ros.prec)
+    })
+    it('primary, secondary, and weighted heading driection from upslope agrees with BehavePlus V6', () => {
+        // These are bound to the primary
+        expect(wfms.dirUp1.value).precision(dirUp.fm010, dirUp.prec)
+        expect(wfms.dirUp2.value).precision(dirUp.fm124, dirUp.prec)
+        expect(wfms.dirUpW.value).precision(dirUp.fm010, dirUp.prec)
+    })
+    it('primary, secondary, and weighted length-to-width ratio agrees with BehavePlus V6', () => {
+        // These are bound to the primary
+        expect(wfms.lwr1.value).precision(lwr.fm010, lwr.prec)
+        expect(wfms.lwr2.value).precision(lwr.fm124, lwr.prec)
+        expect(wfms.lwrW.value).precision(lwr.fm010, lwr.prec)
+    })
+    // Fli, Rxi, Flame, HPUA, Scorch use the maximum of the two fuels, in this case, its fm124
+    it('primary, secondary, and weighted fireline intensity agrees with BehavePlus V6', () => {
+        expect(wfms.fli1.value).precision(fli.fm010, fli.prec)
+        expect(wfms.fli2.value).precision(fli.fm124, fli.prec)
+        expect(wfms.fliW.value).precision(fli.fm124, fli.prec)
+    })
+})
