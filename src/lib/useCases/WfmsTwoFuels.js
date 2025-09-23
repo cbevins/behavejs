@@ -1,7 +1,7 @@
 import { Paths as P } from '../index.js'
-import { WfmsConfig } from '../index.js'
+import { WfmsUseCases } from '../index.js'
 
-export class WfmsTwoFuels extends WfmsConfig {
+export class WfmsTwoFuels extends WfmsUseCases {
     constructor(name='Two Fuel Models Test') {
         super(name)
         this._setConfiguration()

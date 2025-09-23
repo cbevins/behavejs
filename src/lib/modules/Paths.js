@@ -25,7 +25,6 @@ export class Paths {
     // Fire Ellipse model
     static cfgLwr = 'ellipse/length-to-width ratio/parameter' // ['input', 'estimated'][0]],
     static cfgFli = 'ellipse/fireline intensity/parameter'    // ['fireline intensity', 'flame length'][1]],
-    static cfgVector = 'ellipse/vector/input'    // ['from head', 'from up-slope', 'from north'][2]],
     // Fire Growth links with Surface Fire: 'input' is unlinked,
     // 'surface' uses surface fire direction, spread rate, fli, lwr, and eff wind
     static cfgEffLink = 'ellipse/parameters'  // ['input', 'surface'][0]],

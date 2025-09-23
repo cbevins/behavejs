@@ -4,7 +4,14 @@ import { Wfms, Paths as P, Util } from '../index.js'
 const wfms = new Wfms()
 const dag  = wfms.dag
 
-// Step 2 - configure input choices and computational options
+// Step 2 - configured for 9 inputs
+// - a single surface standard fuel model key
+// - all 5 fuel moisture inputs
+// - midflame wind speed is directly entered (no 20-ft wind or wsrf needed)
+// - slope direction is upslope
+// - wind direction is heading from up-slope (no wind direction needed)
+// - live curing fraction is estimated from herb moisture (no input required)
+
 wfms.setConfig([
     [P.cfgSurfWtg,      ['primary', 'harmonic', 'arithmetic'][0]],
     [P.cfgCanopy,       ["height-base","ratio-height","height-length",

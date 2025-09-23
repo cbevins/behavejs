@@ -7,7 +7,7 @@ const _node = {key: '', value: null, units: null, cfg: null, options: [],
 const _nodeOption = {value: '', updater: null, suppliers: []}
 
 // Template for statistics tracker object
-const _tracker = {clean: 0, constant: 0, input: 0, assign: 0, calc: 0, stack: []}
+const _tracker = {from: null, leaf: null, clean: 0, constant: 0, input: 0, assign: 0, calc: 0, stack: []}
 
 /**
  * USAGE
@@ -87,10 +87,25 @@ export class Dag {
     // If the DagNode is dirty, get() is recursively called on all its suppliers,
     // and its dirty flag is cleared before returning its updated value.
     get(refOrKey, log=false) {
-        this.tracker = {..._tracker}
         const node = this.nodeRef(refOrKey)  // only use node references within _get()!!!
         return this._get(node, log)
     }
+
+    // Same as get(), but with tracking
+    track(fromRefOrKey, leafRefOrKey) {
+        const from = this.nodeRef(fromRefOrKey)  // only use node references within _get()!!!
+        const leaf = this.nodeRef(leafRefOrKey)  // only use node references within _get()!!!
+        this.tracker = {..._tracker, from, leaf}
+        return this._track(leaf)
+    }
+
+    leafNodes() {
+        const active = []
+        for(let node of this.nodeMap.values())
+            if (node.status === Dag.leaf) active.push(node)
+        return active
+    }
+    leafNodesByKey() { return this.leafNodes().sort((a, b) => a.key.localeCompare(b.key))}
 
     // Returns a reference to the DagNode with 'key' prop
     nodeRef(refOrKey, caller='unknown') { 
@@ -264,6 +279,24 @@ export class Dag {
 
     _get(node, log) {
         if (node.updater === Dag.constant) {
+        } else if (node.updater === Dag.input) {
+        } else if (node.dirty === Dag.clean) {
+        } else if (node.updater === Dag.assign) {
+            node.value = this._get(node.suppliers[0], log)
+        } else { // get updated supplier values
+            const args = []
+            for(let supplier of node.suppliers)
+                args.push(this._get(supplier, log))
+            node.value = node.updater.apply(node, args)
+            if(log) console.log(`_get(${node.key}) invoked ${node.updater.name}`)
+        }
+        node.dirty = Dag.clean
+        return node.value
+    }
+
+    // Same as _get(), but with tracking
+    _track(node) {
+        if (node.updater === Dag.constant) {
             this.tracker.constant++
         } else if (node.updater === Dag.input) {
             this.tracker.input++
@@ -271,15 +304,14 @@ export class Dag {
             this.tracker.clean++
         } else if (node.updater === Dag.assign) {
             this.tracker.assign++
-            node.value = this._get(node.suppliers[0], log)
+            node.value = this._track(node.suppliers[0])
         } else { // get updated supplier values
             this.tracker.calc++
             const args = []
             for(let supplier of node.suppliers)
-                args.push(this._get(supplier, log))
+                args.push(this._track(supplier))
             // this.tracker.stack.push(node.updater.name)
             node.value = node.updater.apply(node, args)
-            if(log) console.log(`_get(${node.key}) invoked ${node.updater.name}`)
         }
         node.dirty = Dag.clean
         return node.value

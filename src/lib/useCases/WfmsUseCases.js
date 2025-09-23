@@ -5,7 +5,7 @@ import { Wfms } from '../index.js'
 // 1 - a WFMS with preset selected nodes, configuration, and input values;
 // 2 - access to commonly used node references; and
 // 3 - chaining to lower lever Wfms and Dag methods
-export class WfmsConfig {
+export class WfmsUseCases {
     constructor(name='WFMS Standard Configuration')
     {
         this.name = name
@@ -29,6 +29,8 @@ export class WfmsConfig {
     configs() { return this.wfms.configs() }
     allInputs() { return this.dag.allInputs() }
     allInputsByKey() { return this.dag.allInputsByKey() }
+    leafNodes() { return this.dag.leafNodes() }
+    leafNodesByKey() { return this.dag.leafNodesByKey() }
     nodes() { return this.dag.nodes() }
     nodesByKey() { return this.dag.nodesByKey() }
     nodeRef(refOrKey, caller='unknown') {  return this.dag.nodeRef(refOrKey, caller) }
@@ -122,6 +124,10 @@ export class WfmsConfig {
         this.moisStem       = dag.nodeRef('weather/moisture/live/stem')
         this.windFromNorth  = dag.nodeRef('weather/wind/direction/source/from north')
         this.windHeadUpslp  = dag.nodeRef('weather/wind/direction/heading/from up-slope')
+        this.windAt20ft     = dag.nodeRef('weather/wind/speed/at 20-ft')
+        this.canCover       = dag.nodeRef('canopy/coverage')
+        this.canBaseHt      = dag.nodeRef('canopy/crown/base height')
+        this.canTotalHt     = dag.nodeRef('canopy/crown/total height')
     }
 
     // The 'fire map' configuration is meant to implement a common use case of
@@ -143,7 +149,7 @@ export class WfmsConfig {
                                 "ratio-base","ratio-length","length-base"][0]],
             [P.cfgEffWind,      ["applied","not applied"][0]],
             [P.cfgEllipse,      ["surface", "observed"][0]],
-            [P.cfgVector,       ["fire head", "up-slope", "north"][0]],
+            [P.cfgVectors,      ["fire head", "up-slope", "north"][0]],
             [P.cfgCured,        ["input","estimated"][1]],
             [P.cfgWsrf,         ["input","estimated"][1]],
             [P.cfgMidflame,     ["input","estimated"][1]],

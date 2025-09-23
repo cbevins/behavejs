@@ -21,6 +21,6 @@ export {TreeMortalityEquations} from './equations/TreeMortalityEquations.js'
 export {Util} from './equations/Util.js'
 export {WindEquations} from './equations/WindEquations.js'
 
-// WFMS Configurations
-export {WfmsConfig} from './configs/WfmsConfig.js'
-export {WfmsTwoFuels} from './configs/WfmsTwoFuels.js'
+// WFMS Use Case Configurations
+export {WfmsUseCases} from './useCases/WfmsUseCases.js'
+export {WfmsTwoFuels} from './useCases/WfmsTwoFuels.js'

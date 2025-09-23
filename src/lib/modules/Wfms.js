@@ -108,7 +108,7 @@ export class Wfms {
         const slpdirCfg = this._addCfg(new SlopeDirectionConfig())
         const slpdirMod = new SlopeDirectionModule('terrain/', slpdirCfg)
         const upslopeDirNode = slpdirMod.path + P.slopeUp
-        console.log('UPSLOPEDIRNODE', upslopeDirNode)
+
         // SlopeSteepnessModule produces 1 node referenced by the SurfaceFireModule
         const slpsteepCfg = this._addCfg(new SlopeSteepnessConfig())
         const slpsteepMod = new SlopeSteepnessModule('terrain/', slpsteepCfg)

@@ -29,11 +29,11 @@ export class FireEllipseModule extends ModuleBase {
         super(prefix, P.ellipseSelf, P.ellipseMod, cfg)
         const path = this.path  // ellipseSelf
 
-        let str = `${this.module} prefix="${prefix}" self="${this.self}"\n`
-        str += `    surface path="${surfPath}",\n    canopy path="${canopyPath}"\n`
-        str += `    upslopeNode=${upslopeNode}"\n    elapsedTimeNode="${elapsedNode}"\n`
-        str += `    airTempNode="${airTempNode}"\n    mapScaleNode="${mapScaleNode}"`
-        console.log(str)
+        // let str = `${this.module} prefix="${prefix}" self="${this.self}"\n`
+        // str += `    surface path="${surfPath}",\n    canopy path="${canopyPath}"\n`
+        // str += `    upslopeNode=${upslopeNode}"\n    elapsedTimeNode="${elapsedNode}"\n`
+        // str += `    airTempNode="${airTempNode}"\n    mapScaleNode="${mapScaleNode}"`
+        // console.log(str)
 
         this.surfaceLinkNodes = [
             [path+P.axisLwr, U.ratio, cfg, [

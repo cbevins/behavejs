@@ -75,7 +75,7 @@ export class CanopyEquations {
 
     // Canopy-induced midflame windspeed adjustment factor
     static canopyWindSpeedAdjustmentFactor (cover, ht, fill) {
-      const waf = (CanopyEquations.sheltersFuelFromWind(cover, ht, fill))
+      const waf = (CanopyEquations.canopySheltersFuelFromWind(cover, ht, fill))
         ? 0.555 / (Math.sqrt(fill * ht) * Math.log((20 + 0.36 * ht) / (0.13 * ht)))
         : 1
       return Calc.fraction(waf)
