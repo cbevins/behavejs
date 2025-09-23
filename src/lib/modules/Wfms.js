@@ -17,6 +17,7 @@ import {LiveFuelCuringModule} from './LiveFuelCuringModule.js'
 import {LiveFuelCuringConfig} from './LiveFuelCuringConfig.js'
 import {LiveFuelMoistureModule} from './LiveFuelMoistureModule.js'
 import {LiveFuelMoistureConfig} from './LiveFuelMoistureConfig.js'
+import {MapModule} from './MapModule.js'
 import {MidflameWindSpeedConfig} from './MidflameWindSpeedConfig.js'
 import {MidflameWindSpeedModule} from './MidflameWindSpeedModule.js'
 import {SlopeDirectionModule} from './SlopeDirectionModule.js'
@@ -103,6 +104,10 @@ export class Wfms {
         const livemoisMod = new LiveFuelMoistureModule('weather/', livemoisCfg)
         const moisHerbNode = livemoisMod.path + P.moisLiveHerb  // Referenced by LiveFuelCuringModule
         const moisStemNode = livemoisMod.path + P.moisLiveStem
+
+        // MapModule has no configs
+        const mapMod = new MapModule()
+        const mapScaleNode = mapMod.path + P.mapScale
 
         // SlopeDirectionModule produces 1 node referenced by the SurfaceFireModule
         const slpdirCfg = this._addCfg(new SlopeDirectionConfig())
@@ -201,9 +206,7 @@ export class Wfms {
         const ellipseCfg = this._addCfg(new FireEllipseConfig())
         const vectorCfg = this._addCfg(new FireVectorConfig())
         const ellipseMod = new FireEllipseModule('', ellipseCfg, vectorCfg,
-            wtgMod.path, canopyMod.path, upslopeDirNode, 'time/fire/ignition/elapsed',
-            'weather/temperature/ambient air', 'map/scale')
-
+            wtgMod.path, canopyMod.path, upslopeDirNode, mapScaleNode)
 
         // Create the this.dag from here so we can garbage collect the nodeDefs
         this.dag = new Dag([
@@ -212,6 +215,7 @@ export class Wfms {
             ...canopyMod.nodes,
             ...deadmoisMod.nodes,
             ...livemoisMod.nodes,
+            ...mapMod.nodes,
             ...windspdMod.nodes,
             ...slpsteepMod.nodes,
             ...slpdirMod.nodes,

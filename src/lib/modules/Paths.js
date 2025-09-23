@@ -67,6 +67,9 @@ export class Paths {
     static ellipseSelf = 'ellipse/'
     static ellEccent   = 'eccentricity'
 
+    static airTemp     = 'temperature/ambient air'
+    static fireTime    = 'time/ignition/elapsed'
+
     static axisLw     = 'axis/length-to-width ratio'
     static axisFRos   = 'axis/f/spread rate'
     static axisGRos   = 'axis/g/spread rate'
@@ -150,6 +153,19 @@ export class Paths {
     static moisLiveHerb = 'herb'
     static moisLiveStem = 'stem'
 
+    // MapModule
+    static mapMod        = 'MapModule'
+    static mapSelf       = 'map/'
+    static mapScale      = 'scale'
+    static mapContours   = 'contour/count'
+    static mapInterval   = 'countour/interval'
+    static mapDist       = 'distance'
+    static mapFactor     = 'scale/inverse'
+    static mapReach      = 'slope/reach'
+    static mapRise       = 'slope/rise'
+    static mapSlopeRatio = 'slope/ratio'
+    static mapSlopeDeg   = 'slope/degrees'
+    
     // MidflameWindSpeedModule
     static midflameMod   = 'MidflameWindSpeedModule'
     static midflameSelf  = 'wind/speed/'

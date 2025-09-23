@@ -10,9 +10,11 @@ export class Units {
     static posint   = {key: 'posint',   type: 'posint',   units: []}  // any non-negative integer
     static posratio = {key: 'posratio', type: 'posratio', units: []} // any non-negative rational number
     static posreal  = {key: 'posreal',  type: 'posreal',  units: []} // any non-negative real
+    static real     = {key: 'real',     type: 'real',     units: []}  // any real value
     static quantity = {key: 'quantity', type: 'posreal',  units: []}
     static ratio    = {key: 'ratio',    type: 'ratio',    units: ['ratio']} // any rational number, no percent option
     static select   = {key: 'select',   type: 'select',   units: []}    // array of valid strings
+    static temp     = {key: 'temp',     type: 'real',     units: ['F', 'C']}
     static text     = {key: 'text',     type: 'text',     units: [0,16]}  // takes min and max length args
     static time     = {key: 'time',     type: 'time',     units: []}
 
@@ -59,6 +61,8 @@ export class Units {
 
     static mapArea  = {key: 'map area', type: 'quantity', units: ['in2', 'cm2']}
     static mapDist  = {key: 'map distance', type: 'quantity', units: ['in', 'cm']}
+    static mapScale = {key: 'map scale', type: 'posreal', units: [] }
+
     static treeLeng = {key: 'tree lengths', type: 'quantity', units: ['ft', 'm']}
 
     static windSpeed = {key: 'wind speed', type: 'quantity', units: ['ft/min', 'mi/h', 'm/s', 'km/h']}
