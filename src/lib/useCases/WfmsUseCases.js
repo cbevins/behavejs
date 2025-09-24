@@ -53,81 +53,42 @@ export class WfmsUseCases {
     _assignCommonNodeReferences() {
         const dag = this.dag
         // SurfaceFuelBed
-        this.bulk  = dag.nodeRef('primary/bed/bulk density')
         this.cured = dag.nodeRef('weather/curing/fraction/applied')
 
-        // SurfaceFireModule and SurfaceFireWtgModule
-        this.cover2   = dag.nodeRef('surface/fire/cover/secondary')
-        this.ros1 = dag.nodeRef('primary/fire/heading/spread rate')
-        this.ros2 = dag.nodeRef('secondary/fire/heading/spread rate')
-        this.rosH = dag.nodeRef('surface/fire/spread rate/harmonic mean')
-        this.rosA = dag.nodeRef('surface/fire/spread rate/arithmetic mean')
-        this.rosW = dag.nodeRef('surface/fire/heading/spread rate')
-        
-        this.dirNo1 = dag.nodeRef('primary/fire/heading/direction/from north')
-        this.dirNo2 = dag.nodeRef('secondary/fire/heading/direction/from north')
-        this.dirNoW = dag.nodeRef('surface/fire/heading/direction/from north')
-        
-        this.dirUp1 = dag.nodeRef('primary/fire/heading/direction/from up-slope')
-        this.dirUp2 = dag.nodeRef('secondary/fire/heading/direction/from up-slope')
-        this.dirUpW = dag.nodeRef('surface/fire/heading/direction/from up-slope')
-
-        this.lwr1 = dag.nodeRef('primary/fire/length-to-width ratio')
-        this.lwr2 = dag.nodeRef('secondary/fire/length-to-width ratio')
-        this.lwrW = dag.nodeRef('surface/fire/length-to-width ratio')
-
-        this.mid1 = dag.nodeRef('primary/fire/wind/speed/midflame')
-        this.mid2 = dag.nodeRef('secondary/fire/wind/speed/midflame')
-        this.midW = dag.nodeRef('surface/fire/wind/speed/midflame')
-
-        this.rxi1 = dag.nodeRef('primary/fire/reaction intensity')
-        this.rxi2 = dag.nodeRef('secondary/fire/reaction intensity')
-        this.rxiW = dag.nodeRef('surface/fire/reaction intensity')
-
-        this.ews1 = dag.nodeRef('primary/fire/effective wind/speed')
-        this.ews2 = dag.nodeRef('secondary/fire/effective wind/speed')
-        this.ewsW = dag.nodeRef('surface/fire/effective wind/speed')
-
-        this.ewsl1 = dag.nodeRef('primary/fire/effective wind/speed/limit')
-        this.ewsl2 = dag.nodeRef('secondary/fire/effective wind/speed/limit')
-        this.ewslW = dag.nodeRef('surface/fire/effective wind/speed/limit')
-
-        this.ewsx2 = dag.nodeRef('primary/fire/effective wind/speed/exceeded')
-        this.ewsx1 = dag.nodeRef('secondary/fire/effective wind/speed/exceeded')
-        this.ewsxW = dag.nodeRef('surface/fire/effective wind/speed/exceeded')
-        
-        this.hpua1 = dag.nodeRef('primary/fire/heat per unit area')
-        this.hpua2 = dag.nodeRef('secondary/fire/heat per unit area')
-        this.hpuaW = dag.nodeRef('surface/fire/heat per unit area')
-
-        this.fli1 = dag.nodeRef('primary/fire/heading/fireline intensity')
-        this.fli2 = dag.nodeRef('secondary/fire/heading/fireline intensity')
-        this.fliW = dag.nodeRef('surface/fire/heading/fireline intensity')
-
-        this.fl1 = dag.nodeRef('primary/fire/heading/flame length')
-        this.fl2 = dag.nodeRef('secondary/fire/heading/flame length')
-        this.flW = dag.nodeRef('surface/fire/heading/flame length')
-
         // Common inputs nodes
-        this.key1           = dag.nodeRef('primary/model/standard/key')
-        this.key2           = dag.nodeRef('secondary/model/standard/key')
-        this.cover1         = dag.nodeRef('surface/fire/cover/primary')
-        this.midflame1      = dag.nodeRef('primary/wind/speed/midflame')
-        this.midflame2      = dag.nodeRef('secondary/wind/speed/midflame')
-        this.aspect         = dag.nodeRef('terrain/slope/direction/down-slope')
-        this.upslope        = dag.nodeRef('terrain/slope/direction/up-slope')
-        this.slopeRatio     = dag.nodeRef('terrain/slope/steepness/ratio')
-        this.mois1          = dag.nodeRef('weather/moisture/dead/1-h')
-        this.mois10         = dag.nodeRef('weather/moisture/dead/10-h')
-        this.mois100        = dag.nodeRef('weather/moisture/dead/100-h')
-        this.moisHerb       = dag.nodeRef('weather/moisture/live/herb')
-        this.moisStem       = dag.nodeRef('weather/moisture/live/stem')
-        this.windFromNorth  = dag.nodeRef('weather/wind/direction/source/from north')
-        this.windHeadUpslp  = dag.nodeRef('weather/wind/direction/heading/from up-slope')
-        this.windAt20ft     = dag.nodeRef('weather/wind/speed/at 20-ft')
-        this.canCover       = dag.nodeRef('canopy/coverage')
-        this.canBaseHt      = dag.nodeRef('canopy/crown/base height')
-        this.canTotalHt     = dag.nodeRef('canopy/crown/total height')
+        this.canopy = {
+            cover: dag.nodeRef('canopy/coverage'),
+            base: dag.nodeRef('canopy/crown/base height'),
+            total: dag.nodeRef('canopy/crown/total height')
+        }
+        this.mois = {
+            tl1: dag.nodeRef('weather/moisture/dead/1-h'),
+            tl10: dag.nodeRef('weather/moisture/dead/10-h'),
+            tl100: dag.nodeRef('weather/moisture/dead/100-h'),
+            herb: dag.nodeRef('weather/moisture/live/herb'),
+            stem: dag.nodeRef('weather/moisture/live/stem'),
+        }
+        this.primary = {
+            cover: dag.nodeRef('weighted/fire/cover/primary'),
+            fuel: dag.nodeRef('primary/model/standard/key'),
+            midflame: dag.nodeRef('primary/wind/speed/midflame'),
+        }
+        this.secondary = {
+            fuel: dag.nodeRef('secondary/model/standard/key'),
+            midflame: dag.nodeRef('secondary/wind/speed/midflame'),
+        }
+        this.slope = {
+            aspect: dag.nodeRef('terrain/slope/direction/down-slope/degrees/from north'),
+            upslope: dag.nodeRef('terrain/slope/direction/up-slope/degrees/from north'),
+            ratio: dag.nodeRef('terrain/slope/steepness/ratio/rise-to-reach'),
+            degrees: dag.nodeRef('terrain/slope/steepness/degrees/from horizontal'),
+        },
+        this.wind = {
+            source: dag.nodeRef('weather/wind/direction/source/degrees/from north'),
+            heading: dag.nodeRef('weather/wind/direction/heading/degrees/from up-slope'),
+            at20ft: dag.nodeRef('weather/wind/speed/at 20-ft'),
+            at10m: dag.nodeRef('weather/wind/speed/at 10-m')
+        }
     }
 
     // The 'fire map' configuration is meant to implement a common use case of
@@ -166,7 +127,7 @@ export class WfmsUseCases {
         ]
     }
     
-    // Input values used for version 1 unit testing
+    // For reference, here are t input values used for version 1 unit testing
     _testInputs () {
         this.oldInputsFm010Fm124 = [
             ['site.fire.time.sinceIgnition', [60]],

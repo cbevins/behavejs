@@ -199,7 +199,7 @@ export class Wfms {
 
         // SurfaceFireWtgModule
         const wtgCfg = this._addCfg(new SurfaceFireWtgConfig())
-        const wtgMod = new SurfaceFireWtgModule('surface/', wtgCfg,
+        const wtgMod = new SurfaceFireWtgModule('', wtgCfg,
             fireMod1.path, fireMod2.path)
 
         // FireEllipseModule
@@ -234,6 +234,7 @@ export class Wfms {
             ...midflameMod2.nodes,
             ...fireMod2.nodes,
             ...wtgMod.nodes,
+            ...ellipseMod.nodes,
         ].sort((a, b) => { return a.key - b.key }), 'Behave')
 
         const mods = [

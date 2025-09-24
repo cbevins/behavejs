@@ -20,7 +20,7 @@ export class MapModule extends ModuleBase {
     constructor(prefix='') {
         super(prefix, P.mapSelf, P.mapMod, null)
         const path = this.path  // P.mapSelf
-console.log('WELCOME TO', this.module, this.path, path+P.mapScale)
+
         this.nodes = [
             [path+P.mapScale, 0, U.mapScale , null, [
                 ['', Dag.input, []]]],

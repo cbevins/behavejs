@@ -33,12 +33,12 @@ wfms.setConfig([
 ])
 
 // Step 3 - specify the fire behavior variables to be produced
-const ros = dag.nodeRef('surface/fire/heading/spread rate')
-const dirUp = dag.nodeRef('surface/fire/heading/direction/from up-slope')
-const hpua = dag.nodeRef('surface/fire/heat per unit area')
-const fli = dag.nodeRef('surface/fire/heading/fireline intensity')
-const ews = dag.nodeRef('surface/fire/effective wind/speed')
-const lwr = dag.nodeRef('surface/fire/length-to-width ratio')
+const ros = dag.nodeRef('weighted/fire/heading/spread rate')
+const dirUp = dag.nodeRef('weighted/fire/heading/degrees/from up-slope')
+const hpua = dag.nodeRef('weighted/fire/heat per unit area')
+const fli = dag.nodeRef('weighted/fire/heading/fireline intensity')
+const ews = dag.nodeRef('weighted/fire/effective wind/speed')
+const lwr = dag.nodeRef('weighted/fire/length-to-width ratio')
 dag.select(ros, dirUp, hpua, fli, ews, lwr)
 
 // If interested in these ...
@@ -81,9 +81,9 @@ function optimal() {
                 for(let wspd of windSpeeds) {
                     dag.set('primary/wind/speed/midflame', wspd)
                     for(let windDir of windDirs) {
-                        dag.set('weather/wind/direction/heading/from up-slope', windDir)
+                        dag.set('weather/wind/direction/heading/degrees/from up-slope', windDir)
                         for(let slope of slopes) {
-                            dag.set('terrain/slope/steepness/ratio', slope)
+                            dag.set('terrain/slope/steepness/ratio/rise-to-reach', slope)
                             dag.updateAll()
                             n++
                         }
@@ -136,8 +136,8 @@ function mapBased() {
             dag.set('weather/moisture/live/herb', datum.herb)
             dag.set('weather/moisture/dead/1-h', datum.tl1h)
             dag.set('primary/wind/speed/midflame', datum.wspd)
-            dag.set('weather/wind/direction/heading/from up-slope', datum.wdir)
-            dag.set('terrain/slope/steepness/ratio', datum.slope)
+            dag.set('weather/wind/direction/heading/degrees/from up-slope', datum.wdir)
+            dag.set('terrain/slope/steepness/ratio/rise-to-reach', datum.slope)
             dag.updateAll()
             n++
         }

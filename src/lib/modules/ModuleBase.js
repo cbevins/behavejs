@@ -14,4 +14,16 @@ export class ModuleBase {
         this.path   = prefix + self
         this.nodes  = []
     }
+    checkNodes() {
+        let prev = 'first'
+        for(let i=0; i<this.nodes.length; i++) {
+            const node = this.nodes[i]
+            const [key, value, units, cfg, options] = node
+            console.log(i, key)
+            if (key.includes('undefined')) {
+                console.log(`${this.module} has undefined key at node index ${i} with units "${units.key}" right after node "${prev}"`)
+            }
+            prev = key
+        }
+    }
 }

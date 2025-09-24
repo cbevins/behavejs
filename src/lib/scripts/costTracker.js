@@ -35,12 +35,12 @@ wfms.setConfig([
 ])
 
 // Step 3 - specify the fire behavior variables to be produced
-const ros = dag.nodeRef('surface/fire/heading/spread rate')
-const dirUp = dag.nodeRef('surface/fire/heading/direction/from up-slope')
-const hpua = dag.nodeRef('surface/fire/heat per unit area')
-const fli = dag.nodeRef('surface/fire/heading/fireline intensity')
-const ews = dag.nodeRef('surface/fire/effective wind/speed')
-const lwr = dag.nodeRef('surface/fire/length-to-width ratio')
+const ros = dag.nodeRef('weighted/fire/heading/spread rate')
+const dirUp = dag.nodeRef('weighted/fire/heading/degrees/from up-slope')
+const hpua = dag.nodeRef('weighted/fire/heat per unit area')
+const fli = dag.nodeRef('weighted/fire/heading/fireline intensity')
+const ews = dag.nodeRef('weighted/fire/effective wind/speed')
+const lwr = dag.nodeRef('weighted/fire/length-to-width ratio')
 dag.select(ros, dirUp, hpua, fli, ews, lwr)
 
 dag.set('primary/model/standard/key', '124')
@@ -49,9 +49,9 @@ dag.set('weather/moisture/dead/10-h', 0.07)
 dag.set('weather/moisture/dead/100-h', 0.09)
 dag.set('weather/moisture/live/herb', 0.5)
 dag.set('weather/moisture/live/stem', 1.5)
-dag.set('terrain/slope/direction/down-slope', 180)
-dag.set('terrain/slope/steepness/ratio', 0.25)
-dag.set('weather/wind/direction/source/from north', 270)
+dag.set('terrain/slope/direction/down-slope/degrees/from north', 180)
+dag.set('terrain/slope/steepness/ratio/rise-to-reach', 0.25)
+dag.set('weather/wind/direction/source/degrees/from north', 270)
 dag.set('weather/wind/speed/at 20-ft', 20*88)
 dag.set('canopy/coverage', 0.9)
 dag.set('canopy/crown/base height', 10)
@@ -103,16 +103,17 @@ costs.push(track('canopy/coverage', 0.89, leafNodes))
 costs.push(track('canopy/crown/base height', 11, leafNodes))
 costs.push(track('canopy/crown/total height', 41, leafNodes))
 costs.push(track('weather/wind/speed/at 20-ft', 10*88, leafNodes))
-costs.push(track('terrain/slope/direction/down-slope', 181, leafNodes))
-costs.push(track('weather/wind/direction/source/from north', 90, leafNodes))
-costs.push(track('terrain/slope/steepness/ratio', 0.20, leafNodes))
+costs.push(track('terrain/slope/direction/down-slope/degrees/from north', 181, leafNodes))
+costs.push(track('weather/wind/direction/source/degrees/from north', 90, leafNodes))
+costs.push(track('terrain/slope/steepness/ratio/rise-to-reach', 0.20, leafNodes))
 
 // Display summary
-let str = `\n${'Dag.get() calls Required'.padEnd(40)} ---------- get() Method Results ---------\n`
-str += `${'by changing just this parameter:'.padEnd(40)} Clean Const Input Assig Calcs Total Costs\n`
+const wid = 54
+let str = `\n${'Dag.get() calls Required'.padEnd(wid)} ---------- get() Method Results ---------\n`
+str += `${'by changing just this parameter:'.padEnd(wid)} Clean Const Input Assig Calcs Total Costs\n`
 for(let cost of costs) {
     const {from, clean, constant, input, assign, calc, total, estcost} = cost
-    str += `${from.key.padEnd(40)} ${pad(clean)} ${pad(constant)} ${pad(input)}`
+    str += `${from.key.padEnd(wid, ' .')} ${pad(clean)} ${pad(constant)} ${pad(input)}`
         + ` ${pad(assign)} ${pad(calc)} ${pad(total)} ${pad(estcost)}\n`
 }
 console.log(str)

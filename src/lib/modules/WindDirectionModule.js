@@ -10,7 +10,7 @@ export class WindDirectionModule extends ModuleBase {
      * (something like 'weather/' or '') to preface this module's 'wind/direction/<node>' keys.
      * @param {Config} cfg Config reference
      * @param {string} upslope Fully qualified path to the upslope direction node,
-     * something like 'terrain/slope/direction/up-slope'
+     * something like 'terrain/slope/direction/up-slope/degrees/from north'
      */
     constructor(prefix, cfg, upslope){
         super(prefix, P.wdirSelf, P.wdirMod, cfg)

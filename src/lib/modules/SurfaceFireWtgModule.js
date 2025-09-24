@@ -26,7 +26,7 @@ export class SurfaceFireWtgModule extends ModuleBase {
         const path = this.path
         // NOTE that the FireEllipseModule links to the following nodes:
         // path+P.fireHeadRos
-        // path+P.fireHeadDirUp
+        // path+P.fireFromUpslope
         // path+P.fireLwr
         // path+P.fireMidf (used for scorch height)
         // path+P.fireHeadFlame    
@@ -42,10 +42,10 @@ export class SurfaceFireWtgModule extends ModuleBase {
             // The following 6 (or maybe 7) are ALWAYS bound to the primary fuel
             [path+P.fireWeff, 0, U.windSpeed, null, [
                 [cfg.any, Dag.assign, [fire1Path+P.fireWeff]]]],
-            [path+P.fireHeadDirUp, 0, U.compass, null, [
-                [cfg.any, Dag.assign, [fire1Path+P.fireHeadDirUp]]]],
-            [path+P.fireHeadDirNo, 0, U.compass, null, [
-                [cfg.any, Dag.assign, [fire1Path+P.fireHeadDirNo]]]],
+            [path+P.fireFromUpslope, 0, U.compass, null, [
+                [cfg.any, Dag.assign, [fire1Path+P.fireFromUpslope]]]],
+            [path+P.fireFromNorth, 0, U.compass, null, [
+                [cfg.any, Dag.assign, [fire1Path+P.fireFromNorth]]]],
             [path+P.fireLwr,       1, U.ratio, null, [
                 [cfg.any, Dag.assign, [fire1Path+P.fireLwr]]]],
             [path+P.fireMidf,      1, U.windSpeed, null, [

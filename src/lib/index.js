@@ -23,4 +23,5 @@ export {WindEquations} from './equations/WindEquations.js'
 
 // WFMS Use Case Configurations
 export {WfmsUseCases} from './useCases/WfmsUseCases.js'
+export {WfmsFireEllipse} from './useCases/WfmsFireEllipse.js'
 export {WfmsTwoFuels} from './useCases/WfmsTwoFuels.js'

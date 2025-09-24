@@ -17,6 +17,11 @@ export class Units {
     static temp     = {key: 'temp',     type: 'real',     units: ['F', 'C']}
     static text     = {key: 'text',     type: 'text',     units: [0,16]}  // takes min and max length args
     static time     = {key: 'time',     type: 'time',     units: []}
+    static junk     = {key: 'JUNK'}
+    
+    static compassNo = {key: 'compass degrees from north', type: 'compass', units: ['degrees']}
+    static compassUp = {key: 'compass degrees from up-slope', type: 'compass', units: ['degrees']}
+    static compassHead = {key: 'compass degrees from fire heading', type: 'compass', units: ['degrees']}
 
     static fireArea   = {key: 'fire area', type: 'quantity', units: ['ft2', 'm2']}
     static fireDist   = {key: 'fire distance', type: 'quantity', units: ['ft', 'm', 'mi', 'km']}

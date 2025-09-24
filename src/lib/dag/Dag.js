@@ -168,6 +168,9 @@ export class Dag {
             // Create a dagNode from the Module node definition
             const [key, value, units, cfg, options] = nodeDef
             const dagNode = {key, value, units, cfg, options: []}
+            if (! Array.isArray(options)) {
+                throw new Error(`Node "${key}" options array is not an array; ensure its the 5th element!`)
+            }
             for(let option of options) {
                 const [value, updater, args] = option
                 dagNode.options.push({value, updater, suppliers: [...args]})

@@ -65,12 +65,18 @@ export class Paths {
     // FireEllipseModule
     static ellipseMod  = 'FireEllipseModule'
     static ellipseSelf = 'ellipse/'
-    static ellEccent   = 'eccentricity'
+    static eccent      = 'eccentricity'
 
     static airTemp     = 'temperature/ambient air'
+    static fireMidf    = 'ellipse/wind/speed/midflame'
     static fireTime    = 'time/ignition/elapsed'
+    static fireHead    = 'heading/from north'
 
-    static axisLw     = 'axis/length-to-width ratio'
+    static vectorFromHead    = 'vector/degrees/from fire head'
+    static vectorFromNorth   = 'vector/degrees/from north'
+    static vectorFromUpslope = 'vector/degrees/from up-slope'
+
+    static axisLwr    = 'axis/length-to-width ratio'
     static axisFRos   = 'axis/f/spread rate'
     static axisGRos   = 'axis/g/spread rate'
     static axisHRos   = 'axis/h/spread rate'
@@ -125,7 +131,7 @@ export class Paths {
     static psiRos     = 'psi/spread rate'
     static psiFlame   = 'psi/flame length'
     static psiFli     = 'psi/fireline intensity'
-    static psiSh      = 'psi/scorch height'
+    static psiScorch  = 'psi/scorch height'
     static psiMort    = 'psi/tree mortality'
 
     static sizeArea   = 'size/area'
@@ -174,14 +180,14 @@ export class Paths {
     // SlopeDirectionModule
     static slopeDirMod  = 'SlopeDirectionModule'
     static slopeDirSelf = 'slope/direction/'
-    static slopeUp      = 'up-slope'
-    static slopeDown    = 'down-slope'
+    static slopeUp      = 'up-slope/degrees/from north'
+    static slopeDown    = 'down-slope/degrees/from north'
 
     // SlopeSteepnessModule
     static slopeSteepMod  = 'SlopeSteepnessModule'
     static slopeSteepSelf = 'slope/steepness/'
-    static slopeDegrees   = 'degrees'
-    static slopeRatio     = 'ratio'
+    static slopeDegrees   = 'degrees/from horizontal'
+    static slopeRatio     = 'ratio/rise-to-reach'
 
     // StandardFuelModelModule
     static stdMod           = 'StandardFuelModelModule'
@@ -244,11 +250,11 @@ export class Paths {
     static firep5    = '5 eff wind limit applied/' // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
     static firep6    = '6 ros limit applied/'      // 'spread rate', 'effective wind/speed', 'effective wind/coefficient'
     static firep7    = '7 both limits applied/'
-    static fireHeadFlame = 'heading/flame length'
-    static fireHeadFli   = 'heading/fireline intensity'
-    static fireHeadRos   = 'heading/spread rate'
-    static fireHeadDirUp = 'heading/direction/from up-slope'
-    static fireHeadDirNo = 'heading/direction/from north'
+    static fireHeadFlame   = 'heading/flame length'
+    static fireHeadFli     = 'heading/fireline intensity'
+    static fireHeadRos     = 'heading/spread rate'
+    static fireFromNorth   = 'heading/degrees/from north'
+    static fireFromUpslope = 'heading/degrees/from up-slope'
     static fireHpua      = 'heat per unit area'
     static fireLwr       = 'length-to-width ratio'
     static fireMidf      = 'wind/speed/midflame'
@@ -275,7 +281,7 @@ export class Paths {
 
     // SurfaceFireWtgModule
     static wtgMod    = 'SurfaceFireWtgModule'
-    static wtgSelf   = 'fire/'
+    static wtgSelf   = 'weighted/fire/'
     static wtgCover1 = 'cover/primary'
     static wtgCover2 = 'cover/secondary'
     static wtgRosArith = 'spread rate/arithmetic mean'
@@ -338,10 +344,10 @@ export class Paths {
     // WindDirectionModule
     static wdirMod          = 'WindDirectionModule'
     static wdirSelf         = 'wind/direction/'
-    static wdirHeadFromUp   = 'heading/from up-slope'
-    static wdirSourceFromUp = 'source/from up-slope'
-    static wdirHeadFromNo   = 'heading/from north'
-    static wdirSourceFromNo = 'source/from north'
+    static wdirHeadFromUp   = 'heading/degrees/from up-slope'
+    static wdirSourceFromUp = 'source/degrees/from up-slope'
+    static wdirHeadFromNo   = 'heading/degrees/from north'
+    static wdirSourceFromNo = 'source/degrees/from north'
 
     // WindSpeedModule
     static wspdMod  = 'WindSpeedModule'
