@@ -20,12 +20,12 @@ export class SurfaceFuelConfig extends ConfigBase {
         this.value = this.options[0]
     }
 }
-export class PrimarySurfaceFuelConfig extends SurfaceFuelConfig {
+export class SurfacePrimaryFuelConfig extends SurfaceFuelConfig {
     constructor(key=Paths.cfgFuelDomain1) {
         super(key, 'primary')
     }
 }
-export class SecondarySurfaceFuelConfig extends SurfaceFuelConfig {
+export class SurfaceSecondaryFuelConfig extends SurfaceFuelConfig {
     constructor(key=Paths.cfgFuelDomain2) {
         super(key, 'secondary')
     }

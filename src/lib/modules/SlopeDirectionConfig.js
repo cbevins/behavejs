@@ -7,6 +7,7 @@ export class SlopeDirectionConfig extends ConfigBase {
         // keys for outside reference
         this.upslope = 'up-slope'
         this.downslope = 'down-slope'
+        this.aspect = 'down-slope'
         this.options = [this.upslope, this.downslope]
         this.prompt = 'slope direction is specified as'
         this.prompts = [

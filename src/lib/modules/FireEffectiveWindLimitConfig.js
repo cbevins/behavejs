@@ -1,7 +1,7 @@
 import { ConfigBase } from './ConfigBase.js'
 import {Paths} from './Paths.js'
 
-export class SurfaceFireConfig extends ConfigBase {
+export class FireEffectiveWindLimitConfig extends ConfigBase {
     constructor(key=Paths.cfgEffWind) {
         super(key)
     // keys for outside reference

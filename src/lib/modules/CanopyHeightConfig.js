@@ -1,6 +1,6 @@
 import { ConfigBase } from './ConfigBase.js'
 import {Paths} from './Paths.js'
-export class CanopyConfig extends ConfigBase {
+export class CanopyHeightConfig extends ConfigBase {
     constructor(key=Paths.cfgCanopy) {
         super(key)
         // keys for outside reference

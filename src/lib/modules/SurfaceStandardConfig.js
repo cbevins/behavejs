@@ -1,7 +1,7 @@
 import { ConfigBase } from './ConfigBase.js'
 import {Paths} from './Paths.js'
 
-export class StandardFuelModelConfig extends ConfigBase {
+export class SurfaceStandardConfig extends ConfigBase {
     constructor(key='') {
         super(key)
         // keys for outside reference
@@ -16,13 +16,13 @@ export class StandardFuelModelConfig extends ConfigBase {
         this.value = this.options[0]
     }
 }
-export class PrimaryStandardFuelModelConfig extends StandardFuelModelConfig {
+export class SurfacePrimaryStandardConfig extends SurfaceStandardConfig {
     constructor(key=Paths.cfgStdInput1) {
         super(key, false)
         this.prompt = 'Primary ' + this.prompt
     }
 }
-export class SecondaryStandardFuelModelConfig extends StandardFuelModelConfig {
+export class SurfaceSecondaryStandardConfig extends SurfaceStandardConfig {
     constructor(key=Paths.cfgStdInput2) {
         super(key, true)
         this.prompt = 'Secondary ' + this.prompt

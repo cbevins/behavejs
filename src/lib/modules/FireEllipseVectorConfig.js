@@ -1,7 +1,7 @@
 import { ConfigBase } from './ConfigBase.js'
 import {Paths} from './Paths.js'
 
-export class FireVectorConfig extends ConfigBase {
+export class FireEllipseVectorConfig extends ConfigBase {
     constructor(key=Paths.cfgVectors) {
         super(key)
         // keys for outside reference

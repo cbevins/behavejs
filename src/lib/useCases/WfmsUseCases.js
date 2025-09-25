@@ -1,95 +1,20 @@
-import { Paths as P } from '../index.js'
 import { Wfms } from '../index.js'
 
 // High level WFMS convenience base class whose derived classes provide:
 // 1 - a WFMS with preset selected nodes, configuration, and input values;
 // 2 - access to commonly used node references; and
 // 3 - chaining to lower lever Wfms and Dag methods
-export class WfmsUseCases {
-    constructor(name='WFMS Standard Configuration')
-    {
+export class WfmsUseCases extends Wfms{
+    constructor(name='WFMS Standard Configuration') {
+        super()
         this.name = name
-        this.wfms = new Wfms()
-        this.dag  = this.wfms.dag
-        this._assignCommonNodeReferences()
-        this.wfms.setConfig(this.fireMapConfig())
+        this.nodeRefs = {}
+        this._assignNodeRefs()
     }
 
     //--------------------------------------------------------------------------
     // Public methods
     //--------------------------------------------------------------------------
-
-    // Convenience accessor methods
-    activeConfigs() { return this.dag.activeConfigs() }
-    activeConfigsByKey() { return this.dag.activeConfigsByKey() }
-    activeInputs() { return this.dag.activeInputs() }
-    activeInputsByKey() { return this.dag.activeInputsByKey() }
-    activeNodes() { return this.dag.activeNodes() }
-    activeNodesByKey() { return this.dag.activeNodesByKey() }
-    configs() { return this.wfms.configs() }
-    allInputs() { return this.dag.allInputs() }
-    allInputsByKey() { return this.dag.allInputsByKey() }
-    leafNodes() { return this.dag.leafNodes() }
-    leafNodesByKey() { return this.dag.leafNodesByKey() }
-    nodes() { return this.dag.nodes() }
-    nodesByKey() { return this.dag.nodesByKey() }
-    nodeRef(refOrKey, caller='unknown') {  return this.dag.nodeRef(refOrKey, caller) }
-    selected() { return this.dag.selected() }
-    selectedByKey() { return this.dag.selectedByKey() }
-
-    // Convenience operations methods
-    configure() { return this.dag.configure() }
-    get(node) { return this.dag.get(node) }
-    select(whatever) { return this.dag.select(whatever) }
-    set(refOrKey, value, inputsOnly=true, unequalOnly=true) {
-        return this.dag.set(refOrKey, value, inputsOnly, unequalOnly) }
-    setConfig(items) { return this.wfms.setConfig(items) }
-    updateAll() { return this.dag.updateAll }
-
-    //--------------------------------------------------------------------------
-    // Private methods
-    //--------------------------------------------------------------------------
-    
-    _assignCommonNodeReferences() {
-        const dag = this.dag
-        // SurfaceFuelBed
-        this.cured = dag.nodeRef('weather/curing/fraction/applied')
-
-        // Common inputs nodes
-        this.canopy = {
-            cover: dag.nodeRef('canopy/coverage'),
-            base: dag.nodeRef('canopy/crown/base height'),
-            total: dag.nodeRef('canopy/crown/total height')
-        }
-        this.mois = {
-            tl1: dag.nodeRef('weather/moisture/dead/1-h'),
-            tl10: dag.nodeRef('weather/moisture/dead/10-h'),
-            tl100: dag.nodeRef('weather/moisture/dead/100-h'),
-            herb: dag.nodeRef('weather/moisture/live/herb'),
-            stem: dag.nodeRef('weather/moisture/live/stem'),
-        }
-        this.primary = {
-            cover: dag.nodeRef('weighted/fire/cover/primary'),
-            fuel: dag.nodeRef('primary/model/standard/key'),
-            midflame: dag.nodeRef('primary/wind/speed/midflame'),
-        }
-        this.secondary = {
-            fuel: dag.nodeRef('secondary/model/standard/key'),
-            midflame: dag.nodeRef('secondary/wind/speed/midflame'),
-        }
-        this.slope = {
-            aspect: dag.nodeRef('terrain/slope/direction/down-slope/degrees/from north'),
-            upslope: dag.nodeRef('terrain/slope/direction/up-slope/degrees/from north'),
-            ratio: dag.nodeRef('terrain/slope/steepness/ratio/rise-to-reach'),
-            degrees: dag.nodeRef('terrain/slope/steepness/degrees/from horizontal'),
-        },
-        this.wind = {
-            source: dag.nodeRef('weather/wind/direction/source/degrees/from north'),
-            heading: dag.nodeRef('weather/wind/direction/heading/degrees/from up-slope'),
-            at20ft: dag.nodeRef('weather/wind/speed/at 20-ft'),
-            at10m: dag.nodeRef('weather/wind/speed/at 10-m')
-        }
-    }
 
     // The 'fire map' configuration is meant to implement a common use case of
     // predicting fire behavior from map and weather data streams such as
@@ -102,32 +27,141 @@ export class WfmsUseCases {
     // - slope direction is the aspect and steepness is ratio
     // - wind speed reduction factor and midflame wind speed are derived from 20-ft wind
     // - canopy inputs are total height and base height
+    applyFireMapConfig() {
+        const {canopy, ellipse, moisture, slope, surface, wind} = this.config
+        const {primary, secondary} = surface
 
-    fireMapConfig() {
-        return [
-            [P.cfgSurfWtg,      ['primary', 'harmonic', 'arithmetic'][0]],
-            [P.cfgCanopy,       ["height-base","ratio-height","height-length",
-                                "ratio-base","ratio-length","length-base"][0]],
-            [P.cfgEffWind,      ["applied","not applied"][0]],
-            [P.cfgEllipse,      ["surface", "observed"][0]],
-            [P.cfgVectors,      ["fire head", "up-slope", "north"][0]],
-            [P.cfgCured,        ["input","estimated"][1]],
-            [P.cfgWsrf,         ["input","estimated"][1]],
-            [P.cfgMidflame,     ["input","estimated"][1]],
-            [P.cfgMoisDead,     ["particle","category"][0]],
-            [P.cfgMoisLive,     ["particle","category"][0]],
-            [P.cfgStdInput1,    ["catalog","custom"][0]],
-            [P.cfgStdInput2,    ["catalog","custom"][0]],
-            [P.cfgFuelDomain1,  ["standard","chaparral","palmetto","aspen"][0]],
-            [P.cfgFuelDomain2,  ["standard","chaparral","palmetto","aspen"][0]],
-            [P.cfgSlopeDir,     ["up-slope","down-slope"][1]],
-            [P.cfgSlopeSteep,   ["ratio","degrees","map"][0]],
-            [P.cfgWindSpeed,    ["at 20-ft","at 10-m"][0]],
-            [P.cfgWindDir,      ["source from north","heading from up-slope","up-slope"][0]],
-        ]
+        canopy.height.value = canopy.height.heightBase
+
+        ellipse.link.value = ellipse.link.surface
+        ellipse.vector.value = ellipse.vector.fromHead
+
+        moisture.dead.value = moisture.dead.particle
+        moisture.live.value = moisture.live.particle
+
+        slope.direction.value = slope.direction.downslope
+        slope.steepness.value = slope.steepness.ratio
+
+        wind.direction.value = wind.direction.sourceFromNorth
+        wind.speed.value = wind.speed.at20ft
+
+        surface.curing.value = surface.curing.estimated
+        surface.midflame.value = surface.midflame.estimated
+        surface.windLimit.value = surface.windLimit.applied
+        surface.wsrf.value = surface.wsrf.estimated
+
+        // Setting the following to 'primary' results in just 1 surface fuel
+        // Setting it to any other value results in 2 surface fuel
+        surface.weighting.value = surface.weighting.primary
+        primary.fuel.value = primary.fuel.standard
+        primary.standard.value = primary.standard.catalog
+        secondary.fuel.value = secondary.fuel.standard
+        secondary.standard.value = secondary.standard.catalog
+        this.configure()
     }
+
+    //--------------------------------------------------------------------------
+    // Private methods
+    //--------------------------------------------------------------------------
     
-    // For reference, here are t input values used for version 1 unit testing
+    _assignNodeRefs() {
+        const dag = this.dag
+        this.nodeRefs = {
+            surface: {
+                cured: dag.nodeRef('weather/curing/fraction/applied'),
+
+                primary: {
+                    cover: dag.nodeRef('weighted/fire/cover/primary'),
+                    ewind: {
+                        speed: dag.nodeRef('primary/fire/effective wind/speed'),
+                        limit: dag.nodeRef('primary/fire/effective wind/speed/limit'),
+                        exceeded: dag.nodeRef('secondary/fire/effective wind/speed/exceeded'),
+                    },
+                    heading: {
+                        fromNorth: dag.nodeRef('primary/fire/heading/degrees/from north'),
+                        fromUpslope: dag.nodeRef('primary/fire/heading/degrees/from up-slope'),
+                    },
+                    flame: dag.nodeRef('primary/fire/heading/flame length'),
+                    fli: dag.nodeRef('primary/fire/heading/fireline intensity'),
+                    fuel: {
+                        key: dag.nodeRef('primary/model/standard/key'),
+                    },
+                    hpua: dag.nodeRef('primary/fire/heat per unit area'),
+                    lwr: dag.nodeRef('primary/fire/length-to-width ratio'),
+                    midflame: dag.nodeRef('primary/wind/speed/midflame'),
+                    ros: dag.nodeRef('primary/fire/heading/spread rate'),
+                    rxi: dag.nodeRef('primary/fire/reaction intensity'),
+                },
+                secondary: {
+                    ewind: {
+                        speed: dag.nodeRef('secondary/fire/effective wind/speed'),
+                        limit: dag.nodeRef('secondary/fire/effective wind/speed/limit'),
+                        exceeded: dag.nodeRef('primary/fire/effective wind/speed/exceeded'),
+                    },
+                    heading: {
+                        fromNorth: dag.nodeRef('secondary/fire/heading/degrees/from north'),
+                        fromUpslope: dag.nodeRef('secondary/fire/heading/degrees/from up-slope'),
+                    },
+                    flame: dag.nodeRef('secondary/fire/heading/flame length'),
+                    fli: dag.nodeRef('secondary/fire/heading/fireline intensity'),
+                    fuel: {
+                        key: dag.nodeRef('secondary/model/standard/key'),
+                    },
+                    hpua: dag.nodeRef('secondary/fire/heat per unit area'),
+                    lwr: dag.nodeRef('secondary/fire/length-to-width ratio'),
+                    midflame: dag.nodeRef('secondary/wind/speed/midflame'),
+                    rxi: dag.nodeRef('secondary/fire/reaction intensity'),
+                    ros: dag.nodeRef('secondary/fire/heading/spread rate'),
+                },
+                weighted: {
+                    arithmetic: dag.nodeRef('weighted/fire/spread rate/arithmetic mean'),
+                    ewind: {
+                        speed: dag.nodeRef('weighted/fire/effective wind/speed'),
+                        limit: dag.nodeRef('weighted/fire/effective wind/speed/limit'),
+                        exceeded: dag.nodeRef('weighted/fire/effective wind/speed/exceeded'),
+                    },
+                    harmonic: dag.nodeRef('weighted/fire/spread rate/harmonic mean'),
+                    heading: {
+                        fromNorth: dag.nodeRef('weighted/fire/heading/degrees/from north'),
+                        fromUpslope: dag.nodeRef('weighted/fire/heading/degrees/from up-slope'),
+                    },
+                    flame: dag.nodeRef('weighted/fire/heading/flame length'),
+                    fli: dag.nodeRef('weighted/fire/heading/fireline intensity'),
+                    lwr: dag.nodeRef('weighted/fire/length-to-width ratio'),
+                    midflame: dag.nodeRef('weighted/fire/wind/speed/midflame'),
+                    rxi: dag.nodeRef('weighted/fire/reaction intensity'),
+                    hpua: dag.nodeRef('weighted/fire/heat per unit area'),
+                    ros: dag.nodeRef('weighted/fire/heading/spread rate'),
+                },
+            },
+            canopy: {
+                cover: dag.nodeRef('canopy/coverage'),
+                baseHeight: dag.nodeRef('canopy/crown/base height'),
+                totalHeight: dag.nodeRef('canopy/crown/total height')
+            },
+            moisture: {
+                tl1: dag.nodeRef('weather/moisture/dead/1-h'),
+                tl10: dag.nodeRef('weather/moisture/dead/10-h'),
+                tl100: dag.nodeRef('weather/moisture/dead/100-h'),
+                herb: dag.nodeRef('weather/moisture/live/herb'),
+                stem: dag.nodeRef('weather/moisture/live/stem'),
+            },
+            slope: {
+                aspect: dag.nodeRef('terrain/slope/direction/down-slope/degrees/from north'),
+                upslope: dag.nodeRef('terrain/slope/direction/up-slope/degrees/from north'),
+                ratio: dag.nodeRef('terrain/slope/steepness/ratio/rise-to-reach'),
+                degrees: dag.nodeRef('terrain/slope/steepness/degrees/from horizontal'),
+            },
+            wind: {
+                source: dag.nodeRef('weather/wind/direction/source/degrees/from north'),
+                heading: dag.nodeRef('weather/wind/direction/heading/degrees/from up-slope'),
+                at20ft: dag.nodeRef('weather/wind/speed/at 20-ft'),
+                at10m: dag.nodeRef('weather/wind/speed/at 10-m')
+            }
+        }
+    }
+
+    // For reference, here are the input values used for version 1 unit testing
     _testInputs () {
         this.oldInputsFm010Fm124 = [
             ['site.fire.time.sinceIgnition', [60]],
