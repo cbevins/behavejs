@@ -25,22 +25,24 @@ export class Util {
         const w0 = nodes.reduce((w, node) => Math.max(node.key.length, w), 0)
         const w1 = nodes.reduce((w, node) => Math.max((''+node.value).length, w), 0)
         const w2 = nodes.reduce((w, node) => Math.max((''+node.units).length, w), 0)
-        const w3 = nodes.reduce((w, node) => Math.max((''+node.updater.name).length, w), 0)
+        const w3 = nodes.reduce((w, node) => Math.max((''+node.current.updater.name).length, w), 0)
         const w6 = nodes.reduce((w, node) => Math.max((''+node.status).length, w), 0)
         const w7 = nodes.reduce((w, node) => Math.max((''+node.dirty).length, w), 0)
         let str = `\n${title}\n`
         for(let node of nodes) {
-            const {key, value, units, cfg, options,
-                updater, suppliers, consumers, dirty, status, cfgval} = node
+            const {key, value, units, cfg, options, current, consumers, dirty, status} = node
             str += key.padEnd(w0+2)
             str += ('"'+value+'"').padEnd(w1+4)
             str += status.padEnd(w6+2)
             str += dirty.padEnd(w7+2)
-            str += (updater.name).padEnd(w3+2)
-            str += (''+suppliers.length).padStart(4)
+            str += (current.updater.name).padEnd(w3+2)
+            str += (''+current.suppliers.length).padStart(4)
             str += (''+consumers.length).padStart(4)
-            const k = (! cfg || cfg==='') ? 'none' : cfg.key
-            str += `  "${k}" = "${cfgval}"`
+            if (! cfg || cfg==='') {
+                str += `  "any" = "${current.value}"`
+            } else {
+                str += `  "${cfg.key}" = "${current.value}"`
+            }
             str += '\n'
         }
         return str + nodes.length + ' nodes'

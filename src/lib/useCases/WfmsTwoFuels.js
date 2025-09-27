@@ -3,47 +3,57 @@ import { WfmsUseCases } from '../index.js'
 export class WfmsTwoFuels extends WfmsUseCases {
     constructor(name='Two Fuel Models Test') {
         super(name)
-        this._applyTwoFuelsTestingConfig()
-        this._setSelected()
-        this._setInputs()
+        this.configure(this.configTwoFuelsTesting())
+        this.select(this.selectTwoFuelsTestNodes())
+        this.setTwoFuelsTestInputs()
     }
 
-    _applyTwoFuelsTestingConfig(config) {
-        const {canopy, ellipse, moisture, slope, surface, wind} = this.config
+    /**
+     * Returns a two fuel model testing configuration:
+     * - two standard surface fuel models specified by catalog key;
+     * - the weighted fire spread rate is the harmonic mean with effective wind limit applied;
+     * - midflame wind speed is an input parameter for each fuel bed;
+     * - dead and live fuel moistures are entered for each particle type;
+     * - live fuel curing fraction is estimated from herb moisture;
+     * - wind speed is at 20-ft and direction is source from north;
+     * - slope steepness is ratio and direction is the aspect.
+     */
+    configTwoFuelsTesting() {
+        const {canopy, ellipse, moisture, slope, surface, wind} = this.configObj
         const {primary, secondary} = surface
+        return [
+            // Setting the following to 'primary' results in just 1 surface fuel
+            // Setting it to any other value results in 2 surface fuel
+            [surface.weighting.key,  surface.weighting.harmonic],
+            [primary.fuel.key,       primary.fuel.standard],
+            [primary.standard.key,   primary.standard.catalog],
+            [secondary.fuel.key,     secondary.fuel.standard],
+            [secondary.standard.key, secondary.standard.catalog],
 
-        canopy.height.value = canopy.height.heightBase
+            [surface.curing.key,     surface.curing.estimated],
+            [surface.midflame.key,   surface.midflame.input],
+            [surface.windLimit.key,  surface.windLimit.applied],
+            [surface.wsrf.key,       surface.wsrf.input],           // not used
 
-        ellipse.link.value = ellipse.link.surface
-        ellipse.vector.value = ellipse.vector.fromHead
+            [moisture.dead.key,      moisture.dead.particle],
+            [moisture.live.key,      moisture.live.particle],
 
-        moisture.dead.value = moisture.dead.particle
-        moisture.live.value = moisture.live.particle
+            [slope.direction.key,    slope.direction.downslope],
+            [slope.steepness.key,    slope.steepness.ratio],
 
-        slope.direction.value = slope.direction.downslope
-        slope.steepness.value = slope.steepness.ratio
+            [wind.direction.key,     wind.direction.sourceFromNorth],
+            [wind.speed.key,         wind.speed.at20ft],
 
-        wind.direction.value = wind.direction.sourceFromNorth
-        wind.speed.value = wind.speed.at20ft
+            [canopy.height.key,      canopy.height.heightBase],     // not used],
 
-        surface.curing.value = surface.curing.estimated
-        surface.midflame.value = surface.midflame.input
-        surface.windLimit.value = surface.windLimit.applied
-        surface.wsrf.value = surface.wsrf.input
-
-        // Setting the following to 'primary' results in just 1 surface fuel
-        // Setting it to any other value results in 2 surface fuel
-        surface.weighting.value = surface.weighting.harmonic
-        primary.fuel.value = primary.fuel.standard
-        primary.standard.value = primary.standard.catalog
-        secondary.fuel.value = secondary.fuel.standard
-        secondary.standard.value = secondary.standard.catalog
-        this.configure()
+            [ellipse.link.key,       ellipse.link.surface],         // not used],
+            [ellipse.vector.key,     ellipse.vector.fromHead],      // not used],
+        ]
     }
 
-    _setSelected() {
+    selectTwoFuelsTestNodes() {
         const {primary:p, secondary:s, weighted:w} = this.nodeRefs.surface
-        this.dag.select(
+        return [
             p.ros, s.ros, w.ros, w.arithmetic, w.harmonic,
             p.heading.fromUpslope, s.heading.fromUpslope, w.heading.fromUpslope,
             p.ewind.speed, s.ewind.speed, w.ewind.speed,
@@ -51,27 +61,26 @@ export class WfmsTwoFuels extends WfmsUseCases {
             p.ewind.exceeded, s.ewind.exceeded, w.ewind.exceeded,
             p.lwr, s.lwr, w.lwr,
             p.fli, s.fli, w.fli,
-        )
+        ]
     }
 
-    _setInputs() {
-        const dag = this.dag
+    setTwoFuelsTestInputs() {
         const {canopy, moisture, slope, surface, wind} = this.nodeRefs
         const {primary, secondary} = surface
 
-        dag.set(primary.cover, 0.6)
-        dag.set(primary.fuel.key, '10')
-        dag.set(secondary.fuel.key, '124')
-        dag.set(primary.midflame, 880)
-        dag.set(secondary.midflame, 880)
-        dag.set(moisture.tl1, 0.05)
-        dag.set(moisture.tl10, 0.07)
-        dag.set(moisture.tl100, 0.09)
-        dag.set(moisture.herb, 0.5)
-        dag.set(moisture.stem, 1.5)
-        dag.set(slope.ratio, 0.25)
-        dag.set(slope.aspect, 180)
-        dag.set(wind.source, 270)
-        dag.updateAll()
+        this.set(primary.cover, 0.6)
+        this.set(primary.fuel.key, '10')
+        this.set(secondary.fuel.key, '124')
+        this.set(primary.midflame, 880)
+        this.set(secondary.midflame, 880)
+        this.set(moisture.tl1, 0.05)
+        this.set(moisture.tl10, 0.07)
+        this.set(moisture.tl100, 0.09)
+        this.set(moisture.herb, 0.5)
+        this.set(moisture.stem, 1.5)
+        this.set(slope.ratio, 0.25)
+        this.set(slope.aspect, 180)
+        this.set(wind.source, 270)
+        this.updateAll()
     }
 }

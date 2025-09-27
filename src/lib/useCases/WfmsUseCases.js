@@ -1,15 +1,16 @@
+// Extends the Wfms class to provide an object of hierarchical references to commonly used nodes.
+// Derived classes *MUST* then implement their own configuration and selected nodes
+// as appropriate to their use case.
+
 import { Wfms } from '../index.js'
 
-// High level WFMS convenience base class whose derived classes provide:
-// 1 - a WFMS with preset selected nodes, configuration, and input values;
-// 2 - access to commonly used node references; and
-// 3 - chaining to lower lever Wfms and Dag methods
 export class WfmsUseCases extends Wfms{
     constructor(name='WFMS Standard Configuration') {
         super()
         this.name = name
         this.nodeRefs = {}
         this._assignNodeRefs()
+        // this.configure(this.configFireMapping())
     }
 
     //--------------------------------------------------------------------------
@@ -27,37 +28,76 @@ export class WfmsUseCases extends Wfms{
     // - slope direction is the aspect and steepness is ratio
     // - wind speed reduction factor and midflame wind speed are derived from 20-ft wind
     // - canopy inputs are total height and base height
-    applyFireMapConfig() {
-        const {canopy, ellipse, moisture, slope, surface, wind} = this.config
+    configFireMapping() {
+        const {canopy, ellipse, moisture, slope, surface, wind} = this.configObj
         const {primary, secondary} = surface
+        return [
 
-        canopy.height.value = canopy.height.heightBase
+            [canopy.height.key, canopy.height.heightBase],
 
-        ellipse.link.value = ellipse.link.surface
-        ellipse.vector.value = ellipse.vector.fromHead
+            [ellipse.link.key, ellipse.link.surface],
+            [ellipse.vector.key, ellipse.vector.fromHead],
 
-        moisture.dead.value = moisture.dead.particle
-        moisture.live.value = moisture.live.particle
+            [moisture.dead.key, moisture.dead.particle],
+            [moisture.live.key, moisture.live.particle],
 
-        slope.direction.value = slope.direction.downslope
-        slope.steepness.value = slope.steepness.ratio
+            [slope.direction.key, slope.direction.downslope],
+            [slope.steepness.key, slope.steepness.ratio],
 
-        wind.direction.value = wind.direction.sourceFromNorth
-        wind.speed.value = wind.speed.at20ft
+            [wind.direction.key, wind.direction.sourceFromNorth],
+            [wind.speed.key, wind.speed.at20ft],
 
-        surface.curing.value = surface.curing.estimated
-        surface.midflame.value = surface.midflame.estimated
-        surface.windLimit.value = surface.windLimit.applied
-        surface.wsrf.value = surface.wsrf.estimated
+            [surface.curing.key, surface.curing.estimated],
+            [surface.midflame.key, surface.midflame.estimated],
+            [surface.windLimit.key, surface.windLimit.applied],
+            [surface.wsrf.key, surface.wsrf.estimated],
 
-        // Setting the following to 'primary' results in just 1 surface fuel
-        // Setting it to any other value results in 2 surface fuel
-        surface.weighting.value = surface.weighting.primary
-        primary.fuel.value = primary.fuel.standard
-        primary.standard.value = primary.standard.catalog
-        secondary.fuel.value = secondary.fuel.standard
-        secondary.standard.value = secondary.standard.catalog
-        this.configure()
+            // Setting the following to 'primary' results in just 1 surface fuel
+            // Setting it to any other value results in 2 surface fuel
+            [surface.weighting.key, surface.weighting.primary],
+            [primary.fuel.key, primary.fuel.standard],
+            [primary.standard.key, primary.standard.catalog],
+            [secondary.fuel.key, secondary.fuel.standard],
+            [secondary.standard.key, secondary.standard.catalog],
+        ]
+    }
+
+    // - single surface fuel model
+    configDefault() {
+        const {canopy, ellipse, moisture, slope, surface, wind} = this.configObj
+        const {primary, secondary} = surface
+        return [
+            // Most commonly changed configurations ----------------------------
+
+            // Setting the following to 'primary' results in just 1 surface fuel
+            [surface.weighting.key, surface.weighting.primary],     // or .harmonic, .arithmetic
+            [surface.midflame.key, surface.midflame.input],         // or .estimated
+            [surface.curing.key, surface.curing.input],             // or .estimated
+
+            [ellipse.link.key, ellipse.link.surface],               // or .observed for stand alone
+            [ellipse.vector.key, ellipse.vector.fromHead],          // or .fromNorth, .fromUpslope
+
+            // Less frequently changed configurations -------------------------
+            [canopy.height.key, canopy.height.heightBase],
+
+            [moisture.dead.key, moisture.dead.particle],            // or .category
+            [moisture.live.key, moisture.live.particle],            // or .category
+
+            [slope.direction.key, slope.direction.usplope],         // or .downslope 
+            [slope.steepness.key, slope.steepness.ratio],           // or .degrees, .map
+
+            [wind.direction.key, wind.direction.sourceFromNorth],   // or .headingFromUpslope or .upslope
+            [wind.speed.key, wind.speed.at20ft],                    // or .at10m
+
+            [surface.windLimit.key, surface.windLimit.applied],     // or .notApplied
+            [surface.wsrf.key, surface.wsrf.input],                 // or .estimated
+
+            // Setting it to any other value results in 2 surface fuel
+            [primary.fuel.key, primary.fuel.standard],              // or .chaparral, .palmetto, .aspen
+            [primary.standard.key, primary.standard.catalog],       // or .custom
+            [secondary.fuel.key, secondary.fuel.standard],          // or .chaparral, .palmetto, .aspen
+            [secondary.standard.key, secondary.standard.catalog],   // or .custom
+        ]
     }
 
     //--------------------------------------------------------------------------
@@ -157,6 +197,108 @@ export class WfmsUseCases extends Wfms{
                 heading: dag.nodeRef('weather/wind/direction/heading/degrees/from up-slope'),
                 at20ft: dag.nodeRef('weather/wind/speed/at 20-ft'),
                 at10m: dag.nodeRef('weather/wind/speed/at 10-m')
+            },
+            ellipse: {
+                axis: {
+                    f: dag.nodeRef('ellipse/axis/f/spread rate'),
+                    g: dag.nodeRef('ellipse/axis/g/spread rate'),
+                    h: dag.nodeRef('ellipse/axis/h/spread rate'),
+                    lwr: dag.nodeRef('ellipse/axis/length-to-width ratio'),
+                    major: dag.nodeRef('ellipse/axis/major/spread rate'),
+                    minor: dag.nodeRef('ellipse/axis/minor/spread rate'),
+                },
+                back: {
+                    dist: dag.nodeRef('ellipse/backing/distance'),
+                    fli : dag.nodeRef('ellipse/backing/fireline intensity'),
+                    flame: dag.nodeRef('ellipse/backing/flame length'),
+                    mapdist: dag.nodeRef('ellipse/backing/map distance'),
+                    ros: dag.nodeRef('ellipse/backing/spread rate'),
+                    scorch: dag.nodeRef('ellipse/backing/scorch height'),
+                },
+                beta: {
+                    dist: dag.nodeRef('ellipse/beta/distance'),
+                    fli : dag.nodeRef('ellipse/beta/fireline intensity'),
+                    flame: dag.nodeRef('ellipse/beta/flame length'),
+                    mapdist: dag.nodeRef('ellipse/beta/map distance'),
+                    psi: {
+                        degrees: dag.nodeRef('ellipse/beta/psi/degrees'),
+                        ros: dag.nodeRef('ellipse/beta/psi/spread rate'),
+                    },
+                    ros: dag.nodeRef('ellipse/beta/spread rate'),
+                    scorch: dag.nodeRef('ellipse/beta/scorch height'),
+                },
+                beta5: {
+                    dist: dag.nodeRef('ellipse/beta5/distance'),
+                    fli : dag.nodeRef('ellipse/beta5/fireline intensity'),
+                    flame: dag.nodeRef('ellipse/beta5/flame length'),
+                    mapdist: dag.nodeRef('ellipse/beta5/map distance'),
+                    ros: dag.nodeRef('ellipse/beta5/spread rate'),
+                    scorch: dag.nodeRef('ellipse/beta5/scorch height'),
+                },
+                direction: {
+                    north: dag.nodeRef('ellipse/heading/degrees/from north'),
+                    upslope: dag.nodeRef('ellipse/heading/degrees/from up-slope'),
+                },
+                eccent: dag.nodeRef('ellipse/eccentricity'),
+                flank: {
+                    dist: dag.nodeRef('ellipse/flanking/distance'),
+                    fli : dag.nodeRef('ellipse/flanking/fireline intensity'),
+                    flame: dag.nodeRef('ellipse/flanking/flame length'),
+                    mapdist: dag.nodeRef('ellipse/flanking/map distance'),
+                    ros: dag.nodeRef('ellipse/flanking/spread rate'),
+                    scorch: dag.nodeRef('ellipse/flanking/scorch height'),
+                },
+                head: {
+                    dist: dag.nodeRef('ellipse/heading/distance'),
+                    fli : dag.nodeRef('ellipse/heading/fireline intensity'),
+                    flame: dag.nodeRef('ellipse/heading/flame length'),
+                    mapdist: dag.nodeRef('ellipse/heading/map distance'),
+                    scorch: dag.nodeRef('ellipse/heading/scorch height'),
+                    ros: dag.nodeRef('ellipse/heading/spread rate'),
+                },
+                map: {
+                    area: dag.nodeRef('ellipse/map/area'),
+                    length: dag.nodeRef('ellipse/map/length'),
+                    perim: dag.nodeRef('ellipse/map/perimeter'),
+                    width: dag.nodeRef('ellipse/map/width'),
+                },
+                psi: {
+                    dist: dag.nodeRef('ellipse/psi/distance'),
+                    fli : dag.nodeRef('ellipse/psi/fireline intensity'),
+                    flame: dag.nodeRef('ellipse/psi/flame length'),
+                    mapdist: dag.nodeRef('ellipse/psi/map distance'),
+                    scorch: dag.nodeRef('ellipse/psi/scorch height'),
+                    ros: dag.nodeRef('ellipse/psi/spread rate'),
+                },
+                size: {
+                    area: dag.nodeRef('ellipse/size/area'),
+                    length: dag.nodeRef('ellipse/size/length'),
+                    perim: dag.nodeRef('ellipse/size/perimeter'),
+                    width: dag.nodeRef('ellipse/size/width'),
+                },
+                temp: dag.nodeRef('ellipse/temperature/ambient air'),
+                time: dag.nodeRef('ellipse/time/ignition/elapsed'),
+                vector: {
+                    head: dag.nodeRef('ellipse/vector/degrees/from fire head'),
+                    north: dag.nodeRef('ellipse/vector/degrees/from north'),
+                    upslope: dag.nodeRef('ellipse/vector/degrees/from up-slope'),
+                },
+                wind: dag.nodeRef('ellipse/wind/speed/midflame'),
+            },
+            map: {
+                contour: {
+                    count: dag.nodeRef('map/contour/count'),
+                    interval: dag.nodeRef('map/contour/interval'),
+                },
+                dist: dag.nodeRef('map/distance'),
+                scale: dag.nodeRef('map/scale'),
+                factor: dag.nodeRef('map/scale/inverse'),
+                slope: {
+                    degrees: dag.nodeRef('map/slope/degrees'),
+                    ratio: dag.nodeRef('map/slope/ratio'),
+                    reach: dag.nodeRef('map/slope/reach'),
+                    rise: dag.nodeRef('map/slope/rise'),
+                },
             }
         }
     }

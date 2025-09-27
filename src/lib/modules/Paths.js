@@ -164,7 +164,7 @@ export class Paths {
     static mapSelf       = 'map/'
     static mapScale      = 'scale'
     static mapContours   = 'contour/count'
-    static mapInterval   = 'countour/interval'
+    static mapInterval   = 'contour/interval'
     static mapDist       = 'distance'
     static mapFactor     = 'scale/inverse'
     static mapReach      = 'slope/reach'

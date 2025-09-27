@@ -145,7 +145,7 @@ export class FireEllipseModule extends ModuleBase {
                 ['', FireEllipse.spreadDistance, [
                     path+P.axisMinRos,
                     path+P.fireTime]]]],
-//
+
             // end path+'size'
             [path+P.mapArea, 0, U.mapArea, null, [
                 ['', FireEllipse.mapArea, [

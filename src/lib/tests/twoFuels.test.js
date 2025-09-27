@@ -7,6 +7,7 @@ expect.extend({ precision, sig })
 // Results from BehavePlus V6
 const ros   = { fm010: 18.551680325448835, fm124: 48.47042599399056,  prec: 10 }
 const dirUp = { fm010: 87.573367385837855, fm124: 87.613728665173383, prec: 11 }
+const dirNo = { fm010: 87.573367385837855, fm124: 87.613728665173383, prec: 11 }
 const lwr   = { fm010: 3.5015680219321221, fm124: 3.501581941,        prec: 10 }
 const rxi   = { fm010: 5794.6954002291168, fm124: 12976.692888496578, prec: 12 }
 const ews   = { fm010: 880.55194372010692, fm124: 880.5568433322004,  prec: 12 }
@@ -29,19 +30,19 @@ const {canopy, moisture, slope, surface, wind} = wfms.nodeRefs
 const {primary, secondary} = surface
 
 wfms.set(primary.cover, 0.6)
-wfms.set(primary.fuel.key, '10')
-wfms.set(secondary.fuel.key, '124')
-wfms.set(primary.midflame, 880)
-wfms.set(secondary.midflame, 880)
-wfms.set(moisture.tl1, 0.05)
-wfms.set(moisture.tl10, 0.07)
-wfms.set(moisture.tl100, 0.09)
-wfms.set(moisture.herb, 0.5)
-wfms.set(moisture.stem, 1.5)
-wfms.set(slope.ratio, 0.25)
-wfms.set(slope.aspect, 180)
-wfms.set(wind.source, 270)
-wfms.updateAll()
+    .set(primary.fuel.key, '10')
+    .set(secondary.fuel.key, '124')
+    .set(primary.midflame, 880)
+    .set(secondary.midflame, 880)
+    .set(moisture.tl1, 0.05)
+    .set(moisture.tl10, 0.07)
+    .set(moisture.tl100, 0.09)
+    .set(moisture.herb, 0.5)
+    .set(moisture.stem, 1.5)
+    .set(slope.ratio, 0.25)
+    .set(slope.aspect, 180)
+    .set(wind.source, 270)
+    .updateAll()
 
 const {primary:p, secondary:s, weighted:w} = wfms.nodeRefs.surface
 

@@ -1,10 +1,9 @@
-import { describe, it, expect } from 'vitest'
-import { precision, sig } from './matchers.js'
-import { Wfms, WfmsFireEllipse, Util } from '../index.js'
+import { WfmsFireEllipse, Util } from '../index.js'
 import { SurfaceFireEquations } from '../index.js'
-expect.extend({ precision, sig })
 
+//------------------------------------------------------------------------------
 // Results from fireEllipse.bp6.results.js
+//------------------------------------------------------------------------------
 const scale = 24000
 const et = 60
 
@@ -88,68 +87,11 @@ const mapLength = { fm010: 1136.7724089520932/scale, fm124: 2970.0723834794749/s
 const mapPerim = { fm010: 2476.2400999186934/scale, fm124: 6469.7282289420209/scale, prec: 9 }
 const mapWidth = { fm010: 324.64667309956644/scale, fm124: 848.20873344743575/scale, prec: 9 }
 
-const wfms = new WfmsFireEllipse()
-const {canopy, ellipse, moisture, slope, surface, wind, map} = wfms.nodeRefs
-const {primary, secondary, weighted} = surface
-const {time, vector, temp, axis, direction,
-    head, back, flank, size, beta, beta5, emap} = ellipse
+//------------------------------------------------------------------------------
+// Create 
+//------------------------------------------------------------------------------
+const wfms = new WfmsFireEllipse('Fire Ellipse Debugging')
 
-wfms.set(vector.north, 45)
-wfms.set(time, 60)
-wfms.set(temp, 95)
-wfms.set(primary.fuel.key, '10')
-wfms.set(primary.midflame, 880)
-wfms.set(slope.aspect, 180)
-wfms.set(slope.ratio, 0.25)
-wfms.set(moisture.tl1, 0.05)
-wfms.set(moisture.tl10, 0.07)
-wfms.set(moisture.tl100, 0.09)
-wfms.set(moisture.herb, 0.5)
-wfms.set(moisture.stem, 1.5)
-wfms.set(wind.source, 270)
-wfms.updateAll()
-
-// If interested in these ...
-// Util.logDagNodes(wfms.selected(), 'Selected Node Values')
-// Util.logDagConfigs(wfms.activeConfigsByKey(), 'Active Configurations')
-// Util.logDagNodes(wfms.activeInputsByKey(), 'Active Inputs')
-
-describe('Test 1: Fire Ellipse agrees with BehavePlus V6 tests', () => {
-    it('1.1 - ensure the surface results are as expected', () => {
-        // expect(weighted.heading.fromUpslope.value).sig(surfaceDir.fm010, surfaceDir.prec)
-        // expect(weighted.heading.fromNorth.value).sig(surfaceDir.fm010, surfaceDir.prec)
-        expect(weighted.ros.value).precision(surfaceRos.fm010, surfaceDir.prec)
-        expect(weighted.lwr.value).precision(surfaceLwr.fm010, surfaceDir.prec)
-    })
-    it('1.2 - axis values', () => {
-        expect(ellipse.eccent.value).sig(eccent.fm010, eccent.prec)
-        expect(axis.lwr.value).sig(lwr.fm010, lwr.prec)
-        expect(axis.f.value).sig(fRos.fm010, fRos.prec)
-        expect(axis.g.value).sig(gRos.fm010, gRos.prec)
-        expect(axis.h.value).sig(hRos.fm010, hRos.prec)
-        expect(axis.major.value).sig(majorRos.fm010, majorRos.prec)
-        expect(axis.minor.value).sig(minorRos.fm010, majorRos.prec)
-    })
-    it('1.3 - size and dimensions', () => {
-        expect(size.length.value).sig(sizeLength.fm010, sizeLength.prec)
-        expect(size.width.value).sig(sizeWidth.fm010, sizeWidth.prec)
-        expect(size.area.value).sig(sizeArea.fm010, sizeArea.prec)
-        expect(size.perim.value).sig(sizePerim.fm010, sizePerim.prec)
-    })
-    it('1.4 - spread rates', () => {
-        expect(head.ros.value).sig(headRos.fm010, headRos.prec)
-        expect(back.ros.value).sig(backRos.fm010, backRos.prec)
-        expect(flank.ros.value).sig(flankRos.fm010, flankRos.prec)
-        // expect(beta5.ros.value).sig(beta5Ros.fm010, beta5Ros.prec)
-    })
-    it('1.5 - ellipse should link to surface for its inputs', () => {
-        expect(time.value).sig(60, 11)
-        // expect(vector.north.value).sig(vectorNorth.fm010, vectorNorth.prec)
-        // expect(vector.upslope.value).sig(vectorUpslope.fm010, vectorUpslope.prec)
-        // expect(vector.head.value).sig(vectorHead.fm010, vectorHead.prec)
-        // expect(direction.north.value).sig(0, 11)
-        // expect(direction.north.value).sig(dirMaxRosUp.fm010, dirMaxRosUp.prec)
-        expect(weighted.heading.fromNorth.value).sig(surfaceDir.fm010, surfaceDir.prec)
-        expect(weighted.heading.fromUpslope.value).sig(surfaceDir.fm010, surfaceDir.prec)
-    })
-})
+Util.logDagNodes(wfms.activeInputsByKey(), 'Active Input Node Values')
+Util.logDagNodes(wfms.selected(), 'Selected Node Values')
+Util.logDagConfigs(wfms.activeConfigsByKey(), 'Active Configurations')

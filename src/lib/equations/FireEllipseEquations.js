@@ -59,7 +59,7 @@ export class FireEllipseEquations {
     // Calculate the fire spread rate in this azimuth
     // if it deviates more than a tenth degree from the maximum azimuth
     if (Math.abs(betaHead) > 0) {
-      const rad = Compass.radians(betaHead)
+      const rad = Compass.compassRadiansFromDegrees(betaHead)
       rosBeta = (rosHead * (1 - eccent)) / (1 - eccent * Math.cos(rad))
     }
     return rosBeta
@@ -193,7 +193,7 @@ export class FireEllipseEquations {
     if (rosF <= 0 || rosH <= 0 || thetaFromHead <= 0) {
       return 0
     }
-    const thetaRadians = Compass.radians(thetaFromHead)
+    const thetaRadians = Compass.compassRadiansFromDegrees(thetaFromHead)
     const tanPsiRadians = (Math.tan(thetaRadians) * rosF) / rosH
     let psiRadians = Math.atan(tanPsiRadians)
     // psiRadians += ( psiRadians < 0) ? pi : 0
@@ -207,7 +207,7 @@ export class FireEllipseEquations {
       psiRadians += 2 * Math.PI
     }
     // Convert psi radians to degrees
-    return Compass.degrees(psiRadians)
+    return Compass.compassDegreesFromRadians(psiRadians)
   }
 
   /**
@@ -226,7 +226,7 @@ export class FireEllipseEquations {
   static psiSpreadRate (psiHead, rosF, rosG, rosH) {
     let rosPsi = 0
     if (rosF * rosG * rosH > 0) {
-      const radians = Compass.radians(psiHead)
+      const radians = Compass.compassRadiansFromDegrees(psiHead)
       const cosPsi = Math.cos(radians)
       const cos2Psi = cosPsi * cosPsi
       const sin2Psi = 1 - cos2Psi
@@ -253,7 +253,7 @@ export class FireEllipseEquations {
     if (rosF <= 0 || rosH <= 0) {
       return 0
     }
-    const betaRadians = Compass.radians(betaHead)
+    const betaRadians = Compass.compassRadiansFromDegrees(betaHead)
     const cosBeta = Math.cos(betaRadians)
     const cos2Beta = cosBeta * cosBeta
     const sin2Beta = 1 - cos2Beta
@@ -272,7 +272,7 @@ export class FireEllipseEquations {
       thetaRadians = 2 * Math.PI - thetaRadians
     }
     // Convert theta radians to degrees
-    let thetaHead = Compass.degrees(thetaRadians)
+    let thetaHead = Compass.compassDegreesFromRadians(thetaRadians)
     if (betaHead > 180) {
       thetaHead = 360 - thetaHead
     }
@@ -292,7 +292,7 @@ export class FireEllipseEquations {
 //  * @returns The azimuth from the fire ignition point.
 //  */
 // static betaFromTheta( theta, rosF, rosG, rosH) {
-//   const thetaRadians = Compass.radians(theta)
+//   const thetaRadians = Compass.compassRadiansFromDegrees(theta)
 //   const num = rosH * Math.sin( thetaRadians)
 //   const denom = rosG + rosF* Math.cos(thetaRadians)
 //   let betaRadians = ( denom <= 0 ) ? 0 : Math.atan( num / denom )
@@ -307,7 +307,7 @@ export class FireEllipseEquations {
 //     betaRadians += 2.0 * Math.PI
 //   }
 //   // Convert beta radians to degrees
-//   return Compass.degrees(betaRadians)
+//   return Compass.compassDegreesFromRadians(betaRadians)
 // }
 
 // static thetaFromPsi( psiHead, rosF, rosH ) {
@@ -326,7 +326,7 @@ export class FireEllipseEquations {
 //   }
 //   //thetaRadians += ( thetaRadians < 0. || psiradians > pi ) ? pi : 0.
 //   // Convert theta radians to degrees
-//   thetaDegrees = Compass.degrees( thetaRadians )
+//   thetaDegrees = Compass.compassDegreesFromRadians( thetaRadians )
 //   return thetaRadians
 // }
 }

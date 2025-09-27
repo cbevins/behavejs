@@ -10,8 +10,9 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run --browser=chromium"
+		"test:unit": "vitest --browser.headless",
+		"testbrowser": "npm run test:unit -- --run --browser=chromium",
+		"test": "npm run test:unit"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

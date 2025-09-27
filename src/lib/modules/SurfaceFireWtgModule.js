@@ -51,7 +51,8 @@ export class SurfaceFireWtgModule extends ModuleBase {
             [path+P.fireMidf,      1, U.windSpeed, null, [
                 [cfg.any, Dag.assign, [fire1Path+P.fireMidf]]]],
             // BP6 also saved the primary wind speed reduction factor,
-            // but that's a pain to get from here, and not sure its used anywhere else?
+            // but that's a pain to get from here, may not have ever been calculate,
+            // and I'm not sure if its used by ellipse anywhere else?
 
             // The following 4 use the maximum of the primary or secondary fuel
             [path+P.fireRxi, 0, U.fireRxi, cfg, [
@@ -74,7 +75,7 @@ export class SurfaceFireWtgModule extends ModuleBase {
             
             // The effective wind speed limit is the minimum of either
             [path+P.fireWeffLim, 0, U.windSpeed, cfg, [
-                [cfg.primary, Dag.assign, [fire1Path+P.fireHeadFlame]],
+                [cfg.primary, Dag.assign, [fire1Path+P.fireWeffLim]],
                 [cfg.any, Math.min, [fire1Path+P.fireWeffLim, fire2Path+P.fireWeffLim]]]],
 
             // Arithmetic and harmonic means

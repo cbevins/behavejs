@@ -7,6 +7,7 @@ export class FireEllipseLinkConfig extends ConfigBase {
         // keys for outside reference
         this.surface  = 'surface'
         this.observed = 'observed'
+        this.input = 'observed'
         this.options = [this.surface, this.observed]
         this.prompt = 'the required 5 fire behavior inputs are'
         this.prompts = [
