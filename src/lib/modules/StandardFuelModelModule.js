@@ -21,7 +21,7 @@ export class StandardFuelModelModule extends ModuleBase {
         super(prefix,  P.stdSelf, P.stdMod, cfg)
         const path = this.path
         this.nodes = [
-            [path+P.stdKey, '', U.fuelKey, cfg, [
+            [path+P.stdKey, 'none', U.fuelKey, cfg, [
                 [cfg.catalog, Dag.input, []],
                 [cfg.custom, Dag.constant, []],
             ]],

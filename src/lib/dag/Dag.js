@@ -18,6 +18,7 @@ export class Dag {
 
         this.activeInputsSet = new Set()    // Set of all ACTIVE input nodes
         this.allInputsSet = new Set()       // Set of current configuration all possible input nodes
+        this.messages = []
         this.selectSet = new Set()          // Set of references to all 'selected' nodes
         this.tracker = {...Dag._trackerTemplate}
 
@@ -96,7 +97,8 @@ export class Dag {
     nodeRef(refOrKey, caller='unknown') { 
         if (typeof refOrKey === 'string') {
             if (! this.nodeMap.has(refOrKey))
-                throw new Error(`Attempt to access Dag.nodeMap() with unknown key '${refOrKey}' from function ${caller}'.`)
+                this._log(Dag.fatal, 'nodeRef',
+                    `Attempt to access Dag.nodeMap() with unknown key '${refOrKey}' from function ${caller}'.`)
             return this.nodeMap.get(refOrKey)
         }
         return refOrKey // otherwise assume it is a DagNode reference
@@ -110,36 +112,46 @@ export class Dag {
     //--------------------------------------------------------------------------
 
     _build(nodeDefs) {
+        this.messages = []
         this._buildNodeMap(nodeDefs)
         this._resolveSuppliers()
     }
 
     // Converts each node definition into a Dag node object and stores it in this.nodeMap
     _buildNodeMap(nodeDefs) {
+        const method = '_buildNodeMap'
         for(let nodeDef of nodeDefs) {
             // Create a dagNode from the Module node definition
             const [key, value, units, cfg, options] = nodeDef
             const cfgkey = cfg ? cfg.key : ''   // store the config key with the node
             const dagNode = {key, value, units, cfg: cfgkey, options: []}
-            if (! Array.isArray(options)) {
-                throw new Error(`Node Definition "${key}" options array is not an array; ensure its the 5th element!`)
-            }
+
+            if(key.includes('undefined'))
+                this._log(Dag.fatal, method,
+                    `Node Definition "${key}" has an *undefined* key segment: "${supkey}"`)
+
+            if (! Array.isArray(options))
+                this._log(Dag.fatal, method,
+                    `Node Definition "${key}" options array is not an array; ensure its the 5th element!`)
+            
             for(let option of options) {
                 const [value, updater, args] = option
                 dagNode.options.push({value, updater, suppliers: [...args]})
             }
 
             // Ensure cfg integrity
-            if (cfg === null && options.length>1)
-                throw new Error(`Node "${key}" has no config, but still has multiple options.`)
-            // Disable the following until we add more fuel domains
-            // if (cfg !== null && options.length<2)
-            //     throw new Error(`Node "${key}" has a config but only 1 option.`)
+            if (cfgkey === '' && options.length>1)
+                this._log(Dag.fatal, method,
+                    `Node Definition "${key}" has no config specification, but still has multiple options.`)
+            if (cfgkey !== '' && options.length<2)
+                this._log(Dag.warn, method,
+                    `Node "${key}" has a config specification, but only 1 option.`)
 
             // Add it to the map, reporting any overwrites
             if (this.nodeMap.has(key)) {
                 const prev = this.nodeMap.get(key)
-                console.log(`Node ${key} was previously defined`)
+                this._log(Dag.warn, method, `Node ${key} was previously defined by "${prev}`)
+                console.log(`Node ${key} was previously defined by "${prev}`)
                 console.log('Previous:', prev)
                 console.log('Current:', dagNode)
             }
@@ -149,15 +161,19 @@ export class Dag {
 
     // For each node, converts in-place all of its options suppliers into node references
     _resolveSuppliers() {
+        const method = '_resolveSuppliers'
         for(let node of this.nodeMap.values()) {
             const {key, options} = node
             for(let i=0; i<options.length; i++) {
                 const suppliers = options[i].suppliers
                 for(let j=0; j<suppliers.length; j++) {
                     const supkey = suppliers[j]
+                    if(supkey.includes('undefined'))
+                        this._log(Dag.fatal, method,
+                            `Node "${key}" option ${i} supplier ${j} has an *undefined* key segment: "${supkey}"`)
                     if (!this.nodeMap.has(supkey))
-                        throw new Error(`Node "${key}" option ${i} supplier ${j} "${supkey}" is an invalid node key.`)
-                    // console.log(`Node "${key} option ${i} arg ${j} key="${supkey}"`)
+                        this._log(Dag.fatal, method,
+                            `Node "${key}" option ${i} supplier ${j} has an invalid node key of "${supkey}"`)
                     node.options[i].suppliers[j] = this.nodeMap.get(supkey)
                 }
             }
@@ -169,11 +185,14 @@ export class Dag {
     //--------------------------------------------------------------------------
 
     configure(cfgPairs=[]) {
+        const method = 'configure'
+        this.messages = []
         // First update the config map with any provided data
         for (let [key, value] of cfgPairs) {
             const config = this.configMap.get(key)
-            
-            if (! config) throw new Error(`Dag.configure(): attempt to update Config key "${key}" to "${value}", but it is not in the map`)
+            if (! config) 
+                this._log(Dag.fatal, method,
+                    `Config key "${key}" is invalid, cannot set it to "${value}"`)
             config.value = value
         }
         // Reinitialize all the nodes
@@ -189,7 +208,9 @@ export class Dag {
             // Get configuration key and object for this node
             if (node.cfg !== '' && node.options.length > 1) {
                 const config = this.configMap.get(node.cfg)
-                if (! config) throw new Error(`Dag.configure(): node "${node.key}" Config key "${node.cfg}" is not in the map`)
+                if (! config) 
+                    this._log(Dag.fatal, method,
+                    `Node "${node.key}" configuration key "${node.cfg}" is not in the map`)
 
                 let found = false
                 for(let i=0; i<node.options.length; i++) {
@@ -200,10 +221,9 @@ export class Dag {
                         break
                     }
                 }
-                if(!found) {
-                    let str = `Dag.configure(): node "${node.key}" has no matching option for config "${node.cfg}" = "${config.value}"\n`
-                    throw new Error(str)
-                }
+                if(!found)
+                    this._log(Dag.fatal, method,)
+                        `Node "${node.key}" has no matching option for config "${node.cfg}" = "${config.value}"`
             }
             // Set the node's current option
             node.current = active
@@ -213,41 +233,6 @@ export class Dag {
         }
         this._updateAllInputsSet()
         this._reselect()
-        return this
-    }
-
-    // Applies current config settings to all nodes
-    _reconfigure() {
-        for(let node of this.nodeMap.values()) {
-            node.current = null   // will be a reference to one of the node.options
-            node.dirty   = Dag.dirty
-            node.status  = Dag.ignored
-            node.consumers = []
-        }
-        for(let node of this.nodeMap.values()) {
-            // Determine the node's current active configuration
-            let active = node.options[0]    // Use first (or only) option by default
-            if(node.cfg && node.options.length>1) { // if configurable and more than 1 option...
-                let found = false
-                for(let i=0; i<node.options.length; i++) {
-                    const optval = node.options[i].value
-                    if ( optval === node.cfg.value || optval === node.cfg.any) {
-                        active = node.options[i]
-                        found = true
-                        break
-                    }
-                }
-                if(!found) {
-                    let str = `Node "${node.key}" has no matching option for config "${node.cfg.key}" = "${node.cfg.value}"\n`
-                    throw new Error(str)
-                }
-            }
-            // Set the node's Dag properties
-            node.current = active
-            // Add this node to each of its suppliers' consumers array.
-            for(let supplier of node.current.suppliers)
-                supplier.consumers.push(node)
-        }
         return this
     }
 
@@ -343,14 +328,31 @@ export class Dag {
     // Only works for INPUT DagNodes and if value is different from current value.
     set(refOrKey, value, unequalOnly=true) {
         const node = this.nodeRef(refOrKey, 'set()')
-        // Log warning if this is a conatnt or non-input node??
-        // if (inputsOnly && node.option.updater !== Dag.input) return this
+        // Need to implement the following
+        this.validate(node, value)
+        // Log warning if this is a constant or non-input node??
+        if (node.current.updater !== Dag.input) {
+            this._log(Dag.warn, 'set',
+                `attempt to set the value of non-input node "${node.key}" to "${value}" was denied`)
+            return this
+        } else if (node.current.updater === Dag.constant) {
+            this._log(Dag.error, 'set',
+                `attempt to set the value of *constant* node "${node.key}" to "${value}" was denied`)
+            return this
+        } else if (node.status !== Dag.selected) {
+            this._log(Dag.warn, 'set',
+                `attempt to set the value of *unselected* node "${node.key}" to "${value}" was allowed but not propagated`)
+            node.value = value
+            return this
+        }
         if (unequalOnly && node.value === value) return this
-        node.value = value
         node.dirty = Dag.dirty
         this._propagateDirtyToConsumers(node)
         return this
     }
+
+    // TO DO
+    validate(node, value) {}
 
     // Propagates the 'dirty' flag to all the node's consumers
     _propagateDirtyToConsumers(node) {
@@ -371,6 +373,11 @@ export class Dag {
     // and its dirty flag is cleared before returning its updated value.
     get(refOrKey, log=false) {
         const node = this.nodeRef(refOrKey)  // only use node references within _get()!!!
+        if (node.status === Dag.ignore) {
+            this._log(Dag.warn, 'get', `attempt to get value of INACTIVE node "${node.key}"` )
+            // node.dirty = Dag.clean   // is this necessary?
+            return node.value
+        }
         return this._get(node, log)
     }
 
@@ -396,8 +403,8 @@ export class Dag {
             const args = []
             for(let supplier of node.current.suppliers)
                 args.push(this._get(supplier, log))
+            if(log) this._log(Dag.info, 'get', `Updating node ${node.key}) via ${node.current.updater.name}...`)
             node.value = node.current.updater.apply(node, args)
-            if(true) console.log(`_get(${node.key}) invoked ${node.current.updater.name}`)
         }
         node.dirty = Dag.clean
         return node.value
@@ -438,5 +445,26 @@ export class Dag {
         }
         node.dirty = Dag.clean
         return node.value
+    }
+    
+    //--------------------------------------------------------------------------
+    // Logging methods
+    //--------------------------------------------------------------------------
+    /**
+     * 
+     * @param {string} method Name of the calling method
+     * @param {integer} level Dag.info, Dag.warn, Dag.error, or Dag.fatal
+     * @param {string} msg 
+     */
+    static info = 0
+    static warn = 1
+    static error = 2
+    static fatal = 3
+    static fatal = 4
+    _log(method, level, msg) {
+        const m = ['INFO', 'WARN', 'ERROR', 'FATAL']
+        this.messages.push({method, level, msg})
+        if (level === Dag.fatal)
+            throw new Error(`${m} from ${method}: ${msg}`)
     }
 }

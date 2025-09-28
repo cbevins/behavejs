@@ -1,5 +1,7 @@
 # Wildland Fire Modeling System for Javascipt Life Cycle
 
+## NOTES
+
 ## System Definition Phase
 
 ### 1 - Defining Available Configuration Parameters
