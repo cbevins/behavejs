@@ -1,22 +1,51 @@
 <script>
     import TreeView from '$lib/svelte/TreeView.svelte'
     let { wfms } = $props()
+    console.clear()
+    console.log(wfms.configObj)
 
+    // This automates building the tree data structure
+    const items = []
+    traverse(wfms.configObj, items)
+    function traverse(obj, items, pid='', depth=0) {
+        for(let key of Object.keys(obj)) {
+            console.log('traverse', depth, key)
+            const prop = obj[key]
+            const id = pid + key + '/'
+            if (prop.key) {  // if this is a leaf object
+                const item = {id, label: key, config: prop}
+                items.push(item)
+            } else { // this is a branch object
+                const item = {id, label: key, children: []}
+                traverse(prop, item.children, id, depth+1)
+                items.push(item)
+            }
+        }
+    }
+    console.log('Items=', items)
+
+    // This builds a customized tree data structure
+    function ucfirst(str) {
+        if (typeof str !== 'string' || str.length === 0) return str
+        return str.charAt(0).toUpperCase() + str.slice(1)
+    }
+    const {canopy, ellipse, moisture, slope, surface, terrain, wind} = wfms.configObj
+    const {primary, secondary} = surface
     const treeData = [
-        {id: '1', label: 'Surface', children: [
-            { id: '1.1', label: 'Primary', children: [
-                { id: '1.1.1', label: 'Fuel Domain' },
-                { id: '1.1.2', label: 'Standard' }]
+        {id: 'a', label: 'Surface', children: [
+            { id: 'b', label: 'Primary', children: [
+                { id: 'c', label: ucfirst(primary.fuel.prompt)},
+                { id: 'd', label: ucfirst(primary.standard.prompt) }]
             },
-            { id: '1.2', label: 'Secondary', children: [
-                { id: '1.2.1', label: 'Fuel Domain' },
-                { id: '1.2.2', label: 'Standard' }]
+            { id: 'e', label: 'Secondary', children: [
+                { id: 'f', label: 'Fuel Domain' },
+                { id: 'g', label: 'Standard' }]
             },
-            { id: '1.3', label: 'Curing Fraction'},
-            { id: '1.4', label: 'Midflame Wind Speed'},
-            { id: '1.5', label: 'Weighting'},
-            { id: '1.6', label: 'Wind Limit'},
-            { id: '1.7', label: 'Wind Speed Reduction Factor'},
+            { id: 'h', label: 'Curing Fraction'},
+            { id: 'i', label: 'Midflame Wind Speed'},
+            { id: 'j', label: 'Weighting'},
+            { id: 'k', label: 'Wind Limit'},
+            { id: 'l', label: 'Wind Speed Reduction Factor'},
         ]},
         { id: '2', label: 'Ellipse', children: [
             { id: '2.1', label: 'Link'},
@@ -38,42 +67,6 @@
             { id: '6.1', label: 'Height'}],
         },
     ]
-         // this.configObj = {
-        //     canopy: {
-        //         height: this._set(new CanopyHeightConfig()),
-        //     },
-        //     ellipse: {
-        //         link: this._set(new FireEllipseLinkConfig()),
-        //         vector: this._set(new FireEllipseVectorConfig()),
-        //     },
-        //     moisture: {
-        //         dead: this._set(new DeadFuelMoistureConfig()),
-        //         live: this._set(new LiveFuelMoistureConfig()),
-        //     },
-        //     slope: {
-        //         direction: this._set(new SlopeDirectionConfig()),
-        //         steepness: this._set(new SlopeSteepnessConfig()),
-        //     },
-        //     surface: {
-        //         curing: this._set(new LiveFuelCuringConfig()),
-        //         midflame: this._set(new MidflameWindSpeedConfig()),
-        //         primary: {
-        //             fuel: this._set(new SurfacePrimaryFuelConfig()),
-        //             standard: this._set(new SurfacePrimaryStandardConfig()),
-        //         },
-        //         secondary: {
-        //             fuel: this._set(new SurfaceSecondaryFuelConfig()),
-        //             standard: this._set(new SurfaceSecondaryStandardConfig()),
-        //         },
-        //         weighting: this._set(new SurfaceFireWtgConfig()),
-        //         windLimit: this._set(new FireEffectiveWindLimitConfig()),
-        //         wsrf: this._set(new WindSpeedReductionConfig()),
-        //     },
-        //     wind: {
-        //         direction: this._set(new WindDirectionConfig()),
-        //         speed: this._set(new WindSpeedConfig()),
-        //     }
-        // }
 
     function handleNodeToggle(event) {
         console.log('Node toggled:', event.detail);
@@ -85,5 +78,5 @@
 </script>
 
 <div class='mx-4 my-4'>
-    <TreeView data={treeData} on:toggle={handleNodeToggle} on:select={handleNodeSelect} />
+    <TreeView data={items} on:toggle={handleNodeToggle} on:select={handleNodeSelect} />
 </div>
