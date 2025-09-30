@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { precision, sig } from './matchers.js'
+import { sig } from './matchers.js'
 import { WfmsTwoFuels } from '../index.js'
 
-expect.extend({ precision, sig })
+expect.extend({ sig })
 
 // Results from BehavePlus V6
 const ros   = { fm010: 18.551680325448835, fm124: 48.47042599399056,  prec: 10 }
@@ -50,52 +50,54 @@ describe('Two fuel models', () => {
 
     // The final RoS is bound to the harmonic mean RoS
     it('primary, secondary, and weighted RoS agrees with BehavePlus V6', () => {
-        expect(p.ros.value).precision(ros.fm010, ros.prec)
+        expect(p.ros.value).sig(ros.fm010, ros.prec)
         expect(s.ros.value).sig(ros.fm124, ros.prec)
-        expect(w.harmonic.value).precision(ros.harm, ros.prec)
-        expect(w.arithmetic.value).precision(ros.arith, ros.prec)
-        expect(w.ros.value).precision(ros.harm, ros.prec)
+        expect(w.harmonic.value).sig(ros.harm, ros.prec)
+        expect(w.arithmetic.value).sig(ros.arith, ros.prec)
+        expect(w.ros.value).sig(ros.harm, ros.prec)
     })
 
     // The heading from upslope, effective wind speed, length-to-width ratio,
     // midflame wind speed, and wsrf are all bound to the PRIMARY FUEL.
     // In this case, its fm010:
     it('primary, secondary, and weighted heading driection from upslope agrees with BehavePlus V6', () => {
-        expect(p.heading.fromUpslope.value).precision(dirUp.fm010, dirUp.prec)
-        expect(s.heading.fromUpslope.value).precision(dirUp.fm124, dirUp.prec)
-        expect(w.heading.fromUpslope.value).precision(dirUp.fm010, dirUp.prec)
+        expect(p.heading.fromUpslope.value).sig(dirUp.fm010, dirUp.prec)
+        expect(s.heading.fromUpslope.value).sig(dirUp.fm124, dirUp.prec)
+        expect(w.heading.fromUpslope.value).sig(dirUp.fm010, dirUp.prec)
     })
+
     it('primary, secondary, and weighted length-to-width ratio agrees with BehavePlus V6', () => {
-        expect(p.lwr.value).precision(lwr.fm010, lwr.prec)
-        expect(s.lwr.value).precision(lwr.fm124, lwr.prec)
-        expect(w.lwr.value).precision(lwr.fm010, lwr.prec)
+        expect(p.lwr.value).sig(lwr.fm010, lwr.prec)
+        expect(s.lwr.value).sig(lwr.fm124, lwr.prec)
+        expect(w.lwr.value).sig(lwr.fm010, lwr.prec)
     })
+    
     it('primary, secondary, and weighted effective wind speed agrees with BehavePlus V6', () => {
-        expect(p.ewind.speed.value).precision(ews.fm010, ews.prec)
-        expect(s.ewind.speed.value).precision(ews.fm124, ews.prec)
-        expect(w.ewind.speed.value).precision(ews.fm010, ews.prec)
+        expect(p.ewind.speed.value).sig(ews.fm010, ews.prec)
+        expect(s.ewind.speed.value).sig(ews.fm124, ews.prec)
+        expect(w.ewind.speed.value).sig(ews.fm010, ews.prec)
     })
 
     // The fireline intensity, reaction itensity, flame length, and heat per unit area
     // are all bound to the MAXIMUM of the two fuels,
     // In this case, its fm124:
     it('primary, secondary, and weighted fireline intensity agrees with BehavePlus V6', () => {
-        expect(p.fli.value).precision(fli.fm010, fli.prec)
-        expect(s.fli.value).precision(fli.fm124, fli.prec)
-        expect(w.fli.value).precision(fli.fm124, fli.prec)
+        expect(p.fli.value).sig(fli.fm010, fli.prec)
+        expect(s.fli.value).sig(fli.fm124, fli.prec)
+        expect(w.fli.value).sig(fli.fm124, fli.prec)
     })
 
     // The effective wind speed limit is bound to the MINIMUM of the two fuels.
     // In this case, its fm010
     it('primary, secondary, and weighted effective wind speed limit agrees with BehavePlus V6', () => {
-        expect(p.ewind.limit.value).precision(ewsl.fm010, ewsl.prec)
-        expect(s.ewind.limit.value).precision(ewsl.fm124, ewsl.prec)
-        expect(w.ewind.limit.value).precision(ewsl.fm010, ewsl.prec)
+        expect(p.ewind.limit.value).sig(ewsl.fm010, ewsl.prec)
+        expect(s.ewind.limit.value).sig(ewsl.fm124, ewsl.prec)
+        expect(w.ewind.limit.value).sig(ewsl.fm010, ewsl.prec)
     })
 
     // The effective wind speed limit exceeded is TRUE if EITHER fuel's limit is exceeded
     // In this case, its FALSE for both fuels
-    it('primary, secondary, and weighted effective wind speed limit agrees with BehavePlus V6', () => {
+    it('primary, secondary, and weighted effective wind speed limit exceeded agrees with BehavePlus V6', () => {
         expect(p.ewind.exceeded.value).toBe(ewsx.fm010)
         expect(s.ewind.exceeded.value).toBe(ewsx.fm124)
         expect(w.ewind.exceeded.value).toBe(ewsx.fm010 || ewsx.fm124)

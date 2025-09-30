@@ -37,7 +37,7 @@ export class SurfaceFireWtgModule extends ModuleBase {
                 [cfg.any, Dag.input, []]]],
             [path+P.wtgCover2, 0, U.fraction, cfg, [
                 [cfg.primary, Dag.assign, [P.zero]],
-                [cfg.any, Calc.diff, [P.one, path+P.wtgCover1]]]],
+                [cfg.any, Calc.subtract, [P.one, path+P.wtgCover1]]]],
 
             // The following 6 (or maybe 7) are ALWAYS bound to the primary fuel
             [path+P.fireWeff, 0, U.windSpeed, null, [

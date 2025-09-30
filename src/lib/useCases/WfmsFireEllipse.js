@@ -1,11 +1,16 @@
 import { WfmsUseCases } from '../index.js'
 
 export class WfmsFireEllipse extends WfmsUseCases {
-    constructor(name='Fire Ellipse Test') {
+    constructor(name='Fire Ellipse Test', showMessages=false) {
         super(name)
         this.configure(this.configFireEllipseTesting())
+        // if (showMessages) console.log(this.dag.messages)
+
         this.select(this.selectFireEllipseTestNodes())
+        if (showMessages) console.log(this.dag.messages)
+
         this.setFireEllipseTestInputs()
+        if (showMessages) console.log(this.dag.messages)
     }
 
     /**
@@ -44,11 +49,12 @@ export class WfmsFireEllipse extends WfmsUseCases {
             ['link.treeMortality', 'linkedToScorchHeight']
         ]
 
+        // Config object references for convenience
         const {canopy, ellipse, moisture, slope, surface, wind} = this.configObj
         const {primary, secondary} = surface
         return [
             [ellipse.link.key,       ellipse.link.surface],
-            [ellipse.vector.key,     ellipse.vector.fromNorth],
+            [ellipse.vector.key,     ellipse.vector.fromNorth], // use fromNorth for tests!!
            // Setting the following to 'primary' results in just 1 surface fuel
             // Setting it to any other value results in 2 surface fuel
             [surface.weighting.key,  surface.weighting.primary],
@@ -80,30 +86,41 @@ export class WfmsFireEllipse extends WfmsUseCases {
     }
 
     selectFireEllipseTestNodes() {
-        const {ellipse, surface} = this.nodeRefs
-        const {time, vector, temp, axis, direction, head, back, flank, size, beta, beta5, emap} = ellipse
+        // Node references for convenience
+        const {canopy, ellipse, map, moisture, slope, surface, wind} = this.nodeRefs
+        const {primary, secondary, weighted} = surface
+        const {axis, back, beta, beta5, direction, eccent, flank, head, map:emap,
+            psi, size, temp, time, vector } = ellipse
 
         return [
             surface.weighted.heading.fromUpslope,
-            surface.weighted.ros,
-            surface.primary.ros,
-            surface.secondary.ros,
+            surface.weighted.heading.fromNorth,
+            // surface.weighted.ros,
+            // surface.weighted.harmonic,
+            // surface.weighted.arithmetic,
+            // surface.primary.ros,
+            // surface.secondary.ros,
 
-            head.ros, head.fli, head.flame, head.dist,
-            back.ros, back.fli, back.flame, back.dist,
             axis.f, axis.g, axis.h, axis.lwr, axis.major, axis.minor,
-            flank.ros, flank.fli, flank.flame, flank.dist,
-            beta5.ros, beta5.fli, beta5.flame, beta5.dist,
-            beta.ros, beta.fli, beta.flame, beta.dist,
+            head.ros, head.fli, head.flame, head.dist, head.mapdist,
+            back.ros, back.fli, back.flame, back.dist, back.mapdist,
+            flank.ros, flank.fli, flank.flame, flank.dist, flank.mapdist,
+            beta5.ros, beta5.fli, beta5.flame, beta5.dist, beta5.mapdist,
+            beta.ros, beta.fli, beta.flame, beta.dist, beta.mapdist, beta.psi.degrees, beta.psi.ros, beta.theta,
+            psi.ros, psi.fli, psi.flame, psi.dist, psi.mapdist,
             size.area, size.perim, size.length, size.width,
+            emap.area, emap.perim, emap.length, emap.width,
+            vector.head, vector.upslope,
             // surface.weighted.heading.fromNorth,
         ]
     }
 
     setFireEllipseTestInputs() {
-        const {canopy, ellipse, moisture, slope, surface, wind, map} = this.nodeRefs
+        // Node references for convenience
+        const {canopy, ellipse, map, moisture, slope, surface, wind} = this.nodeRefs
         const {primary, secondary} = surface
-        const {time, vector, temp, axis, direction, head, back, flank, size, beta, beta5, emap} = ellipse
+        const {axis, back, beta, beta5, direction, eccent, flank, head, map:emap,
+            psi, size, temp, time, vector } = ellipse
 
         this.set(vector.north, 45)
         this.set(time, 60)
@@ -117,6 +134,7 @@ export class WfmsFireEllipse extends WfmsUseCases {
         this.set(moisture.herb, 0.5)
         this.set(moisture.stem, 1.5)
         this.set(wind.source, 270)
+        this.set(map.scale, 24000)
         this.set(temp, 95)
         this.updateAll()
     }

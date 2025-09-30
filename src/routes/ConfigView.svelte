@@ -2,27 +2,24 @@
     import TreeView from '$lib/svelte/TreeView.svelte'
     let { wfms } = $props()
     console.clear()
-    console.log(wfms.configObj)
+    // console.log(wfms.configObj)
 
     // This automates building the tree data structure
     const items = []
     traverse(wfms.configObj, items)
     function traverse(obj, items, pid='', depth=0) {
-        for(let key of Object.keys(obj)) {
-            console.log('traverse', depth, key)
-            const prop = obj[key]
-            const id = pid + key + '/'
-            if (prop.key) {  // if this is a leaf object
-                const item = {id, label: key, config: prop}
-                items.push(item)
+        for(let [key, config] of Object.entries(obj)) {
+            const id = pid + (depth ? '-' : '') + key
+            if (config.key) {  // if this is a leaf object
+                items.push({id, label: key, config})
             } else { // this is a branch object
                 const item = {id, label: key, children: []}
-                traverse(prop, item.children, id, depth+1)
+                traverse(config, item.children, id, depth+1)
                 items.push(item)
             }
         }
     }
-    console.log('Items=', items)
+    // console.log('Items=', items)
 
     // This builds a customized tree data structure
     function ucfirst(str) {

@@ -62,35 +62,33 @@ export class FireEllipseModule extends ModuleBase {
                 [cfg.surface, Dag.assign, [surfPath+P.fireMidf]],
                 [cfg.observed, Dag.input, []]]],
 
-                // Move these into their own module?
-            // this.fireVectorNodes = [
             [path+P.vectorFromHead, 0, U.compass, cfgVectors, [
                 [cfgVectors.fromHead, Dag.input, []],
-                [cfgVectors.fromUpslope, Compass.diff, [
+                [cfgVectors.fromUpslope, Compass.compassDiff, [
                     path+P.vectorFromUpslope,
                     path+P.fireFromUpslope]],
-                [cfgVectors.fromNorth, Compass.diff, [
+                [cfgVectors.fromNorth, Compass.compassDiff, [
                     path+P.vectorFromNorth,
                     path+P.fireFromNorth]]]],
 
             [path+P.vectorFromNorth, 0, U.compass, cfgVectors, [
                 [cfgVectors.fromNorth, Dag.input, []],
-                [cfgVectors.fromHead, Compass.sum, [
+                [cfgVectors.fromHead, Compass.compassSum, [
                     path+P.vectorFromHead,
                     path+P.fireFromNorth]],
-                [cfgVectors.fromUpslope, Compass.sum, [
+                [cfgVectors.fromUpslope, Compass.compassSum, [
                     path+P.vectorFromUpslope,
                     upslopeNode]]]],
 
             [path+P.vectorFromUpslope, 0, U.compass, cfgVectors, [
                 [cfgVectors.fromUpslope, Dag.input, []],
-                [cfgVectors.fromHead, Compass.sum, [
+                [cfgVectors.fromHead, Compass.compassSum, [
                     path+P.vectorFromHead,
                     path+P.fireFromUpslope]],
-                [cfgVectors.fromNorth, Compass.diff, [
+                [cfgVectors.fromNorth, Compass.compassDiff, [
                     path+P.vectorFromNorth,
                     upslopeNode]],
-                [cfgVectors.any, Compass.diff, [
+                [cfgVectors.any, Compass.compassDiff, [
                     path+P.vectorFromNorth,
                     upslopeNode]]]],
 
@@ -414,7 +412,7 @@ export class FireEllipseModule extends ModuleBase {
 
             // end path+'beta'
             [path+P.fireFromNorth, 0, U.compass, null, [
-                ['', Compass.sum, [
+                ['', Compass.compassSum, [
                     upslopeNode,
                     path+P.fireFromUpslope]]]],
         ]

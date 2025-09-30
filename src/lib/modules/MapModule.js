@@ -44,14 +44,14 @@ export class MapModule extends ModuleBase {
                 ['', Calc.multiply, [path+P.mapInterval, path+P.mapContours]]]],
 
             [path+P.mapSlopeRatio, 0, U.posratio, null, [
-                ['', Compass.slopeRatioMap, [
+                ['', Compass.compassSlopeRatioMap, [
                     path+P.mapScale,
                     path+P.mapInterval,
                     path+P.mapContours,
                     path+P.mapDist]]]],
 
             [path+P.mapSlopeDeg, 0., U.degrees, null, [
-                ['', Compass.slopeDegreesMap, [
+                ['', Compass.compassSlopeDegreesMap, [
                     path+P.mapScale,
                     path+P.mapInterval,
                     path+P.mapContours,

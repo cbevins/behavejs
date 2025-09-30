@@ -107,96 +107,10 @@ export class WfmsUseCases extends Wfms{
     _assignNodeRefs() {
         const dag = this.dag
         this.nodeRefs = {
-            surface: {
-                cured: dag.nodeRef('weather/curing/fraction/applied'),
-
-                primary: {
-                    cover: dag.nodeRef('weighted/fire/cover/primary'),
-                    ewind: {
-                        speed: dag.nodeRef('primary/fire/effective wind/speed'),
-                        limit: dag.nodeRef('primary/fire/effective wind/speed/limit'),
-                        exceeded: dag.nodeRef('secondary/fire/effective wind/speed/exceeded'),
-                    },
-                    heading: {
-                        fromNorth: dag.nodeRef('primary/fire/heading/degrees/from north'),
-                        fromUpslope: dag.nodeRef('primary/fire/heading/degrees/from up-slope'),
-                    },
-                    flame: dag.nodeRef('primary/fire/heading/flame length'),
-                    fli: dag.nodeRef('primary/fire/heading/fireline intensity'),
-                    fuel: {
-                        key: dag.nodeRef('primary/model/standard/key'),
-                    },
-                    hpua: dag.nodeRef('primary/fire/heat per unit area'),
-                    lwr: dag.nodeRef('primary/fire/length-to-width ratio'),
-                    midflame: dag.nodeRef('primary/wind/speed/midflame'),
-                    ros: dag.nodeRef('primary/fire/heading/spread rate'),
-                    rxi: dag.nodeRef('primary/fire/reaction intensity'),
-                },
-                secondary: {
-                    ewind: {
-                        speed: dag.nodeRef('secondary/fire/effective wind/speed'),
-                        limit: dag.nodeRef('secondary/fire/effective wind/speed/limit'),
-                        exceeded: dag.nodeRef('primary/fire/effective wind/speed/exceeded'),
-                    },
-                    heading: {
-                        fromNorth: dag.nodeRef('secondary/fire/heading/degrees/from north'),
-                        fromUpslope: dag.nodeRef('secondary/fire/heading/degrees/from up-slope'),
-                    },
-                    flame: dag.nodeRef('secondary/fire/heading/flame length'),
-                    fli: dag.nodeRef('secondary/fire/heading/fireline intensity'),
-                    fuel: {
-                        key: dag.nodeRef('secondary/model/standard/key'),
-                    },
-                    hpua: dag.nodeRef('secondary/fire/heat per unit area'),
-                    lwr: dag.nodeRef('secondary/fire/length-to-width ratio'),
-                    midflame: dag.nodeRef('secondary/wind/speed/midflame'),
-                    rxi: dag.nodeRef('secondary/fire/reaction intensity'),
-                    ros: dag.nodeRef('secondary/fire/heading/spread rate'),
-                },
-                weighted: {
-                    arithmetic: dag.nodeRef('weighted/fire/spread rate/arithmetic mean'),
-                    ewind: {
-                        speed: dag.nodeRef('weighted/fire/effective wind/speed'),
-                        limit: dag.nodeRef('weighted/fire/effective wind/speed/limit'),
-                        exceeded: dag.nodeRef('weighted/fire/effective wind/speed/exceeded'),
-                    },
-                    harmonic: dag.nodeRef('weighted/fire/spread rate/harmonic mean'),
-                    heading: {
-                        fromNorth: dag.nodeRef('weighted/fire/heading/degrees/from north'),
-                        fromUpslope: dag.nodeRef('weighted/fire/heading/degrees/from up-slope'),
-                    },
-                    flame: dag.nodeRef('weighted/fire/heading/flame length'),
-                    fli: dag.nodeRef('weighted/fire/heading/fireline intensity'),
-                    lwr: dag.nodeRef('weighted/fire/length-to-width ratio'),
-                    midflame: dag.nodeRef('weighted/fire/wind/speed/midflame'),
-                    rxi: dag.nodeRef('weighted/fire/reaction intensity'),
-                    hpua: dag.nodeRef('weighted/fire/heat per unit area'),
-                    ros: dag.nodeRef('weighted/fire/heading/spread rate'),
-                },
-            },
             canopy: {
                 cover: dag.nodeRef('canopy/coverage'),
                 baseHeight: dag.nodeRef('canopy/crown/base height'),
                 totalHeight: dag.nodeRef('canopy/crown/total height')
-            },
-            moisture: {
-                tl1: dag.nodeRef('weather/moisture/dead/1-h'),
-                tl10: dag.nodeRef('weather/moisture/dead/10-h'),
-                tl100: dag.nodeRef('weather/moisture/dead/100-h'),
-                herb: dag.nodeRef('weather/moisture/live/herb'),
-                stem: dag.nodeRef('weather/moisture/live/stem'),
-            },
-            slope: {
-                aspect: dag.nodeRef('terrain/slope/direction/down-slope/degrees/from north'),
-                upslope: dag.nodeRef('terrain/slope/direction/up-slope/degrees/from north'),
-                ratio: dag.nodeRef('terrain/slope/steepness/ratio/rise-to-reach'),
-                degrees: dag.nodeRef('terrain/slope/steepness/degrees/from horizontal'),
-            },
-            wind: {
-                source: dag.nodeRef('weather/wind/direction/source/degrees/from north'),
-                heading: dag.nodeRef('weather/wind/direction/heading/degrees/from up-slope'),
-                at20ft: dag.nodeRef('weather/wind/speed/at 20-ft'),
-                at10m: dag.nodeRef('weather/wind/speed/at 10-m')
             },
             ellipse: {
                 axis: {
@@ -226,6 +140,7 @@ export class WfmsUseCases extends Wfms{
                     },
                     ros: dag.nodeRef('ellipse/beta/spread rate'),
                     scorch: dag.nodeRef('ellipse/beta/scorch height'),
+                    theta: dag.nodeRef('ellipse/beta/theta/degrees'),
                 },
                 beta5: {
                     dist: dag.nodeRef('ellipse/beta5/distance'),
@@ -236,8 +151,8 @@ export class WfmsUseCases extends Wfms{
                     scorch: dag.nodeRef('ellipse/beta5/scorch height'),
                 },
                 direction: {
-                    north: dag.nodeRef('ellipse/heading/degrees/from north'),
-                    upslope: dag.nodeRef('ellipse/heading/degrees/from up-slope'),
+                    north: dag.nodeRef('ellipse/heading/degrees from north'),
+                    upslope: dag.nodeRef('ellipse/heading/degrees from up-slope'),
                 },
                 eccent: dag.nodeRef('ellipse/eccentricity'),
                 flank: {
@@ -279,9 +194,9 @@ export class WfmsUseCases extends Wfms{
                 temp: dag.nodeRef('ellipse/temperature/ambient air'),
                 time: dag.nodeRef('ellipse/time/ignition/elapsed'),
                 vector: {
-                    head: dag.nodeRef('ellipse/vector/degrees/from fire head'),
-                    north: dag.nodeRef('ellipse/vector/degrees/from north'),
-                    upslope: dag.nodeRef('ellipse/vector/degrees/from up-slope'),
+                    head: dag.nodeRef('ellipse/vector/degrees from fire head'),
+                    north: dag.nodeRef('ellipse/vector/degrees from north'),
+                    upslope: dag.nodeRef('ellipse/vector/degrees from up-slope'),
                 },
                 wind: dag.nodeRef('ellipse/wind/speed/midflame'),
             },
@@ -299,7 +214,92 @@ export class WfmsUseCases extends Wfms{
                     reach: dag.nodeRef('map/slope/reach'),
                     rise: dag.nodeRef('map/slope/rise'),
                 },
-            }
+            },
+            moisture: {
+                tl1: dag.nodeRef('weather/moisture/dead/1-h'),
+                tl10: dag.nodeRef('weather/moisture/dead/10-h'),
+                tl100: dag.nodeRef('weather/moisture/dead/100-h'),
+                herb: dag.nodeRef('weather/moisture/live/herb'),
+                stem: dag.nodeRef('weather/moisture/live/stem'),
+            },
+            slope: {
+                aspect: dag.nodeRef('terrain/slope/direction/down-slope/degrees from north'),
+                upslope: dag.nodeRef('terrain/slope/direction/up-slope/degrees from north'),
+                ratio: dag.nodeRef('terrain/slope/steepness/ratio/rise-to-reach'),
+                degrees: dag.nodeRef('terrain/slope/steepness/degrees from horizontal'),
+            },
+            surface: {
+                cured: dag.nodeRef('weather/curing/fraction/applied'),
+                primary: {
+                    cover: dag.nodeRef('weighted/fire/cover/primary'),
+                    ewind: {
+                        speed: dag.nodeRef('primary/fire/effective wind/speed'),
+                        limit: dag.nodeRef('primary/fire/effective wind/speed/limit'),
+                        exceeded: dag.nodeRef('secondary/fire/effective wind/speed/exceeded'),
+                    },
+                    heading: {
+                        fromNorth: dag.nodeRef('primary/fire/heading/degrees from north'),
+                        fromUpslope: dag.nodeRef('primary/fire/heading/degrees from up-slope'),
+                    },
+                    flame: dag.nodeRef('primary/fire/heading/flame length'),
+                    fli: dag.nodeRef('primary/fire/heading/fireline intensity'),
+                    fuel: {
+                        key: dag.nodeRef('primary/model/standard/key'),
+                    },
+                    hpua: dag.nodeRef('primary/fire/heat per unit area'),
+                    lwr: dag.nodeRef('primary/fire/length-to-width ratio'),
+                    midflame: dag.nodeRef('primary/wind/speed/midflame'),
+                    ros: dag.nodeRef('primary/fire/heading/spread rate'),
+                    rxi: dag.nodeRef('primary/fire/reaction intensity'),
+                },
+                secondary: {
+                    ewind: {
+                        speed: dag.nodeRef('secondary/fire/effective wind/speed'),
+                        limit: dag.nodeRef('secondary/fire/effective wind/speed/limit'),
+                        exceeded: dag.nodeRef('primary/fire/effective wind/speed/exceeded'),
+                    },
+                    heading: {
+                        fromNorth: dag.nodeRef('secondary/fire/heading/degrees from north'),
+                        fromUpslope: dag.nodeRef('secondary/fire/heading/degrees from up-slope'),
+                    },
+                    flame: dag.nodeRef('secondary/fire/heading/flame length'),
+                    fli: dag.nodeRef('secondary/fire/heading/fireline intensity'),
+                    fuel: {
+                        key: dag.nodeRef('secondary/model/standard/key'),
+                    },
+                    hpua: dag.nodeRef('secondary/fire/heat per unit area'),
+                    lwr: dag.nodeRef('secondary/fire/length-to-width ratio'),
+                    midflame: dag.nodeRef('secondary/wind/speed/midflame'),
+                    rxi: dag.nodeRef('secondary/fire/reaction intensity'),
+                    ros: dag.nodeRef('secondary/fire/heading/spread rate'),
+                },
+                weighted: {
+                    arithmetic: dag.nodeRef('weighted/fire/spread rate/arithmetic mean'),
+                    ewind: {
+                        speed: dag.nodeRef('weighted/fire/effective wind/speed'),
+                        limit: dag.nodeRef('weighted/fire/effective wind/speed/limit'),
+                        exceeded: dag.nodeRef('weighted/fire/effective wind/speed/exceeded'),
+                    },
+                    harmonic: dag.nodeRef('weighted/fire/spread rate/harmonic mean'),
+                    heading: {
+                        fromNorth: dag.nodeRef('weighted/fire/heading/degrees from north'),
+                        fromUpslope: dag.nodeRef('weighted/fire/heading/degrees from up-slope'),
+                    },
+                    flame: dag.nodeRef('weighted/fire/heading/flame length'),
+                    fli: dag.nodeRef('weighted/fire/heading/fireline intensity'),
+                    lwr: dag.nodeRef('weighted/fire/length-to-width ratio'),
+                    midflame: dag.nodeRef('weighted/fire/wind/speed/midflame'),
+                    rxi: dag.nodeRef('weighted/fire/reaction intensity'),
+                    hpua: dag.nodeRef('weighted/fire/heat per unit area'),
+                    ros: dag.nodeRef('weighted/fire/heading/spread rate'),
+                },
+            },
+            wind: {
+                source: dag.nodeRef('weather/wind/direction/source/degrees from north'),
+                heading: dag.nodeRef('weather/wind/direction/heading/degrees from up-slope'),
+                at20ft: dag.nodeRef('weather/wind/speed/at 20-ft'),
+                at10m: dag.nodeRef('weather/wind/speed/at 10-m')
+            },
         }
     }
 

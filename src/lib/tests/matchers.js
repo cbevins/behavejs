@@ -5,9 +5,6 @@
  * @license MIT
 */
 
-// Number bar for showing decimals places
-const bar = '        : 1.23456789012'
-
 /**
   A Jest matcher specifically for Dag Node value testing
 
@@ -20,19 +17,22 @@ const bar = '        : 1.23456789012'
 */
 export const sig = function (received, expected, precision, msg = '') {
   if (typeof expected === 'number' && typeof received === 'number') {
-    const exp = expected.toExponential(precision)
-    const rec = received.toExponential(precision)
-    const pass = exp === rec
+    const exp = (''+expected.toExponential(precision+1))
+    const rec = (''+received.toExponential(precision+1)).substring(0, precision)
+    const places = '1.2345678901234567890'.substring(0, precision) // Number bar for showing decimals places
+    const bar = '        : ' + places
+
+    const pass = (exp.substring(0, precision) === rec.substring(0, precision))
     if (pass) {
       return {
         message: () =>
-          `${msg} should NOT agree to ${precision} digits:\nexpected: ${exp}\nreceived: ${rec}\n${bar}`,
+          `${msg} should NOT agree to ${precision} significant digits:\nexpected: ${exp}\nreceived: ${rec}\n${bar}`,
         pass: true
       }
     } else {
       return {
         message: () =>
-          `${msg} should agree to ${precision} digits\nexpected: ${exp}\nreceived: ${rec}\n${bar}`,
+          `${msg} should agree to ${precision} significant digits\nexpected: ${exp}\nreceived: ${rec}\n${bar}`,
         pass: false
       }
     }
@@ -48,67 +48,6 @@ export const sig = function (received, expected, precision, msg = '') {
       return {
         message: () =>
           `${msg} should be equal\nexpected: ${expected}\nreceived: ${received}\n${bar}`,
-        pass: false
-      }
-    }
-  }
-}
-
-export function precision(received, expected, n) {
-    const { isNot } = this
-    let e = (''+expected)
-    const chars = Math.min(n, e.length)
-    e = e.substring(0, chars)
-    const r = (''+received).substring(0, chars)
-    return {
-        // do not alter your "pass" based on isNot. Vitest does it for you
-        pass: r === e,
-        message: () => `"${received}" ${isNot ? ' matches' : ' does not match'} "${e}" to ${chars} places`
-    }
-}
-
-
-/**
-  A Jest matcher specifically for Dag Node value testing
-
-  Use as follows:
-  import * as DagJest from '../jest/matchers.js'
-  const value = DagJest.value
-  expect.extend({ value })
-  expect(nodeValue).value(expected, significantDigits)
-  expect(dag.nodeValue(nodeIdx)).value(expected, significantDigits)
-*/
-export const value = function (node, expected, prec = 12) {
-  const precision = prec === null ? 11 : prec - 1
-  if (typeof expected === 'number') {
-    const exp = expected.toExponential(precision)
-    const rec = node.value().toExponential(precision)
-    const pass = exp === rec
-    if (pass) {
-      return {
-        message: () =>
-          `'${node.key()}' should NOT be equal\nexpected: ${exp}\nreceived: ${rec}\n${bar}`,
-        pass: true
-      }
-    } else {
-      return {
-        message: () =>
-          `'${node.key()}' should be equal\nexpected: ${exp}\nreceived: ${rec}\n${bar}`,
-        pass: false
-      }
-    }
-  } else {
-    const pass = expected === node.value()
-    if (pass) {
-      return {
-        message: () =>
-          `'${node.key()}' should NOT be equal\nexpected: ${expected}\nreceived: ${node.value()}\n${bar}`,
-        pass: true
-      }
-    } else {
-      return {
-        message: () =>
-          `'${node.key()}' should be equal\nexpected: ${expected}\nreceived: ${node.value()}\n${bar}`,
         pass: false
       }
     }

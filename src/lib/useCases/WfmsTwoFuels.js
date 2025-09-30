@@ -1,11 +1,16 @@
 import { WfmsUseCases } from '../index.js'
 
 export class WfmsTwoFuels extends WfmsUseCases {
-    constructor(name='Two Fuel Models Test') {
+    constructor(name='Two Fuel Models Test', showMessages=false) {
         super(name)
         this.configure(this.configTwoFuelsTesting())
+        if (showMessages) console.log(this.dag.messages)
+
         this.select(this.selectTwoFuelsTestNodes())
+        if (showMessages) console.log(this.dag.messages)
+
         this.setTwoFuelsTestInputs()
+        if (showMessages) console.log(this.dag.messages)
     }
 
     /**

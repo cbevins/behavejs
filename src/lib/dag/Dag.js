@@ -134,8 +134,11 @@ export class Dag {
                 this._log(Dag.fatal, method,
                     `Node Definition "${key}" options array is not an array; ensure its the 5th element!`)
             
-            for(let option of options) {
+            for(let [idx, option] of options.entries()) {
                 const [value, updater, args] = option
+                if (!updater)
+                    this._log(Dag.fatal, method,
+                        `Node Definition "${key}" options[${idx}] has a null updater`)
                 dagNode.options.push({value, updater, suppliers: [...args]})
             }
 
@@ -188,13 +191,7 @@ export class Dag {
         const method = 'configure'
         this.messages = []
         // First update the config map with any provided data
-        for (let [key, value] of cfgPairs) {
-            const config = this.configMap.get(key)
-            if (! config) 
-                this._log(Dag.fatal, method,
-                    `Config key "${key}" is invalid, cannot set it to "${value}"`)
-            config.value = value
-        }
+        this.setConfig(cfgPairs)
         // Reinitialize all the nodes
         for(let node of this.nodeMap.values()) {
             node.current = null     // will become a reference to one of the node.options
@@ -236,12 +233,47 @@ export class Dag {
         return this
     }
 
+    getConfigObj(key) { return this.configMap.get(key) }
+    getConfigValue(key) {
+        const config = this.configMap.get(key)
+        return (config) ? config.value : null
+    }
+
+    setConfig(cfgPairs=[]) {
+        // Argument must be an array, even if its empty
+        if (!Array.isArray(cfgPairs))
+            this._log(Dag.fatal, method,
+                `configure must be called with an array argument.`)
+        for (let [idx, item] of cfgPairs.entries()) {
+            // Each item in the argument array must be a [key, value] array
+            if(!Array.isArray(item))
+                this._log(Dag.fatal, method,
+                    `the configuration items array element ${idx} is not a [key, value] array`)
+            if(item.length !== 2)
+                this._log(Dag.fatal, method,
+                    `the configuration items array element ${idx} [key, value] does not have length of 2`)
+            const [key, value] = item
+            const config = this.configMap.get(key)
+            if (! config) 
+                this._log(Dag.fatal, method,
+                    `Config key "${key}" is invalid, cannot set it to "${value}"`)
+            if(!config.hasOption(value))
+                this._log(Dag.fatal, method,
+                    `Config key "${key}" option "${value}" is invalid`)
+            // Whew! eveything is fine, so store it
+            config.value = value
+        }
+    }
+
     // Creates the this.allInputsSet of all the current configuration possible input nodes , whether active or not
     _updateAllInputsSet() {
         this.allInputsSet = new Set()
         for(let node of this.nodeMap.values()) {
-            if (!node.current.updater) // Any node without an updater() must be a Dag input
+            if (!node.current.updater) {// Any node without an updater() must be a Dag input
                 node.current.updater = Dag.input
+                this._log(Dag.fatal, '_updateAllInputSets',
+                    `Node "${node.key}" was not matched with an updater.`)
+            }
             if (node.current.updater === Dag.input)
                 this.allInputsSet.add(node)
         }
@@ -333,7 +365,7 @@ export class Dag {
         // Log warning if this is a constant or non-input node??
         if (node.current.updater !== Dag.input) {
             this._log(Dag.warn, 'set',
-                `attempt to set the value of non-input node "${node.key}" to "${value}" was denied`)
+                `attempt to set the value of *non-input* node "${node.key}" to "${value}" was denied`)
             return this
         } else if (node.current.updater === Dag.constant) {
             this._log(Dag.error, 'set',
@@ -460,11 +492,10 @@ export class Dag {
     static warn = 1
     static error = 2
     static fatal = 3
-    static fatal = 4
-    _log(method, level, msg) {
+    _log(level, method, msg) {
         const m = ['INFO', 'WARN', 'ERROR', 'FATAL']
-        this.messages.push({method, level, msg})
+        this.messages.push({level: m[level], method, msg})
         if (level === Dag.fatal)
-            throw new Error(`${m} from ${method}: ${msg}`)
+            throw new Error(`${level} from ${method}: ${msg}`)
     }
 }

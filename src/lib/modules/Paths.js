@@ -72,9 +72,9 @@ export class Paths {
     static fireTime    = 'time/ignition/elapsed'
     static fireHead    = 'heading/from north'
 
-    static vectorFromHead    = 'vector/degrees/from fire head'
-    static vectorFromNorth   = 'vector/degrees/from north'
-    static vectorFromUpslope = 'vector/degrees/from up-slope'
+    static vectorFromHead    = 'vector/degrees from fire head'
+    static vectorFromNorth   = 'vector/degrees from north'
+    static vectorFromUpslope = 'vector/degrees from up-slope'
 
     static axisLwr    = 'axis/length-to-width ratio'
     static axisFRos   = 'axis/f/spread rate'
@@ -180,13 +180,13 @@ export class Paths {
     // SlopeDirectionModule
     static slopeDirMod  = 'SlopeDirectionModule'
     static slopeDirSelf = 'slope/direction/'
-    static slopeUp      = 'up-slope/degrees/from north'
-    static slopeDown    = 'down-slope/degrees/from north'
+    static slopeUp      = 'up-slope/degrees from north'
+    static slopeDown    = 'down-slope/degrees from north'
 
     // SlopeSteepnessModule
     static slopeSteepMod  = 'SlopeSteepnessModule'
     static slopeSteepSelf = 'slope/steepness/'
-    static slopeDegrees   = 'degrees/from horizontal'
+    static slopeDegrees   = 'degrees from horizontal'
     static slopeRatio     = 'ratio/rise-to-reach'
 
     // StandardFuelModelModule
@@ -253,8 +253,8 @@ export class Paths {
     static fireHeadFlame   = 'heading/flame length'
     static fireHeadFli     = 'heading/fireline intensity'
     static fireHeadRos     = 'heading/spread rate'
-    static fireFromNorth   = 'heading/degrees/from north'
-    static fireFromUpslope = 'heading/degrees/from up-slope'
+    static fireFromNorth   = 'heading/degrees from north'
+    static fireFromUpslope = 'heading/degrees from up-slope'
     static fireHpua      = 'heat per unit area'
     static fireLwr       = 'length-to-width ratio'
     static fireMidf      = 'wind/speed/midflame'
@@ -344,10 +344,10 @@ export class Paths {
     // WindDirectionModule
     static wdirMod          = 'WindDirectionModule'
     static wdirSelf         = 'wind/direction/'
-    static wdirHeadFromUp   = 'heading/degrees/from up-slope'
-    static wdirSourceFromUp = 'source/degrees/from up-slope'
-    static wdirHeadFromNo   = 'heading/degrees/from north'
-    static wdirSourceFromNo = 'source/degrees/from north'
+    static wdirHeadFromUp   = 'heading/degrees from up-slope'
+    static wdirSourceFromUp = 'source/degrees from up-slope'
+    static wdirHeadFromNo   = 'heading/degrees from north'
+    static wdirSourceFromNo = 'source/degrees from north'
 
     // WindSpeedModule
     static wspdMod  = 'WindSpeedModule'

@@ -41,7 +41,7 @@ export class Util {
             if (! cfg || cfg==='') {
                 str += `  "any" = "${current.value}"`
             } else {
-                str += `  "${cfg.key}" = "${current.value}"`
+                str += `  "${cfg}" = "${current.value}"`
             }
             str += '\n'
         }

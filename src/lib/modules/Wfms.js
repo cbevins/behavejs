@@ -38,6 +38,9 @@ export class Wfms {
     allInputs() { return this.dag.allInputs() }
     allInputsByKey() { return this.dag.allInputsByKey() }
 
+    getConfigObj(key) { return this.dag.getConfigObj(key) }
+    getConfigValue(key) { return this.dag.getConfigValue(key) }
+
     leafNodes() { return this.dag.leafNodes() }
     leafNodesByKey() { return this.dag.leafNodesByKey() }
 
@@ -50,7 +53,7 @@ export class Wfms {
     selectedByKey() { return this.dag.selectedByKey() }
 
     // Forwarded Dag operations methods
-    configure() { return this.dag.configure() }
+    configure(cfgPairs=[]) { return this.dag.configure(cfgPairs) }
 
     clearSelect() { return this.dag.clearSelect() }
     select(whatever) { return this.dag.select(whatever) }
