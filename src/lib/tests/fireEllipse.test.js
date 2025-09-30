@@ -47,21 +47,21 @@ const backFli = { fm010: 8.2929003879841954, fm124: 52.483394093499705, prec: 12
 const backFlame =  { fm010: 1.1907414731175683, fm124: 2.7824194067294856, prec: 14 }
 const backDist = { fm010: 23.671589425163184, fm124: 61.846823840041452, prec: 13 }
 const backMapDist = { fm010: 23.671589425163184/scale, fm124: 61.846823840041452/scale, prec: 12 }
-const backScorch = { fm010: 0.52018662032054752, fm124: 4.3824121071933915, prec: 12 }
+const backScorch = { fm010: 0.52018662032054752, fm124: 4.3824121071933915, prec: 13 }
 
 const flankRos = { fm010: 2.7053889424963877, fm124: 7.0684061120619655, prec: 11 }
 const flankFli = { fm010: 56.866957074505869, fm124: 359.89619544220318, prec:9 }
 const flankFlame = { fm010: 2.8870088099013929, fm124: 6.7461198324614715, prec: 9 }
 const flankDist = { fm010: 162.32333654978328, fm124: 424.10436672371793, prec: 11 }
 const flankMapDist = { fm010: 162.32333654978328/scale, fm124: 424.10436672371793/scale, prec: 12 }
-const flankScorch = { fm010: 4.8023644521509334, fm124: 36.440372402518008, prec: 12 }
+const flankScorch = { fm010: 4.8023644521509334, fm124: 36.440372402518008, prec: 10 }
 
 const betaRos = { fm010: 2.6256648650882601, fm124: 6.8494531181657319, prec: 11 }
 const betaFli = { fm010: 22.809320529051977, fm124: 144.22374220988746, prec: 10 }
 const betaFlame = { fm010: 1.896462213587117, fm124: 4.4296501098298906, prec: 10 }
 const betaDist = { fm010: et * 2.6256648650882601, fm124: et * 6.8494531181657319, prec: 11 }
 const betaMapDist = { fm010: (et * 2.6256648650882601)/scale, fm124: (et * 6.8494531181657319)/scale, prec: 10 }
-const betaScorch = { fm010: 1.6814949065754006, fm124: 13.669401441568459, prec: 12 } // to do
+const betaScorch = { fm010: 1.6814949065754006, fm124: 13.669401441568459, prec: 10 } // to do
 const betaTheta = { fm010: 138.95912883244358, fm124: 138.998426267168, prec: 12 }  // to do
 const betaPsi = { fm010: 108.16241745554537, fm124: 108.185867694348, prec: 12 } // to do
 
@@ -70,14 +70,14 @@ const beta5Fli = { fm010: beta5fli010, fm124: beta5fli124, prec: 9 }
 const beta5Flame = { fm010: beta5fl010, fm124: beta5fl124, prec: 10 }
 const beta5Dist = { fm010: et * 2.6256648650882601, fm124: et * 6.8494531181657319, prec: 11 }
 const beta5MapDist = { fm010: (et * 2.6256648650882601)/scale, fm124: (et * 6.8494531181657319)/scale, prec: 10 }
-const beta5Scorch = { fm010: beta5scht010, fm124: beta5scht124, prec: 12 }
+const beta5Scorch = { fm010: beta5scht010, fm124: beta5scht124, prec: 10 }
 
 const psiRos = { fm010: 13.8977795836636, fm124: 36.2892704981354, prec: 11 }
 const psiFli = { fm010: 292.129690908633, fm124: 1847.71081196849, prec: 11 }
 const psiFlame = { fm010: 6.12882661647451, fm124: 14.3173998471815, prec: 11 }
 const psiDist = { fm010: et * 13.8977795836636, fm124: et * 36.2892704981354, prec: 11 }
 const psiMapDist = { fm010: (et * 13.8977795836636)/scale, fm124: (et * 36.2892704981354)/scale, prec: 10 }
-const psiScorch = { fm010: 29.307635864149884, fm124: 169.80644998818718, prec: 12 }
+const psiScorch = { fm010: 29.307635864149884, fm124: 169.80644998818718, prec: 11 }
 
 const vectorNorth = { fm010: 45, fm124: 45, prec: 15 }
 const vectorUpslope = { fm010: 45, fm124: 45, prec: 15 }
@@ -191,7 +191,15 @@ describe('Test 1: Fire Ellipse agrees with BehavePlus V6 tests', () => {
         expect(beta5.mapdist.value).sig(beta5MapDist.fm010, beta5MapDist.prec)
         expect(psi.mapdist.value).sig(psiMapDist.fm010, psiMapDist.prec)
     })
-    it('1.5 - ellipse should link to surface for its inputs', () => {
+    it('1.9 - scorch height for head, back, flank, beta, beta5, and psi', () => {
+        expect(head.scorch.value).sig(headScorch.fm010, headScorch.prec)
+        expect(back.scorch.value).sig(backScorch.fm010, backScorch.prec)
+        expect(flank.scorch.value).sig(flankScorch.fm010, flankScorch.prec)
+        expect(beta.scorch.value).sig(betaScorch.fm010, betaScorch.prec)
+        expect(beta5.scorch.value).sig(beta5Scorch.fm010, beta5Scorch.prec)
+        expect(psi.scorch.value).sig(psiScorch.fm010, psiScorch.prec)
+    })
+    it('1.10 - ellipse should link to surface for its inputs', () => {
         expect(vector.north.value).sig(vectorNorth.fm010, vectorNorth.prec)
         expect(vector.upslope.value).sig(vectorUpslope.fm010, vectorUpslope.prec)
         expect(vector.head.value).sig(vectorHead.fm010, vectorHead.prec)
