@@ -13,6 +13,7 @@ import {WfmsConfig} from './WfmsConfig.js'
 
 import {CanopyModule} from './CanopyModule.js'
 import {ConstantsModule} from './ConstantsModule.js'
+import {CrownFuelModule} from './CrownFuelModule.js'
 import {DeadFuelMoistureModule} from './DeadFuelMoistureModule.js'
 import {FireEllipseModule} from './FireEllipseModule.js'
 import {LiveFuelCuringModule} from './LiveFuelCuringModule.js'
@@ -154,6 +155,10 @@ export class WfmsModule {
         // FireEllipseModule
         const ellipseMod = this._add(new FireEllipseModule(none, cfg.ellipse.link, cfg.ellipse.vector,
             wtgMod.path, canopyMod.path, upslopeDirNode, mapScaleNode))
+
+        // CrownFuelModule
+        const crownFuelMod = this._add(new CrownFuelModule('crown/canopy/fuel/',
+            mois1hNode, mois10hNode, mois100hNode, moisStemNode))
     }
     _add(mod) {
         this.nodeDefs.push(...mod.nodes)

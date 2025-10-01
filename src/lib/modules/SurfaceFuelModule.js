@@ -30,6 +30,18 @@ export class SurfaceFuelModule extends ModuleBase {
     */
     constructor(prefix, cfg, stdPath='', chPath='', pgPath='', waPath='') {
         super(prefix, P.fuelSelf, P.fuelMod, cfg)
+        this.cNodes = []    // configurable nodes
+        this.dNodes = []    // derived nodes
+        this._derivedNodes()
+        if (!cfg) return
+        // If no cfg, this is the parent of a derived class (CrownFuelModule)
+        // with its own _configurableNodes() implementation
+        this._configurableNodes(cfg, stdPath, chPath, pgPath, waPath)
+        this.nodes = [...this.cNodes, ...this.dNodes]
+    }
+
+    // Creates nodes that depend upon cfg, stdPath, chPath, pgPath, waPath
+    _configurableNodes(cfg, stdPath, chPath, pgPath, waPath) {
         const bed  = this.path
         const dead = bed + P.fuelDead
         const live = bed + P.fuelLive
@@ -43,11 +55,21 @@ export class SurfaceFuelModule extends ModuleBase {
         const l3 = live + P.fuelEl3
         const l4 = live + P.fuelEl4
         const l5 = live + P.fuelEl5
-        
+
+        //----------------------------------------------------------------------
+        // Fuel bed nodes
+        //----------------------------------------------------------------------
+        this.cNodes.push(
+            [bed+P.fuelDepth,  0, U.fuelLeng, cfg, [
+                [cfg.standard, Dag.assign, [stdPath + P.stdDepth]]]],
+            [dead+P.fuelMext, 0, U.fuelMois, cfg, [
+                [cfg.standard, Dag.assign, [stdPath + P.stdDeadMext]]]],
+        )
+
         //----------------------------------------------------------------------
         // Fuel bed particle input nodes (9)
         //----------------------------------------------------------------------
-        this.nodes = [
+        this.cNodes.push(
             [d1+P.fuelLife, '', U.fuelLife, null, [
                 ['', Dag.assign, [P.fuelDeadCat]]
             ]],
@@ -336,7 +358,24 @@ export class SurfaceFuelModule extends ModuleBase {
             [l5+P.fuelSeff, 0, U.fuelFrac, cfg, [
                 [cfg.standard, Dag.assign, [stdPath + P.stdSeff]],
             ]],
-        ]
+        )
+    }
+
+    // These do not require any cfg or paths
+    _derivedNodes() {
+        const bed  = this.path
+        const dead = bed + P.fuelDead
+        const live = bed + P.fuelLive
+        const d1 = dead + P.fuelEl1
+        const d2 = dead + P.fuelEl2
+        const d3 = dead + P.fuelEl3
+        const d4 = dead + P.fuelEl4
+        const d5 = dead + P.fuelEl5
+        const l1 = live + P.fuelEl1
+        const l2 = live + P.fuelEl2
+        const l3 = live + P.fuelEl3
+        const l4 = live + P.fuelEl4
+        const l5 = live + P.fuelEl5
 
         //----------------------------------------------------------------------
         // Fuel life category and particle *derived* nodes
@@ -352,7 +391,7 @@ export class SurfaceFuelModule extends ModuleBase {
             //------------------------------------------------------------------
             for(let p of [p1, p2, p3, p4, p5]) {
                 // Each particle has 11 derived characteristics
-                this.nodes.push(
+                this.dNodes.push(
                     [p+P.fuelEhn, 0, U.fraction, null, [
                         ['', Fuel.effectiveHeatingNumber, [p+P.fuelSavr]]]],
                     [p+P.fuelEfol, 0, U.fuelLoad, null, [
@@ -384,7 +423,7 @@ export class SurfaceFuelModule extends ModuleBase {
             //------------------------------------------------------------------
             // Fuel life category *derived* nodes
             //------------------------------------------------------------------
-            this.nodes.push(
+            this.dNodes.push(
                 [lcat+P.fuelScar, 0, U.fuelWtg, null, [
                     ['', Bed.sizeClassWeightingFactorArray, [
                         p1+P.fuelSa, p1+P.fuelSize,
@@ -439,30 +478,25 @@ export class SurfaceFuelModule extends ModuleBase {
             )
         }
         // The following nodes only exist for the surface fire 'dead' category
-        this.nodes.push(
-            [dead+P.fuelMext, 0, U.fuelMois, cfg, [
-                [cfg.standard, Dag.assign, [stdPath + P.stdDeadMext]]]],
+        this.dNodes.push(
             [dead+P.fuelEfwl, 0, U.fuelLoad, null, [
                 ['', Calc.sum, [d1+P.fuelEfwl, d2+P.fuelEfwl, d3+P.fuelEfwl, d4+P.fuelEfwl, d5+P.fuelEfwl]]]],
             [dead+P.fuelEfmc, 0, U.fuelMois, null, [
                 ['', Calc.divide, [dead+P.fuelEfwl, dead+P.fuelEfol]]]],
         )
         // The following nodes only exist for the surface fire 'live' category
-        this.nodes.push(
+        this.dNodes.push(
             [live+P.fuelMextf, 0, U.factor, null, [
                 ['', Bed.liveFuelExtinctionMoistureContentFactor, [dead+P.fuelEfol, live+P.fuelEfol]]]],
             [live+P.fuelMext,  0, U.fuelMois, null, [
                 ['', Bed.liveFuelExtinctionMoistureContent, [
                     live+P.fuelMextf, dead+P.fuelEfmc, dead+P.fuelMext]]]]
         )
-        // The crown canopy fuel model mext is 0.25, wrsf is 0.4, slope is 0
 
         //----------------------------------------------------------------------
         // Fuel bed *derived*  and *input* nodes
         //----------------------------------------------------------------------
-        this.nodes.push(
-            [bed+P.fuelDepth,  0, U.fuelLeng, cfg, [
-                [cfg.standard, Dag.assign, [stdPath + P.stdDepth]]]],
+        this.dNodes.push(
             [bed+P.fuelBulk,   0, U.fuelBulk, null, [
                 ['', Bed.bulkDensity, [bed+P.fuelLoad, bed+P.fuelDepth]]]],
             [bed+P.fuelLoad,   0, U.fuelLoad, null, [

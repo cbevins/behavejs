@@ -82,6 +82,17 @@ export class Dag {
     allInputs() { return [...this.allInputsSet] }
     allInputsByKey() { return this.allInputs().sort((a, b) => a.key.localeCompare(b.key))}
 
+    allPossibleInputs() {
+        const results = new Set()
+        for(let node of this.nodeMap.values()) {
+            for(let opt of node.options) {
+                if (opt.updater === Dag.input) results.add(node)
+            }
+        }
+        return [...results]
+    }
+    allPossibleInputsByKey() { return this.allPossibleInputs().sort((a, b) => a.key.localeCompare(b.key))}
+
     leafNodes() {
         const active = []
         for(let node of this.nodeMap.values())
@@ -171,6 +182,9 @@ export class Dag {
                 const suppliers = options[i].suppliers
                 for(let j=0; j<suppliers.length; j++) {
                     const supkey = suppliers[j]
+                    if(!supkey) 
+                        this._log(Dag.fatal, method,
+                            `Node "${key}" option ${i} supplier ${j} is undefined: "${supkey}"`)
                     if(supkey.includes('undefined'))
                         this._log(Dag.fatal, method,
                             `Node "${key}" option ${i} supplier ${j} has an *undefined* key segment: "${supkey}"`)
@@ -238,7 +252,7 @@ export class Dag {
         const config = this.configMap.get(key)
         return (config) ? config.value : null
     }
-
+    
     setConfig(cfgPairs=[]) {
         // Argument must be an array, even if its empty
         if (!Array.isArray(cfgPairs))

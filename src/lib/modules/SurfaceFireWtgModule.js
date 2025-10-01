@@ -13,6 +13,25 @@ import { SurfaceFireEquations as Fire } from '../index.js'
 
 export class SurfaceFireWtgModule extends ModuleBase {
     /**
+     * The sole purpose of the SurfaceFireWtgModule is to provide the following
+     * parameters to the FireEllipseModule:
+     * - direction of maximum fire spread from upslope,
+     * - fire spread rate in the direction of maximum spread,
+     * - fireline intensity (or flame length) at the fire head, and
+     * - fire length-to-width ratio (or effective wind speed).
+     * 
+     * This belies the fact that the majority of the modules and nodes of the WFMS
+     * are devoted to this one task, and are not required by any other modules:
+     * - SurfaceFireModule for both primary and secondary surface fuels,
+     * - SurfaceFuelModule for both primary and secondary surface fuels,
+     * - LiveFuelCuringModule,
+     * - StandardFuelModelModule,for both primary and secondary surface fuels,
+     * - ChaparralFuelModelModule for both primary and secondary surface fuels,
+     * - PalmettoGallberryFuelModelModulefor both primary and secondary surface fuels,
+     * - WesternAspenFuelModelModule for both primary and secondary surface fuels,
+     * - MidflameWindSpeedModule for both primary and secondary surface fuels,
+     * - WindSpeedReductionModule for both primary and secondary surface fuels,
+     * 
      * @param {string} prefix Prefix for this module's fully qualified node names
      * (something like 'weather/' or '') to preface this module's 'wind/direction/<node>' keys.
      * @param {Config} cfg Refernce to a SurfaceFireWtgConfig

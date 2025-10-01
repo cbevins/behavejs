@@ -37,6 +37,9 @@ export class Wfms {
 
     allInputs() { return this.dag.allInputs() }
     allInputsByKey() { return this.dag.allInputsByKey() }
+    
+    allPossibleInputs() { return this.dag.allPossibleInputs() }
+    allPossibleInputsByKey() { return this.dag.allPossibleInputsByKey() }
 
     getConfigObj(key) { return this.dag.getConfigObj(key) }
     getConfigValue(key) { return this.dag.getConfigValue(key) }

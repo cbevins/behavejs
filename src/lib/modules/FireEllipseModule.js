@@ -16,7 +16,20 @@ import { SurfaceFireEquations as SurfaceFire } from '../index.js'
 
 export class FireEllipseModule extends ModuleBase {
     /**
-     * Creates the fuel moisture module.
+     * The FireEllipseModule is the central module around which the WFMS is built.
+     * It requires the following nodes:
+     *  - direction of maximum fire spread from upslope,
+     *  - fire spread rate in the direction of maximum spread,
+     *  - fireline intensity (or flame length) at the fire head, and
+     *  - fire length-to-width ratio (or effective wind speed).
+     * which may be input directly via Dag.set(), or calculated and made available
+     * by the SurfaceFireWtgModule.
+     * 
+     * Other modules, including the CrownFireModule and SpottingDistanceModule,
+     * also use these same four nodes as input.  SO if the FireEllipseModule is
+     * linked to the SurfaceFireWtgModule, then so are the CrownFireModule
+     * and SpottingDistanceModule.
+     * 
      * @param {string} prefix Prefix for this module instance's fully qualified node names
      * something like 'fire/' or '' to prefix the 'ellipse/<node>' keys.
      * @param {Config} cfg Config reference to FireEllipseConfig.js

@@ -9,7 +9,6 @@ import { SurfaceFireEquations as Fire } from '../index.js'
 
 export class SurfaceFireModule extends ModuleBase {
     /**
-     * 
      * @param {string} prefix Prefix for this module's fully qualified node names
      * (something like `primary/surface/`) to append this module's 'fire/<node>' node keys
      * MUST  BE THE SAME 'path' THAT WAS PASSED TO SurfaceFuelModel()

@@ -10,6 +10,7 @@ export {Units} from './modules/Units.js'
 // Equation and data libraries
 export {Calc} from './equations/Calc.js'
 export {CanopyEquations} from './equations/CanopyEquations.js'
+export {CrownFireEquations} from './equations/CrownFireEquations.js'
 export {CompassEquations} from './equations/CompassEquations.js'
 export {FireEllipseEquations} from './equations/FireEllipseEquations.js'
 export {FuelBedEquations} from './equations/FuelBedEquations.js'
