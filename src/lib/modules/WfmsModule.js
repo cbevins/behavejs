@@ -42,88 +42,72 @@ export class WfmsModule {
         const terrain   = 'terrain/'
         const weather   = 'weather/'
 
-        // Get each Module's node defs and store names of shared nodes
-
-        // CanopyModule produces 2 nodes referenced by the WindSpeedReductionModule
-        // and ??? nodes by the CanopyFireModule
+        // CanopyModule
         const canopyMod = this._add(new CanopyModule(none, cfg.canopy.height))
 
         // ConstantsModule provides a 'zero' and a 'one' and some fuel types
         // to which other nodes can bind
         const constantsMod = this._add(new ConstantsModule(none, cfg))
 
-        // DeadFuelMoistureModel produces 3 nodes referenced used by the StandardFuelModelModule
+        // DeadFuelMoistureModel
         const deadmoisMod = this._add(new DeadFuelMoistureModule(weather, cfg.moisture.dead))
 
-        // LiveFuelMoistureModel produces 2 node referenced by the StandardFuelModelModule
-        // and 1 of them is also referenced by the LiveFuelCuringModule
+        // LiveFuelMoistureModel
         const livemoisMod = this._add(new LiveFuelMoistureModule(weather, cfg.moisture.live))
 
         // MapModule has no configs
         const mapMod = this._add(new MapModule(none))
 
-        // SlopeDirectionModule produces 1 node referenced by the SurfaceFireModule
+        // SlopeDirectionModule
         const slpdirMod = this._add(new SlopeDirectionModule(terrain, cfg.slope.direction))
         
-        // SlopeSteepnessModule produces 1 node referenced by the SurfaceFireModule
+        // SlopeSteepnessModule
         const slpsteepMod = this._add(new SlopeSteepnessModule(terrain, cfg.slope.steepness))
 
-        // WindSpeedModule produces 1 node referenced by the MidflameWindSpeedModule
+        // WindSpeedModule
         const windspdMod = this._add(new WindSpeedModule(weather, cfg.wind.speed))
 
-        // WindDirectionModule produces 1 node referenced by the SurfaceFireModule
-        // and references 1 node from the SlopeDirectionModule
+        // WindDirectionModule
         const winddirMod = this._add(new WindDirectionModule(weather, cfg.wind.direction,
             slpdirMod.path))
 
-        // LiveFuelCuringModule produces 1 node referenced by the StandardFuelModelModule
-        // and references 1 node produced by the LiveFuelMoistureModule
+        // LiveFuelCuringModule
         const curingMod = this._add(new LiveFuelCuringModule(weather, cfg.surface.curing,
             livemoisMod.path))
         
         // NOTE: If a site has primary and secondary fuels,
-        // it may have 2 different midflame windspeeds (due to bed depth differences),
-        // but both fuel share the same terrain, weather, moisture, and curing parms.
-        
-        // StandardFuelModelModule produces lots of nodes referenced by the SurfaceFuelModule,
-        // and references 3 nodes from the DeadFuelMoistureModule, 2 nodes from the
-        // LiveFuelMoistureModule, and 1 node from the LiveFuelCuringModule.
-        // Need separate primary and secondary instances as they may use different fuel models
+        // they may have different fuel models, midflame windspeeds, and wind speed
+        // // redction factors (due to bed depth differences),
+        // but both fuels share the same terrain, weather, moisture, and curing parms.
+
+        // Primary fuel
         const stdMod1 = this._add(new StandardFuelModelModule('primary/model/', cfg.surface.primary.standard,
             deadmoisMod.path, livemoisMod.path, curingMod.path))
 
-        const stdMod2 = this._add(new StandardFuelModelModule('secondary/model/', cfg.surface.secondary.standard,
-            deadmoisMod.path, livemoisMod.path, curingMod.path))
-
-        // SurfaceFuelModule produces
-        // Need separate primary and secondary instances as they may use different fuel model domains
         const bedMod1 = this._add(new SurfaceFuelModule(primary, cfg.surface.primary.fuel,
             stdMod1.path, none, none, none))
+
+        const wsrfMod1 = this._add(new WindSpeedReductionModule(primary, cfg.surface.wsrf,
+            canopyMod.path, bedMod1.path))
+
+        const midflameMod1 = this._add(new MidflameWindSpeedModule(primary, cfg.surface.midflame,
+            windspdMod.path, wsrfMod1.path))
+
+        const fireMod1 = this._add(new SurfaceFireModule(primary, cfg.surface.windLimit,
+            bedMod1.path, slpsteepMod.path, slpdirMod.path, midflameMod1.path, winddirMod.path))
+
+        // Secondary fuel
+        const stdMod2 = this._add(new StandardFuelModelModule('secondary/model/', cfg.surface.secondary.standard,
+            deadmoisMod.path, livemoisMod.path, curingMod.path))
 
         const bedMod2 = this._add(new SurfaceFuelModule(secondary, cfg.surface.secondary.fuel,
             stdMod2.path, none, none, none))
 
-        // WindSpeedReductionModule produces 1 node referenced by the MidflameWindSpeedModule
-        // and references 2 nodes from the CanopyModule and 1 node from the SurfaceFuelModule.
-        // Need separate primary and secondary instances since this module requires fuel bed depth
-        const wsrfMod1 = this._add(new WindSpeedReductionModule(primary, cfg.surface.wsrf,
-            canopyMod.path, bedMod1.path))
-
         const wsrfMod2 = this._add(new WindSpeedReductionModule(secondary, cfg.surface.wsrf,
             canopyMod.path, bedMod2.path))
         
-        // MidflameWindSpeedModule produces 1 node referenced by the SurfaceFireModule
-        // and references 1 node from the WindSpeedModule and 1 node from the WindSpeedReductionModule
-        // Need separate primary and secondary instances since this module requires fuel bed wsrf
-        const midflameMod1 = this._add(new MidflameWindSpeedModule(primary, cfg.surface.midflame,
-            windspdMod.path, wsrfMod1.path))
-            
         const midflameMod2 = this._add(new MidflameWindSpeedModule(secondary, cfg.surface.midflame,
             windspdMod.path, wsrfMod2.path))
-                
-        // SurfaceFireModule
-        const fireMod1 = this._add(new SurfaceFireModule(primary, cfg.surface.windLimit,
-            bedMod1.path, slpsteepMod.path, slpdirMod.path, midflameMod1.path, winddirMod.path))
 
         const fireMod2 = this._add(new SurfaceFireModule(secondary, cfg.surface.windLimit,
             bedMod2.path, slpsteepMod.path, slpdirMod.path, midflameMod2.path, winddirMod.path))
