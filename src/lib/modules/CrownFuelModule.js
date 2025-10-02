@@ -1,34 +1,29 @@
 import { Dag } from '../index.js'
-import { ModuleBase } from './ModuleBase.js'
 import { Paths as P} from './Paths.js'
 import { Units as U} from './Units.js'
-import { SurfaceFuelModule } from './SurfaceFuelModule.js'
+import { SurfaceFuelBaseModule } from './SurfaceFuelBaseModule.js'
 
-import { Calc, FuelElementEquations as Fuel } from '../index.js'
-import { FuelBedEquations as Bed } from '../index.js'
-import { SurfaceFireEquations as Fire } from '../index.js'
-
-export class CrownFuelModule extends SurfaceFuelModule {
+export class CrownFuelModule extends SurfaceFuelBaseModule {
     /**
      * Specializes the SurfaceFuelModule for crown fire modeling.
      * 
      * @param {string} prefix Prefix for this module's fully qualified node names
-     * (something like `primary/surface/`) to append this module's 'bed/<node>' node keys
-     * @param {string} mois1Node Fully qualified path to the 1-h fuel moisture node
-     * @param {string} mois10Node Fully qualified path to the 10-h fuel moisture node
-     * @param {string} mois100Node Fully qualified path to the 100-h fuel moisture node
-     * @param {string} moisStemNode Fully qualified path to the live stem fuel moisture node
+     * (something like 'crown/') to append this module's 'bed/<node>' node keys
+     * @param {string} moisDeadPath Path to the DeadMoistureModule
+     * @param {string} moisLivePath Path to the LiveMoistureModule
     */
-    constructor(prefix, mois1Node, mois10Node, mois100Node, moisStemNode) {
-        // Pass SurfaceFuelModule a null config so it lets us do our own particle nodes
-        super(prefix+P.crownFuel, null)
-        this.self = P.crownFuelSelf
-        this.module = P.crownFuelMod
-        this._configurableNodes(mois1Node, mois10Node, mois100Node, moisStemNode)
-        this.nodes = [...this.cNodes, ...this.dNodes]
+    constructor(prefix, moisDeadPath, moisLivePath) {
+        super(prefix, P.fuelSelf, P.fuelMod, null)
+        const particleNodes = this._particleNodes(moisDeadPath, moisLivePath)
+        this.nodes = [...this._bedNodes(), ...particleNodes]
     }
 
-    _configurableNodes(mois1Node, mois10Node, mois100Node, moisStemNode) {
+    _particleNodes(moisDeadPath, moisLivePath) {
+        const mois1Node = moisDeadPath + P.moisDead1
+        const mois10Node = moisDeadPath + P.moisDead10
+        const mois100Node = moisDeadPath + P.moisDead100
+        const moisStemNode = moisLivePath + P.moisLiveStem
+
         const bed  = this.path
         const dead = bed + P.fuelDead
         const live = bed + P.fuelLive
@@ -47,7 +42,9 @@ export class CrownFuelModule extends SurfaceFuelModule {
         //----------------------------------------------------------------------
         // Fuel bed nodes
         //----------------------------------------------------------------------
-        this.cNodes.push(
+        const nodes = []
+
+        nodes.push(
             [bed+P.fuelDepth,  1, U.fuelLeng, null, [['', Dag.constant, []]]],
             [dead+P.fuelMext, 0.25, U.fuelMois, null, [['', Dag.constant, []]]],
         )
@@ -55,7 +52,7 @@ export class CrownFuelModule extends SurfaceFuelModule {
         //----------------------------------------------------------------------
         // Fuel bed particle input nodes (9)
         //----------------------------------------------------------------------
-        this.cNodes.push(
+        nodes.push(
             // Dead particle 1
             [d1+P.fuelType, P.stdDead1Type, U.fuelType, null, [['', Dag.constant, []]]],
             [d1+P.fuelMois, 0, U.fuelMois, null, [['', Dag.assign, [mois1Node]]]],
@@ -82,18 +79,18 @@ export class CrownFuelModule extends SurfaceFuelModule {
         )
 
         for(let p of [d1, d2, d3, d4, d5]) {
-            this.cNodes.push(       
+            nodes.push(       
                 [p+P.fuelLife, P.fuelDeadCat, U.fuelLife, null, [['', Dag.constant, []]]])
         }
 
         for(let p of [l1, l2, l3, l4, l5]) {
-            this.cNodes.push(       
+            nodes.push(       
                 [p+P.fuelLife, P.fuelLiveCat, U.fuelLife, null, [['', Dag.constant, []]]])
         }
 
         // Unused particles
         for(let p of [d4, d5, l1, l3, l4, l5]) {
-            this.cNodes.push(       
+            nodes.push(       
                 [p+P.fuelType, P.fuelUnused, U.fuelType, null, [['', Dag.constant, []]]],
                 [p+P.fuelMois, 0, U.fuelMois, null, [['', Dag.constant, []]]],
                 [p+P.fuelLoad, 0, U.fuelLoad, null, [['', Dag.constant, []]]],
@@ -102,12 +99,13 @@ export class CrownFuelModule extends SurfaceFuelModule {
         }
 
         for(let p of [d1, d2, d3, d4, d5, l1, l2, l3, l4, l5]) {
-            this.cNodes.push(       
+            nodes.push(       
                 [p+P.fuelHeat, 8000,   U.fuelHeat, null, [['', Dag.constant, []]]],
                 [p+P.fuelDens, 32,     U.fuelDens, null, [['', Dag.constant, []]]],
                 [p+P.fuelStot, 0.0555, U.fuelFrac, null, [['', Dag.constant, []]]],
                 [p+P.fuelSeff, 0.01,   U.fuelFrac, null, [['', Dag.constant, []]]],
             )
         }
+        return nodes
     }
 }

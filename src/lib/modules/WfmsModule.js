@@ -121,8 +121,8 @@ export class WfmsModule {
             wtgMod.path, canopyMod.path, slpdirMod.path, mapMod.path))
 
         // CrownFuelModule
-        // const crownFuelMod = this._add(new CrownFuelModule(none,
-        //     moisdeadMod.path, moisliveMod.path, curingMod.path))
+        const crownFuelMod = this._add(new CrownFuelModule(none,
+            deadmoisMod.path, livemoisMod.path))
     }
     _add(mod) {
         this.nodeDefs.push(...mod.nodes)

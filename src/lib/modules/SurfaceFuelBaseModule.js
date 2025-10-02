@@ -18,7 +18,8 @@ export class SurfaceFuelBaseModule extends ModuleBase {
      * and shape characteristcis can be determined.
      * 
      * @param {string} prefix Prefix for this module's fully qualified node names
-     * (something like `primary/surface/`) to append this module's 'bed/<node>' node keys
+     * (something like `primary/`, 'secondary', or 'crown/')
+     * to append this module's 'bed/<node>' node keys
      * @param {Config} cfg Config reference
     */
     constructor(prefix, self='', module='', cfg) {
