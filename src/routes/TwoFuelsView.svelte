@@ -9,6 +9,6 @@
     {@render wfmsConfigTable('Active Configurations', wfms.activeConfigsByKey())}
     {@render wfmsNodeTable('Selected Nodes', wfms.selectedByKey())}
     {@render wfmsNodeTable('Active Inputs Nodes', wfms.activeInputsByKey())}
-    {@render wfmsNodeTable('Active Nodes', wfms.activeNodesByKey())}
+    <!-- {@render wfmsNodeTable('Active Nodes', wfms.activeNodesByKey())} -->
     {@render wfmsNodeTable('All Nodes', wfms.nodesByKey())}
 </div>

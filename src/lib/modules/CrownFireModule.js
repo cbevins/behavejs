@@ -1,10 +1,9 @@
 /**
- * @file Crown Fire genes
- * @copyright 2021 Systems for Environmental Management
+ * @file Crown Fire Module
+ * @copyright 2025 Systems for Environmental Management
  * @author Collin D. Bevins, <cbevins@montana.com>
  * @license MIT
 */
-
 import { Dag } from '../index.js'
 import { ModuleBase } from './ModuleBase.js'
 import { Paths as P } from './Paths.js'
@@ -14,585 +13,319 @@ import { CrownFireEquations as CrownFire } from '../index.js'
 import { FireEllipseEquations as FireEllipse } from '../index.js'
 import { SurfaceFireEquations as SurfaceFire } from '../index.js'
 
-// import * as Particle from './surface.fuel.bed.particle.js'
+export class CrownFireModule extends ModuleBase {
+    constructor(prefix, cfg) {
+        super(prefix, P.crownFireSelf, P.crownFireMod, cfg)
 
-const prefix = 'crown.canopy.fuel'
+        this.nodes = [
+            // Surface fireline intensity is used by S&R for 'crown.fire.initiation.transitionRatio'
+            ['crown.fire.surface.firelineIntensity', 0, U.fireFli, cfg, [
+                [cfg.surface, Dag.assign, ['surface.weighted.fire.firelineIntensity']],
+                [cfg.any, Dag.assign, [ellPath+P.headFli]]]],
 
-export const canopyParticles = [
-    [`${prefix}.bed.dead.particle.class1.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.dead.particle.class1.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.dead.particle.class1.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `Dead 1-h time-lag (0 to 0.25 inch diameter) branch wood`]
-    // ]]],
-    [`${prefix}.bed.dead.particle.class1.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0.138]]]
-    ],
-    [`${prefix}.bed.dead.particle.class1.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.assign, 'site.moisture.dead.tl1h']]]
-    ],
-    [`${prefix}.bed.dead.particle.class1.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 2000]]]
-    ],
-    [`${prefix}.bed.dead.particle.class1.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.dead.particle.class1.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.dead.particle.class1`
-    [`${prefix}.bed.dead.particle.class2.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.dead.particle.class2.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.dead.particle.class2.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `Dead 10-h time-lag (0.25 to 1 inch diameter) branch wood`]
-    // ]]],
-    [`${prefix}.bed.dead.particle.class2.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0.092]]]
-    ],
-    [`${prefix}.bed.dead.particle.class2.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.assign, 'site.moisture.dead.tl10h']]]
-    ],
-    [`${prefix}.bed.dead.particle.class2.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 109]]]
-    ],
-    [`${prefix}.bed.dead.particle.class2.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.dead.particle.class2.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.dead.particle.class2`
-    [`${prefix}.bed.dead.particle.class3.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.dead.particle.class3.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.dead.particle.class3.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `Dead 100-h time-lag (1 to 3 inch diameter) branch wood`]
-    // ]]],
-    [`${prefix}.bed.dead.particle.class3.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0.23]]]
-    ],
-    [`${prefix}.bed.dead.particle.class3.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.assign, 'site.moisture.dead.tl100h']]]
-    ],
-    [`${prefix}.bed.dead.particle.class3.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 30]]]
-    ],
-    [`${prefix}.bed.dead.particle.class3.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.dead.particle.class3.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.dead.particle.class3`
-    [`${prefix}.bed.dead.particle.class4.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.dead.particle.class4.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.dead.particle.class4.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `Dead herb`]
-    // ]]],
-    [`${prefix}.bed.dead.particle.class4.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0]]]
-    ],
-    [`${prefix}.bed.dead.particle.class4.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.assign, 'site.moisture.dead.tl1h']]]
-    ],
-    [`${prefix}.bed.dead.particle.class4.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1500]]]
-    ],
-    [`${prefix}.bed.dead.particle.class4.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.dead.particle.class4.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.dead.particle.class4`
-    [`${prefix}.bed.dead.particle.class5.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.dead.particle.class5.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.dead.particle.class5.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `unused`],
-    // ]]],
-    [`${prefix}.bed.dead.particle.class5.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0]]]
-    ],
-    [`${prefix}.bed.dead.particle.class5.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.constant, 5]]]
-    ],
-    [`${prefix}.bed.dead.particle.class5.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1]]]
-    ],
-    [`${prefix}.bed.dead.particle.class5.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.dead.particle.class5.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.dead.particle.class5`
-    // end `${prefix}.bed.dead.particle`
-    [`${prefix}.bed.live.particle.class1.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.live.particle.class1.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.live.particle.class1.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `Live herb`]
-    // ]]],
-    [`${prefix}.bed.live.particle.class1.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0]]]
-    ],
-    [`${prefix}.bed.live.particle.class1.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.assign, 'site.moisture.live.herb']]]
-    ],
-    [`${prefix}.bed.live.particle.class1.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1500]]]
-    ],
-    [`${prefix}.bed.live.particle.class1.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.live.particle.class1.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.live.particle.class1`
-    [`${prefix}.bed.live.particle.class2.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.live.particle.class2.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.live.particle.class2.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `Live stem wood`]
-    // ]]],
-    [`${prefix}.bed.live.particle.class2.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0.092]]]
-    ],
-    [`${prefix}.bed.live.particle.class2.moistureContent`,
-        [
-        ['FuelMoistureContent'],
-        [['finally', Dag.assign, 'site.moisture.live.stem']]
+            // Surface fire HPUA is used by:
+            //  - Rothermel for 'crown.fire.active.heatPerUnitArea'
+            //  - S&R for 'crown.fire.final.firelineIntensity'
+            //  - S&R for 'crown.fire.initiation.spreadRate'
+            ['crown.fire.surface.heatPerUnitArea', 0, U.fireHpua, cfg, [
+                [cfg.surface, Dag.assign, ['surface.weighted.fire.heatPerUnitArea']],
+                [cfg.any, Dag.assign, [ellPath+P.fireHpua]]]],
+
+            //------------------------------------------------------------------
+            // Rothermel crown fire assumes a fully 'active' crown fire
+            // Inputs are:
+            //  - surface fire heat per unit area
+            //  - crown fire active spread rate, determined from FM10, 0.4*wind20,
+            //      and fuel moisture content
+            //  - surface fire hpua
+            //------------------------------------------------------------------
+
+            //------------------------------------------------------------------
+            // Rothermel crown fire behavior
+            //------------------------------------------------------------------
+
+            ['crown.fire.active.heatPerUnitArea', 0, U.fireHpua, null, [
+                ['', CrownFire.hpuaActive, [
+                    'site.canopy.fire.heatPerUnitArea',
+                    'crown.fire.surface.heatPerUnitArea']]]],
+            
+            ['crown.fire.active.spreadRate', 0, U.fireRos, null, [
+                ['', CrownFire.rActive, [
+                    'crown.canopy.fuel.fire.spreadRate']]]],
+
+            ['crown.fire.active.firelineIntensity', 0, U.fireFli, null, [
+                ['', CrownFire.fliActive, [
+                    'crown.fire.active.heatPerUnitArea',
+                    'crown.fire.active.spreadRate']]]],
+
+            ['crown.fire.active.flameLength', 0, U.fireFlame, null, [
+                ['', CrownFire.flameLengthThomas, [
+                    'crown.fire.active.firelineIntensity']]]],
+
+            ['crown.fire.active.powerOfTheFire', 0, U.firePower, null, [
+                ['', CrownFire.powerOfTheFire, [
+                    'crown.fire.active.firelineIntensity']]]],
+
+            ['crown.fire.active.powerOfTheWind', 0, U.windPower, null, [
+                ['', CrownFire.powerOfTheWind, [
+                    'site.wind.speed.at20ft',
+                    'crown.fire.active.spreadRate']]]],
+
+            ['crown.fire.active.powerRatio', 0, U.ratio, [
+                ['', Calc.divide, [
+                    'crown.fire.active.powerOfTheFire',
+                    'crown.fire.active.powerOfTheWind']]]],
+
+            ['crown.fire.active.isPlumeDominated', 0, U.yesno, null [
+                ['', CrownFire.isPlumeDominated, [
+                    'crown.fire.active.powerRatio']]]],
+
+            ['crown.fire.active.isWindDriven', 0, U.yesno, null, [
+                ['', CrownFire.isWindDriven, [
+                    'crown.fire.active.powerRatio']]]],
+
+            //------------------------------------------------------------------
+            // Rothermel crown fire size, shape, and growth
+            //------------------------------------------------------------------
+            
+            ['crown.fire.active.lengthToWidthRatio', 1, U.fireLwr, null, [
+                ['', CrownFire.lengthToWidthRatio, [
+                    'site.wind.speed.at20ft']]]],
+
+            ['crown.fire.active.size.area', 0, U.fireArea, null, [
+                ['', CrownFire.area, [
+                    'crown.fire.active.size.length',
+                    'crown.fire.active.lengthToWidthRatio']]]],
+
+            ['crown.fire.active.size.length', 0, U.fireDist, null, [
+                ['', FireEllipse.spreadDistance, [
+                    'crown.fire.active.spreadRate',
+                    'site.fire.time.sinceIgnition']]]],
+
+            ['crown.fire.active.size.perimeter', 0, U.fireDist, null, [
+                ['', CrownFire.perimeter, [
+                    'crown.fire.active.size.length',
+                    'crown.fire.active.lengthToWidthRatio']]]],
+
+            ['crown.fire.active.size.width', 0, U.fireDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.active.size.length',
+                    'crown.fire.active.lengthToWidthRatio']]]],
+
+            ['crown.fire.active.map.area', 0, U.mapArea, null, [
+                ['', FireEllipse.mapArea, [
+                    'crown.fire.active.size.area',
+                    'site.map.scale']]]],
+
+            ['crown.fire.active.map.length', 0, U.mapDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.active.size.length',
+                    'site.map.scale']]]],
+
+            ['crown.fire.active.map.perimeter', 0, U.mapDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.active.size.perimeter',
+                    'site.map.scale']]]],
+
+            [' crown.fire.active.map.width', 0, U.mapDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.active.size.width',
+                    'site.map.scale']]]],
+
+            //------------------------------------------------------------------
+            // Scott & Reinhardt allows partial crown fires based on surface and
+            // canopy fuel & fire characteristics
+            // Inputs:
+            //  - surface fire fireline intensity
+            //  - surface fire heat per unit area
+            //  - Rothermel's 'crown.fire.active.spreadRate'
+            //  - Rothermel's 'crown.fire.active.lengthToWidthRatio' (for size and area only)
+            //  - canopy fuel bulk density
+            //  - canopy foliar moisture content
+            //  - canopy crown base height
+            //  - Rothermel's 'crown.canopy.fuel.fire.reactionIntensity',
+            //  - Rothermel's 'crown.canopy.fuel.bed.heatSink',
+            //  - Rothermel's 'crown.canopy.fuel.fire.slope.phi'
+            //  - Surface fire 'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
+            //  - Surface fire 'surface.primary.fuel.fire.windSpeedAdjustmentFactor',
+            //  - Surface fire 'surface.primary.fuel.fire.wind.factor.b',
+            //  - Surface fire 'surface.primary.fuel.fire.wind.factor.k',
+            //  - Surface fire 'surface.primary.fuel.fire.slope.phi'
+            //------------------------------------------------------------------
+            
+            //------------------------------------------------------------------
+            // initiation and transition variables
+            //------------------------------------------------------------------
+
+            // Intermediate
+            ['crown.fire.initiation.rPrime', 0, U.fireRos, null, [
+                ['', CrownFire.rPrimeActive, [
+                    'site.canopy.fuel.bulkDensity']]]],
+
+            // Intermediate
+            ['crown.fire.initiation.activeRatio', 0, U.ratio, [
+                ['', CrownFire.activeRatio, [
+                    'crown.fire.active.spreadRate',
+                    'crown.fire.initiation.rPrime']]]],
+
+            // Intermediate
+            ['crown.fire.initiation.firelineIntensity', 0, U.fireFli, null, [
+                ['', CrownFire.fliInit, [
+                    'site.canopy.fuel.foliar.moistureContent',
+                    'site.canopy.crown.baseHeight']]]],
+                    
+            // Intermediate
+            ['crown.fire.initiation.transitionRatio', 0, U.ratio, null, [
+                ['', CrownFire.transitionRatio, [
+                    'crown.fire.surface.firelineIntensity',
+                    'crown.fire.initiation.firelineIntensity']]]],
+
+            // Output only
+            ['crown.fire.initiation.canTransition', 0, U.yesno, null, [
+                ['', CrownFire.canTransition, [
+                    'crown.fire.initiation.transitionRatio']]]],
+
+            // Output only
+            ['crown.fire.initiation.flameLength', 0, U.fireFlame, null, [
+                ['', SurfaceFire.flameLength, [
+                    'crown.fire.initiation.firelineIntensity']]]],
+
+            // Intermediate
+            ['crown.fire.initiation.spreadRate',  0, U.fireRos, null, [
+                ['', CrownFire.rInit, [
+                    'crown.fire.initiation.firelineIntensity',
+                    'crown.fire.surface.heatPerUnitArea']]]],
+            
+            // Intermediate
+            ['crown.fire.initiation.oActive', 0, U.windSpeed, [
+                ['', CrownFire.oActive, [
+                    'site.canopy.fuel.bulkDensity',
+                    'crown.canopy.fuel.fire.reactionIntensity',
+                    'crown.canopy.fuel.bed.heatSink',
+                    'crown.canopy.fuel.fire.slope.phi']]]],
+                    
+            // Output only
+            ['crown.fire.initiation.crowningIndex', 0, U.factor, null, [
+                ['', CrownFire.crowningIndex, [
+                    'crown.fire.initiation.oActive']]]],
+
+            // Output only
+            ['crown.fire.initiation.type', CrownFire.Surface, U.crownInitType, null, [
+                ['', CrownFire.type, [
+                    'crown.fire.initiation.transitionRatio',
+                    'crown.fire.initiation.activeRatio']]]],
+
+            // Output only
+            ['crown.fire.initiation.isActiveCrownFire', 0, U.yesno, null, [
+                ['', CrownFire.isActive, [
+                    'crown.fire.initiation.transitionRatio',
+                    'crown.fire.initiation.activeRatio']]]],
+
+            // Output only
+            ['crown.fire.initiation.isCrownFire',  0, U.yesno, null, [
+                ['', CrownFire.isCrown, [
+                    'crown.fire.initiation.transitionRatio',
+                    'crown.fire.initiation.activeRatio']]]],
+
+            // Output only
+            ['crown.fire.initiation.isPassiveCrownFire', 0, U.yesno, null, [
+                ['', CrownFire.isPassive, [
+                    'crown.fire.initiation.transitionRatio',
+                    'crown.fire.initiation.activeRatio']]]],
+
+            // Output only
+            ['crown.fire.initiation.isConditionalCrownFire', 0, U.yesno, null, [
+                ['', CrownFire.isConditional, [
+                    'crown.fire.initiation.transitionRatio',
+                    'crown.fire.initiation.activeRatio']]]],
+
+            // Output only
+            ['crown.fire.initiation.isSurfaceFire', 0, U.yesno, null, [
+                ['', CrownFire.isSurface, [
+                    'crown.fire.initiation.transitionRatio',
+                    'crown.fire.initiation.activeRatio']]]],
+
+            //------------------------------------------------------------------
+            // Final fire behavior (Scott & Reinhardt)
+            //------------------------------------------------------------------
+
+            // According to Scott & Reinhardt, this is the
+            // "critical open wind speed at 20-ft that leads to cronw fire activity
+            // for a set of site charactersitcis, surface, and canopy fuel
+            // characteristics, and fuel moisture conditions."
+            //
+            // Probably better to move rSa and oActive nodes the Surface
+            ['crown.fire.final.rSa', 0, U.fireRos,  null, [
+                ['', CrownFire.rSa, [
+                    'crown.fire.initiation.oActive',    // depends on crown/canopy/fuel/bed|fire chars
+                    'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
+                    'surface.primary.fuel.fire.windSpeedAdjustmentFactor',
+                    'surface.primary.fuel.fire.wind.factor.b',
+                    'surface.primary.fuel.fire.wind.factor.k',
+                    'surface.primary.fuel.fire.slope.phi']]]],
+
+            ['crown.fire.final.crownFractionBurned', 0, U.fraction, null, [
+                ['', CrownFire.crownFractionBurned, [
+                    'surface.primary.fuel.fire.spreadRate',
+                    'crown.fire.initiation.spreadRate',
+                    'crown.fire.final.rSa']]]],
+
+            ['crown.fire.final.spreadRate', 0, U.fireRos, null, [
+                ['', CrownFire.rFinal, [
+                    'surface.primary.fuel.fire.spreadRate',
+                    'crown.fire.active.spreadRate',
+                    'crown.fire.final.crownFractionBurned']]]],
+
+            ['crown.fire.final.firelineIntensity', 0, U.fireFli, null, [
+                ['', CrownFire.fliFinal, [
+                    'crown.fire.final.spreadRate',
+                    'crown.fire.final.crownFractionBurned',
+                    'site.canopy.fire.heatPerUnitArea',
+                    'crown.fire.surface.heatPerUnitArea']]]],
+
+            ['crown.fire.final.flameLength', 0, U.fireFlame, null, [
+                ['', CrownFire.flameLengthThomas, [
+                    'crown.fire.final.firelineIntensity']]]],
+
+            ['crown.fire.final.size.area', 0, U.fireArea, null, [
+                ['', CrownFire.area, [
+                    'crown.fire.final.size.length',
+                    'crown.fire.active.lengthToWidthRatio']]]],
+
+            ['crown.fire.final.size.length', 0, U.fireDist, null, [
+                ['', FireEllipse.spreadDistance, [
+                    'crown.fire.final.spreadRate',
+                    'site.fire.time.sinceIgnition']]]],
+
+            ['crown.fire.final.size.perimeter', 0, U.fireDist, null, [
+                ['', CrownFire.perimeter, [
+                    'crown.fire.final.size.length',
+                    'crown.fire.active.lengthToWidthRatio']]]],
+
+            ['crown.fire.final.size.width', 0, U.fireDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.final.size.length',
+                    'crown.fire.active.lengthToWidthRatio']]]],
+                    
+            ['crown.fire.final.map.area', 0, U.mapArea, null, [
+                ['', FireEllipse.mapArea, [
+                    'crown.fire.final.size.area',
+                    'site.map.scale']]]],
+
+            ['crown.fire.final.map.length', 0, U.mapDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.final.size.length',
+                    'site.map.scale']]]],
+
+            ['crown.fire.final.map.perimeter', 0, U.mapDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.final.size.perimeter',
+                    'site.map.scale']]]],
+
+            ['crown.fire.final.map.width', 0, U.mapDist, null, [
+                ['', Calc.divide, [
+                    'crown.fire.final.size.width',
+                    'site.map.scale']]]],
         ]
-    ],
-    [`${prefix}.bed.live.particle.class2.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1500]]]
-    ],
-    [`${prefix}.bed.live.particle.class2.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.live.particle.class2.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.live.particle.class2`
-    [`${prefix}.bed.live.particle.class3.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.live.particle.class3.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.live.particle.class3.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `unused`],
-    // ]]],
-    [`${prefix}.bed.live.particle.class3.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0]]]
-    ],
-    [`${prefix}.bed.live.particle.class3.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.constant, 5]]]
-    ],
-    [`${prefix}.bed.live.particle.class3.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1]]]
-    ],
-    [`${prefix}.bed.live.particle.class3.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.live.particle.class3.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.live.particle.class3`
-    [`${prefix}.bed.live.particle.class4.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.live.particle.class4.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.live.particle.class4.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `unused`]
-    // ]]],
-    [`${prefix}.bed.live.particle.class4.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0]]]
-    ],
-    [`${prefix}.bed.live.particle.class4.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.constant, 5]]]
-    ],
-    [`${prefix}.bed.live.particle.class4.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1]]]
-    ],
-    [`${prefix}.bed.live.particle.class4.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.live.particle.class4.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ],
-    // end `${prefix}.bed.live.particle.class4`
-    [`${prefix}.bed.live.particle.class5.fiberDensity`,
-        [['FuelParticleFiberDensity'], [['finally', Dag.constant, 32]]]
-    ],
-    [`${prefix}.bed.live.particle.class5.heatOfCombustion`,
-        [['FuelHeatOfCombustion'], [['finally', Dag.constant, 8000]]]
-    ],
-    // [`${prefix}.bed.live.particle.class5.label`, [[`FuelLabelText`], [
-    //   [`finally`, `Dag.fixed`, `unused`]
-    // ]]],
-    [`${prefix}.bed.live.particle.class5.ovendryLoad`,
-        [['FuelOvendryLoad'], [['finally', Dag.constant, 0]]]
-    ],
-    [`${prefix}.bed.live.particle.class5.moistureContent`,
-        [['FuelMoistureContent'], [['finally', Dag.constant, 5]]]
-    ],
-    [`${prefix}.bed.live.particle.class5.surfaceAreaToVolumeRatio`,
-        [['FuelSurfaceAreaToVolumeRatio'], [['finally', Dag.constant, 1]]]
-    ],
-    [`${prefix}.bed.live.particle.class5.effective.mineralContent`,
-        [['FuelEffectiveMineralContent'], [['finally', Dag.constant, 0.01]]]
-    ],
-    [`${prefix}.bed.live.particle.class5.total.mineralContent`,
-        [['FuelTotalMineralContent'], [['finally', Dag.constant, 0.0555]]]
-    ]
-    // end `${prefix}.bed.live.particle.class5`
-]
-
-export const crownFire = [
-    ['crown.fire.active.size.area', [['FireArea'], [
-        ['finally',
-            CrownFire.area,
-            'crown.fire.active.size.length',
-            'crown.fire.active.lengthToWidthRatio'
-            ]]]],
-    ['crown.fire.active.size.length', [['FireSpreadDistance'], [
-            ['finally',
-            FireEllipse.spreadDistance,
-            'crown.fire.active.spreadRate',
-            'site.fire.time.sinceIgnition'
-            ]]]],
-    ['crown.fire.active.size.perimeter', [['FireSpreadDistance'], [
-        ['finally',
-            CrownFire.perimeter,
-            'crown.fire.active.size.length',
-            'crown.fire.active.lengthToWidthRatio'
-            ]]]],
-    ['crown.fire.active.size.width', [['FireSpreadDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.active.size.length',
-            'crown.fire.active.lengthToWidthRatio'
-            ]]]],
-    // end 'crown.fire.active.size'
-    ['crown.fire.active.map.area', [['MapArea'], [
-        ['finally',
-            FireEllipse.mapArea,
-            'crown.fire.active.size.area',
-            'site.map.scale'
-            ]]]],
-    ['crown.fire.active.map.length', [['MapDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.active.size.length',
-            'site.map.scale'
-            ]]]],
-    ['crown.fire.active.map.perimeter', [['MapDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.active.size.perimeter',
-            'site.map.scale'
-            ]]]],
-    [' crown.fire.active.map.width', [['MapDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.active.size.width',
-            'site.map.scale'
-            ]]]],
-    // end 'crown.fire.active.map'
-    ['crown.fire.active.lengthToWidthRatio', [['FireLengthToWidthRatio'], [
-        ['finally',
-            CrownFire.lengthToWidthRatio,
-            'site.wind.speed.at20ft']]
-        ]],
-    ['crown.fire.active.spreadRate', [['FireSpreadRate'], [
-        ['finally',
-            CrownFire.rActive,
-            'crown.canopy.fuel.fire.spreadRate']]
-        ]],
-    ['crown.fire.active.firelineIntensity', [['FireFirelineIntensity'], [
-        ['finally',
-            CrownFire.fliActive,
-            'crown.fire.active.heatPerUnitArea',
-            'crown.fire.active.spreadRate'
-            ]]]],
-    ['crown.fire.active.flameLength', [['FireFlameLength'], [
-        ['finally',
-            CrownFire.flameLengthThomas,
-            'crown.fire.active.firelineIntensity'
-            ]]]],
-    ['crown.fire.active.heatPerUnitArea', [['FireHeatPerUnitArea'], [
-        ['finally',
-            CrownFire.hpuaActive,
-            'site.canopy.fire.heatPerUnitArea',
-            'crown.fire.surface.heatPerUnitArea'
-            ]]]],
-    ['crown.fire.active.powerOfTheFire', [['FirePower'], [
-        ['finally',
-            CrownFire.powerOfTheFire,
-            'crown.fire.active.firelineIntensity'
-            ]]]],
-    ['crown.fire.active.powerOfTheWind', [['FirePower'], [
-        ['finally',
-            CrownFire.powerOfTheWind,
-            'site.wind.speed.at20ft',
-            'crown.fire.active.spreadRate'
-            ]]]],
-    ['crown.fire.active.powerRatio', [['FirePowerRatio'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.active.powerOfTheFire',
-            'crown.fire.active.powerOfTheWind'
-            ]]]],
-    ['crown.fire.active.isPlumeDominated', [['NoYes'], [
-        ['finally',
-            CrownFire.isPlumeDominated,
-            'crown.fire.active.powerRatio'
-            ]]]],
-    ['crown.fire.active.isWindDriven', [['NoYes'], [
-        ['finally',
-            CrownFire.isWindDriven,
-            'crown.fire.active.powerRatio']]
-        ]
-    ],
-    // end 'crown.fire.active'
-    ['crown.fire.final.size.area', [['FireArea'], [
-        ['finally',
-            CrownFire.area,
-            'crown.fire.final.size.length',
-            'crown.fire.active.lengthToWidthRatio'
-            ]]]],
-    ['crown.fire.final.size.length', [['FireSpreadDistance'], [
-        ['finally',
-            FireEllipse.spreadDistance,
-            'crown.fire.final.spreadRate',
-            'site.fire.time.sinceIgnition'
-            ]]]],
-    ['crown.fire.final.size.perimeter', [['FireSpreadDistance'], [
-        ['finally',
-            CrownFire.perimeter,
-            'crown.fire.final.size.length',
-            'crown.fire.active.lengthToWidthRatio'
-            ]]]],
-    ['crown.fire.final.size.width', [['FireSpreadDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.final.size.length',
-            'crown.fire.active.lengthToWidthRatio'
-            ]]]],
-    // end 'crown.fire.final.size'
-    ['crown.fire.final.map.area', [['MapArea'], [
-        ['finally',
-            FireEllipse.mapArea,
-            'crown.fire.final.size.area',
-            'site.map.scale'
-            ]]]],
-    ['crown.fire.final.map.length', [['MapDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.final.size.length',
-            'site.map.scale'
-            ]]]],
-    ['crown.fire.final.map.perimeter', [['MapDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.final.size.perimeter',
-            'site.map.scale'
-            ]]]],
-    ['crown.fire.final.map.width', [['MapDistance'], [
-        ['finally',
-            Calc.divide,
-            'crown.fire.final.size.width',
-            'site.map.scale'
-            ]]]],
-    // end 'crown.fire.final.map'
-    ['crown.fire.final.rSa', [['FireSpreadRate'], [
-        ['finally',
-            CrownFire.rSa,
-            'crown.fire.initiation.oActive',
-            'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
-            'surface.primary.fuel.fire.windSpeedAdjustmentFactor',
-            'surface.primary.fuel.fire.wind.factor.b',
-            'surface.primary.fuel.fire.wind.factor.k',
-            'surface.primary.fuel.fire.slope.phi'
-            ]]]],
-    ['crown.fire.final.crownFractionBurned', [['CrownFireBurnedFraction'], [
-        ['finally',
-            CrownFire.crownFractionBurned,
-            'surface.primary.fuel.fire.spreadRate',
-            'crown.fire.initiation.spreadRate',
-            'crown.fire.final.rSa'
-            ]]]],
-    ['crown.fire.final.spreadRate', [['FireSpreadRate'], [
-        ['finally',
-            CrownFire.rFinal,
-            'surface.primary.fuel.fire.spreadRate',
-            'crown.fire.active.spreadRate',
-            'crown.fire.final.crownFractionBurned'
-            ]]]],
-    ['crown.fire.final.firelineIntensity', [['FireFirelineIntensity'], [
-        ['finally',
-            CrownFire.fliFinal,
-            'crown.fire.final.spreadRate',
-            'crown.fire.final.crownFractionBurned',
-            'site.canopy.fire.heatPerUnitArea',
-            'crown.fire.surface.heatPerUnitArea'
-            ]]]],
-    ['crown.fire.final.flameLength', [['FireFirelineIntensity'], [
-        ['finally',
-            CrownFire.flameLengthThomas,
-            'crown.fire.final.firelineIntensity'
-            ]]]],
-    // end 'crown.fire.final'
-    ['crown.fire.initiation.firelineIntensity', [['FireFirelineIntensity'], [
-        ['finally',
-            CrownFire.fliInit,
-            'site.canopy.fuel.foliar.moistureContent',
-            'site.canopy.crown.baseHeight'
-            ]]]],
-    ['crown.fire.initiation.flameLength', [['FireFlameLength'], [
-        ['finally',
-            SurfaceFire.flameLength,
-            'crown.fire.initiation.firelineIntensity'
-            ]]]],
-    ['crown.fire.initiation.spreadRate', [['FireSpreadRate'], [
-        ['finally',
-            CrownFire.rInit,
-            'crown.fire.initiation.firelineIntensity',
-            'crown.fire.surface.heatPerUnitArea'
-            ]]]],
-    ['crown.fire.initiation.rPrime', [['FireSpreadRate'], [
-        ['finally',
-            CrownFire.rPrimeActive,
-            'site.canopy.fuel.bulkDensity'
-            ]]]],
-    ['crown.fire.initiation.transitionRatio', [['CrownTransitionRatio'], [
-        ['finally',
-            CrownFire.transitionRatio,
-            'crown.fire.surface.firelineIntensity',
-            'crown.fire.initiation.firelineIntensity'
-            ]]]],
-    ['crown.fire.initiation.canTransition', [['NoYes'], [
-        ['finally',
-            CrownFire.canTransition,
-            'crown.fire.initiation.transitionRatio'
-            ]]]],
-    ['crown.fire.initiation.activeRatio', [['CrownFireActiveRatio'], [
-        ['finally',
-            CrownFire.activeRatio,
-            'crown.fire.active.spreadRate',
-            'crown.fire.initiation.rPrime'
-            ]]]],
-    ['crown.fire.initiation.type', [['CrownFireInitiationTypeOption'], [
-        ['finally',
-            CrownFire.type,
-            'crown.fire.initiation.transitionRatio',
-            'crown.fire.initiation.activeRatio'
-            ]]]],
-    ['crown.fire.initiation.isActiveCrownFire', [['NoYes'], [
-        ['finally',
-            CrownFire.isActive,
-            'crown.fire.initiation.transitionRatio',
-            'crown.fire.initiation.activeRatio'
-            ]]]],
-    ['crown.fire.initiation.isCrownFire', [['NoYes'], [
-        ['finally',
-            CrownFire.isCrown,
-            'crown.fire.initiation.transitionRatio',
-            'crown.fire.initiation.activeRatio'
-            ]]]],
-    ['crown.fire.initiation.isPassiveCrownFire', [['NoYes'], [
-        ['finally',
-            CrownFire.isPassive,
-            'crown.fire.initiation.transitionRatio',
-            'crown.fire.initiation.activeRatio'
-            ]]]],
-    ['crown.fire.initiation.isConditionalCrownFire', [['NoYes'], [
-        ['finally',
-            CrownFire.isConditional,
-            'crown.fire.initiation.transitionRatio',
-            'crown.fire.initiation.activeRatio'
-            ]]]],
-    ['crown.fire.initiation.isSurfaceFire', [['NoYes'], [
-        ['finally',
-            CrownFire.isSurface,
-            'crown.fire.initiation.transitionRatio',
-            'crown.fire.initiation.activeRatio'
-            ]]]],
-    ['crown.fire.initiation.oActive', [['WindSpeed'], [
-        ['finally',
-            CrownFire.oActive,
-            'site.canopy.fuel.bulkDensity',
-            'crown.canopy.fuel.fire.reactionIntensity',
-            'crown.canopy.fuel.bed.heatSink',
-            'crown.canopy.fuel.fire.slope.phi'
-            ]]]],
-    ['crown.fire.initiation.crowningIndex', [['Factor'], [
-        ['finally', CrownFire.crowningIndex,
-            'crown.fire.initiation.oActive'
-            ]]]],
-    // end 'crown.fire.initiation'
-    ['crown.fire.surface.firelineIntensity', [['FireFirelineIntensity'], [
-        ['when','link.crownFire', 'equals', 'linkedToSurfaceFire',
-                Dag.assign, 'surface.weighted.fire.firelineIntensity'],
-        ['finally', Dag.assign, 'site.fire.observed.firelineIntensity']
-            ]]],
-    ['crown.fire.surface.flameLength', [['FireFlameLength'], [
-        ['when', 'link.crownFire', 'equals', 'linkedToSurfaceFire',
-            Dag.assign, 'surface.weighted.fire.flameLength'],
-        ['finally', Dag.assign, 'site.fire.observed.flameLength']
-        ]]],
-    ['crown.fire.surface.heatPerUnitArea', [['FireHeatPerUnitArea'], [
-        ['when', 'link.crownFire', 'equals', 'linkedToSurfaceFire',
-            Dag.assign, 'surface.weighted.fire.heatPerUnitArea'],
-        ['finally', Dag.assign, 'site.fire.observed.heatPerUnitArea']
-        ]]],
-    // end 'crown.fire.surface'
-    // end 'crown.fire'
-    // end 'crown'
-]
-
-export const genome = [
-    ...canopyParticles,
-    ...Particle.derived(prefix, 'dead', '1'),
-    ...Particle.derived(prefix, 'dead', '2'),
-    ...Particle.derived(prefix, 'dead', '3'),
-    ...Particle.derived(prefix, 'dead', '4'),
-    ...Particle.derived(prefix, 'dead', '5'),
-    ...Particle.derived(prefix, 'live', '1'),
-    ...Particle.derived(prefix, 'live', '2'),
-    ...Particle.derived(prefix, 'live', '3'),
-    ...Particle.derived(prefix, 'live', '4'),
-    ...Particle.derived(prefix, 'live', '5'),
-    ...Life.genome(prefix, 'dead'),
-    ...Life.genome(prefix, 'live'),
-    ...Bed.bed(prefix),
-    ...Fire.genome(prefix),
-    ...crownFire
-    ]
+    }
+}

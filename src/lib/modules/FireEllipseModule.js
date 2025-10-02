@@ -33,10 +33,16 @@ export class FireEllipseModule extends ModuleBase {
      * @param {string} prefix Prefix for this module instance's fully qualified node names
      * something like 'fire/' or '' to prefix the 'ellipse/<node>' keys.
      * @param {Config} cfg Config reference to FireEllipseConfig.js
+     * @param {string} surfPath Path to the SurfaceFireWtgModule, something like 'weighted/fire/'
+     * @param {string} canopyPath Path to the CanopyModule, something like 'canopy/'
+     * @param {string} slopeDirPath Path to the SlopeDirectionModule, something like 'terrain/slope/direction/'
+     * @param {string} mapPath Path to the MapModule, something like 'map/'
      */
-    constructor(prefix, cfg, cfgVectors, surfPath, canopyPath,
-        upslopeNode, mapScaleNode) {
+    constructor(prefix, cfg, cfgVectors, surfPath, canopyPath, slopeDirPath, mapPath) {
         super(prefix, P.ellipseSelf, P.ellipseMod, cfg)
+
+        const upslopeNode = slopeDirPath + P.slopeUp
+        const mapScaleNode = mapPath + P.mapScale
         const path = this.path  // ellipseSelf
 
         // let str = `${this.module} prefix="${prefix}" self="${this.self}"\n`

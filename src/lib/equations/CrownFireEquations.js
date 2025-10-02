@@ -15,6 +15,10 @@ export const SURFACE = 'Surface'
 export const InitiationTypes = [ACTIVE, CONDITIONAL, PASSIVE, SURFACE]
 
 export class CrownFireEquations {
+  static active = 'Active'
+  static conditional = 'Conditional'
+  static passive = 'Passive'
+  static surface = 'Surface'
 
   /**
    * Calculate the crown fire active ratio.

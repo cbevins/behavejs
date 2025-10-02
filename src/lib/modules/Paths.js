@@ -54,6 +54,12 @@ export class Paths {
     static zero          = 'constants/zero'
     static one           = 'constants/one'
 
+    // CrownFireModule
+    static crownFireSelf = 'crown/'
+    static crownFireMod  = 'CrownFireModule'
+    static crownFuelSelf = 'crown/canopy/fuel/'
+    static crownFuelMod  = 'CrownFuelModule'
+
     // DeadFuelMoistureModule
     static moisDeadMod  = 'DeadFuelMoistureModule'
     static moisDeadSelf = 'moisture/dead/'
@@ -359,4 +365,101 @@ export class Paths {
     static wsrfMod      = 'WindSpeedReductionModule'
     static wsrfSelf     = 'wind/speed/reduction/factor/'
     static wsrfMidflame = 'midflame'
+}
+
+class AltPaths {
+    static paths = {
+        canopy: {
+            crown: {},
+            fire: {},
+            fuel: {},
+            wind: {speed:{reduction:{}}},
+        },
+        constants:{},
+        ellipse: {
+            axis: {},
+            backing: {},
+            beta: {},
+            beta5: {},
+            flanking: {},
+            heading: {},
+            map: {},
+            psi: {},
+            size: {},
+            temperature: {},
+            time: {},
+            vector: {},
+            wind:{speed:{midflame:{}}},
+        },
+        crown: {
+            bed: {},
+            fire: {},
+
+        },
+        map: {
+            contour: {},
+            scale: {},
+            slope: {},
+        },
+        primary: {
+            bed: {
+                dead: {
+                    d1:{}, d2:{}, d3:{}, d4:{}, d5:{},
+                },
+                live: {
+                    l1:{}, l2:{}, l3:{}, l4:{}, l5:{},
+                },
+                beta: {},
+                rxi: {},
+                wind: {speed:{reduction:{}}},   // 1
+            },
+            fire: {
+                f1:{}, f2:{}, f3:{}, f4:{}, f5:{}, f6:{}, f7:{},
+                effective: {},
+                heading: {},
+                slope: {},
+                wind: {
+                    factor: {},
+                    speed: {midflame: {}},  // 0  IS THIS USED??
+                },
+            },
+            model: {
+                standard: {},
+                chaparral: {},
+                palmetto: {},
+                aspen: {},
+            },
+            wind: {speed: {
+                midflame: {}, // 880
+                reduction: {factor: {midflame:{}}}, // 1
+            }}
+        },
+        secondary: {},  // same as 'primary'
+        terrain: {
+            slope: {
+                direction: {},
+                steepness: {},
+            },
+        },
+        weather: {
+            curing: {fraction: {}},
+            moisture: {
+                canopy: {},
+                dead: {},
+                live: {},
+            },
+            wind: {
+                direction: {},
+                speed: {},
+            },
+        },
+        weighted: {
+            fire: {
+                cover: {},
+                effectiveWind: {speed:{}},
+                heading: {},
+                ros: {},
+            }
+        },
+    }
 }

@@ -9,18 +9,19 @@ export class MidflameWindSpeedModule extends ModuleBase {
      * @param {string} prefix Prefix for this module instance's fully qualified node names,
      * (something like 'primary/surface/bed/') to refix this module's 'wind speed reduction factor/<node>' keys.
      * @param {Config} cfg Config reference
-     * @param {string} wspd20ft Fully qualified name of the 20-ft wind speed node,
-     * something like 'weather/wind/speed/at 20-ft'.
-     * @param {string} wsrfMidflame Fully qualified name of the midflame wind speed reduction factor,
-     * something like 'primary/surface/bed/wind speed reduction factor/midflame'.
+     * @param {string} windSpeedPath Path to the WindSpeedModule, something like 'weather/wind/speed/'.
+     * @param {string} wsrfPath Path to the WindSpeedReductionModule, something like 'primary/wind/speed/reduction/factor'.
      */
-    constructor(prefix, cfg, wspd20ft, wsrfMidflame) {
+    constructor(prefix, cfg, windSpeedPath, wsrfPath) {
         super(prefix, P.midflameSelf, P.midflameMod, cfg)
         const path = this.path
+        const wspd20ftNode = windSpeedPath + P.wspd20ft
+        const wsrfNode = wsrfPath + P.wsrfMidflame
+
         this.nodes = [
             [path+P.midflame, 0, U.windSpeed, cfg, [
                 [cfg.observed, Dag.input, []],
-                [cfg.estimated, Calc.multiply, [wspd20ft, wsrfMidflame]]
+                [cfg.estimated, Calc.multiply, [wspd20ftNode, wsrfNode]]
             ]]
         ]
     }

@@ -70,7 +70,7 @@ export class SurfaceFireWtgModule extends ModuleBase {
             [path+P.fireMidf,      1, U.windSpeed, null, [
                 [cfg.any, Dag.assign, [fire1Path+P.fireMidf]]]],
             // BP6 also saved the primary wind speed reduction factor,
-            // but that's a pain to get from here, may not have ever been calculate,
+            // but that's a pain to get from here, may not have ever been calculated,
             // and I'm not sure if its used by ellipse anywhere else?
 
             // The following 4 use the maximum of the primary or secondary fuel

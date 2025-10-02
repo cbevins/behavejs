@@ -13,14 +13,16 @@ export class LiveFuelCuringModule extends ModuleBase {
      * @param {string} herbMoisKey Fully qualified path to the herb moisture content node
      * sonething like 'weather/moisture/live/herb'
      */
-    constructor(prefix, cfg, herbMoisKey) {
+    constructor(prefix, cfg, moisLivePath) {
         super(prefix, P.curingSelf, P.curingMod, cfg)
         const path = this.path
         this.nodes = [
             [path+P.curingObserved, 0, U.fraction, null, [
                 ['', Dag.input, []]]],
+
             [path+P.curingEstimated, 0, U.fraction, null, [
-                ['', Bed.curedHerbFraction, [herbMoisKey]]]],
+                ['', Bed.curedHerbFraction, [moisLivePath+P.moisLiveHerb]]]],
+                
             [path+P.curingApplied, 0, U.fraction, cfg, [
                 [cfg.observed, Dag.assign, [path+P.curingObserved]],
                 [cfg.estimated, Dag.assign, [path+P.curingEstimated]],

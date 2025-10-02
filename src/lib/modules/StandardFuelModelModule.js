@@ -10,14 +10,11 @@ export class StandardFuelModelModule extends ModuleBase {
      * @param {string} prefix Prefix for this module instance's fully qualified node names
      * (something like 'primary/surface/model/') to prefix this module's 'standard/<node>' keys.
      * @param {Config} cfg Config reference
-     * @param {string} mois1h Fully qualified path to dead 1-h moisture content node
-     * @param {string} mois10h Fully qualified path to dead 10-h moisture content node
-     * @param {string} mois100h Fully qualified path to dead 100-h moisture content node
-     * @param {string} moisHerb Fully qualified path to live herb moisture content node
-     * @param {string} moisStem Fully qualified path to live stem moisture content node
-     * @param {string} curedFraction Fully qualified path to cured herb fraction node
+     * @param {string} moisDeadPath Path to the dead fuel moisture module, something like 'moisture/dead'
+     * @param {string} moisDeadLive Path to the live fuel moisture module, something like 'moisture/live'
+     * @param {string} curedPath Path path to th live curing module, something like 'curing/'
      */
-    constructor(prefix, cfg, mois1h, mois10h, mois100h, moisHerb, moisStem, curedFraction) {
+    constructor(prefix, cfg, moisDeadPath, moisLivePath, curedPath) {
         super(prefix,  P.stdSelf, P.stdMod, cfg)
         const path = this.path
         this.nodes = [
@@ -67,7 +64,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead1Mois, 0, U.fuelMois, null, [
-                ['', Dag.assign, [mois1h]],
+                ['', Dag.assign, [moisDeadPath+P.moisDead1]],
             ]],
             [path+P.stdDead1Savr, 1, U.fuelSavr, cfg, [
                 [cfg.catalog, Cat.standardSavr1, [path+P.stdKey]],
@@ -82,7 +79,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead10Mois, 0, U.fuelMois, null, [
-                ['', Dag.assign, [mois10h]],
+                ['', Dag.assign, [moisDeadPath+P.moisDead10]],
             ]],
             [path+P.stdDead10Savr, 1, U.fuelSavr, null, [
                 ['', Cat.standardSavr10, []],
@@ -96,7 +93,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdDead100Mois, 0, U.fuelMois, null, [
-                ['', Dag.assign, [mois100h]],
+                ['', Dag.assign, [moisDeadPath+P.moisDead100]],
             ]],
             [path+P.stdDead100Savr, 1, U.fuelSavr, null, [
                 ['', Cat.standardSavr100, []],
@@ -106,10 +103,10 @@ export class StandardFuelModelModule extends ModuleBase {
             ]],
             // cured portion of total herb load
             [path+P.stdDeadHerbLoad, 0, U.fuelLoad, null, [
-                ['', Cat.standardLoadCured, [path+P.stdKey, curedFraction]],
+                ['', Cat.standardLoadCured, [path+P.stdKey, curedPath+P.curingApplied]],
             ]],
             [path+P.stdDeadHerbMois, 0, U.fuelMois, null, [
-                ['', Dag.assign, [mois1h]],
+                ['', Dag.assign, [moisDeadPath+P.moisDead1]],
             ]],
             [path+P.stdDeadHerbSavr, 1, U.fuelSavr, null, [
                 ['', Dag.assign, [path+P.stdTotalHerbSavr]],
@@ -119,10 +116,10 @@ export class StandardFuelModelModule extends ModuleBase {
             ]],
             // uncured portion of total herb load
             [path+P.stdLiveHerbLoad, 0, U.fuelLoad, null, [
-                ['', Cat.standardLoadUncured, [path+P.stdKey, curedFraction]],
+                ['', Cat.standardLoadUncured, [path+P.stdKey, curedPath+P.curingApplied]],
             ]],
             [path+P.stdLiveHerbMois, 0, U.fuelMois, null, [
-                ['', Dag.assign, [moisHerb]],
+                ['', Dag.assign, [moisLivePath+P.moisLiveHerb]],
             ]],
             [path+P.stdLiveHerbSavr, 1, U.fuelSavr, null, [
                 ['', Dag.assign, [path+P.stdTotalHerbSavr]],
@@ -148,7 +145,7 @@ export class StandardFuelModelModule extends ModuleBase {
                 [cfg.custom, Dag.input, []],
             ]],
             [path+P.stdLiveStemMois, 0, U.fuelMois, null, [
-                ['', Dag.assign, [moisStem]],
+                ['', Dag.assign, [moisLivePath+P.moisLiveStem]],
             ]],
             [path+P.stdLiveStemSavr, 1, U.fuelSavr, cfg, [
                 [cfg.catalog, Cat.standardSavrStem, [path+P.stdKey]],

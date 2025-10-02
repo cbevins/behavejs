@@ -12,6 +12,7 @@ export class Units {
     static posreal  = {key: 'posreal',  type: 'posreal',  units: []} // any non-negative real
     static real     = {key: 'real',     type: 'real',     units: []}  // any real value
     static quantity = {key: 'quantity', type: 'posreal',  units: []}
+    static power    = {key: 'power',    type: 'quantity', units: [['kg m2 s-3', 'W', 'J/s']]}
     static ratio    = {key: 'ratio',    type: 'ratio',    units: ['ratio']} // any rational number, no percent option
     static select   = {key: 'select',   type: 'select',   units: []}    // array of valid strings
     static temp     = {key: 'temp',     type: 'real',     units: ['F', 'C']}
@@ -23,6 +24,7 @@ export class Units {
     static compassUp = {key: 'compass degrees from up-slope', type: 'compass', units: ['degrees']}
     static compassHead = {key: 'compass degrees from fire heading', type: 'compass', units: ['degrees']}
 
+    static crownInitType = {key: 'crown fire initiation type', type: 'list', units: ['Active', 'Conditional', 'Passive', 'Surface']}
     static fireArea   = {key: 'fire area', type: 'quantity', units: ['ft2', 'm2']}
     static fireDist   = {key: 'fire distance', type: 'quantity', units: ['ft', 'm', 'mi', 'km']}
     static fireFlame  = {key: 'fire flame length', type: 'quantity', units: ['ft', 'm']}
@@ -30,6 +32,7 @@ export class Units {
     static fireRos    = {key: 'fire spread rate', type: 'quantity', units: ['ft/min']}
     static fireRxi    = {key: 'fire reaction intensity', type: 'quantity', units: ['BTU/ft2-min']}
     static fireFli    = {key: 'fireline intensity', type: 'quantity', units: ['BTU/ft-s']}
+    static firePower  = {key: 'power of the fire', type: 'quantity', units: [['kg m2 s-3', 'W', 'J/s']]}
     static fireScorch = {key: 'fire scorch height', type: 'quantity', units: ['ft', 'm']}
     static fireTaur   = {key: 'fire residence time', type: 'time', units: ['min']}
     static fireTime   = {key: 'fire elapsed time', type: 'time', units: ['min', 'h']}
@@ -70,6 +73,7 @@ export class Units {
 
     static treeLeng = {key: 'tree lengths', type: 'quantity', units: ['ft', 'm']}
 
+    static windPower = {key: 'power of the wind', type: 'quantity', units: [['kg m2 s-3', 'W', 'J/s']]}
     static windSpeed = {key: 'wind speed', type: 'quantity', units: ['ft/min', 'mi/h', 'm/s', 'km/h']}
 
     static yesno = {key: 'yes or no', type: 'select', units: ['yes', 'no']}

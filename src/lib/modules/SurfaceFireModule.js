@@ -10,22 +10,23 @@ import { SurfaceFireEquations as Fire } from '../index.js'
 export class SurfaceFireModule extends ModuleBase {
     /**
      * @param {string} prefix Prefix for this module's fully qualified node names
-     * (something like `primary/surface/`) to append this module's 'fire/<node>' node keys
+     * (something like `primary/`) to preface this module's 'fire/<node>' node keys
      * MUST  BE THE SAME 'path' THAT WAS PASSED TO SurfaceFuelModel()
-     * @param {Config} cfg Config reference
-     * @param {string} bedPath Fully qualified path to surface fuel bed for this fire,
-     * something like `primary/bed/`
-     * @param {string} slopeRatio Fully qualified path to slope steepness ratio node,
-     * something like 'terrain/slope/steepness/ratio/rise-to-reach'
-     * @param {string} upslope Fully qualified path to the upslope direction node,
-     * something like 'terrain/slope/direction/up-slope/degrees/from north'
-     * @param {string} midflame Fully qualified path to the midflame wind speed,
-     * something like 'primary/wind/speed/midflame'
-     * @param {string} wdirHeadFromUp Fully qualified path to wind heading direction from upslope node,
-     * something like 'wind/direction/heading/from up-slope'.
+     * @param {Config} cfg Reference to the FireEffectiveWindLimitConfig object
+     * @param {string} bedPath Path to the SurfaceFuelModule, something like `primary/bed/`
+     * @param {string} slopeSteepPath Path to the SlopeSteepnessModule, like 'terrain/slope/steepness/'
+     * @param {string} slopeDirPath Path to the SlopeDirectionModule, something like 'terrain/slope/direction/'
+     * @param {string} midflamePath Path to the MidflameWindSpeedModule, something like 'primary/wind/speed/'
+     * @param {string} windDirPath Path to the WindDirectionModule, something like 'wind/direction/'
 */
-    constructor(prefix, cfg, bedPath, slopeRatio, upslope, midflameWspd, wdirHeadFromUp) {
+    constructor(prefix, cfg, bedPath, slopeSteepPath, slopeDirPath, midflamePath, windDirPath) {
         super(prefix, P.fireSelf, P.fireMod, cfg)
+
+        const upslopeNode = slopeDirPath + P.slopeUp
+        const slopeRatioNode = slopeSteepPath + P.slopeRatio
+        const midflameWspdNode = midflamePath + P.midflame
+        const wdirHeadFromUpNode = windDirPath + P.wdirHeadFromUp
+
         const path = this.path
         const fire  = path              // 'fire/' final applied values
         const fire1 = path + P.firep1   // 'fire/1 no-wind no-slope/'
@@ -53,9 +54,9 @@ export class SurfaceFireModule extends ModuleBase {
 
             // Part 1 - No-wind, no-slope fire spread rate and effective wind
             [fire1+P.firePhiW,   0, U.factor, null, [
-                ['', Fire.phiWind, [midflameWspd, fire+P.fireWindB, fire+P.fireWindK]]]],
+                ['', Fire.phiWind, [midflameWspdNode, fire+P.fireWindB, fire+P.fireWindK]]]],
             [fire1+P.firePhiS,   0, U.factor, null, [
-                ['', Fire.phiSlope, [slopeRatio, fire+P.fireSlpk]]]],
+                ['', Fire.phiSlope, [slopeRatioNode, fire+P.fireSlpk]]]],
             [fire1+P.fireRos,    0, U.fireRos, null, [
                 ['', Bed.noWindNoSlopeSpreadRate, [bed+P.fuelSource, bed+P.fuelSink]]]],
             [fire1+P.firePhiE,   0, U.factor, null, [
@@ -69,9 +70,9 @@ export class SurfaceFireModule extends ModuleBase {
             [fire2+P.fireRosWind,   0, U.fireRos, null, [
                 ['', Fire.maximumDirectionWindSpreadRate, [fire1+P.fireRos, fire1+P.firePhiW]]]],
             [fire2+P.fireRosXcomp,  0, U.factor, null, [
-                ['', Fire.maximumDirectionXComponent, [fire2+P.fireRosWind, fire2+P.fireRosSlope, wdirHeadFromUp]]]],
+                ['', Fire.maximumDirectionXComponent, [fire2+P.fireRosWind, fire2+P.fireRosSlope, wdirHeadFromUpNode]]]],
             [fire2+P.fireRosYcomp,  0, U.factor, null, [
-                ['', Fire.maximumDirectionYComponent, [fire2+P.fireRosWind, wdirHeadFromUp]]]],
+                ['', Fire.maximumDirectionYComponent, [fire2+P.fireRosWind, wdirHeadFromUpNode]]]],
             [fire2+P.fireRos,   0, U.fireRos, null, [
                 ['', Fire.maximumDirectionSpreadRate, [fire2+P.fireRosXcomp, fire2+P.fireRosYcomp]]]],
 
@@ -143,7 +144,7 @@ export class SurfaceFireModule extends ModuleBase {
             [fire+P.fireFromUpslope, 0, U.compass, null, [
                 ['', Fire.spreadDirectionFromUpslope, [fire2+P.fireRosXcomp, fire2+P.fireRosYcomp, fire2+P.fireRos]]]], 
             [fire+P.fireFromNorth, 0, U.compass, null, [
-                ['', Compass.compassSum, [upslope, fire+P.fireFromUpslope]]]],
+                ['', Compass.compassSum, [upslopeNode, fire+P.fireFromUpslope]]]],
 
             [fire+P.fireTaur,      0, U.fireTaur, null, [
                 ['', Bed.fireResidenceTime, [bed+P.fuelSavr]]]],
@@ -156,9 +157,15 @@ export class SurfaceFireModule extends ModuleBase {
             [fire+P.fireHeadFlame, 0, U.fireFlame, null, [
                 ['', Fire.flameLength, [fire+P.fireHeadFli]]]],
             [fire+P.fireMidf, 0, U.windSpeed, null, [
-                ['', Dag.assign, [midflameWspd]]]],
+                ['', Dag.assign, [midflameWspdNode]]]],
             [fire+P.fireRxi, 0, U.fireRxi, null, [
                 ['', Dag.assign, [bed+P.fireRxi]]]]
+
+            // // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread
+            // [fire1+P.fireRsa, 0, U.fireRos, null, [
+            //     ['', CrownFire.rSa, [oActive, fire1+P.fireRos, midflameWspdNode, 
+            //         fire+P.fireWindB, fire+P.fireWindK, fire1+P.firePhiS]]]],
+
         ]
     }
 }

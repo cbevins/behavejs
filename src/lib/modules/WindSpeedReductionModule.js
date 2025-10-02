@@ -9,17 +9,20 @@ export class WindSpeedReductionModule extends ModuleBase {
      * @param {string} prefix Prefix for this module instance's fully qualified node names
      * (something like 'primary/wind/speed/reduction factor/') to prefix this module's keys.
      * @param {Config} cfg Config reference
-     * @param {string} canopyShelters Fully qualified node name, something like 'canopy/'shelters fuel from wind'
-     * @param {string} canopyWsrf Fully qualified node name, something like 'canopy/wind/speed/reduction/factor'
-     * @param {string} fuelWsrf Fully qualified node name, something like 'primary/surface/bed/wind speed reduction factor'.
+     * @param {string} canopyPath Path to the canopy module, something like 'canopy/'
+     * @param {string} bedPath Path to the primary or secondary surface fuel module, something 'primary/surface/bed/wind speed reduction factor'.
      */
-    constructor(prefix, cfg, canopyShelters, canopyWsrf, fuelWsrf){
+    constructor(prefix, cfg, canopyPath, bedPath) { //canopyShelters, canopyWsrf, fuelWsrf){
         super(prefix, P.wsrfSelf, P.wsrfMod, cfg)
         const path = this.path
+        
         this.nodes = [
             [path+P.wsrfMidflame, 1, U.fraction, cfg, [
                 [cfg.observed, Dag.input, []],
-                [cfg.estimated, Bed.windSpeedAdjustmentFactor, [canopyShelters, canopyWsrf, fuelWsrf]],
+                [cfg.estimated, Bed.windSpeedAdjustmentFactor, [
+                    canopyPath + P.canopyShelters,
+                    canopyPath + P.canopyWsrf,
+                    bedPath + P.fuelWsrf]],
             ]],
         ]
     }

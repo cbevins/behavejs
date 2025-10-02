@@ -21,7 +21,9 @@ export class CrownFuelModule extends SurfaceFuelModule {
     */
     constructor(prefix, mois1Node, mois10Node, mois100Node, moisStemNode) {
         // Pass SurfaceFuelModule a null config so it lets us do our own particle nodes
-        super(prefix, null)
+        super(prefix+P.crownFuel, null)
+        this.self = P.crownFuelSelf
+        this.module = P.crownFuelMod
         this._configurableNodes(mois1Node, mois10Node, mois100Node, moisStemNode)
         this.nodes = [...this.cNodes, ...this.dNodes]
     }
