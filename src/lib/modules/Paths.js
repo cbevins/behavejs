@@ -33,17 +33,21 @@ export class Paths {
     static canopySelf     = 'canopy/'
     static canopyMod      = 'CanopyModule'
     static canopyCover    = 'coverage'
+    
     static canopyBase     = 'crown/base height'
-    static canopyLength   = 'crown/length'
     static canopyRatio    = 'crown/ratio'
+    static canopyLength   = 'crown/length'
     static canopyHeight   = 'crown/total height'
-    static canopyBulk     = 'fuel/bulk density'
-    static canopyLoad     = 'fuel/ovendry load'
-    static canopyVol      = 'fuel/volumetric fill ratio'
+
     static canopyHeat     = 'fire/heat of combustion'
     static canopyHpua     = 'fire/heat per unit area'
-    static canopyShelters = 'shelters fuel from wind'
-    static canopyWsrf     = 'wind/speed/reduction/factor'
+    
+    static canopyBulk     = 'fuel/bulk density'
+    static canopyLoad     = 'fuel/ovendry load'
+    static canopyMois     = 'fuel/foliar/moisture content'
+    static canopyVol      = 'fuel/volumetric fill ratio'
+    static canopyShelters = 'fuel/shelters surface from wind'
+    static canopyWsrf     = 'fuel/wind/speed/reduction factor'
 
     // ConstantsModule
     static constantsSelf = 'constants/'
@@ -54,11 +58,26 @@ export class Paths {
     static zero          = 'constants/zero'
     static one           = 'constants/one'
 
-    // CrownFireModule
-    static crownFireSelf = 'crown/'
-    static crownFireMod  = 'CrownFireModule'
-    static crownFuelSelf = 'crown/canopy/fuel/'
-    static crownFuelMod  = 'CrownFuelModule'
+    // CrownFireSRModule
+    static crownFireSelf   = 'crown/fire/final/'
+    static crownFireMod    = 'CrownFireModule'
+
+    // CrownFuelRothermelModule
+    static crownFuelSelf   = 'crown/fire/active/fuel/'
+    static crownFuelMod    = 'CrownFuelModule'
+    
+    // CrownFireRothermelModule
+    static crownRothMod    = 'CrownFireRothermelModule'
+    static crownRothSelf   = 'crown/fire/active'
+    static crownPowerFire  = 'power/fire'
+    static crownPowerWind  = 'power/wind'
+    static crownPowerRatio = 'power/ratio'
+    static crownTypePlume  = 'type/plume dominated'
+    static crownTypeWind   = 'type/wind driven'
+
+    // CrownFireGrowthModule
+    static crownFireGrowthMod  = 'CrownFireGrowthModule'
+    static crownFireGrowthSelf = 'crown/fire/growth'
 
     // DeadFuelMoistureModule
     static moisDeadMod  = 'DeadFuelMoistureModule'
@@ -344,7 +363,7 @@ export class Paths {
     static fuelStot = 'total mineral content'
     static fuelType = 'fuel type'
     static fuelVol  = 'volume'
-    static fuelWsrf = 'wind/speed/reduction/factor/'
+    static fuelWsrf = 'no-canopy/wind speed reduction factor'
     static fuelXi   = 'propagating flux ratio'
 
     // WindDirectionModule
@@ -362,104 +381,7 @@ export class Paths {
     static wspd10m  = 'at 10-m'
 
     // WindSpeedReductionModule
-    static wsrfMod      = 'WindSpeedReductionModule'
-    static wsrfSelf     = 'wind/speed/reduction/factor/'
-    static wsrfMidflame = 'midflame'
-}
-
-class AltPaths {
-    static paths = {
-        canopy: {
-            crown: {},
-            fire: {},
-            fuel: {},
-            wind: {speed:{reduction:{}}},
-        },
-        constants:{},
-        ellipse: {
-            axis: {},
-            backing: {},
-            beta: {},
-            beta5: {},
-            flanking: {},
-            heading: {},
-            map: {},
-            psi: {},
-            size: {},
-            temperature: {},
-            time: {},
-            vector: {},
-            wind:{speed:{midflame:{}}},
-        },
-        crown: {
-            bed: {},
-            fire: {},
-
-        },
-        map: {
-            contour: {},
-            scale: {},
-            slope: {},
-        },
-        primary: {
-            bed: {
-                dead: {
-                    d1:{}, d2:{}, d3:{}, d4:{}, d5:{},
-                },
-                live: {
-                    l1:{}, l2:{}, l3:{}, l4:{}, l5:{},
-                },
-                beta: {},
-                rxi: {},
-                wind: {speed:{reduction:{}}},   // 1
-            },
-            fire: {
-                f1:{}, f2:{}, f3:{}, f4:{}, f5:{}, f6:{}, f7:{},
-                effective: {},
-                heading: {},
-                slope: {},
-                wind: {
-                    factor: {},
-                    speed: {midflame: {}},  // 0  IS THIS USED??
-                },
-            },
-            model: {
-                standard: {},
-                chaparral: {},
-                palmetto: {},
-                aspen: {},
-            },
-            wind: {speed: {
-                midflame: {}, // 880
-                reduction: {factor: {midflame:{}}}, // 1
-            }}
-        },
-        secondary: {},  // same as 'primary'
-        terrain: {
-            slope: {
-                direction: {},
-                steepness: {},
-            },
-        },
-        weather: {
-            curing: {fraction: {}},
-            moisture: {
-                canopy: {},
-                dead: {},
-                live: {},
-            },
-            wind: {
-                direction: {},
-                speed: {},
-            },
-        },
-        weighted: {
-            fire: {
-                cover: {},
-                effectiveWind: {speed:{}},
-                heading: {},
-                ros: {},
-            }
-        },
-    }
+    static wsrfMod    = 'WindSpeedReductionModule'
+    static wsrfSelf   = 'wind/speed/reduction/'
+    static wsrfFactor = 'factor'
 }

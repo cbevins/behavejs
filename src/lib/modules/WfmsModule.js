@@ -13,7 +13,8 @@ import {WfmsConfig} from './WfmsConfig.js'
 
 import {CanopyModule} from './CanopyModule.js'
 import {ConstantsModule} from './ConstantsModule.js'
-import {CrownFuelModule} from './CrownFuelModule.js'
+import {CrownFireRothermelModule} from './CrownFireRothermelModule.js'
+import {CrownFuelRothermelModule} from './CrownFuelRothermelModule.js'
 import {DeadFuelMoistureModule} from './DeadFuelMoistureModule.js'
 import {FireEllipseModule} from './FireEllipseModule.js'
 import {LiveFuelCuringModule} from './LiveFuelCuringModule.js'
@@ -36,6 +37,7 @@ export class WfmsModule {
         this.nodeDefs = []
         
         // Prefixes
+        const crown     = 'crown/'
         const none      = ''
         const primary   = 'primary/'
         const secondary = 'secondary/'
@@ -80,7 +82,7 @@ export class WfmsModule {
         // // redction factors (due to bed depth differences),
         // but both fuels share the same terrain, weather, moisture, and curing parms.
 
-        // Primary fuel
+        // Primary fuel modules
         const stdMod1 = this._add(new StandardFuelModelModule('primary/model/', cfg.surface.primary.standard,
             deadmoisMod.path, livemoisMod.path, curingMod.path))
 
@@ -96,7 +98,7 @@ export class WfmsModule {
         const fireMod1 = this._add(new SurfaceFireModule(primary, cfg.surface.windLimit,
             bedMod1.path, slpsteepMod.path, slpdirMod.path, midflameMod1.path, winddirMod.path))
 
-        // Secondary fuel
+        // Secondary fuel modules
         const stdMod2 = this._add(new StandardFuelModelModule('secondary/model/', cfg.surface.secondary.standard,
             deadmoisMod.path, livemoisMod.path, curingMod.path))
 
@@ -120,9 +122,17 @@ export class WfmsModule {
         const ellipseMod = this._add(new FireEllipseModule(none, cfg.ellipse.link, cfg.ellipse.vector,
             wtgMod.path, canopyMod.path, slpdirMod.path, mapMod.path))
 
-        // CrownFuelModule
-        const crownFuelMod = this._add(new CrownFuelModule(none,
+        // Crown fuel modules
+        const bedModCrown = this._add(new CrownFuelRothermelModule(none,
             deadmoisMod.path, livemoisMod.path))
+
+        // TO DO - fo
+        const fireModCrown = this._add(new SurfaceFireModule(crown,
+            cfg.surface.windLimit,  // force this to APPLIED
+            bedModCrown.path,
+            slpsteepMod.path, slpdirMod.path, // force these to zero
+            midflameMod1.path,      // force this to 20-ft
+            winddirMod.path))
     }
     _add(mod) {
         this.nodeDefs.push(...mod.nodes)

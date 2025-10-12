@@ -3,9 +3,21 @@ import { Paths as P} from './Paths.js'
 import { Units as U} from './Units.js'
 import { SurfaceFuelBaseModule } from './SurfaceFuelBaseModule.js'
 
-export class CrownFuelModule extends SurfaceFuelBaseModule {
+export class CrownFuelRothermelModule extends SurfaceFuelBaseModule {
     /**
-     * Specializes the SurfaceFuelModule for crown fire modeling.
+     * Specializes the SurfaceFuelModule for use in Rothermel's active crown fire model.
+     * Rothermel uses the Timber & Litter Understory (10) fuel model
+     * with no slope and a 0.40 20-ft wind speed reduction factor
+     * to determine the active crown fire spread rate parameter,
+     * which is then multiplied by a correlation factor (3.34).
+     * 
+     * Only the following node is used directly by the Rothermel active crown fire model:
+     *  - 'crown.canopy.fuel.fire.spreadRate'
+     * 
+     * The following nodes are used by the Scott & Reinhardt
+     *  - 'crown.canopy.fuel.fire.reactionIntensity',
+     *  - 'crown.canopy.fuel.bed.heatSink',
+     *  - 'crown.canopy.fuel.fire.slope.phi'
      * 
      * @param {string} prefix Prefix for this module's fully qualified node names
      * (something like 'crown/') to append this module's 'bed/<node>' node keys

@@ -14,318 +14,434 @@ import { FireEllipseEquations as FireEllipse } from '../index.js'
 import { SurfaceFireEquations as SurfaceFire } from '../index.js'
 
 export class CrownFireModule extends ModuleBase {
-    constructor(prefix, cfg) {
+    constructor(prefix, cfg,
+            canopyPath,     // CanopyModule.path
+            primaryPath,    // SurfaceFireModule path
+            weightedPath,   // SurfaceFireWtg.path
+            mapPath,        // MapModule.path
+            crownFuelPath,  // CrownFuelModule.path
+            crownFirePath,  // CrownFireModule.path
+            windSpeedPath,
+            timePath,       // 
+            observedPath,   // ObservedFireModule.path with P.fireHpua and P.fireFli nodes
+        ) {
         super(prefix, P.crownFireSelf, P.crownFireMod, cfg)
 
-        this.nodes = [
-            // Surface fireline intensity is used by S&R for 'crown.fire.initiation.transitionRatio'
-            ['crown.fire.surface.firelineIntensity', 0, U.fireFli, cfg, [
-                [cfg.surface, Dag.assign, ['surface.weighted.fire.firelineIntensity']],
-                [cfg.any, Dag.assign, [ellPath+P.headFli]]]],
+        //----------------------------------------------------------------------
+        // Identify the required nodes from each Module
+        //----------------------------------------------------------------------
 
+        const canopyModMois = moisPath   + P.canopyMois         // 'site.canopy.fuel.foliar.moistureContent'
+        const canopyModBulk = canopyPath + P.canopyBulk         // 'site.canopy.fuel.bulkDensity'
+        const canopyModHpua = canopyPath + P.canopyHpua         // 'site.canopy.fire.heatPerUnitArea'
+        const canopyModBase = canopypath + P.canopyBase         // 'site.canopy.crown.baseHeight'
+        
+        const mapModScale   = mapPath + P.mapScale              // 'site.map.scale'
+        
+        const crownModRos   = crownFirePath + P.fireRos         // 'crown.canopy.fuel.fire.spreadRate'
+        const crownModRxi   = crownFirePath + P.fireRxi         // 'crown.canopy.fuel.fire.reactionIntensity',
+        const crownModSink  = crownFuelPath + P.fuelSink        // 'crown.canopy.fuel.bed.heatSink',
+        const crownModPhiS  = crownFirePath + P.firePhiS        // 'crown.canopy.fuel.fire.slope.phi']]]],
+
+        const obsModFli     = weightedPath  + P.fireFli         // 'site.fire.observed.firelineIntensity'
+        const obsModHpua    = weightedPath  + P.fireHpua        // 'site.fire.observed.heatPerUnitArea'
+
+        const windMod20ft   = windSpeedPath + P.wspd20ft        // 'site.wind.speed.at20ft'
+        
+        const wtdModFli     = weightedPath + P.fireFli          // 'surface.weighted.fire.firelineIntensity'
+        const wtdModHpua    = weightedPath + P.fireHpua         // 'surface.weighted.fire.heatPerUnitArea'
+
+        const primModRos    = primaryPath + P.fireHeadRos       // 'surface.primary.fuel.fire.spreadRate'
+        const primModRos0   = primaryPath + P.firep1 + P.fireRos    // 'surface.primary.fuel.bed.noWindNoSlope.spreadRate'
+        const primModPhiS   = primaryPath + P.firep1 + P.firePhiS   // 'surface.primary.fuel.fire.slope.phi'
+        const primModWsrf   = primaryPath + P.wsrfFactor        // 'surface.primary.fuel.fire.windSpeedAdjustmentFactor'
+        const primModB      = primaryPath + P.fireWindB         // 'surface.primary.fuel.fire.wind.factor.b',
+        const primModK      = primaryPath + P.fireWindK         // 'surface.primary.fuel.fire.wind.factor.k',
+
+        const elapsedTime   = timePath + P.fireTime             // 'site.fire.time.sinceIgnition'
+
+        //----------------------------------------------------------------------
+        // Define the Rothermel 'active crown fire' node keys
+        // S&R call Rothermel's crown fire spread rate 'Ractive'
+        //----------------------------------------------------------------------
+        const active = this.path + P.crownActive
+        const activeFli = active + P.fireFli                    // 'crown.fire.active.firelineIntensity'
+        const activeHpua = active + P.fireHpua                  // 'crown.fire.active.heatPerUnitArea'
+        const activeRos = active + P.fireRos                    // 'crown.fire.active.spreadRate'
+        const activeFlame = active + P.fireFlame                // 'crown.fire.active.flameLength'
+        const activeFirePow = active + P.crownPowerFire         // 'crown.fire.active.powerOfTheFire'
+        const activeWindPow = active + P.crownPowerWind         // 'crown.fire.active.powerOfTheWind'
+        const activePowerRatio = active + P.crownPowerRatio     // 'crown.fire.active.powerRatio'
+        const activePlumeDom = active + P.crownTypePlume        // 'crown.fire.active.isPlumeDominated'
+        const activeWindDriven = active + P.crownTypeWind       // 'crown.fire.active.isWindDriven'
+        
+        const activeLength = active + 'size/length'             // 'crown.fire.active.size.length'
+        const activeLwr = active + P.fireLwr                    // 'crown.fire.active.lengthToWidthRatio'
+        const activeWidth = active + 'size/width'               // 'crown.fire.active.size.width'
+        const activePerim = active + 'size/perimeter'           // 'crown.fire.active.size.perimeter'
+        const activeArea = active + 'size/area'                 // 'crown.fire.active.size.area'
+        
+        const activeMapLength = active + 'map/length'           // 'crown.fire.active.map.length'
+        const activeMapWidth = active + 'map/width'             // 'crown.fire.active.map.width'
+        const activeMapPerim = active + 'map/perimeter'         // 'crown.fire.active.map.perimeter'
+        const activeMapArea = active + 'map/area'               // 'crown.fire.active.map.area'
+
+        //----------------------------------------------------------------------
+        // Define the nodes linked to SurfaceFireWtgModule or ObservedFireModule
+        //----------------------------------------------------------------------
+        const surface = this.path + 'surface/'
+        const surfaceHpua = surface + P.fireHpua                // 'crown.fire.surface.heatPerUnitArea'
+        const surfaceFli = surface + P.fireFli                  // 'crown.fire.surface.firelineIntensity'
+
+        const activeNodes = [
             // Surface fire HPUA is used by:
-            //  - Rothermel for 'crown.fire.active.heatPerUnitArea'
+            //  - RCR for 'crown.fire.active.heatPerUnitArea'
             //  - S&R for 'crown.fire.final.firelineIntensity'
             //  - S&R for 'crown.fire.initiation.spreadRate'
-            ['crown.fire.surface.heatPerUnitArea', 0, U.fireHpua, cfg, [
-                [cfg.surface, Dag.assign, ['surface.weighted.fire.heatPerUnitArea']],
-                [cfg.any, Dag.assign, [ellPath+P.fireHpua]]]],
+            [surfaceHpua, 0, U.fireHpua, cfg, [                 // 'crown.fire.surface.heatPerUnitArea'
+                [cfg.surface, Dag.assign, [wtdModHpua]],        // 'surface.weighted.fire.firelineIntensity'
+                [cfg.any, Dag.assign, [obsModHpua]]]],          // 'site.fire.observed.firelineIntensity'
 
             //------------------------------------------------------------------
-            // Rothermel crown fire assumes a fully 'active' crown fire
-            // Inputs are:
+            // Rothermel crown fire assumes a fully 'active' crown fire. Inputs are:
             //  - surface fire heat per unit area
-            //  - crown fire active spread rate, determined from FM10, 0.4*wind20,
-            //      and fuel moisture content
-            //  - surface fire hpua
+            //  - canopy fuel  heat per unit area
+            //  - canopy spread rate for FM10, 0.4*wind20, no slope, and fuel moistures
+            //    (which in turn requires fuel moistures and FM10)
             //------------------------------------------------------------------
 
             //------------------------------------------------------------------
             // Rothermel crown fire behavior
             //------------------------------------------------------------------
 
-            ['crown.fire.active.heatPerUnitArea', 0, U.fireHpua, null, [
+            [activeHpua, 0, U.fireHpua, null, [     // 'crown.fire.active.heatPerUnitArea'
                 ['', CrownFire.hpuaActive, [
-                    'site.canopy.fire.heatPerUnitArea',
-                    'crown.fire.surface.heatPerUnitArea']]]],
+                    canopyModHpua,                  // 'site.canopy.fire.heatPerUnitArea'
+                    surfaceHpua]]]],                // 'crown.fire.surface.heatPerUnitArea'
             
-            ['crown.fire.active.spreadRate', 0, U.fireRos, null, [
+            [activeRos, 0, U.fireRos, null, [       // 'crown.fire.active.spreadRate'
                 ['', CrownFire.rActive, [
-                    'crown.canopy.fuel.fire.spreadRate']]]],
+                    crownModRos]]]],                // 'crown.canopy.fuel.fire.spreadRate'
 
-            ['crown.fire.active.firelineIntensity', 0, U.fireFli, null, [
+            [activeFli, 0, U.fireFli, null, [       // 'crown.fire.active.firelineIntensity'
                 ['', CrownFire.fliActive, [
-                    'crown.fire.active.heatPerUnitArea',
-                    'crown.fire.active.spreadRate']]]],
+                    activeHpua,                     // 'crown.fire.active.heatPerUnitArea',
+                    activeRos]]]],                  // 'crown.fire.active.spreadRate'
 
-            ['crown.fire.active.flameLength', 0, U.fireFlame, null, [
+            [activeFlame, 0, U.fireFlame, null, [   // 'crown.fire.active.flameLength'
                 ['', CrownFire.flameLengthThomas, [
-                    'crown.fire.active.firelineIntensity']]]],
+                    activeFli]]]],                  // 'crown.fire.active.firelineIntensity'
 
-            ['crown.fire.active.powerOfTheFire', 0, U.firePower, null, [
+            [activeFirePow, 0, U.firePower, null, [ // 'crown.fire.active.powerOfTheFire'
                 ['', CrownFire.powerOfTheFire, [
-                    'crown.fire.active.firelineIntensity']]]],
+                    activeFli]]]],                  // 'crown.fire.active.firelineIntensity'
 
-            ['crown.fire.active.powerOfTheWind', 0, U.windPower, null, [
+            [activeWindPow, 0, U.windPower, null, [ // 'crown.fire.active.powerOfTheWind'
                 ['', CrownFire.powerOfTheWind, [
-                    'site.wind.speed.at20ft',
-                    'crown.fire.active.spreadRate']]]],
+                    windMod20ft,                    // 'site.wind.speed.at20ft'
+                    activeRos]]]],                  // 'crown.fire.active.spreadRate'
 
-            ['crown.fire.active.powerRatio', 0, U.ratio, [
+            [activePowerRatio, 0, U.ratio, [        // 'crown.fire.active.powerRatio'
                 ['', Calc.divide, [
-                    'crown.fire.active.powerOfTheFire',
-                    'crown.fire.active.powerOfTheWind']]]],
+                    activeFirePow,                  // 'crown.fire.active.powerOfTheFire'
+                    activeWindPow]]]],              // 'crown.fire.active.powerOfTheWind'
 
-            ['crown.fire.active.isPlumeDominated', 0, U.yesno, null [
+            [activePlumeDom, 0, U.yesno, null [     // 'crown.fire.active.isPlumeDominated'
                 ['', CrownFire.isPlumeDominated, [
-                    'crown.fire.active.powerRatio']]]],
+                    activePowerRatio]]]],           // 'crown.fire.active.powerRatio'
 
-            ['crown.fire.active.isWindDriven', 0, U.yesno, null, [
+            [activeWindDriven, 0, U.yesno, null, [  // 'crown.fire.active.isWindDriven'
                 ['', CrownFire.isWindDriven, [
-                    'crown.fire.active.powerRatio']]]],
+                    activePowerRatio]]]],           // 'crown.fire.active.powerRatio'
 
             //------------------------------------------------------------------
             // Rothermel crown fire size, shape, and growth
             //------------------------------------------------------------------
             
-            ['crown.fire.active.lengthToWidthRatio', 1, U.fireLwr, null, [
+            [activeLwr, 1, U.fireLwr, null, [       // 'crown.fire.active.lengthToWidthRatio'
                 ['', CrownFire.lengthToWidthRatio, [
-                    'site.wind.speed.at20ft']]]],
+                    windMod20ft]]]],                // 'site.wind.speed.at20ft'
 
-            ['crown.fire.active.size.area', 0, U.fireArea, null, [
+            [activeArea, 0, U.fireArea, null, [     // 'crown.fire.active.size.area'
                 ['', CrownFire.area, [
-                    'crown.fire.active.size.length',
-                    'crown.fire.active.lengthToWidthRatio']]]],
+                    activeLength,                   // 'crown.fire.active.size.length'
+                    activeLwr]]]],                  // 'crown.fire.active.lengthToWidthRatio'
 
-            ['crown.fire.active.size.length', 0, U.fireDist, null, [
+            [activeLength, 0, U.fireDist, null, [   // 'crown.fire.active.size.length'
                 ['', FireEllipse.spreadDistance, [
-                    'crown.fire.active.spreadRate',
-                    'site.fire.time.sinceIgnition']]]],
+                    activeRos,                      // 'crown.fire.active.spreadRate'
+                    elapsedTime]]]],                // 'site.fire.time.sinceIgnition'
 
-            ['crown.fire.active.size.perimeter', 0, U.fireDist, null, [
+            [activePerim, 0, U.fireDist, null, [    // 'crown.fire.active.size.perimeter'
                 ['', CrownFire.perimeter, [
-                    'crown.fire.active.size.length',
-                    'crown.fire.active.lengthToWidthRatio']]]],
+                    activeLength,                   // 'crown.fire.active.size.length'
+                    activeLwr]]]],                  // 'crown.fire.active.lengthToWidthRatio'
 
-            ['crown.fire.active.size.width', 0, U.fireDist, null, [
+            [activeWidth, 0, U.fireDist, null, [    // 'crown.fire.active.size.width'
                 ['', Calc.divide, [
-                    'crown.fire.active.size.length',
-                    'crown.fire.active.lengthToWidthRatio']]]],
+                    activeLength,                   // 'crown.fire.active.size.length'
+                    activeLwr]]]],                  // 'crown.fire.active.lengthToWidthRatio'
 
-            ['crown.fire.active.map.area', 0, U.mapArea, null, [
+            [activeMapArea, 0, U.mapArea, null, [   // 'crown.fire.active.map.area'
                 ['', FireEllipse.mapArea, [
-                    'crown.fire.active.size.area',
-                    'site.map.scale']]]],
+                    activeArea,                     // 'crown.fire.active.size.area',
+                    mapModScale]]]],                // 'site.map.scale'
 
-            ['crown.fire.active.map.length', 0, U.mapDist, null, [
+            [activeMapLength, 0, U.mapDist, null, [ // 'crown.fire.active.map.length'
                 ['', Calc.divide, [
-                    'crown.fire.active.size.length',
-                    'site.map.scale']]]],
+                    activeLength,                   // 'crown.fire.active.size.length',
+                    mapModScale]]]],                // 'site.map.scale'
 
-            ['crown.fire.active.map.perimeter', 0, U.mapDist, null, [
+            [activeMapPerim, 0, U.mapDist, null, [  // 'crown.fire.active.map.perimeter'
                 ['', Calc.divide, [
-                    'crown.fire.active.size.perimeter',
-                    'site.map.scale']]]],
+                    activePerim,                    // 'crown.fire.active.size.perimeter',
+                    mapModScale]]]],                // 'site.map.scale'
 
-            [' crown.fire.active.map.width', 0, U.mapDist, null, [
+            [activeMapWidth, 0, U.mapDist, null, [  // 'crown.fire.active.map.width'
                 ['', Calc.divide, [
-                    'crown.fire.active.size.width',
-                    'site.map.scale']]]],
+                    activeWidth,                    // 'crown.fire.active.size.width',
+                    mapModScale]]]],                // 'site.map.scale'
+        ]
 
-            //------------------------------------------------------------------
-            // Scott & Reinhardt allows partial crown fires based on surface and
-            // canopy fuel & fire characteristics
-            // Inputs:
-            //  - surface fire fireline intensity
-            //  - surface fire heat per unit area
-            //  - Rothermel's 'crown.fire.active.spreadRate'
-            //  - Rothermel's 'crown.fire.active.lengthToWidthRatio' (for size and area only)
-            //  - canopy fuel bulk density
-            //  - canopy foliar moisture content
-            //  - canopy crown base height
-            //  - Rothermel's 'crown.canopy.fuel.fire.reactionIntensity',
-            //  - Rothermel's 'crown.canopy.fuel.bed.heatSink',
-            //  - Rothermel's 'crown.canopy.fuel.fire.slope.phi'
-            //  - Surface fire 'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
-            //  - Surface fire 'surface.primary.fuel.fire.windSpeedAdjustmentFactor',
-            //  - Surface fire 'surface.primary.fuel.fire.wind.factor.b',
-            //  - Surface fire 'surface.primary.fuel.fire.wind.factor.k',
-            //  - Surface fire 'surface.primary.fuel.fire.slope.phi'
-            //------------------------------------------------------------------
-            
+        //------------------------------------------------------------------
+        // Scott & Reinhardt allows partial crown fires based on surface and
+        // canopy fuel & fire characteristics
+        // Inputs:
+        //  - surface fire fireline intensity
+        //  - surface fire heat per unit area
+        //  - Rothermel's 'crown.fire.active.spreadRate'
+        //  - Rothermel's 'crown.fire.active.lengthToWidthRatio' (for size and area only)
+        //  - canopy fuel bulk density
+        //  - canopy foliar moisture content
+        //  - canopy crown base height
+        //  - Rothermel's 'crown.canopy.fuel.fire.reactionIntensity',
+        //  - Rothermel's 'crown.canopy.fuel.bed.heatSink',
+        //  - Rothermel's 'crown.canopy.fuel.fire.slope.phi'
+        //  - Surface fire 'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
+        //  - Surface fire 'surface.primary.fuel.fire.windSpeedAdjustmentFactor',
+        //  - Surface fire 'surface.primary.fuel.fire.wind.factor.b',
+        //  - Surface fire 'surface.primary.fuel.fire.wind.factor.k',
+        //  - Surface fire 'surface.primary.fuel.fire.slope.phi'
+        //------------------------------------------------------------------
+        
+        // Define crown fire *initiation* phase nodes
+        const crit = this.path + 'critical/'
+        const critActiveRos = crit + 'active/' + P.fireRos      // 'crown.fire.initiation.rPrime' R'-active
+        const critRosRatio = crit + 'spread rate/ratio'         // 'crown.fire.initiation.activeRatio'
+        const critSurfFli = crit + 'surface/' + P.fireFli       // 'crown.fire.initiation.firelineIntensity', I'-initiation
+        const critSurfFlame = crit + 'surface/' + P.fireFlame   // 'crown.fire.initiation.flameLength'
+        const critSurfRos = crit + 'surface/' + P.fireRos       // 'crown.fire.initiation.spreadRate'
+        const critTransRatio = crit + 'transition/ratio'        // 'crown.fire.initiation.transitionRatio'
+        const critWind20ft = crit + 'wind/speed/' + P.wspd20ft  // 'crown.fire.initiation.oActive'
+        const crowningIndex = 'crowning index'                  // 'crown.fire.initiation.crowningIndex'
+
+        const type = this.path + 'type/'                        // 'crown.fire.initiation.type'
+        const crownFireType = this.path + 'type/'               // 'crown.fire.initiation.type'
+        const canTransition = type + 'can transition'           // 'crown.fire.initiation.canTransition'
+        const isActive = type + 'is active crown fire'          // 'crown.fire.initiation.isActiveCrownFire'
+        const isCrown = type + 'is crown fire'                  // 'crown.fire.initiation.isCrownFire'
+        const isPassive = type + 'is passive crown fire'        // 'crown.fire.initiation.isPassiveCrownFire'
+        const isConditional = type + 'is conditional crown fire'// 'crown.fire.initiation.isConditionalCrownFire'
+        const isSurface = type + 'is surface fire'              // 'crown.fire.initiation.isSurfaceFire'
+
+        const final = this.path + 'final/'
+        const finalRsa = final + 'Rsa'                          // 'crown.fire.final.rSa'
+        const finalRos = final + P.fireRos                      // 'crown.fire.final.spreadRate'
+        const finalCfb = final + 'crown fraction burned'        // 'crown.fire.final.crownFractionBurned'
+        const finalFlame = final + P.fireFlame                  // 'crown.fire.final.flameLength'
+        const finalFli = final + P.fireFli                      // 'crown.fire.final.firelineIntensity'
+
+        const finalLength = final + 'size/length'               // 'crown.fire.final.size.length'
+        const finalWidth = final + 'size/width'                 // 'crown.fire.final.size.width'
+        const finalPerim = final + 'size/perimeter'             // 'crown.fire.final.size.perimeter'
+        const finalArea = final + 'size/area'                   // 'crown.fire.final.size.area'
+        const finalMapLength = final + 'map/length'             // 'crown.fire.final.map.length'
+        const finalMapWidth = final + 'map/width'               // 'crown.fire.final.map.width'
+        const finalMapPerim = final + 'map/perimeter'           // 'crown.fire.final.map.perimeter'
+        const finalMapArea = final + 'map/area'                 // 'crown.fire.final.map.area'
+
+        const finalNodes = [
+            // Surface fireline intensity is used by S&R for 'crown.fire.initiation.transitionRatio'
+            [surfaceFli, 0, U.fireFli, cfg, [                // 'crown.fire.surface.firelineIntensity'
+                [cfg.surface, Dag.assign, [wtgPath + P.fireFli]],
+                [cfg.any, Dag.assign, [ellPath + P.headFli]]]],
+
             //------------------------------------------------------------------
             // initiation and transition variables
             //------------------------------------------------------------------
 
             // Intermediate
-            ['crown.fire.initiation.rPrime', 0, U.fireRos, null, [
+            // S&R's R-prime-active, the critical (minimum) canopy spread rate for *active* crowning
+            [critActiveRos, 0, U.fireRos, null, [       // 'crown.fire.initiation.rPrime' R-prime-active
                 ['', CrownFire.rPrimeActive, [
-                    'site.canopy.fuel.bulkDensity']]]],
+                    canopyModBulk]]]],                  // 'site.canopy.fuel.bulkDensity'
 
             // Intermediate
-            ['crown.fire.initiation.activeRatio', 0, U.ratio, [
+            [critRosRatio, 0, U.ratio, [                // 'crown.fire.initiation.activeRatio'
                 ['', CrownFire.activeRatio, [
-                    'crown.fire.active.spreadRate',
-                    'crown.fire.initiation.rPrime']]]],
+                    activeRos,                          // 'crown.fire.active.spreadRate' R-active
+                    critActiveRos]]]],                  // 'crown.fire.initiation.rPrime' R-prime-active
 
             // Intermediate
-            ['crown.fire.initiation.firelineIntensity', 0, U.fireFli, null, [
+            [critSurfFli, 0, U.fireFli, null, [         // 'crown.fire.initiation.firelineIntensity'
                 ['', CrownFire.fliInit, [
-                    'site.canopy.fuel.foliar.moistureContent',
-                    'site.canopy.crown.baseHeight']]]],
+                    canopyModMois,                      // 'site.canopy.fuel.foliar.moistureContent'
+                    canopyModBase]]]],                  // 'site.canopy.crown.baseHeight'
                     
             // Intermediate
-            ['crown.fire.initiation.transitionRatio', 0, U.ratio, null, [
+            [critTransRatio, 0, U.ratio, null, [        // 'crown.fire.initiation.transitionRatio'
                 ['', CrownFire.transitionRatio, [
-                    'crown.fire.surface.firelineIntensity',
-                    'crown.fire.initiation.firelineIntensity']]]],
+                    surfaceFli,                         // 'crown.fire.surface.firelineIntensity'
+                    critSurfFli]]]],                    // 'crown.fire.initiation.firelineIntensity'
 
             // Output only
-            ['crown.fire.initiation.canTransition', 0, U.yesno, null, [
+            [canTransition, 0, U.yesno, null, [         // 'crown.fire.initiation.canTransition'
                 ['', CrownFire.canTransition, [
-                    'crown.fire.initiation.transitionRatio']]]],
+                    critTransRatio]]]],                 // 'crown.fire.initiation.transitionRatio'
 
             // Output only
-            ['crown.fire.initiation.flameLength', 0, U.fireFlame, null, [
+            [critSurfFlame, 0, U.fireFlame, null, [     // 'crown.fire.initiation.flameLength'
                 ['', SurfaceFire.flameLength, [
-                    'crown.fire.initiation.firelineIntensity']]]],
+                    critSurfFli]]]],                    // 'crown.fire.initiation.firelineIntensity'
 
             // Intermediate
-            ['crown.fire.initiation.spreadRate',  0, U.fireRos, null, [
+            // S&R's R-prime-initiation
+            [critSurfRos,  0, U.fireRos, null, [        // 'crown.fire.initiation.spreadRate'
                 ['', CrownFire.rInit, [
-                    'crown.fire.initiation.firelineIntensity',
-                    'crown.fire.surface.heatPerUnitArea']]]],
+                    critSurfFli,                        // 'crown.fire.initiation.firelineIntensity'
+                    surfaceHpua]]]],                    // 'crown.fire.surface.heatPerUnitArea'
             
             // Intermediate
-            ['crown.fire.initiation.oActive', 0, U.windSpeed, [
+            // According to Scott & Reinhardt, this is O-prime-active, the
+            // "critical open windspeed at 20-ft for sustaining fully active crown fire
+            [critWind20ft, 0, U.windSpeed, [            // 'crown.fire.initiation.oActive'
                 ['', CrownFire.oActive, [
-                    'site.canopy.fuel.bulkDensity',
-                    'crown.canopy.fuel.fire.reactionIntensity',
-                    'crown.canopy.fuel.bed.heatSink',
-                    'crown.canopy.fuel.fire.slope.phi']]]],
+                    canopyModBulk,                      // 'site.canopy.fuel.bulkDensity',
+                    crownModRxi,                        // 'crown.canopy.fuel.fire.reactionIntensity',
+                    crownModSink,                       // 'crown.canopy.fuel.bed.heatSink',
+                    crownModPhiS]]]],                   // 'crown.canopy.fuel.fire.slope.phi'
                     
             // Output only
-            ['crown.fire.initiation.crowningIndex', 0, U.factor, null, [
+            [crowningIndex, 0, U.factor, null, [        // 'crown.fire.initiation.crowningIndex'
                 ['', CrownFire.crowningIndex, [
-                    'crown.fire.initiation.oActive']]]],
+                    critWind20ft]]]],                   // 'crown.fire.initiation.oActive'
 
             // Output only
-            ['crown.fire.initiation.type', CrownFire.Surface, U.crownInitType, null, [
+            [crownFireType, CrownFire.Surface, U.crownInitType, null, [ // 'crown.fire.initiation.type'
                 ['', CrownFire.type, [
-                    'crown.fire.initiation.transitionRatio',
-                    'crown.fire.initiation.activeRatio']]]],
+                    critTransRatio,                     // 'crown.fire.initiation.transitionRatio'
+                    critRosRatio]]]],                   // 'crown.fire.initiation.activeRatio'
 
             // Output only
-            ['crown.fire.initiation.isActiveCrownFire', 0, U.yesno, null, [
+            [isActive, 0, U.yesno, null, [              // 'crown.fire.initiation.isActiveCrownFire'
                 ['', CrownFire.isActive, [
-                    'crown.fire.initiation.transitionRatio',
-                    'crown.fire.initiation.activeRatio']]]],
+                    critTransRatio,                     // 'crown.fire.initiation.transitionRatio'
+                    critRosRatio]]]],                   // 'crown.fire.initiation.activeRatio'
 
             // Output only
-            ['crown.fire.initiation.isCrownFire',  0, U.yesno, null, [
+            [isCrown,  0, U.yesno, null, [              // 'crown.fire.initiation.isCrownFire'
                 ['', CrownFire.isCrown, [
-                    'crown.fire.initiation.transitionRatio',
-                    'crown.fire.initiation.activeRatio']]]],
+                    critTransRatio,                     // 'crown.fire.initiation.transitionRatio'
+                    critRosRatio]]]],                   // 'crown.fire.initiation.activeRatio'
 
             // Output only
-            ['crown.fire.initiation.isPassiveCrownFire', 0, U.yesno, null, [
+            [isPassive, 0, U.yesno, null, [             // 'crown.fire.initiation.isPassiveCrownFire'
                 ['', CrownFire.isPassive, [
-                    'crown.fire.initiation.transitionRatio',
-                    'crown.fire.initiation.activeRatio']]]],
+                    critTransRatio,                     // 'crown.fire.initiation.transitionRatio'
+                    critRosRatio]]]],                   // 'crown.fire.initiation.activeRatio'
 
             // Output only
-            ['crown.fire.initiation.isConditionalCrownFire', 0, U.yesno, null, [
+            [isConditional, 0, U.yesno, null, [         // 'crown.fire.initiation.isConditionalCrownFire'
                 ['', CrownFire.isConditional, [
-                    'crown.fire.initiation.transitionRatio',
-                    'crown.fire.initiation.activeRatio']]]],
+                    critTransRatio,                     // 'crown.fire.initiation.transitionRatio'
+                    critRosRatio]]]],                   // 'crown.fire.initiation.activeRatio'
 
             // Output only
-            ['crown.fire.initiation.isSurfaceFire', 0, U.yesno, null, [
+            [isSurface, 0, U.yesno, null, [             // 'crown.fire.initiation.isSurfaceFire'
                 ['', CrownFire.isSurface, [
-                    'crown.fire.initiation.transitionRatio',
-                    'crown.fire.initiation.activeRatio']]]],
+                    critTransRatio,                     // 'crown.fire.initiation.transitionRatio'
+                    critRosRatio]]]],                   // 'crown.fire.initiation.activeRatio'
 
             //------------------------------------------------------------------
             // Final fire behavior (Scott & Reinhardt)
             //------------------------------------------------------------------
 
-            // According to Scott & Reinhardt, this is the
-            // "critical open wind speed at 20-ft that leads to cronw fire activity
-            // for a set of site charactersitcis, surface, and canopy fuel
-            // characteristics, and fuel moisture conditions."
-            //
-            // Probably better to move rSa and oActive nodes the Surface
-            ['crown.fire.final.rSa', 0, U.fireRos,  null, [
+            // According to Scott & Reinhardt, this is the "predicted surface fire
+            // spread rate that corresponds to the environmental conditions for
+            // which R-active = R'active" (p41)
+            [finalRsa, 0, U.fireRos,  null, [           // 'crown.fire.final.rSa'
                 ['', CrownFire.rSa, [
-                    'crown.fire.initiation.oActive',    // depends on crown/canopy/fuel/bed|fire chars
-                    'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
-                    'surface.primary.fuel.fire.windSpeedAdjustmentFactor',
-                    'surface.primary.fuel.fire.wind.factor.b',
-                    'surface.primary.fuel.fire.wind.factor.k',
-                    'surface.primary.fuel.fire.slope.phi']]]],
+                    critWind20ft,                       // 'crown.fire.initiation.oActive'
+                    primModRos0,                        // 'surface.primary.fuel.bed.noWindNoSlope.spreadRate',
+                    primModWsrf,                        // 'surface.primary.fuel.fire.windSpeedAdjustmentFactor'
+                    primModB,                           // 'surface.primary.fuel.fire.wind.factor.b'
+                    primModK,                           // 'surface.primary.fuel.fire.wind.factor.k'
+                    primModPhiS]]]],                    // 'surface.primary.fuel.fire.slope.phi'
 
-            ['crown.fire.final.crownFractionBurned', 0, U.fraction, null, [
+            [finalCfb, 0, U.fraction, null, [           // 'crown.fire.final.crownFractionBurned'
                 ['', CrownFire.crownFractionBurned, [
-                    'surface.primary.fuel.fire.spreadRate',
-                    'crown.fire.initiation.spreadRate',
-                    'crown.fire.final.rSa']]]],
+                    primModRos,                         // 'surface.primary.fuel.fire.spreadRate'
+                    critSurfRos,                        // 'crown.fire.initiation.spreadRate'
+                    finalRsa]]]],                       // 'crown.fire.final.rSa'
 
-            ['crown.fire.final.spreadRate', 0, U.fireRos, null, [
+            [finalRos, 0, U.fireRos, null, [            // 'crown.fire.final.spreadRate'
                 ['', CrownFire.rFinal, [
-                    'surface.primary.fuel.fire.spreadRate',
-                    'crown.fire.active.spreadRate',
-                    'crown.fire.final.crownFractionBurned']]]],
+                    primModRos,                         // 'surface.primary.fuel.fire.spreadRate',
+                    activeRos,                          // 'crown.fire.active.spreadRate'
+                    finalCfb]]]],                       // 'crown.fire.final.crownFractionBurned'
 
-            ['crown.fire.final.firelineIntensity', 0, U.fireFli, null, [
+            [finalFli, 0, U.fireFli, null, [            // 'crown.fire.final.firelineIntensity'
                 ['', CrownFire.fliFinal, [
-                    'crown.fire.final.spreadRate',
-                    'crown.fire.final.crownFractionBurned',
-                    'site.canopy.fire.heatPerUnitArea',
-                    'crown.fire.surface.heatPerUnitArea']]]],
+                    finalRos,                           // 'crown.fire.final.spreadRate'
+                    finalCfb,                           // 'crown.fire.final.crownFractionBurned'
+                    canopyModHpua,                      // 'site.canopy.fire.heatPerUnitArea'
+                    surfaceHpua]]]],                    // 'crown.fire.surface.heatPerUnitArea'
 
-            ['crown.fire.final.flameLength', 0, U.fireFlame, null, [
+            [finalFlame, 0, U.fireFlame, null, [        // 'crown.fire.final.flameLength'
                 ['', CrownFire.flameLengthThomas, [
-                    'crown.fire.final.firelineIntensity']]]],
+                    finalFli]]]],                       // 'crown.fire.final.firelineIntensity'
 
-            ['crown.fire.final.size.area', 0, U.fireArea, null, [
+            [finalArea, 0, U.fireArea, null, [          // 'crown.fire.final.size.area'
                 ['', CrownFire.area, [
-                    'crown.fire.final.size.length',
-                    'crown.fire.active.lengthToWidthRatio']]]],
+                    finalLength,                        // 'crown.fire.final.size.length'
+                    activeLwr]]]],                      // 'crown.fire.active.lengthToWidthRatio'
 
-            ['crown.fire.final.size.length', 0, U.fireDist, null, [
+            [finalLength, 0, U.fireDist, null, [
                 ['', FireEllipse.spreadDistance, [
-                    'crown.fire.final.spreadRate',
-                    'site.fire.time.sinceIgnition']]]],
+                    finalRos,                           // 'crown.fire.final.spreadRate'
+                    elapsedTime]]]],                    // 'site.fire.time.sinceIgnition'
 
-            ['crown.fire.final.size.perimeter', 0, U.fireDist, null, [
+            [finalPerim, 0, U.fireDist, null, [         // 'crown.fire.final.size.perimeter'
                 ['', CrownFire.perimeter, [
-                    'crown.fire.final.size.length',
-                    'crown.fire.active.lengthToWidthRatio']]]],
+                    finalLength,                        // 'crown.fire.final.size.length'
+                    activeLwr]]]],                      // 'crown.fire.active.lengthToWidthRatio'
 
-            ['crown.fire.final.size.width', 0, U.fireDist, null, [
+            [finalWidth, 0, U.fireDist, null, [         // 'crown.fire.final.size.width'
                 ['', Calc.divide, [
-                    'crown.fire.final.size.length',
-                    'crown.fire.active.lengthToWidthRatio']]]],
+                    finalLength,                        // 'crown.fire.final.size.length'
+                    activeLwr]]]],                      // 'crown.fire.active.lengthToWidthRatio'
                     
-            ['crown.fire.final.map.area', 0, U.mapArea, null, [
+            [finalMapArea, 0, U.mapArea, null, [        // 'crown.fire.final.map.area'
                 ['', FireEllipse.mapArea, [
-                    'crown.fire.final.size.area',
-                    'site.map.scale']]]],
+                    finalArea,                          // 'crown.fire.final.size.area'
+                    mapModScale]]]],
 
-            ['crown.fire.final.map.length', 0, U.mapDist, null, [
+            [finalMapLength, 0, U.mapDist, null, [      // 'crown.fire.final.map.length
                 ['', Calc.divide, [
-                    'crown.fire.final.size.length',
-                    'site.map.scale']]]],
+                    finalLength,                        // 'crown.fire.final.size.length'
+                    mapModScale]]]],
 
-            ['crown.fire.final.map.perimeter', 0, U.mapDist, null, [
+            [finalMapPerim, 0, U.mapDist, null, [       // 'crown.fire.final.map.perimeter'
                 ['', Calc.divide, [
-                    'crown.fire.final.size.perimeter',
-                    'site.map.scale']]]],
+                    finalPerim,                         // 'crown.fire.final.size.perimeter'
+                    mapModScale]]]],
 
-            ['crown.fire.final.map.width', 0, U.mapDist, null, [
+            [finalMapWidth, 0, U.mapDist, null, [       // 'crown.fire.final.map.width'
                 ['', Calc.divide, [
-                    'crown.fire.final.size.width',
-                    'site.map.scale']]]],
+                    finalWidth,                         // 'crown.fire.final.size.width'
+                    mapModScale]]]],
         ]
+
+        this.nodes = [...activeNodes, ...finalNodes]
     }
 }

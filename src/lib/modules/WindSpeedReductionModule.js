@@ -17,7 +17,7 @@ export class WindSpeedReductionModule extends ModuleBase {
         const path = this.path
         
         this.nodes = [
-            [path+P.wsrfMidflame, 1, U.fraction, cfg, [
+            [path+P.wsrfFactor, 1, U.fraction, cfg, [
                 [cfg.observed, Dag.input, []],
                 [cfg.estimated, Bed.windSpeedAdjustmentFactor, [
                     canopyPath + P.canopyShelters,

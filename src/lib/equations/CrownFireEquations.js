@@ -180,14 +180,14 @@ export class CrownFireEquations {
   static oActive (cpyBulk, crownRxi, crownSink, phis) {
     if (cpyBulk === 0 || crownSink === 0) return Infinity
     // In native units
-    const cbd = 16.0185 * cpyBulk // Convert from lb/ft3 to kg/m3
+    const cbd = 16.0185 * cpyBulk       // Convert from lb/ft3 to kg/m3
     const ractive = 3.28084 * (3 / cbd) // R'active, ft/min
-    const r10 = ractive / 3.34 // R'active = 3.324 * r10
-    const pflux = 0.048317062998571636 // Fuel model 10 actual propagating flux ratio
+    const r10 = ractive / 3.34          // R'active = 3.324 * r10
+    const pflux = 0.048317062998571636  // Fuel model 10 actual propagating flux ratio
     const ros0 = (crownRxi * pflux) / crownSink
     if ((ros0 - 1 - phis) === 0) return Infinity
-    const windB = 1.4308256324729873 // Fuel model 10 actual wind factor B
-    const windBInv = 1 / windB // Fuel model 10 actual inverse of wind factor B
+    const windB = 1.4308256324729873    // Fuel model 10 actual wind factor B
+    const windBInv = 1 / windB          // Fuel model 10 actual inverse of wind factor B
     const windK = 0.0016102128596515481 // Fuel model 10 actual K = C*pow((beta/betOpt),-E)
     const a = (r10 / ros0 - 1 - phis) / windK
     if (a === 0) return Infinity
