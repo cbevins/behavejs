@@ -1,7 +1,7 @@
 import {Units as U} from './Units.js'
 import {DagModule, DagNode} from './DagItems.js'
 /**
- *
+ * Defines all the DagNodes within the Rothermel Fire and Fuel Model (1972)
  * @param {DagModule} parentMod Reference to the parent DagModule,
  *  usually  site.surface.primary, site.surface.secondary, or site.crown.active
  * @param {string} parentProp Parent's property name for this DagItem
@@ -10,6 +10,7 @@ import {DagModule, DagNode} from './DagItems.js'
 export function defineRothermelModule(parentMod, parentProp, configFuelDomain) {
     const mod = new DagModule(parentMod, parentProp)
 
+    // mod.fire
     mod.fire = new DagModule(mod, 'fire')
     const fire = mod.fire
     fire.dir   = new DagNode(fire, 'dir', U.compass)
@@ -21,6 +22,7 @@ export function defineRothermelModule(parentMod, parentProp, configFuelDomain) {
     fire.rosA  = new DagNode(fire, 'rosA', U.fireRos)
     fire.rosH  = new DagNode(fire, 'rosH', U.fireRos)
 
+    // mod.fuel
     mod.fuel = new DagModule(mod, 'fuel')
     const fuel = mod.fuel
     if (configFuelDomain.value === configFuelDomain.standard) {
@@ -48,6 +50,7 @@ export function defineRothermelModule(parentMod, parentProp, configFuelDomain) {
     fuel.wsrf   = new DagNode(fuel, 'wsrf', U.fraction, 'open canopy wind speed reduction factor')
     fuel.xi     = new DagNode(fuel, 'xi', U.ratio)
 
+    // mod.fuel.<lcat>
     mod.fuel.dead = new DagModule(fuel, 'dead')
     mod.fuel.live = new DagModule(mod, 'live')
     for(let lcat of [mod.fuel.dead, mod.fuel.live]) {
@@ -72,11 +75,12 @@ export function defineRothermelModule(parentMod, parentProp, configFuelDomain) {
         lcat.scar = new DagNode(lcat, 'scar', U.fuelWtg)
         lcat.seff = new DagNode(lcat, 'seff', U.fraction)
         lcat.vol  = new DagNode(lcat, 'vol', U.fuelVol)
+        // mod.fuel.<lcat>.element<n>
         for(let i=1; i<=5; i++) {
             const prop = 'element'+i
             lcat[prop] = new DagModule(lcat, prop)
             const el = lcat[prop]
-            el.life = new DagNode(el, 'life', U.fuelLife).constant(lcat.life)
+            el.life = new DagNode(el, 'life', U.fuelLife).constant(lcat.prop())
             // The following 8 props must be configured based on fuel domain
             el.type = new DagNode(el, 'type', U.fuelType)
             el.load = new DagNode(el, 'load', U.fuelLoad)
@@ -95,9 +99,10 @@ export function defineRothermelModule(parentMod, parentProp, configFuelDomain) {
             el.leng = new DagNode(el, 'leng', U.fuelLeng)
             el.net  = new DagNode(el, 'net', U.fuelLoad)
             el.qig  = new DagNode(el, 'qig', U.fuelQig)
+            el.sawf = new DagNode(el, 'sawf', U.fuelWtg)
+            el.scwf = new DagNode(el, 'scwf', U.fuelWtg)
             el.size = new DagNode(el, 'size', U.fuelSize)
             el.vol  = new DagNode(el, 'vol', U.fuelVol)
-            el.scwf = new DagNode(el, 'scwf', U.fuelWtg)
         }
     }
     return mod

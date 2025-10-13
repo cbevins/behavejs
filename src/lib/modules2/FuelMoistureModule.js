@@ -7,8 +7,7 @@ import {DagModule, DagNode} from './DagItems.js'
  * @param {string} parentProp Parent's property name for this DagItem
  * @returns Reference to the new DagModule 
  */
-export function buildFuelMoistureModule(parentMod, parentProp,
-        configDead, configLive) {
+export function defineFuelMoistureModule(parentMod, parentProp) {
     const mod = new DagModule(parentMod, parentProp)
 
     mod.dead = new DagModule(mod, 'dead')
@@ -19,8 +18,6 @@ export function buildFuelMoistureModule(parentMod, parentProp,
     for(let prop of ['category', 'herb', 'stem'])
         mod.live[prop] = new DagNode(mod.live, prop, U.fuelMois)
 
-    configFuelMoistureModule(mod.dead, configDead, ['tl1', 'tl10', 'tl100'])
-    configFuelMoistureModule(mod.live, configLive, ['herb', 'stem'])
     return mod
 }
 
@@ -29,9 +26,12 @@ export function buildFuelMoistureModule(parentMod, parentProp,
  * @param {DagModule} mod Reference to the DagModule whose DagNodes are to be configured
  * @param {DagConfig} config Reference to the DagConfig to be applied
  */
-export function configFuelMoistureModule(mod, config, elements) {
-    // life category fuel moisture is always an input, so no config
-    mod.category.input()
+export function configFuelMoistureModule(mod, configDead, configLive) {
+    configFuelMoistureLifeModule(mod.dead, configDead, ['tl1', 'tl10', 'tl100'])
+    configFuelMoistureLifeModule(mod.live, configLive, ['herb', 'stem'])
+}
+function configFuelMoistureLifeModule(mod, config, elements) {
+    mod.category.input()    // life category fuel moisture is always an input, so no config
     for(let prop of elements) {
         if (config.value === config.category) mod[prop].bind(mod.category, config)
         else if (config.value === config.element) mod[prop].input(config)

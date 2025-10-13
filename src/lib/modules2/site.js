@@ -1,11 +1,17 @@
 import * as Config from './Configs.js'
 import { Dag } from './Dag.js'
-import { DagModule, DagNode, ModuleMap } from './DagItems.js'
+import { DagModule, DagNode, NodeMap } from './DagItems.js'
 import { Util } from './Util.js'
-import { buildFuelMoistureModule } from './FuelMoistureModule.js'
+import { defineFuelMoistureModule, configFuelMoistureModule } from './FuelMoistureModule.js'
 import { defineRothermelModule } from './defineRothermelModule.js'
+import { configRothermelModule } from './configRothermelModule.js'
 console.log(new Date())
 
+function dump(node) {
+    const {_meta, value, units, updater, suppliers, config, consumers, dirty, status} = node
+    const {key, parent, prop, label, isNode} = _meta
+    console.log(`Node "${key}" = [${value}] ${status} ${dirty} ${updater.name}`)
+}
 //------------------------------------------------------------------------------
 /*
     moisture/ FuelMoistureModule [configMoistureDead, configMoistureLive]
@@ -56,34 +62,40 @@ console.log(new Date())
                     factor/
                         b, c, e, k, i
 */
-
+function configureSite(site) {
+    configFuelMoistureModule(site.moisture, Config.fuelMoistureDead, Config.fuelMoistureLive)
+    configRothermelModule(site.surface.primary, site.moisture, site.wind, site.slope,
+        Config.fuelDomainPrimary, Config.fireEffWindLimit, Config.fuelCuring)
+}
 const site = new DagModule(null, 'site')
-site.moisture = buildFuelMoistureModule(site, 'moisture',
-    Config.fuelMoistureDead, Config.fuelMoistureLive)
+site.moisture = defineFuelMoistureModule(site, 'moisture')
 
 site.slope = new DagModule(site, 'slope') // to be replaced by buildSlopeModule()
 site.wind = new DagModule(site, 'wind') // to be replaced by buildWindModule()
 
 site.surface = new DagModule(site, 'surface')
-site.surface.primary = defineRothermelModule(site.surface, 'primary',
-    Config.fuelDomainPrimary)
+site.surface.primary = defineRothermelModule(site.surface, 'primary', Config.fuelDomainPrimary)
+configureSite(site)
+// console.log(Util.moduleTreeStr(site))
 
-console.log(Util.moduleTreeStr(site))
+const dag = new Dag(NodeMap, 'Test')
+const fuel = site.surface.primary.fuel
+const {stdKey, dead, live} = fuel
+const {tl1, tl10, tl100} = site.moisture.dead
+const {herb, stem} = site.moisture.live
+const bulk = fuel.bulk
+const d1load = dead.element1.load
 
-// for(let [key, mod] of ModuleMap.entries()) {
-//     // Only call configure on non-nodes
-//     if(!mod.isNode()) mod.configure()
-// }
+dag.select(bulk)
+Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
-//------------------------------------------------------------------------------
-// const dead = site.moisture.dead
-// const tl1 = site.moisture.dead.tl1
-// for(let item of [dead, tl1]) {
-//     console.log(`\nkey() of "${item.key()}" is "${item.key()}"`)
-//     console.log(`lineage() of "${item.key()}" is [${item.lineage()}]`)
-//     console.log(`isNode() of "${item.key()}" is "${item.isNode()}"`)
-//     console.log(`items() of "${item.key()}" is "${item.items()}"`)
-//     console.log(`allProps() of "${item.key()}" is "${item.allProps()}"`)
-//     console.log(`propTreeArray() of "${item.key()}" is "${item.propTreeArray()}"`)
-//     console.log(`rootModule() of "${item.key()}" is "${item.rootModule().key()}"`)
-// }
+dag.set(stdKey, '10')
+dag.set(tl1, 0.05)
+dag.set(tl1, 0.07)
+dag.set(tl1, 0.09)
+dag.set(herb, 0.5)
+dag.set(stem, 1.5)
+Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
+
+dag.updateAll()
+dump(bulk)

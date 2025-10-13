@@ -30,8 +30,6 @@ export class DagItem {
     parent() { return this._meta.parent }
     prop() { return this._meta.prop }
 
-    configure() { return this }
-
     // Returns an array of the module's immediate child DagItems (both modules and nodes) as [prop, node] pairs
     items() {
         const ar = []
@@ -81,6 +79,7 @@ export class DagModule extends DagItem {
     constructor(parent, prop, label=null) {
         super(parent, prop, label)
         this._meta.isNode = false
+        ModuleMap.set(this._meta.key, this)
     }
 }
 
@@ -88,19 +87,19 @@ export class DagModule extends DagItem {
 // DagNodes may have no DagItem children, just its Dag related props
 //------------------------------------------------------------------------------
 export class DagNode extends DagItem {
-    constructor(parent, key, units, label=null, value=null) {
-        super(parent, key, label)
+    constructor(parent, prop, units, label=null, value=null) {
+        super(parent, prop, label)
         this._meta.isNode = true    // Reset to TRUE
-        this.units      = units     // reference to the Units object
         this.value      = (value===null) ? units.value : value
-        // console.log(`Node "${key}" is ${units.key} of ${this.value}`)
+        this.units      = units     // reference to the Units object
+        // console.log(`Node "${prop}" is ${units.key} of ${this.value}`)
         this.consumers  = []
         this.status     = 0
         this.dirty      = true
         this.constant(value)
         NodeMap.set(this._meta.key, this)
     }
-    bind(other, config) {
+    bind(other, config=null) {
         this.updater = Dag.bind     // reference to the updater method
         this.suppliers = [other]    // only supplier is the bound DagNode
         this.config = config        // reference to the configuration object, or NULL
