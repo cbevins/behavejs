@@ -12,6 +12,7 @@ export class CanopyEquations {
     static crownFill (cover, cratio) {
       return (Calc.fraction(cratio) * Calc.fraction(cover)) / 3
     }
+    static crownFillRatio(cover, cratio) { return CanopyEquations.crownFill(cover, cratio) }
 
     // Canopy base height
     static canopyBaseFromRatioHeight(ratio, height) {

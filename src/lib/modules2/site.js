@@ -2,6 +2,7 @@ import * as Config from './Configs.js'
 import { Dag } from './Dag.js'
 import { DagModule, DagNode, NodeMap } from './DagItems.js'
 import { Util } from './Util.js'
+import { defineCanopyModule, configCanopyModule } from './CanopyModule.js'
 import { defineFuelMoistureModule, configFuelMoistureModule } from './FuelMoistureModule.js'
 import { defineRothermelModule, configRothermelModule } from './RothermelModule.js'
 import { defineSlopeModule, configSlopeModule } from './SlopeModule.js'
@@ -17,6 +18,7 @@ function dump(node) {
 }
 
 function configureSite(site) {
+    configCanopyModule(site.canopy, Config.canopyHeight)
     configFuelMoistureModule(site.moisture, Config.fuelMoistureDead, Config.fuelMoistureLive)
     configSlopeModule(site.slope, Config.slopeDirection, Config.slopeSteepness)
     configWindModule(site.wind, site.slope, Config.windDirection, Config.windSpeed)
@@ -27,8 +29,8 @@ function configureSite(site) {
 //------------------------------------------------------------------------------
 
 const site = new DagModule(null, 'site')
+site.canopy = defineCanopyModule(site, 'canopy')
 site.moisture = defineFuelMoistureModule(site, 'moisture')
-site.canopy = new DagModule(site, 'canopy')
 site.slope = defineSlopeModule(site, 'slope')
 site.wind = defineWindModule(site, 'wind')
 site.surface = new DagModule(site, 'surface')

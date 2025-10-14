@@ -8,6 +8,15 @@ function makeConfig(key, prompt, prompts=[]) {
     return cfg
 }
 
+export const canopyHeight = makeConfig('canopyHeight',
+    'canopy height parameters are entered for', [
+        ['baseHeight', 'total and crown base heights'],
+        ['ratioHeight', 'total height and crown ratio'],
+        ['lengthHeight', 'total height and crown length'],
+        ['ratioBase', 'crown base height and crown ratio'],
+        ['ratioLength', 'crown length and crown ratio'],
+        ['lengthBase', 'crown length and base height']])
+
 export const fireEffWindLimit = makeConfig('effwindLimit',
     'effective wind speed limit is', [
         ['applied', 'applied'],

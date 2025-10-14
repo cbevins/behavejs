@@ -47,5 +47,7 @@ export class Units {
     static fuelVol  = {key: 'fuel volume',              type: 'volume',     value: 0,   units: ['ft3', 'm3']}
     static fuelWtg  = {key: 'fuel weighting factor',    type: 'fraction',   value: 0}
 
+    static treeLeng = {key: 'tree length',              type: 'distance',   value: 0, units: ['ft', 'm']}
+
     static windSpeed= {key: 'wind speed',               type: 'velocity',   value: 0, units: ['ft/min', 'mi/h', 'm/s', 'km/h']}
 }
