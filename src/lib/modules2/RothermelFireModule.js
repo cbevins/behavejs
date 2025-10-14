@@ -46,11 +46,11 @@ export function defineRothermelFireModule(parentMod, parentProp) {
     p2.ros = new DagNode(p2, 'ros', U.fireRos)
 
     // Final fire parameters
-    mod.ros = new DagNode(mod, '', U.fireRos)
-    mod.phiE = new DagNode(mod, '', U.factor)
-    mod.weff = new DagNode(mod, '', U.windSpeed)
-    mod.weffLim = new DagNode(mod, '', U.windSpeed)
-    mod.weffX = new DagNode(mod, '', U.bool)
+    mod.ros = new DagNode(mod, 'ros', U.fireRos)
+    mod.phiE = new DagNode(mod, 'phiE', U.factor)
+    mod.weff = new DagNode(mod, 'weff', U.windSpeed)
+    mod.weffLim = new DagNode(mod, 'weffLim', U.windSpeed)
+    mod.weffX = new DagNode(mod, 'weffX', U.bool)
     // Direction of maximum spread
     mod.dir = new DagModule(mod, 'direction')
     mod.dir.upslope = new DagNode(mod.dir, 'upslope', U.compass)

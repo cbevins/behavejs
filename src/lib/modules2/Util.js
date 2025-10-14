@@ -29,7 +29,6 @@ export class Util {
         const w2 = nodes.reduce((w, node) => Math.max((''+node.units).length, w), 0)
         const w3 = nodes.reduce((w, node) => Math.max((''+node.updater.name).length, w), 0)
         const w6 = nodes.reduce((w, node) => Math.max((''+node.status).length, w), 0)
-        const w7 = nodes.reduce((w, node) => Math.max((''+node.dirty).length, w), 0)
         let str = `\n${nodes.length} ${title}\n`
         for(let node of nodes) {
             // get all the node properties
@@ -39,7 +38,7 @@ export class Util {
             str += key.padEnd(w0+2)
             str += ('"'+value+'"').padEnd(w1+4)
             str += status.padEnd(w6+2)
-            str += dirty.padEnd(w7+2)
+            str += dirty ? 'DIRTY  ' : 'CLEAN  '
             str += (updater.name).padEnd(w3+2)
             str += (''+suppliers.length).padStart(4)
             str += (''+consumers.length).padStart(4)

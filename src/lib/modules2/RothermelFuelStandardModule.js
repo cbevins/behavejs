@@ -56,5 +56,5 @@ export function configRothermelFuelStandardModule(mod, moistureMod, domain, curi
     l2.type.use(Catalog.standardTypeStem, [mod.stdKey], domain)
     l2.load.use(Catalog.standardLoadStem, [mod.stdKey], domain)
     l2.savr.use(Catalog.standardSavrStem, [mod.stdKey], domain)
-    l2.mois.bind(moistureMod.live.herb, domain)
+    l2.mois.bind(moistureMod.live.stem, domain)
 }

@@ -138,9 +138,9 @@ export function configRothermelFuelModule(mod, moistureMod, domain, curing) {
             mod.rxvo, lcat.net, lcat.heat, lcat.etas], domain)
         lcat.efol.use(Calc.sum, [p1.efol, p2.efol, p3.efol, p4.efol, p5.efol], domain)
         // The following 2 nodes only exist for the surface fire 'dead' category
-        if (lcat.life === 'dead') {
+        if (lcat.life.value === 'dead') {
             lcat.efwl.use(Calc.sum, [p1.efwl, p2.efwl, p3.efwl, p4.efwl, p5.efwl], domain)
-            lcat.efmc.use(Calc.divide, [dead.efwl, dead.efol], domain)
+            lcat.efmc.use(Calc.divide, [lcat.efwl, lcat.efol], domain)
         }
         lcat.etas.use(Bed.mineralDamping, [lcat.seff], domain)
         lcat.etam.use(Bed.moistureDamping, [lcat.mois, lcat.mext], domain)
@@ -149,7 +149,7 @@ export function configRothermelFuelModule(mod, moistureMod, domain, curing) {
             p1.heat, p2.heat, p3.heat, p4.heat, p5.heat], domain)
         lcat.load.use(Calc.sum, [p1.load, p2.load, p3.load, p4.load, p5.load], domain)
         // The following 2 nodes only exist for the surface fire 'live' category
-        if (lcat.life === 'live') {
+        if (lcat.life.value === 'live') {
             lcat.mextf.use(Bed.liveFuelExtinctionMoistureContentFactor, [
                 mod.dead.efol, mod.live.efol], domain)
             lcat.mext.use(Bed.liveFuelExtinctionMoistureContent, [
