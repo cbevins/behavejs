@@ -1,25 +1,31 @@
-import {Units as U} from './Units.js'
-import {DagModule, DagNode} from './DagItems.js'
+import { Units as U } from './Units.js'
+import { DagModule, DagNode } from './DagItems.js'
 import { Calc, FuelElementEquations as Fuel } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
-import { configRothermelFuelStandardModule } from './RothermelFuelStandardModule.js'
+import { configRothermelFuelStandardModule, defineRothermelFuelStandardModule } from './RothermelFuelStandardModule.js'
+import * as Config from './Configs.js'
 
 /**
  * Defines all the DagNodes within the Rothermel Fire and Fuel Model (1972)
  * @param {DagModule} parentMod Reference to the parent DagModule,
  *  usually  site.surface.primary, site.surface.secondary, or site.crown.active
  * @param {string} parentProp Parent's property name for this DagItem
+ * @param {DagConfig} configDomain Either Config.fuelDomainPrimary or Config.fuelDomainSecondary
  * @returns Reference to the new DagModule 
  */
-export function defineRothermelFuelModule(parentMod, parentProp, configFuelDomain) {
+export function defineRothermelFuelModule(parentMod, parentProp, configDomain) {
     const mod = new DagModule(parentMod, parentProp)
-    // Put these into defineRothermelFuelStandardModule()?
-    if (configFuelDomain.value === configFuelDomain.standard) {
-        mod.stdKey = new DagNode(mod, 'stdKey', U.fuelKey)
-        mod.cured = new DagNode(mod, 'cured', U.fraction)
-        mod.curedEst = new DagNode(mod, 'curedEst', U.fraction)
-        mod.curedInp = new DagNode(mod, 'curedInp', U.fraction)
+    const domain = mod.domain = new DagModule(mod, 'domain')
+    // Create some empty modules to be built below
+    domain.standard = new DagModule(domain, 'standard')
+    domain.custom = new DagModule(domain, 'custom')
+    domain.chaparral = new DagModule(domain, 'chaparral')
+    domain.palemtto = new DagModule(domain, 'palmetto')
+    domain.aspen = new DagModule(domain, 'aspen')
+    if (configDomain.value === configDomain.standard) {
+        domain.standard = defineRothermelFuelStandardModule(domain, 'standard')
     }
+
     mod.area   = new DagNode(mod, 'area', U.fuelArea)
     mod.bulk   = new DagNode(mod, 'bulk', U.fuelBulk)
     mod.depth  = new DagNode(mod, 'depth', U.fuelDepth)
@@ -102,7 +108,8 @@ export function defineRothermelFuelModule(parentMod, parentProp, configFuelDomai
  * @param {DagModule} parentMod Reference to the parent DagModule
  * @param {string} parentProp Parent's property name for this DagItem
  */
-export function configRothermelFuelModule(mod, moistureMod, domain, curing) {
+export function configRothermelFuelModule(mod, moistureMod, domain) {
+    const curing = Config.fuelCuring
     // Fuel bed nodes
     mod.area.use(Calc.sum, [mod.dead.area,  mod.live.area], domain)
     mod.beta.use(Bed.packingRatio, [mod.dead.vol, mod.live.vol, mod.depth], domain)
@@ -200,7 +207,11 @@ export function configRothermelFuelModule(mod, moistureMod, domain, curing) {
 
     // Fuel domain configuration
     if (domain.value === domain.standard) {
-        configRothermelFuelStandardModule(mod, moistureMod, domain, curing)
+        configRothermelFuelStandardModule(
+            mod.domain.standard,
+            mod,        // this RothermelFuelModule
+            moistureMod,
+            domain, curing)
     } else {
         throw new Error(`Unknown config "${config.key}" value "${config.value}"`)
     }

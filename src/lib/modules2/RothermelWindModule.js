@@ -1,6 +1,7 @@
 import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
 import { Calc } from '../index.js'
+import * as Config from './Configs.js'
 
 /**
  * Builds and configures a FuelMoistureModule
@@ -15,7 +16,8 @@ export function defineRothermelWindModule(parentMod, parentProp) {
     return mod
 }
 
-export function configRothermelWindModule(mod, windMod, fuelMod, canopyMod, config) {
+export function configRothermelWindModule(mod, windMod, fuelMod, canopyMod) {
+    const config = Config.midflameWindSpeed
     if(config.value === config.input) {
         mod.midflame.input(config)
     } else if(config.value === config.wsrf) {

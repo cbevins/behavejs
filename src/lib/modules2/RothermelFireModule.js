@@ -5,6 +5,8 @@ import { FuelElementEquations as Fuel } from '../index.js'
 import { Calc, CompassEquations as Compass } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
+import * as Config from './Configs.js'
+
 /**
  * Defines all the DagNodes within the Rothermel Fire and Fuel Model (1972)
  * @param {DagModule} parentMod Reference to the parent DagModule,
@@ -66,7 +68,8 @@ export function defineRothermelFireModule(parentMod, parentProp) {
     return mod
 }
 
-export function configRothermelFireModule(mod, windMod, slopeMod, configWeff) {
+export function configRothermelFireModule(mod, windMod, slopeMod) {
+    const config = Config.fireEffWindLimit
     const fuel = mod.parent().fuel
     const wind = mod.parent().wind
     const {part1:p1, part2:p2, part3:p3, part4:p4, part5:p5, part6:p6, part7:p7} = mod
@@ -128,14 +131,14 @@ export function configRothermelFireModule(mod, windMod, slopeMod, configWeff) {
     p7.weff.use(Fire.effectiveWindSpeed, [p7.phiE, mod.windB, mod.windI])
 
     // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
-    if (configWeff.value === configWeff.applied) {
-        mod.ros.bind(p7.ros, configWeff)
-        mod.phiE.bind(p7.phiE, configWeff)
-        mod.weff.bind(p7.weff, configWeff)
+    if (config.value === config.applied) {
+        mod.ros.bind(p7.ros, config)
+        mod.phiE.bind(p7.phiE, config)
+        mod.weff.bind(p7.weff, config)
     } else {
-        mod.ros.bind(p6.ros, configWeff)
-        mod.phiE.bind(p6.phiE, configWeff)
-        mod.weff.bind(p6.weff, configWeff)
+        mod.ros.bind(p6.ros, config)
+        mod.phiE.bind(p6.phiE, config)
+        mod.weff.bind(p6.weff, config)
     }
     // Direction of maximum spread
     mod.dir.upslope.use(Fire.spreadDirectionFromUpslope, [p2.rosXcomp, p2.rosYcomp, p2.ros])

@@ -22,11 +22,11 @@ export const fireEffWindLimit = makeConfig('effwindLimit',
         ['applied', 'applied'],
         ['notApplied', 'not applied']])
 
-export const fireWeighting = makeConfig('effwindLimit',
-    'surface fire results are', [
-        ['primary', 'for the primary fuel only'],
-        ['harmonic', 'harmonic mean of primary and secondary fuels'],
-        ['arithmetic', 'arithmetic mean of primary and secondary fuels']])
+export const surfaceFire = makeConfig('surfaceFire',
+    'surface fire behavior is calculated for', [
+        ['onefuel', 'a single fuel model only'],
+        ['harmonic', 'two fuel models with a harmonic mean spread rate'],
+        ['arithmetic', 'two fuel models with an arithmetic mean spread rate']])
 
 export const fuelCuring = makeConfig('fuelCuring',
     'live fuel curing fraction is', [

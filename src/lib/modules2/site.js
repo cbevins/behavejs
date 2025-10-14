@@ -4,10 +4,9 @@ import { DagModule, DagNode, NodeMap } from './DagItems.js'
 import { Util } from './Util.js'
 import { defineCanopyModule, configCanopyModule } from './CanopyModule.js'
 import { defineFuelMoistureModule, configFuelMoistureModule } from './FuelMoistureModule.js'
-import { defineRothermelModule, configRothermelModule } from './RothermelModule.js'
 import { defineSlopeModule, configSlopeModule } from './SlopeModule.js'
 import { defineWindModule, configWindModule } from './WindModule.js'
-
+import { defineSurfaceModule, configSurfaceModule } from './SurfaceModule.js'
 console.log(new Date())
 
 //------------------------------------------------------------------------------
@@ -26,8 +25,7 @@ function configureSite(site) {
     configSlopeModule(site.slope, Config.slopeDirection, Config.slopeSteepness)
     configWindModule(site.wind, site.slope, Config.windDirection, Config.windSpeed)
 
-    configRothermelModule(site.surface.primary, site.moisture, site.wind, site.slope, site.canopy,
-        Config.fuelDomainPrimary, Config.fireEffWindLimit, Config.fuelCuring, Config.midflameWindSpeed)
+    configSurfaceModule(site.surface, site.moisture, site.wind, site.slope, site.canopy)
 }
 //------------------------------------------------------------------------------
 
@@ -36,8 +34,8 @@ site.canopy = defineCanopyModule(site, 'canopy')
 site.moisture = defineFuelMoistureModule(site, 'moisture')
 site.slope = defineSlopeModule(site, 'slope')
 site.wind = defineWindModule(site, 'wind')
-site.surface = new DagModule(site, 'surface')
-site.surface.primary = defineRothermelModule(site.surface, 'primary', Config.fuelDomainPrimary)
+site.surface = defineSurfaceModule(site, 'surface')
+
 // console.log(Util.moduleTreeStr(site))
 configureSite(site)
 
@@ -49,7 +47,7 @@ const {fire, fuel} = primary
 const {dead, live} = fuel
 
 // Common input nodes
-const {stdKey} = fuel
+const {stdKey} = fuel.domain.standard
 const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
 const {steep} = slope
@@ -62,7 +60,7 @@ const area = fuel.area
 const bulk = fuel.bulk
 const beta = fuel.beta
 const savr = fuel.savr
-const cured = fuel.cured
+const cured = fuel.domain.standard.cured
 const deadEtam = dead.etam
 const deadRxi = dead.rxi
 const liveEtam = live.etam
@@ -103,7 +101,6 @@ dump(liveLoad, 0.092)
 dump(liveMextF, 6.908948234294801)
 dump(live.mext, 5.1935979022741359)
 dump(liveEtas, 0.41739692790939131)
-console.log('Things start to go wrong here')
 dump(liveMois, 1.5)
 dump(liveEtam, 0.59341294014849078)
 dump(liveRxi, 2182.287993033714)

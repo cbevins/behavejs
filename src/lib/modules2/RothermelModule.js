@@ -19,10 +19,9 @@ export function defineRothermelModule(parentMod, parentProp, configFuelDomain) {
     return mod
 }
 
-export function configRothermelModule(mod,
-        moistureMod, windMod, slopeMod, canopyMod,
-        configFuelDomain, configFireEffWindLimit, configFuelCuring, configMidflame) {
-    configRothermelFireModule(mod.fire, windMod, slopeMod, configFireEffWindLimit)
-    configRothermelFuelModule(mod.fuel, moistureMod, configFuelDomain, configFuelCuring)
-    configRothermelWindModule(mod.wind, windMod, mod.fuel, canopyMod, configMidflame)
+export function configRothermelModule(mod, moistureMod, windMod, slopeMod, canopyMod,
+        configFuelDomain) {
+    configRothermelFireModule(mod.fire, windMod, slopeMod)
+    configRothermelFuelModule(mod.fuel, moistureMod, configFuelDomain)
+    configRothermelWindModule(mod.wind, windMod, mod.fuel, canopyMod)
 }
