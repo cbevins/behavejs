@@ -24,7 +24,6 @@ function configureSite(site) {
     configFuelMoistureModule(site.moisture, Config.fuelMoistureDead, Config.fuelMoistureLive)
     configSlopeModule(site.slope, Config.slopeDirection, Config.slopeSteepness)
     configWindModule(site.wind, site.slope, Config.windDirection, Config.windSpeed)
-
     configSurfaceModule(site.surface, site.moisture, site.wind, site.slope, site.canopy)
 }
 //------------------------------------------------------------------------------
@@ -56,24 +55,24 @@ const {midflame, wsrf} = primary.wind
 const windFrom = wind.dir.origin.wrtNo
 
 // Select outputs
-const area = fuel.area
-const bulk = fuel.bulk
-const beta = fuel.beta
-const savr = fuel.savr
-const cured = fuel.domain.standard.cured
-const deadEtam = dead.etam
-const deadRxi = dead.rxi
-const liveEtam = live.etam
-const liveEtas = live.etas
-const liveMext = live.mext
-const liveMextF = live.mextf
-const liveLoad = live.load
-const liveMois = live.mois
-const liveRxi = live.rxi
-const qig = fuel.qig
+// const area = fuel.area
+// const bulk = fuel.bulk
+// const beta = fuel.beta
+// const savr = fuel.savr
+// const cured = fuel.domain.standard.cured
+// const deadEtam = dead.etam
+// const deadRxi = dead.rxi
+// const liveEtam = live.etam
+// const liveEtas = live.etas
+// const liveMext = live.mext
+// const liveMextF = live.mextf
+// const liveLoad = live.load
+// const liveMois = live.mois
+// const liveRxi = live.rxi
+// const qig = fuel.qig
+// const sink = fuel.sink
 const ros = fire.ros
-const sink = fuel.sink
-dag.select(bulk, sink, ros)
+dag.select(ros)
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
 // Set inputs
@@ -89,21 +88,29 @@ dag.set(midflame, 880)
 dag.set(windFrom, 270)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 
+console.log('Active Dirty Before updateAll()', dag.activeDirty().length)
 dag.updateAll()
-dump(cured, 0.778)
-dump(bulk, 0.552)
-dump(area, 13.4665)
-dump(beta, 0.01725)
-dump(savr, 1764.3319812126388)
-dump(deadEtam, 0.65206408989980214)
-dump(deadRxi, 3612.4074071954024)
-dump(liveLoad, 0.092)
-dump(liveMextF, 6.908948234294801)
-dump(live.mext, 5.1935979022741359)
-dump(liveEtas, 0.41739692790939131)
-dump(liveMois, 1.5)
-dump(liveEtam, 0.59341294014849078)
-dump(liveRxi, 2182.287993033714)
-dump(qig, 746.993428042342)
-dump(sink, 412.34037227937284)
+console.log('Active Dirty After updateAll()', dag.activeDirty().length)
+// dump(cured, 0.778)
+// dump(bulk, 0.552)
+// dump(area, 13.4665)
+// dump(beta, 0.01725)
+// dump(savr, 1764.3319812126388)
+// dump(deadEtam, 0.65206408989980214)
+// dump(deadRxi, 3612.4074071954024)
+// dump(liveLoad, 0.092)
+// dump(liveMextF, 6.908948234294801)
+// dump(live.mext, 5.1935979022741359)
+// dump(liveEtas, 0.41739692790939131)
+// dump(liveMois, 1.5)
+// dump(liveEtam, 0.59341294014849078)
+// dump(liveRxi, 2182.287993033714)
+// dump(qig, 746.993428042342)
+// dump(sink, 412.34037227937284)
 dump(ros, 18.551680325448835)
+
+dag.set(stdKey, '124')
+console.log('Step 2 Active Dirty Before updateAll()', dag.activeDirty().length)
+dag.get(ros)
+console.log('Step 2 Active Dirty After updateAll()', dag.activeDirty().length)
+dump(ros, 48.47042599399056)

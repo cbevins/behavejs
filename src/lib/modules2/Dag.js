@@ -57,6 +57,15 @@ export class Dag {
     }
     activeConfigsByKey() { return this.activeConfigs().sort((a, b) => a.key().localeCompare(b.key()))}
 
+    activeDirty() {
+        const dirty = []
+        for(let node of this.nodeMap.values()) {
+            if (node.status !== Dag.ignored && node.dirty === Dag.dirty)
+                dirty.push(node)
+        }
+        return dirty
+    }
+
     activeInputs() { return [...this.activeInputsSet] }
     activeInputsByKey() { return this.activeInputs().sort((a, b) => a.key().localeCompare(b.key()))}
 
@@ -234,18 +243,13 @@ export class Dag {
         if (node.updater !== Dag.input) {
             this._log(Dag.warn, 'set',
                 `attempt to set the value of *non-input* node "${node.key()}" to "${value}" was denied`)
-            return this
         } else if (node.updater === Dag.constant) {
             this._log(Dag.error, 'set',
                 `attempt to set the value of *constant* node "${node.key()}" to "${value}" was denied`)
-            return this
-        } else if (node.status !== Dag.selected) {
-            this._log(Dag.warn, 'set',
-                `attempt to set the value of *unselected* node "${node.key()}" to "${value}" was allowed but not propagated`)
-            node.value = value
-            return this
         }
         if (unequalOnly && node.value === value) return this
+        console.log('propagating set', node.key(), value)
+        node.value = value
         node.dirty = Dag.dirty
         this._propagateDirtyToConsumers(node)
         return this
@@ -256,10 +260,11 @@ export class Dag {
 
     // Propagates the 'dirty' flag to all the node's consumers
     _propagateDirtyToConsumers(node) {
-        if (node.dirty !== Dag.dirty ) {    // if already dirty, no need to descend further
-            node.dirty = Dag.dirty
-            for(let next of node.consumers)
+        for(let next of node.consumers) {
+            if(next.dirty !== Dag.dirty) {
+                next.dirty = Dag.dirty
                 this._propagateDirtyToConsumers(next)
+            }
         }
         return this
     }
