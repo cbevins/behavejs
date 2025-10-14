@@ -1,29 +1,100 @@
-import {Dag} from './Dag.js'
 import {Units as U} from './Units.js'
 import {DagModule, DagNode} from './DagItems.js'
-import { StandardFuelModelCatalog as Catalog } from '../index.js'
 import { Calc, FuelElementEquations as Fuel } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
+import { configRothermelFuelStandardModule } from './RothermelFuelStandardModule.js'
 
 /**
- *
+ * Defines all the DagNodes within the Rothermel Fire and Fuel Model (1972)
  * @param {DagModule} parentMod Reference to the parent DagModule,
  *  usually  site.surface.primary, site.surface.secondary, or site.crown.active
  * @param {string} parentProp Parent's property name for this DagItem
  * @returns Reference to the new DagModule 
  */
-export function configRothermelModule(mod, moistureMod, windMod, slopeMod,
-        configFuelDomain, configFireEffWindLimit, configFuelCuring) {
-    configRothermelFireModule(mod.fire, configFireEffWindLimit)
-    configRothermelFuelModule(mod.fuel, moistureMod, configFuelDomain, configFuelCuring)
-}
-
-export function configRothermelFireModule(mod, config) {
-    if (config.value === config.applied) {
-    } else if (config.value === config.notApplied) {
-    } else {
-        throw new Error(`Unknown config "${config.key}" value "${config.value}"`)
+export function defineRothermelFuelModule(parentMod, parentProp, configFuelDomain) {
+    const mod = new DagModule(parentMod, parentProp)
+    // Put these into defineRothermelFuelStandardModule()?
+    if (configFuelDomain.value === configFuelDomain.standard) {
+        mod.stdKey = new DagNode(mod, 'stdKey', U.fuelKey)
+        mod.cured = new DagNode(mod, 'cured', U.fraction)
+        mod.curedEst = new DagNode(mod, 'curedEst', U.fraction)
+        mod.curedInp = new DagNode(mod, 'curedInp', U.fraction)
     }
+    mod.area   = new DagNode(mod, 'area', U.fuelArea)
+    mod.bulk   = new DagNode(mod, 'bulk', U.fuelBulk)
+    mod.depth  = new DagNode(mod, 'depth', U.fuelDepth)
+    mod.qig    = new DagNode(mod, 'qig', U.fuelQig)
+    mod.beta   = new DagNode(mod, 'beta', U.ratio)
+    mod.bopt   = new DagNode(mod, 'bopt', U.ratio)
+    mod.brat   = new DagNode(mod, 'brat', U.ratio)
+    mod.load   = new DagNode(mod, 'load', U.fuelLoad)
+    mod.rxi    = new DagNode(mod, 'rxi', U.fireRxi)
+    mod.rxve   = new DagNode(mod, 'rxve', U.factor)
+    mod.rxvm   = new DagNode(mod, 'rxvm', U.fuelRxv)
+    mod.rxvo   = new DagNode(mod, 'rxvo', U.fuelRxv)
+    mod.savr   = new DagNode(mod, 'savr', U.fuelSavr)
+    mod.savr15 = new DagNode(mod, 'savr15', U.fuelSavr)
+    mod.sink   = new DagNode(mod, 'sink', U.fuelSink)
+    mod.source = new DagNode(mod, 'source', U.fireRxi)
+    mod.wsrf   = new DagNode(mod, 'wsrf', U.fraction, 'open canopy wind speed reduction factor')
+    mod.xi     = new DagNode(mod, 'xi', U.ratio)
+
+    // mod.<lcat>
+    mod.dead = new DagModule(mod, 'dead')
+    mod.live = new DagModule(mod, 'live')
+    for(let lcat of [mod.dead, mod.live]) {
+        lcat.area = new DagNode(lcat, 'area', U.fuelArea)
+        lcat.drxi = new DagNode(lcat, 'drxi', U.fireRxi)
+        if (lcat === mod.dead) lcat.efmc = new DagNode(lcat, 'efmc', U.fuelMois)
+        lcat.efol = new DagNode(lcat, 'efol', U.fuelLoad)
+        if (lcat === mod.dead) lcat.efwl = new DagNode(lcat, 'efwl', U.fuelLoad)
+        lcat.etam = new DagNode(lcat, 'etam', U.fraction)
+        lcat.etas = new DagNode(lcat, 'etas', U.fraction)
+        lcat.heat = new DagNode(lcat, 'heat', U.fuelHeat)
+        lcat.life = new DagNode(lcat, 'life', U.fuelLife).constant(lcat.prop()) // 'dead' or 'live'
+        lcat.load = new DagNode(lcat, 'load', U.fuelLoad)
+        lcat.mext = new DagNode(lcat, 'mext', U.fuelMois)
+        if (lcat === mod.live) lcat.mextf = new DagNode(lcat, 'mextf', U.factor)
+        lcat.mois = new DagNode(lcat, 'mois', U.fuelMois)
+        lcat.net  = new DagNode(lcat, 'net', U.fuelLoad)
+        lcat.qig  = new DagNode(lcat, 'qig', U.fuelQig)
+        lcat.rxi  = new DagNode(lcat, 'rxi', U.fireRxi)
+        lcat.savr = new DagNode(lcat, 'savr', U.fuelSavr)
+        lcat.sawf = new DagNode(lcat, 'sawf', U.fuelWtg)
+        lcat.scar = new DagNode(lcat, 'scar', U.fuelWtg)
+        lcat.seff = new DagNode(lcat, 'seff', U.fraction)
+        lcat.vol  = new DagNode(lcat, 'vol', U.fuelVol)
+        // mod.<lcat>.element<n>
+        for(let i=1; i<=5; i++) {
+            const prop = 'element'+i
+            lcat[prop] = new DagModule(lcat, prop)
+            const el = lcat[prop]
+            el.life = new DagNode(el, 'life', U.fuelLife).constant(lcat.prop())
+            // The following 8 props must be configured based on fuel domain
+            el.type = new DagNode(el, 'type', U.fuelType)
+            el.load = new DagNode(el, 'load', U.fuelLoad)
+            el.savr = new DagNode(el, 'savr', U.fuelSavr)
+            el.heat = new DagNode(el, 'heat', U.fuelHeat)
+            el.dens = new DagNode(el, 'dens', U.fuelDens)
+            el.stot = new DagNode(el, 'stot', U.fuelStot)
+            el.seff = new DagNode(el, 'seff', U.fuelSeff)
+            el.mois = new DagNode(el, 'mois', U.fuelMois)
+            // Each particle has 12 derived characteristics:
+            el.area = new DagNode(el, 'area', U.fuelArea)
+            el.diam = new DagNode(el, 'diam', U.fuelLeng)
+            el.ehn  = new DagNode(el, 'ehn', U.fraction)
+            el.efol = new DagNode(el, 'efol', U.fuelLoad)
+            el.efwl = new DagNode(el, 'efwl', U.fuelLoad)
+            el.leng = new DagNode(el, 'leng', U.fuelLeng)
+            el.net  = new DagNode(el, 'net', U.fuelLoad)
+            el.qig  = new DagNode(el, 'qig', U.fuelQig)
+            el.sawf = new DagNode(el, 'sawf', U.fuelWtg)
+            el.scwf = new DagNode(el, 'scwf', U.fuelWtg)
+            el.size = new DagNode(el, 'size', U.fuelSize)
+            el.vol  = new DagNode(el, 'vol', U.fuelVol)
+        }
+    }
+    return mod
 }
 
 /**
@@ -32,7 +103,6 @@ export function configRothermelFireModule(mod, config) {
  * @param {string} parentProp Parent's property name for this DagItem
  */
 export function configRothermelFuelModule(mod, moistureMod, domain, curing) {
-
     // Fuel bed nodes
     mod.area.use(Calc.sum, [mod.dead.area,  mod.live.area], domain)
     mod.beta.use(Bed.packingRatio, [mod.dead.vol, mod.live.vol, mod.depth], domain)
@@ -130,62 +200,8 @@ export function configRothermelFuelModule(mod, moistureMod, domain, curing) {
 
     // Fuel domain configuration
     if (domain.value === domain.standard) {
-        configFuelDomainStandard(mod, moistureMod, domain, curing)
+        configRothermelFuelStandardModule(mod, moistureMod, domain, curing)
     } else {
         throw new Error(`Unknown config "${config.key}" value "${config.value}"`)
     }
-}
-
-export function configFuelDomainStandard(mod, moistureMod, domain, curing) {
-    mod.stdKey.input(domain)
-    mod.curedEst.use(Bed.curedHerbFraction, [moistureMod.live.herb], curing)
-    mod.curedInp.input(curing)
-    mod.cured.bind(curing.value===curing.estimated ? mod.curedEst : mod.curedInp, curing)
-    mod.depth.use(Catalog.standardDepth, [mod.stdKey], domain)
-    mod.dead.mext.use(Catalog.standardMext, [mod.stdKey], domain)
-    for(let i=1; i<=5; i++) {
-        const el = 'element'+i
-        mod.dead[el].heat.use(Catalog.standardHeatDead, [mod.stdKey], domain)
-        mod.live[el].heat.use(Catalog.standardHeatLive, [mod.stdKey], domain)
-        for(let lcat of [mod.dead[el], mod.live[el]]) {
-            lcat.dens.use(Catalog.standardDens, [], domain)
-            lcat.seff.use(Catalog.standardSeff, [], domain)
-            lcat.stot.use(Catalog.standardStot, [], domain)
-        }
-    }
-    const d1 = mod.dead.element1
-    d1.type.use(Catalog.standardType1, [mod.stdKey], domain)
-    d1.load.use(Catalog.standardLoad1, [mod.stdKey], domain)
-    d1.savr.use(Catalog.standardSavr1, [mod.stdKey], domain)
-    d1.mois.bind(moistureMod.dead.tl1, domain)
-
-    const d2 = mod.dead.element2
-    d2.type.use(Catalog.standardType10, [mod.stdKey], domain)
-    d2.load.use(Catalog.standardLoad10, [mod.stdKey], domain)
-    d2.savr.use(Catalog.standardSavr10, [mod.stdKey], domain)
-    d2.mois.bind(moistureMod.dead.tl10, domain)
-
-    const d3 = mod.dead.element3
-    d3.type.use(Catalog.standardType100, [mod.stdKey], domain)
-    d3.load.use(Catalog.standardLoad100, [mod.stdKey], domain)
-    d3.savr.use(Catalog.standardSavr100, [mod.stdKey], domain)
-    d3.mois.bind(moistureMod.dead.tl100, domain)
-
-    const d4 = mod.dead.element4
-    d4.type.use(Catalog.standardTypeCured, [mod.stdKey], domain)
-    d4.load.use(Catalog.standardLoadCured, [mod.stdKey, mod.cured], domain)
-    d4.savr.use(Catalog.standardSavrHerb, [mod.stdKey], domain)
-    d4.mois.bind(moistureMod.dead.tl1, domain)
-
-    const l1 = mod.live.element1
-    l1.type.use(Catalog.standardTypeUncured, [mod.stdKey], domain)
-    l1.load.use(Catalog.standardLoadUncured, [mod.stdKey, mod.cured], domain)
-    l1.savr.use(Catalog.standardSavrHerb, [mod.stdKey], domain)
-    l1.mois.bind(moistureMod.live.herb, domain)
-
-    const l2 = mod.live.element2
-    l2.type.use(Catalog.standardTypeStem, [mod.stdKey], domain)
-    l2.load.use(Catalog.standardLoadStem, [mod.stdKey], domain)
-    l2.savr.use(Catalog.standardSavrStem, [mod.stdKey], domain)
-    l2.mois.bind(moistureMod.live.herb, domain)
 }

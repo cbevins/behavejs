@@ -14,13 +14,11 @@ export class Dag {
     constructor(nodeMap, desc='') {
         this.nodeMap = nodeMap              // Map of node key => object reference
         this.desc = desc
-
         this.activeInputsSet = new Set()    // Set of all ACTIVE input nodes
         this.allInputsSet = new Set()       // Set of current configuration all possible input nodes
         this.messages = []
         this.selectSet = new Set()          // Set of references to all 'selected' nodes
         this.tracker = {...Dag._trackerTemplate}
-
         this.configure()
     }
 
@@ -57,10 +55,10 @@ export class Dag {
         }
         return [...configs]
     }
-    activeConfigsByKey() { return this.activeConfigs().sort((a, b) => a.key.localeCompare(b.key))}
+    activeConfigsByKey() { return this.activeConfigs().sort((a, b) => a.key().localeCompare(b.key()))}
 
     activeInputs() { return [...this.activeInputsSet] }
-    activeInputsByKey() { return this.activeInputs().sort((a, b) => a.key.localeCompare(b.key))}
+    activeInputsByKey() { return this.activeInputs().sort((a, b) => a.key().localeCompare(b.key()))}
 
     activeNodes() {
         const active = []
@@ -68,10 +66,10 @@ export class Dag {
             if (node.status !== Dag.ignored) active.push(node)
         return active
     }
-    activeNodesByKey() { return this.activeNodes().sort((a, b) => a.key.localeCompare(b.key))}
+    activeNodesByKey() { return this.activeNodes().sort((a, b) => a.key().localeCompare(b.key()))}
 
     allInputs() { return [...this.allInputsSet] }
-    allInputsByKey() { return this.allInputs().sort((a, b) => a.key.localeCompare(b.key))}
+    allInputsByKey() { return this.allInputs().sort((a, b) => a.key().localeCompare(b.key()))}
 
     allPossibleInputs() {
         const results = new Set()
@@ -82,7 +80,7 @@ export class Dag {
         }
         return [...results]
     }
-    allPossibleInputsByKey() { return this.allPossibleInputs().sort((a, b) => a.key.localeCompare(b.key))}
+    allPossibleInputsByKey() { return this.allPossibleInputs().sort((a, b) => a.key().localeCompare(b.key()))}
 
     leafNodes() {
         const active = []
@@ -90,10 +88,10 @@ export class Dag {
             if (node.status === Dag.leaf) active.push(node)
         return active
     }
-    leafNodesByKey() { return this.leafNodes().sort((a, b) => a.key.localeCompare(b.key))}
+    leafNodesByKey() { return this.leafNodes().sort((a, b) => a.key().localeCompare(b.key()))}
 
     nodes() { return  [...this.nodeMap.values()] }
-    nodesByKey() { return this.nodes().sort((a, b) => a.key.localeCompare(b.key))}
+    nodesByKey() { return this.nodes().sort((a, b) => a.key().localeCompare(b.key()))}
 
     // Returns a reference to the DagNode with 'key' prop
     nodeRef(refOrKey, caller='unknown') { 
@@ -107,11 +105,7 @@ export class Dag {
     }
 
     selected() { return [...this.selectSet] }
-    selectedByKey() { return this.selected().sort((a, b) => a.key.localeCompare(b.key))}
-
-    //--------------------------------------------------------------------------
-    // Dag construction methods
-    //--------------------------------------------------------------------------
+    selectedByKey() { return this.selected().sort((a, b) => a.key().localeCompare(b.key()))}
 
     //--------------------------------------------------------------------------
     // Dag configuration methods
@@ -128,8 +122,11 @@ export class Dag {
         }
         // Add node suppliers to each of its suppliers' consumers array.
         for(let node of this.nodeMap.values()) {
-            for(let supplier of node.suppliers)
+            // console.log('Processing suppliers for', node.key())
+            for(let supplier of node.suppliers) {
+                // console.log('    supplier', supplier.key(), )
                 supplier.consumers.push(node)
+            }
         }
         this._updateAllInputsSet()
         this._reselect()
@@ -143,7 +140,7 @@ export class Dag {
             if (!node.updater) {        // Any node without an updater() must be a Dag input or an Error
                 node.updater = Dag.input
                 this._log(Dag.fatal, '_updateAllInputSets',
-                    `Node "${node.key}" is not matched with an updater.`)
+                    `Node "${node.key()}" is not matched with an updater.`)
             }
             if (node.updater === Dag.input)
                 this.allInputsSet.add(node)
@@ -236,15 +233,15 @@ export class Dag {
         // Log warning if this is a constant or non-input node??
         if (node.updater !== Dag.input) {
             this._log(Dag.warn, 'set',
-                `attempt to set the value of *non-input* node "${node.key}" to "${value}" was denied`)
+                `attempt to set the value of *non-input* node "${node.key()}" to "${value}" was denied`)
             return this
         } else if (node.updater === Dag.constant) {
             this._log(Dag.error, 'set',
-                `attempt to set the value of *constant* node "${node.key}" to "${value}" was denied`)
+                `attempt to set the value of *constant* node "${node.key()}" to "${value}" was denied`)
             return this
         } else if (node.status !== Dag.selected) {
             this._log(Dag.warn, 'set',
-                `attempt to set the value of *unselected* node "${node.key}" to "${value}" was allowed but not propagated`)
+                `attempt to set the value of *unselected* node "${node.key()}" to "${value}" was allowed but not propagated`)
             node.value = value
             return this
         }
@@ -277,7 +274,7 @@ export class Dag {
     get(refOrKey, log=false) {
         const node = this.nodeRef(refOrKey)  // only use node references within _get()!!!
         if (node.status === Dag.ignore) {
-            this._log(Dag.warn, 'get', `attempt to get value of INACTIVE node "${node.key}"` )
+            this._log(Dag.warn, 'get', `attempt to get value of INACTIVE node "${node.key()}"` )
             // node.dirty = Dag.clean   // is this necessary?
             return node.value
         }
@@ -306,7 +303,7 @@ export class Dag {
             const args = []
             for(let supplier of node.suppliers)
                 args.push(this._get(supplier, log))
-            if(log) this._log(Dag.info, 'get', `Updating node ${node.key}) via ${node.updater.name}...`)
+            if(log) this._log(Dag.info, 'get', `Updating node ${node.key()}) via ${node.updater.name}...`)
             node.value = node.updater.apply(node, args)
         }
         node.dirty = Dag.clean

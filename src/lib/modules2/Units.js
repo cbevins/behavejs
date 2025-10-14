@@ -46,4 +46,6 @@ export class Units {
     static fuelType = {key: 'fuel type',                type: 'set',        value: 'unused', units: ['unused', 'dead-down', 'herb', 'stem', 'duff']}
     static fuelVol  = {key: 'fuel volume',              type: 'volume',     value: 0,   units: ['ft3', 'm3']}
     static fuelWtg  = {key: 'fuel weighting factor',    type: 'fraction',   value: 0}
+
+    static windSpeed= {key: 'wind speed',               type: 'velocity',   value: 0, units: ['ft/min', 'mi/h', 'm/s', 'km/h']}
 }
