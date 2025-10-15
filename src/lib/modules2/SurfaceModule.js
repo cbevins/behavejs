@@ -3,7 +3,6 @@ import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
 import { defineRothermelModule, configRothermelModule } from './RothermelModule.js'
 import { defineSurfaceFireModule, configSurfaceFireModule } from './SurfaceFireModule.js'
-
 /**
  * 
  * @param {DagModule} parentMod Reference to the parent dagModule, probably site

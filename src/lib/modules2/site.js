@@ -25,16 +25,22 @@ function configureSite(site) {
     configSlopeModule(site.slope, Config.slopeDirection, Config.slopeSteepness)
     configWindModule(site.wind, site.slope, Config.windDirection, Config.windSpeed)
     configSurfaceModule(site.surface, site.moisture, site.wind, site.slope, site.canopy)
+    // site.surface.config()
+}
+
+function buildSite(prop='site') {
+    const site = new DagModule(null, prop)
+    site.canopy = defineCanopyModule(site, 'canopy')
+    site.moisture = defineFuelMoistureModule(site, 'moisture')
+    site.slope = defineSlopeModule(site, 'slope')
+    site.wind = defineWindModule(site, 'wind')
+    site.surface = defineSurfaceModule(site, 'surface')
+    // site.surface = new SurfaceModule(site, 'surface', site.moisture, site.wind, site.slope, site.canopy)
+    return site
 }
 //------------------------------------------------------------------------------
 
-const site = new DagModule(null, 'site')
-site.canopy = defineCanopyModule(site, 'canopy')
-site.moisture = defineFuelMoistureModule(site, 'moisture')
-site.slope = defineSlopeModule(site, 'slope')
-site.wind = defineWindModule(site, 'wind')
-site.surface = defineSurfaceModule(site, 'surface')
-
+const site = buildSite()
 // console.log(Util.moduleTreeStr(site))
 configureSite(site)
 
@@ -88,9 +94,8 @@ dag.set(midflame, 880)
 dag.set(windFrom, 270)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 
-console.log('Active Dirty Before updateAll()', dag.activeDirty().length)
 dag.updateAll()
-console.log('Active Dirty After updateAll()', dag.activeDirty().length)
+dump(ros, 18.551680325448835)
 // dump(cured, 0.778)
 // dump(bulk, 0.552)
 // dump(area, 13.4665)
@@ -107,10 +112,8 @@ console.log('Active Dirty After updateAll()', dag.activeDirty().length)
 // dump(liveRxi, 2182.287993033714)
 // dump(qig, 746.993428042342)
 // dump(sink, 412.34037227937284)
-dump(ros, 18.551680325448835)
 
 dag.set(stdKey, '124')
-console.log('Step 2 Active Dirty Before updateAll()', dag.activeDirty().length)
-dag.get(ros)
-console.log('Step 2 Active Dirty After updateAll()', dag.activeDirty().length)
+dag.set(tl1, 0.05)
+dag.updateAll()
 dump(ros, 48.47042599399056)
