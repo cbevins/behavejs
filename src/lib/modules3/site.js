@@ -1,4 +1,3 @@
-import * as Config from './Configs.js'
 import { Dag } from './Dag.js'
 import { DagModule, DagNode, NodeMap } from './DagItems.js'
 import { Util } from './Util.js'
@@ -6,10 +5,13 @@ import { Util } from './Util.js'
 import { CanopyModule } from './CanopyModule.js'
 import { FuelMoistureModule } from './FuelMoistureModule.js'
 import { RothermelModule } from './RothermelModule.js'
+import { SurfaceFireModule } from './SurfaceFireModule.js'
 import { SlopeModule } from './SlopeModule.js'
 import { WindModule } from './WindModule.js'
+import * as Config from './Configs.js'
 
 console.log(new Date())
+const useSurface = true
 
 //------------------------------------------------------------------------------
 function dump(node, expected=null) {
@@ -27,20 +29,28 @@ function configureSite(site) {
     site.slope.config()
     site.wind.config()
     site.primary.config()
+    site.secondary.config()
+    site.surface.config()
 }
 
 function buildSite(prop='site') {
     const site = new DagModule(null, prop)
+    site.canopy = new CanopyModule(site, 'canopy', Config.canopyHeight)
     site.moisture = new FuelMoistureModule(site, 'moisture',
         Config.fuelMoistureDead, Config.fuelMoistureLive)
-    site.canopy = new CanopyModule(site, 'canopy', Config.canopyHeight)
     site.slope = new SlopeModule(site, 'slope', Config.slopeDirection, Config.slopeSteepness)
     site.wind = new WindModule(site, 'wind', site.slope, Config.windDirection, Config.windSpeed)
+
     site.primary = new RothermelModule(site, 'primary',
         site.moisture, site.wind, site.slope, site.canopy,
         Config.fireEffWindLimit, Config.midflameWindSpeed,
         Config.fuelDomainPrimary, Config.fuelCuring)
-    // site.surface = new SurfaceModule(site, 'surface', site.moisture, site.wind, site.slope, site.canopy)
+    site.secondary = new RothermelModule(site, 'secondary',
+        site.moisture, site.wind, site.slope, site.canopy,
+        Config.fireEffWindLimit, Config.midflameWindSpeed,
+        Config.fuelDomainSecondary, Config.fuelCuring)
+    site.surface = new SurfaceFireModule(site, 'surface',
+        site.primary, site.secondary, Config.surfaceFire)
     return site
 }
 //------------------------------------------------------------------------------
@@ -51,38 +61,43 @@ console.log(Util.moduleTreeStr(site))
 
 const dag = new Dag(NodeMap, 'Test')
 
-const {canopy, moisture, primary, slope, wind} = site
+const {canopy, moisture, primary, secondary, slope, surface, wind} = site
 // CanopyModule destructuring
 const canopyBase = canopy.crown.base
 const canopyHeight = canopy.crown.height
 const canopyRatio = canopy.crown.ratio
 const canopyWsrf = canopy.wind.wsrf
 // MoistureModule destructuring
-const {tl1, tl10, tl100, category} = moisture.dead
+const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
 // SlopeModule destructuring
 const steep = slope.steep.ratio
 const downslope = slope.dir.downslope
+
+// SurfaceModule destructuring
+const stdKey1 = primary.fuel.domain.standard.stdKey
+const stdKey2 = secondary.fuel.domain.standard.stdKey
+const midflame1 = primary.fire.wind.midflame.speed
+const midflame2 = secondary.fire.wind.midflame.speed
+const ros1 = primary.fire.ros
+const ros2 = secondary.fire.ros
+
 // WindModule destructuring
-const windFrom = wind.dir.origin.wrtNo
 const wind20 =wind.speed.at20ft
-//
-const {fire, fuel} = primary
-const {stdKey} = fuel.domain.standard
-const {midflame} = primary.wind
-const {ros} = primary.fire
+const windFrom = wind.dir.origin.wrtNo
+// console.log(primary.fire.wind.midflame.speed)
 
 dag.select(
     tl1, tl10, tl100, herb, stem,
     steep, downslope,
     windFrom, wind20,
     canopyBase, canopyHeight, canopyRatio,
-    ros
+    ros1
 )
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
 // Set inputs
-dag.set(stdKey, '10')
+dag.set(stdKey1, '10')
 dag.set(canopyBase, 10)
 dag.set(canopyHeight, 40)
 dag.set(tl1, 0.05)
@@ -93,7 +108,7 @@ dag.set(stem, 1.5)
 dag.set(steep, 0.25)
 dag.set(downslope, 180)
 dag.set(windFrom, 270)
-dag.set(midflame, 880)
+dag.set(midflame1, 880)
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 
 dag.updateAll()
@@ -109,9 +124,9 @@ dag.updateAll()
 // dump(canopyBase, 10)
 // dump(canopyHeight, 40)
 // dump(canopyRatio, 0.75)
-// dump(stdKey, '10')
-dump(ros, 18.551680325448835)
+// dump(stdKey1, '10')
+dump(ros1, 18.551680325448835)
 
-dag.set(stdKey, '124')
+dag.set(stdKey1, '124')
 dag.updateAll()
-dump(ros, 48.47042599399056)
+dump(ros1, 48.47042599399056)

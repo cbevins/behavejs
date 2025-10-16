@@ -30,23 +30,25 @@ export class RothermelModule extends DagModule {
             configFuelDomain,   // DagConfig
             configCuring)       // DagConfig
 
-        this.wind = new RothermelWindModule(this, 'wind',
-            this.fuel,          // RothermelFuelModule
-            windMod,            // WindModule
-            canopyMod,          // CanopyModule
-            configMidflame)     // DagConfig
+        // this.wind = new RothermelWindModule(this, 'wind',
+        //     this.fuel,          // RothermelFuelModule
+        //     windMod,            // WindModule
+        //     canopyMod,          // CanopyModule
+        //     configMidflame)     // DagConfig
 
         this.fire = new RothermelFireModule(this, 'fire',
             this.fuel,          // RothermelFuelModule
-            this.wind,          // RothermelWindModule
+            // this.wind,          // RothermelWindModule
             windMod,            // WindModule
             slopeMod,           // SlopeModule
-            configWindLimit)    // DagCOnfig
+            canopyMod,          // CanopyModule
+            configWindLimit,    // DagConfig
+            configMidflame)     // DagConfig
     }
 
     config() {
         this.fuel.config()
-        this.wind.config()
+        // this.wind.config()
         this.fire.config()
     }
 }

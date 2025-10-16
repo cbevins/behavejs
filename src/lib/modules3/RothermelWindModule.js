@@ -18,7 +18,7 @@ export class RothermelWindModule extends DagModule {
         this._meta.config = {configMidflame}
 
         this.midflame = new DagNode(this, 'midflame', U.windSpeed)
-        this.wsrf  = new DagNode(this, 'wsrf', U.fraction)
+        this.factor  = new DagNode(this, 'wsrf', U.fraction)
     }
 
     config() {

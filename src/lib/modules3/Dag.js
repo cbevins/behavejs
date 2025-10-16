@@ -267,6 +267,7 @@ export class Dag {
 
     // Propagates the 'dirty' flag to all the node's consumers
     _propagateDirtyToConsumers(node) {
+        // console.log('propagateDirty() to node', node.key())
         for(let next of node.consumers) {
             if(next.dirty !== Dag.dirty) {
                 next.dirty = Dag.dirty

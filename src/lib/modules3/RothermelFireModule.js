@@ -12,15 +12,17 @@ export class RothermelFireModule extends DagModule {
      * @param {RothermelFireModule} parentMod 
      * @param {string} parentProp 'fire'
      * @param {RothermelFuelModule} fuelMod 
-     * @param {RothermelWindModule} midfMod 
      * @param {WindModule} windMod 
      * @param {SlopeModule} slopeMod 
+     * @param {CanopyModule} canopyMod
      * @param {DagConfig} configWindLimit 
+     * @param {DagConfig} configMidflame
      */
-    constructor(parentMod, parentProp, fuelMod, midfMod, windMod, slopeMod, configWindLimit) {
+    constructor(parentMod, parentProp, fuelMod, windMod, slopeMod, canopyMod,
+            configWindLimit, configMidflame) {
         super(parentMod, parentProp)
-        this._meta.config = {configWindLimit}
-        this._meta.mod = {fuelMod, midfMod, slopeMod, windMod}
+        this._meta.config = {configWindLimit, configMidflame}
+        this._meta.mod = {canopyMod, fuelMod, slopeMod, windMod}
 
         this.slopeK = new DagNode(this, 'slopeK', U.factor)
         this.windB = new DagNode(this, 'windB', U.factor)
@@ -43,6 +45,8 @@ export class RothermelFireModule extends DagModule {
             p.phiE = new DagNode(p, 'phiE', U.factor)
             p.weff = new DagNode(p, 'weff', U.windSpeed)
         }
+        // // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread
+        // p1.rsa = new DagNode(p1, 'rsa', U.fireRos)
 
         p2.rosSlope = new DagNode(p2, 'rosSlope', U.fireRos)
         p2.rosWind = new DagNode(p2, 'rosWind', U.fireRos)
@@ -50,12 +54,10 @@ export class RothermelFireModule extends DagModule {
         p2.rosYcomp = new DagNode(p2, 'rosYcomp', U.factor)
         p2.ros = new DagNode(p2, 'ros', U.fireRos)
 
+        // FireModule implemented below here
         // Final fire parameters
         this.ros = new DagNode(this, 'ros', U.fireRos)
-        this.phiE = new DagNode(this, 'phiE', U.factor)
-        this.weff = new DagNode(this, 'weff', U.windSpeed)
-        this.weffLim = new DagNode(this, 'weffLim', U.windSpeed)
-        this.weffX = new DagNode(this, 'weffX', U.bool)
+
         // Direction of maximum spread
         this.dir = new DagModule(this, 'direction')
         this.dir.upslope = new DagNode(this.dir, 'upslope', U.compass)
@@ -66,13 +68,21 @@ export class RothermelFireModule extends DagModule {
         this.fli = new DagNode(this, 'fli', U.fireFli)
         this.flame = new DagNode(this, 'flame', U.fireFlame)
         this.rxi = new DagNode(this, 'rxi', U.fireRxi)
-        // // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread
-        // p1.rsa = new DagNode(p1, 'rsa',U.fireRos)
+        
+        this.wind = new DagModule(this, 'wind')
+        this.wind.effective = new DagModule(this.wind, 'effective')
+        this.wind.effective.phi = new DagNode(this.wind.effective, 'phi', U.factor)
+        this.wind.effective.speed = new DagNode(this.wind.effective, 'speed', U.windSpeed)
+        this.wind.effective.limit = new DagNode(this.wind.effective, 'limit', U.windSpeed)
+        this.wind.effective.exceeded = new DagNode(this.wind.effective, 'exceeded', U.bool)
+        this.wind.midflame = new DagModule(this.wind, 'midflame')
+        this.wind.midflame.speed = new DagNode(this.wind.midflame, 'speed', U.windSpeed)
+        this.wind.midflame.factor = new DagNode(this.wind.midflame, 'factor', U.windSpeed)
     }
 
     config() {
-        const config = this._meta.config.configWindLimit
-        const {windMod, slopeMod, midfMod, fuelMod: fuel} = this._meta.mod
+        const {configWindLimit, configMidflame} = this._meta.config
+        const {canopyMod, windMod, slopeMod, fuelMod: fuel} = this._meta.mod
         const {part1:p1, part2:p2, part3:p3, part4:p4, part5:p5, part6:p6, part7:p7} = this
 
         // Wind and slope factors
@@ -83,7 +93,7 @@ export class RothermelFireModule extends DagModule {
         this.windI.use(Bed.windI, [fuel.brat, this.windE, this.windC])
         this.windK.use(Bed.windK, [fuel.brat, this.windE, this.windC])
 
-        this.phiW.use(Fire.phiWind, [midfMod.midflame, this.windB, this.windK])
+        this.phiW.use(Fire.phiWind, [this.wind.midflame.speed, this.windB, this.windK])
         this.phiS.use(Fire.phiSlope, [slopeMod.steep.ratio, this.slopeK])
 
         // Part 1 - No-wind, no-slope fire spread rate and effective wind
@@ -132,29 +142,39 @@ export class RothermelFireModule extends DagModule {
         p7.weff.use(Fire.effectiveWindSpeed, [p7.phiE, this.windB, this.windI])
 
         // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
-        if (config.value === config.applied) {
-            this.ros.bind(p7.ros, config)
-            this.phiE.bind(p7.phiE, config)
-            this.weff.bind(p7.weff, config)
-        } else {
-            this.ros.bind(p6.ros, config)
-            this.phiE.bind(p6.phiE, config)
-            this.weff.bind(p6.weff, config)
-        }
+        const p = (configWindLimit.value === configWindLimit.applied) ? p7 : p6
+        this.ros.bind(p.ros, configWindLimit)
+        this.wind.effective.phi.bind(p.phiE, configWindLimit)
+        this.wind.effective.speed.bind(p.weff, configWindLimit)
+        this.wind.effective.limit.use(Dag.bind, [p4.weff])
+        this.wind.effective.exceeded.use(Calc.greaterThan, [p3.weff, p4.weff])
+
         // Direction of maximum spread
         this.dir.upslope.use(Fire.spreadDirectionFromUpslope, [p2.rosXcomp, p2.rosYcomp, p2.ros])
         this.dir.north.use(Compass.compassSum, [slopeMod.dir.upslope, this.dir.upslope])
         this.hpua.use(Bed.heatPerUnitArea, [fuel.rxi, this.taur])
-        this.lwr.use(Fire.lengthToWidthRatio, [this.weff])
+        this.lwr.use(Fire.lengthToWidthRatio, [this.wind.effective.speed])
         this.fli.use(Fire.firelineIntensity, [this.ros, fuel.rxi, this.taur])
         this.flame.use(Fire.flameLength, [this.fli])
         this.rxi.use(Dag.bind, [fuel.rxi])
         this.taur.use(Bed.fireResidenceTime, [fuel.savr])
 
-        this.weffLim.use(Dag.bind, [p4.weff])
-        this.weffX.use(Calc.greaterThan, [p3.weff, p4.weff])
+        const midflame = this.wind.midflame
+        if(configMidflame.value === configMidflame.input) {
+            midflame.speed.input(configMidflame)
+            midflame.factor.constant(1)
+        } else {
+            if(configMidflame.value === configMidflame.wsrf) {
+                midflame.factor.input(configMidflame)
+            } else if(configMidflame.value === configMidflame.fuelbed) {
+                midflame.factor.bind(fuelMod.wsrf)
+            } else if(configMidflame.value === configMidflame.canopy) {
+                midflame.factor.bind(canopyMod.wsrf)
+            }
+            midflame.speed.use(Calc.multiply, [midflame.factor, windMod.speed.at20ft], configMidflame)
+        }
 
-        // // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread
+        // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread
         // p1.rsa.use(CrownFire.rSa, [oActive, p1.ros, midflameWspdNo, this.windB, this.windK, this.phiS])
     }
 }

@@ -4,14 +4,6 @@ import { Calc, FuelElementEquations as Fuel } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { RothermelFuelStandardModule } from './RothermelFuelStandardModule.js'
 
-/**
- * Defines all the DagNodes within the Rothermel Fire and Fuel Model (1972)
- * @param {DagModule} parentMod Reference to the parent DagModule,
- *  usually  site.surface.primary, site.surface.secondary, or site.crown.active
- * @param {string} parentProp Parent's property name for this DagItem
- * @param {DagConfig} configDomain Either Config.fuelDomainPrimary or Config.fuelDomainSecondary
- * @returns Reference to the new DagModule 
- */
 export class RothermelFuelModule extends DagModule {
     /**
      * 

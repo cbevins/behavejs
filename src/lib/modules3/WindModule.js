@@ -3,13 +3,13 @@ import { DagModule, DagNode } from './DagItems.js'
 import { WindEquations as Wind } from '../index.js'
 import { CompassEquations as Compass } from '../index.js'
 
-/**
- * Builds and configures a WindModule
- * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
- * @param {string} parentProp Parent's property name for this DagItem
- * @returns Reference to the new DagModule 
- */
 export class WindModule extends DagModule {
+    /**
+     * 
+     * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
+     * @param {string} parentProp Parent's property name for this DagItem
+     * @param {SlopeModule} slopeMod Reference to a SlopeModule
+     */
     constructor(parentMod, parentProp, slopeMod, configDir, configSpeed) {
         super(parentMod, parentProp)
         this._meta.config = {configDir, configSpeed}
