@@ -11,7 +11,11 @@ export class Calc {
     // Ensures number is in the range [0,1]
     static fraction = number => Math.max(0, Math.min(1, number))
 
+    static fromOne = (number) => Calc.subtract(1, number)
+
     static greaterThan = (a, b) => a > b
+
+    static inverse = (number) => Calc.divide(1, number)
 
     static multiply = (...numbers) => numbers.reduce((a, b) => a * b, 1)
 

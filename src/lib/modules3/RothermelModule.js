@@ -2,21 +2,20 @@ import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
 import { RothermelFireModule } from './RothermelFireModule.js'
 import { RothermelFuelModule } from './RothermelFuelModule.js'
-import { RothermelWindModule } from './RothermelWindModule.js'
 
 export class RothermelModule extends DagModule {
     /**
      * 
-     * @param {*} parentMod 
-     * @param {*} parentProp 
-     * @param {*} moistureMod 
-     * @param {*} windMod 
-     * @param {*} slopeMod 
-     * @param {*} canopyMod 
-     * @param {*} configWindLimit 
-     * @param {*} configMidflame 
-     * @param {*} configFuelDomain 
-     * @param {*} configCuring 
+     * @param {DagModule} parentMod 
+     * @param {string} parentProp 'primary' or 'secondary' or 'canopy'
+     * @param {FuelMoistureMod} moistureMod 
+     * @param {WindMod} windMod 
+     * @param {SlopeMod} slopeMod 
+     * @param {CanopyMod} canopyMod 
+     * @param {DagConfig} configWindLimit 
+     * @param {DagConfig} configMidflame 
+     * @param {DagConfig} configFuelDomain 
+     * @param {DagConfig} configCuring 
      */
     constructor(parentMod, parentProp,
             moistureMod, windMod, slopeMod, canopyMod,
@@ -30,15 +29,8 @@ export class RothermelModule extends DagModule {
             configFuelDomain,   // DagConfig
             configCuring)       // DagConfig
 
-        // this.wind = new RothermelWindModule(this, 'wind',
-        //     this.fuel,          // RothermelFuelModule
-        //     windMod,            // WindModule
-        //     canopyMod,          // CanopyModule
-        //     configMidflame)     // DagConfig
-
         this.fire = new RothermelFireModule(this, 'fire',
             this.fuel,          // RothermelFuelModule
-            // this.wind,          // RothermelWindModule
             windMod,            // WindModule
             slopeMod,           // SlopeModule
             canopyMod,          // CanopyModule
@@ -48,7 +40,6 @@ export class RothermelModule extends DagModule {
 
     config() {
         this.fuel.config()
-        // this.wind.config()
         this.fire.config()
     }
 }

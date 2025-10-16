@@ -4,6 +4,7 @@ import { Util } from './Util.js'
 
 import { CanopyModule } from './CanopyModule.js'
 import { FuelMoistureModule } from './FuelMoistureModule.js'
+import { MapModule } from './MapModule.js'
 import { RothermelModule } from './RothermelModule.js'
 import { SurfaceFireModule } from './SurfaceFireModule.js'
 import { SlopeModule } from './SlopeModule.js'
@@ -25,6 +26,7 @@ function dump(node, expected=null) {
 
 function configureSite(site) {
     site.canopy.config()
+    site.map.config()
     site.moisture.config()
     site.slope.config()
     site.wind.config()
@@ -36,6 +38,7 @@ function configureSite(site) {
 function buildSite(prop='site') {
     const site = new DagModule(null, prop)
     site.canopy = new CanopyModule(site, 'canopy', Config.canopyHeight)
+    site.map = new MapModule(site, 'map')
     site.moisture = new FuelMoistureModule(site, 'moisture',
         Config.fuelMoistureDead, Config.fuelMoistureLive)
     site.slope = new SlopeModule(site, 'slope', Config.slopeDirection, Config.slopeSteepness)
@@ -62,7 +65,8 @@ console.log(Util.moduleTreeStr(site))
 
 const dag = new Dag(NodeMap, 'Test')
 
-const {canopy, moisture, primary, secondary, slope, surface, wind} = site
+// Site destructuring
+const {canopy, map, moisture, primary, secondary, slope, surface, wind} = site
 // CanopyModule destructuring
 const canopyBase = canopy.crown.base
 const canopyHeight = canopy.crown.height
