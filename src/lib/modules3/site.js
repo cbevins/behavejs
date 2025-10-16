@@ -55,6 +55,7 @@ function buildSite(prop='site') {
 }
 //------------------------------------------------------------------------------
 
+Config.surfaceFire.value = Config.surfaceFire.arithmetic
 const site = buildSite()
 configureSite(site)
 console.log(Util.moduleTreeStr(site))
@@ -76,11 +77,17 @@ const downslope = slope.dir.downslope
 
 // SurfaceModule destructuring
 const stdKey1 = primary.fuel.domain.standard.stdKey
-const stdKey2 = secondary.fuel.domain.standard.stdKey
 const midflame1 = primary.fire.wind.midflame.speed
-const midflame2 = secondary.fire.wind.midflame.speed
 const ros1 = primary.fire.ros
+
+const stdKey2 = secondary.fuel.domain.standard.stdKey
+const midflame2 = secondary.fire.wind.midflame.speed
 const ros2 = secondary.fire.ros
+
+const cover1 = surface.cover1
+const ros3 = surface.ros
+const rosA = surface.rosArith
+const rosH = surface.rosHarm
 
 // WindModule destructuring
 const wind20 =wind.speed.at20ft
@@ -90,14 +97,16 @@ const windFrom = wind.dir.origin.wrtNo
 dag.select(
     tl1, tl10, tl100, herb, stem,
     steep, downslope,
-    windFrom, wind20,
-    canopyBase, canopyHeight, canopyRatio,
-    ros1
+    windFrom, // wind20,
+    // canopyBase, canopyHeight, canopyRatio,
+    ros1, ros2, ros3, rosA, rosH
 )
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
 // Set inputs
 dag.set(stdKey1, '10')
+dag.set(stdKey2, '124')
+dag.set(cover1, 0.6)
 dag.set(canopyBase, 10)
 dag.set(canopyHeight, 40)
 dag.set(tl1, 0.05)
@@ -109,24 +118,19 @@ dag.set(steep, 0.25)
 dag.set(downslope, 180)
 dag.set(windFrom, 270)
 dag.set(midflame1, 880)
+dag.set(midflame2, 880)
+dag.updateAll()
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 
-dag.updateAll()
-// dump(tl1, 0.05)
-// dump(tl10, 0.07)
-// dump(tl100, 0.09)
-// dump(herb, 0.5)
-// dump(stem, 1.5)
-// dump(steep, 0.25)
-// dump(downslope, 180)
-// dump(windFrom, 270)
-// dump(wind20, 880)
-// dump(canopyBase, 10)
-// dump(canopyHeight, 40)
-// dump(canopyRatio, 0.75)
-// dump(stdKey1, '10')
-dump(ros1, 18.551680325448835)
+// Expected results
+const xros1 = 18.551680325448835
+const xros2 = 48.47042599399056
+const xcover1 = 0.6
+const xrosH = 1 / (xcover1 / xros1 + (1 - xcover1) / xros2)
+const xrosA = xcover1 * xros1 + (1-xcover1) * xros2
 
-dag.set(stdKey1, '124')
-dag.updateAll()
-dump(ros1, 48.47042599399056)
+dump(ros1, xros1)
+dump(ros2, xros2)
+dump(rosA, xrosA)
+dump(rosH, xrosH)
+dump(ros3, xrosA)

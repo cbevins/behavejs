@@ -22,12 +22,6 @@ export const fireEffWindLimit = makeConfig('effwindLimit',
         ['applied', 'applied'],
         ['notApplied', 'not applied']])
 
-export const surfaceFire = makeConfig('surfaceFire',
-    'surface fire behavior is calculated for', [
-        ['onefuel', 'a single fuel model only'],
-        ['harmonic', 'two fuel models with a harmonic mean spread rate'],
-        ['arithmetic', 'two fuel models with an arithmetic mean spread rate']])
-
 export const fuelCuring = makeConfig('fuelCuring',
     'live fuel curing fraction is', [
         ['estimated', 'estimated from live herb moisture content'],
@@ -74,6 +68,12 @@ export const slopeSteepness = makeConfig('slopeSteepness',
         ['ratio', 'ratio of vertical rise to horizontal reach'],
         ['degrees', 'degrees above horizontal'],
         ['map', 'estimated from map parameters']])
+
+export const surfaceFire = makeConfig('surfaceFire',
+    'surface fire behavior is calculated for', [
+        ['onefuel', 'a single fuel model only'],
+        ['harmonic', 'two fuel models with a harmonic mean spread rate'],
+        ['arithmetic', 'two fuel models with an arithmetic mean spread rate']])
 
 export const windDirection = makeConfig('windDirection',
     'the wind direction is specified as', [
