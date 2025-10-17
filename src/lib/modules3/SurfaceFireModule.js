@@ -4,8 +4,7 @@ import { FireModule } from './FireModule.js'
 import { RothermelModule } from './RothermelModule.js'
 import { SlopeModule } from './SlopeModule.js'
 import { CanopyModule } from './CanopyModule.js'
-import { Calc, CompassEquations as Compass } from '../index.js'
-import { SurfaceFireEquations as Fire } from '../index.js'
+import { Calc, SurfaceFireEquations as Fire } from '../index.js'
 
 /**
  * Defines the final surface module
@@ -32,11 +31,10 @@ export class SurfaceFireModule extends FireModule {
         this._meta.mod = {roth1Mod, roth2Mod}
 
         // SurfaceFireModule has the following additional DagNodes
-        this.one = new DagNode(this, 'one', U.factor).constant(1)
         this.cover1 = new DagNode(this, 'cover1', U.fraction)
         this.cover2 = new DagNode(this, 'cover2', U.fraction)
         this.rosArith = new DagNode(this, 'rosArith', U.fireRos)
-        this.rosHarm = new DagNode(this, 'rosArith', U.fireRos)
+        this.rosHarm  = new DagNode(this, 'rosArith', U.fireRos)
     }
 
     config() {
@@ -44,7 +42,6 @@ export class SurfaceFireModule extends FireModule {
         const {roth1Mod, roth2Mod} = this._meta.mod
         const fire1 = roth1Mod.fire
         const fire2 = roth2Mod.fire
-        this.one.constant(1)
 
         // The following are ALWAYS bound to the primary
         this.dir.upslope.bind(fire1.dir.upslope)
@@ -67,7 +64,7 @@ export class SurfaceFireModule extends FireModule {
             this.wind.effective.limit.bind(fire1.wind.effective.limit)
         } else {
             this.cover1.input(config)
-            this.cover2.use(Calc.subtract, [this.one, this.cover1], config)
+            this.cover2.use(Calc.fromOne, [this.cover1], config)
             // The following use the maximum of the primary or secondary fuel
             this.rxi.use(Math.max, [fire1.rxi, fire2.rxi], config)
             this.hpua.use(Math.max, [fire1.hpua, fire2.hpua], config)
