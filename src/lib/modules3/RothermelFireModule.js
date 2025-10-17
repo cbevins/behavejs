@@ -59,9 +59,9 @@ export class RothermelFireModule extends DagModule {
         this.ros = new DagNode(this, 'ros', U.fireRos)
 
         // Direction of maximum spread
-        this.dir = new DagModule(this, 'direction')
-        this.dir.upslope = new DagNode(this.dir, 'upslope', U.compass)
-        this.dir.north = new DagNode(this.dir, 'north', U.compass)
+        this.dir = new DagModule(this, 'dir')
+        this.dir.fromUpslope = new DagNode(this.dir, 'fromUpslope', U.compass)
+        this.dir.fromNorth = new DagNode(this.dir, 'fromNorth', U.compass)
         this.taur = new DagNode(this, 'taur', U.fireTaur)
         this.hpua = new DagNode(this, 'hpua', U.fireHpua)
         this.lwr = new DagNode(this, 'lwr', U.ratio)
@@ -104,8 +104,8 @@ export class RothermelFireModule extends DagModule {
         // Part 2 - *ADDITIONAL* fire spread rate due to wind and slope ADDED to no-wind, no-slope case
         p2.rosSlope.use(Fire.maximumDirectionSlopeSpreadRate, [p1.ros, this.phiS])
         p2.rosWind.use(Fire.maximumDirectionWindSpreadRate, [p1.ros, this.phiW])
-        p2.rosXcomp.use(Fire.maximumDirectionXComponent, [p2.rosWind, p2.rosSlope, windMod.dir.heading.wrtUp])
-        p2.rosYcomp.use(Fire.maximumDirectionYComponent, [p2.rosWind, windMod.dir.heading.wrtUp])
+        p2.rosXcomp.use(Fire.maximumDirectionXComponent, [p2.rosWind, p2.rosSlope, windMod.dir.heading.fromUpslope])
+        p2.rosYcomp.use(Fire.maximumDirectionYComponent, [p2.rosWind, windMod.dir.heading.fromUpslope])
         p2.ros.use(Fire.maximumDirectionSpreadRate, [p2.rosXcomp, p2.rosYcomp])
 
         // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
@@ -150,8 +150,8 @@ export class RothermelFireModule extends DagModule {
         this.wind.effective.exceeded.use(Calc.greaterThan, [p3.weff, p4.weff])
 
         // Direction of maximum spread
-        this.dir.upslope.use(Fire.spreadDirectionFromUpslope, [p2.rosXcomp, p2.rosYcomp, p2.ros])
-        this.dir.north.use(Compass.compassSum, [slopeMod.dir.upslope, this.dir.upslope])
+        this.dir.fromUpslope.use(Fire.spreadDirectionFromUpslope, [p2.rosXcomp, p2.rosYcomp, p2.ros])
+        this.dir.fromNorth.use(Compass.compassSum, [slopeMod.dir.upslope, this.dir.fromUpslope])
         this.hpua.use(Bed.heatPerUnitArea, [fuel.rxi, this.taur])
         this.lwr.use(Fire.lengthToWidthRatio, [this.wind.effective.speed])
         this.fli.use(Fire.firelineIntensity, [this.ros, fuel.rxi, this.taur])

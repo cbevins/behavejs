@@ -137,9 +137,9 @@ export class Dag {
         }
         // Add node suppliers to each of its suppliers' consumers array.
         for(let node of this.nodeMap.values()) {
-            // console.log('Processing suppliers for', node.key())
+            console.log('Processing suppliers for', node.key())
             for(let supplier of node.suppliers) {
-                // console.log('    supplier', supplier.key(), )
+                console.log('    supplier', supplier.key(), )
                 supplier.consumers.push(node)
             }
         }

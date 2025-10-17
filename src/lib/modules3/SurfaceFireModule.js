@@ -10,7 +10,7 @@ import { Calc, SurfaceFireEquations as Fire } from '../index.js'
  * Defines the final surface module
  * NOTE that the FireEllipseModule links to the following nodes:
  *  fire.ros
- *  fire.dir.upslope
+ *  fire.dir.fromUpslope
  *  fire.lwr
  *  fire.midflame (to calculate scorch height)
  *  fire.flame (to calculate fireline intensity)
@@ -44,8 +44,8 @@ export class SurfaceFireModule extends FireModule {
         const fire2 = roth2Mod.fire
 
         // The following are ALWAYS bound to the primary
-        this.dir.upslope.bind(fire1.dir.upslope)
-        this.dir.north.bind(fire1.dir.north)
+        this.dir.fromUpslope.bind(fire1.dir.fromUpslope)
+        this.dir.fromNorth.bind(fire1.dir.fromNorth)
         this.lwr.bind(fire1.lwr)
         this.wind.effective.speed.bind(fire1.wind.effective.speed)
         this.wind.midflame.speed.bind(fire1.wind.midflame.speed)

@@ -16,9 +16,9 @@ export class FireModule extends DagModule {
         super(parentMod, parentProp)
         
         // Direction of maximum spread
-        this.dir = new DagModule(this, 'direction')
-        this.dir.upslope = new DagNode(this.dir, 'upslope', U.compass)
-        this.dir.north = new DagNode(this.dir, 'north', U.compass)
+        this.dir = new DagModule(this, 'dir')
+        this.dir.fromUpslope = new DagNode(this.dir, 'fromUpslope', U.compass)
+        this.dir.fromNorth = new DagNode(this.dir, 'fromNorth', U.compass)
         
         this.ros = new DagNode(this, 'ros', U.fireRos)
         this.flame = new DagNode(this, 'flame', U.fireFlame)

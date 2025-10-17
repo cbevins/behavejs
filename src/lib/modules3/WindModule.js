@@ -18,12 +18,12 @@ export class WindModule extends DagModule {
         this.dir = new DagModule(this, 'dir')
         
         this.dir.origin = new DagModule(this.dir, 'origin')
-        this.dir.origin.wrtNo = new DagNode(this.dir.origin, 'wrtNo', U.compass)
-        this.dir.origin.wrtUp = new DagNode(this.dir.origin, 'wrtUp', U.compass)
+        this.dir.origin.fromNortth = new DagNode(this.dir.origin, 'fromNortth', U.compass)
+        this.dir.origin.fromUpslope = new DagNode(this.dir.origin, 'fromUpslope', U.compass)
 
         this.dir.heading = new DagModule(this.dir, 'heading')
-        this.dir.heading.wrtNo = new DagNode(this.dir.heading, 'wrtNo', U.compass)
-        this.dir.heading.wrtUp = new DagNode(this.dir.heading, 'wrtUp', U.compass)
+        this.dir.heading.fromNortth = new DagNode(this.dir.heading, 'fromNortth', U.compass)
+        this.dir.heading.fromUpslope = new DagNode(this.dir.heading, 'fromUpslope', U.compass)
 
         this.speed = new DagModule(this, 'speed')
         this.speed.at10m = new DagNode(this.speed, 'at10m', U.windSpeed)
@@ -38,20 +38,20 @@ export class WindModule extends DagModule {
         const {origin, heading} = dir
 
         // No config required for this node
-        dir.origin.wrtUp.use(Compass.compassOpposite, [dir.heading.wrtUp])
+        dir.origin.fromUpslope.use(Compass.compassOpposite, [dir.heading.fromUpslope])
 
         if (configDir.value === configDir.headingWrtUp) {
-            dir.heading.wrtUp.input(configDir)
-            dir.origin.wrtNo.use(Compass.compassOpposite, [dir.heading.wrtNo], configDir)
-            dir.heading.wrtNo.use(Compass.compassSum, [dir.heading.wrtUp, upslopeNode], configDir)
+            dir.heading.fromUpslope.input(configDir)
+            dir.origin.fromNortth.use(Compass.compassOpposite, [dir.heading.fromNortth], configDir)
+            dir.heading.fromNortth.use(Compass.compassSum, [dir.heading.fromUpslope, upslopeNode], configDir)
         } else if (configDir.value === configDir.originWrtNo) {
-            dir.heading.wrtUp.use(Compass.compassDiff, [dir.heading.wrtNo, upslopeNode], configDir)
-            dir.origin.wrtNo.input(configDir)
-            dir.heading.wrtNo.use(Compass.compassOpposite, [dir.origin.wrtNo], configDir)
+            dir.heading.fromUpslope.use(Compass.compassDiff, [dir.heading.fromNortth, upslopeNode], configDir)
+            dir.origin.fromNortth.input(configDir)
+            dir.heading.fromNortth.use(Compass.compassOpposite, [dir.origin.fromNortth], configDir)
         } else if (configDir.value === configDir.upslope) {
-            dir.heading.wrtUp.constant(0)
-            dir.origin.wrtNo.use(Compass.compassOpposite, [upslopeNode], configDir)
-            dir.heading.wrtNo.bind(upslopeNode)
+            dir.heading.fromUpslope.constant(0)
+            dir.origin.fromNortth.use(Compass.compassOpposite, [upslopeNode], configDir)
+            dir.heading.fromNortth.bind(upslopeNode)
         } else throw new Error(`Unknown config "${configDir.key}" value "${configDir.value}"`)
 
         if (configSpeed.value === configSpeed.at20ft) {

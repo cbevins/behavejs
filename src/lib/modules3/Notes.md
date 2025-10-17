@@ -1,29 +1,37 @@
-# Directions
+# Fire, Slope, and Wind Directions
 
-slope.steepness.degrees, ratio
-slope.direction.aspect.fromNorth
-slope.direction.upslope.fromNorth
+slope.steep.degrees, ratio
+slope.dir.aspect.fromNorth
+slope.dir.upslope.fromNorth
 
-wind
 wind.speed
-wind.direction.origin.fromNorth
-wind.direction.heading.fromNorth
-wind.direction.heading.fromUpslope
+wind.dir.origin.fromNorth
+wind.dir.heading.fromNorth
+wind.dir.heading.fromUpslope
 
-fire.heading.direction.fromUpslope, fromNorth
+## FireModule, RothermelFireModule, SurfaceFireModule
+fire.dir
+fire.dir.fromUpslope
+fire.dir.fromNorth
+
+fire.wind
+fire.ignition
+
+## FireEllipse
+fire.heading.dir.fromUpslope, fromNorth
 fire.heading.ros, flame, fli, scorch, mort, dist, x, y
 
-fire.flanking.direction.fromUpslope, fromNorth
-fire.flanking.ros, flame, fli, scorch, mort, dist, x, y
+fire.leftflank.dir.fromUpslope, fromNorth
+fire.leftflank.ros, flame, fli, scorch, mort, dist, x, y
 
-fire.backing.direction.fromUpslope, fromNorth
+fire.rightflank.dir.fromUpslope, fromNorth
+fire.rightflank.ros, flame, fli, scorch, mort, dist, x, y
+
+fire.backing.dir.fromUpslope, fromNorth
 fire.backing.ros, flame, fli, scorch, mort, dist, x, y
 
-fire.ignPt5.direction.fromHeading, fromNorth, fromUpslope
-fire.ignPt5.ros, fli, flame, scorch, mort, dist, x, y
+fire.vector.fromHead, fromNorth, fromUpslope
 
-fire.ignPt6.direction.fromHeading, fromNorth, fromUpslope
-fire.ignPt6.ros, fli, flame, scorch, mort, dist, x, y
-
-fire.ellipseCenter.direction.fromHeading, fromNorth, fromUpslope
-fire.ellipseCenter.ros, fli, flame, scorch, mort, dist, x, y, mapDist, mapX, mapY
+fire.vector.ignPt5.ros, fli, flame, scorch, mort, dist, x, y
+fire.vector.ignPt6.ros, fli, flame, scorch, mort, dist, x, y
+fire.vector.center.ros, fli, flame, scorch, mort, dist, x, y, mapDist, mapX, mapY

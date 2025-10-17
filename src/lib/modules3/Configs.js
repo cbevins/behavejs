@@ -60,7 +60,7 @@ export const midflameWindSpeed = makeConfig('midflameWindSpeed',
 
 export const slopeDirection = makeConfig('slopeDirection',
     'slope direction is specified as', [
-        ['downslope', 'down-slope direction (aspect)'],
+        ['aspect', 'down-slope direction (aspect)'],
         ['upslope', 'up-slope direction']])
 
 export const slopeSteepness = makeConfig('slopeSteepness',

@@ -77,7 +77,7 @@ const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
 // SlopeModule destructuring
 const steep = slope.steep.ratio
-const downslope = slope.dir.downslope
+const aspect = slope.dir.aspect
 
 // SurfaceModule destructuring
 const stdKey1 = primary.fuel.domain.standard.stdKey
@@ -95,12 +95,12 @@ const rosH = surface.rosHarm
 
 // WindModule destructuring
 const wind20 =wind.speed.at20ft
-const windFrom = wind.dir.origin.wrtNo
+const windFrom = wind.dir.origin.fromNortth
 // console.log(primary.fire.wind.midflame.speed)
 
 dag.select(
     tl1, tl10, tl100, herb, stem,
-    steep, downslope,
+    steep, aspect,
     windFrom, // wind20,
     // canopyBase, canopyHeight, canopyRatio,
     ros1, ros2, ros3, rosA, rosH
@@ -119,7 +119,7 @@ dag.set(tl100, 0.09)
 dag.set(herb, 0.5)
 dag.set(stem, 1.5)
 dag.set(steep, 0.25)
-dag.set(downslope, 180)
+dag.set(aspect, 180)
 dag.set(windFrom, 270)
 dag.set(midflame1, 880)
 dag.set(midflame2, 880)

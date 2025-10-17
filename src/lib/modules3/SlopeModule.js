@@ -17,7 +17,7 @@ export class SlopeModule extends DagModule {
 
         this.dir = new DagModule(this, 'dir')
         this.dir.upslope = new DagNode(this.dir, 'upslope', U.compass)
-        this.dir.downslope = new DagNode(this.dir, 'downslope', U.compass)
+        this.dir.aspect = new DagNode(this.dir, 'aspect', U.compass)
 
         this.steep = new DagModule(this, 'speed')
         this.steep.degrees = new DagNode(this.steep, 'degrees', U.compass)
@@ -30,10 +30,10 @@ export class SlopeModule extends DagModule {
 
         if (configDir.value === configDir.upslope) {
             dir.upslope.input(configDir)
-            dir.downslope.use(Compass.compassOpposite, [dir.upslope], configDir)
-        } else if (configDir.value === configDir.downslope) {
-            dir.downslope.input(configDir)
-            dir.upslope.use(Compass.compassOpposite, [dir.downslope], configDir)
+            dir.aspect.use(Compass.compassOpposite, [dir.upslope], configDir)
+        } else if (configDir.value === configDir.aspect) {
+            dir.aspect.input(configDir)
+            dir.upslope.use(Compass.compassOpposite, [dir.aspect], configDir)
         } else throw new Error(`Unknown config "${configDir.key}" value "${configDir.value}"`)
 
         if (configSteep.value === configSteep.ratio) {
