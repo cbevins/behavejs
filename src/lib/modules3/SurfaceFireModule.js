@@ -23,7 +23,7 @@ export class SurfaceFireModule extends FireModule {
      * @param {string} parentProp usually 'surface'
      * @param {RothermelModule} roth1
      * @param {RothermelModule} roth2
-     * @param {DagConfig} configSurface
+     * @param {DagConfig} Reference to Config.surfaceFire
      */
     constructor(parentMod, parentProp, roth1Mod, roth2Mod, configSurface) {
         super(parentMod, parentProp)

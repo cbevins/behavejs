@@ -10,8 +10,9 @@ export class RothermelFuelModule extends DagModule {
      * @param {RothermelFireModule} parentMod 
      * @param {string} parentProp 'fuel'
      * @param {FuelMoistureModule} moistureMod 
-     * @param {DagConfig} configDomain 
-     * @param {DagConfig} configCuring 
+     * @param {DagConfig} configDomain Reference to a Config.fuelDomainPrimary,
+     *  Config.fuelDomainSecondary, or Config.fuelDomainCrown
+     * @param {DagConfig} configCuring Reference to a Config.fuelCuring
      */
     constructor(parentMod, parentProp, moistureMod, configDomain, configCuring) {
         super(parentMod, parentProp)

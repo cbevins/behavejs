@@ -6,7 +6,7 @@ import { FireEllipseEquations as FireEllipse } from '../index.js'
 import { SurfaceFireEquations as SurfaceFire } from '../index.js'
 // import { TreeMortalityEquations as TreeMortality } from '../index.js'
 
-export class FireEllipseModule extends FireModule {
+export class FireEllipseModule extends DagModule {
     /**
      * It requires the following nodes:
      *  - direction of maximum fire spread from upslope,
@@ -16,418 +16,225 @@ export class FireEllipseModule extends FireModule {
      * 
      * @param {DagModule} parentMod
      * @param {string} parentProp Usually 'ellipse'
-     * @param {FireModule} fireMod The linked fire module
-     * @param {MapModule} mapMod
-     * @param {DagConfig} cfgVectors Config reference to FireEllipseConfig.js
+     * @param {FireModule} fireMod The linked FireModule such as a
+     *  SurfaceFireModule.
+     * @param {SlopeModule} slopeMod The linked SlopeModule
+     * @param {MapModule} mapMod The linked MapModule
+     * @param {DagConfig} cfgVectors Reference to Config.fireVector
+     * @param {DagConfig} cfgFli Reference to Config.firelineIntensity
      */
-    constructor(parentMod, parentProp, fireMod, mapMod, configVectors) {
+    constructor(parentMod, parentProp, fireMod, slopeMod, mapMod, configVectors, configFli) {
         super(parentMod, parentProp)
-        this._meta.mod = {fireMod, mapMod}
-        this._meta.config = {configVectors}
+        this._meta.mod = {fireMod, slopeMod, mapMod}
+        this._meta.config = {configFli, configVectors}
+
+        // Structure
+        // fire.head.dir.fromUpslope, fromNorth
+        // fire.head.ros, flame, fli, scorch, mort, dist, x, y
+
+        // fire.back.dir.fromUpslope, fromNorth
+        // fire.back.ros, flame, fli, scorch, mort, dist, x, y
+
+        // fire.left.dir.fromUpslope, fromNorth
+        // fire.left.ros, flame, fli, scorch, mort, dist, x, y
+
+        // fire.right.dir.fromUpslope, fromNorth
+        // fire.right.ros, flame, fli, scorch, mort, dist, x, y
+
+        // fire.vector.dir.fromHead, fromNorth, fromUpslope
+
+        // fire.beta5.ros, fli, flame, scorch, mort, dist, x, y RENAME 'ignPt5'
+        // fire.beta6.ros, fli, flame, scorch, mort, dist, x, y  RENAME 'ignPt6'
+        // fire.psi.ros, fli, flame, scorch, mort, dist, x, y, mapDist, mapX, mapY   RENAME 'center'
+
+        // Create the first depth of DagModules then destructure them
+        for(let sub of ['axis', 'back', 'beta5', 'beta6', 'head', 'ignition', 'left', 'map', 'psi',
+            'right', 'size', 'temp', 'vector', 'wind'])
+            this[sub] = new DagModule(this, sub)
+        const {axis, back, beta5, beta6, head, ignition, left, map, psi, right, size, temp, vector, wind} = this
+
+        // Create common fire behavior DagModule DagNodes
+        for(let sub of [head, back, left, right, beta5, beta6, psi]) {
+            const dir = sub.dir = new DagModule(sub, 'dir')
+            dir.fromUpslope = new DagNode(dir, 'fromUpslope', U.compass)
+            dir.fromNorth = new DagNode(dir, 'fromNorth', U.compass)
+            sub.flame = new DagNode(sub, 'flame', U.fireFlame)
+            sub.fli = new DagNode(sub, 'fli', U.fireFli)
+            sub.ros = new DagNode(sub, 'ros', U.fireRos)
+            sub.scorch = new DagNode(sub, 'scorch', U.fireScorch)
+            sub.dist = new DagNode(sub, 'dist', U.distance)
+            sub.mapDist = new DagNode(sub, 'mapDist', U.mapDist)
+        }
+        // Additional DagNodes for beta6
+        beta6.theta = new DagNode(beta6, 'theta', U.compass)
+        beta6.psi = new DagNode(beta6, 'psi', U.compass)
+        beta6.psiRos = new DagNode(beta6, 'psiRos', U.fireRos)
+
+        for(let sub of [head, back, left, right, vector]) {
+            const dir = sub.dir = new DagModule(sub, 'dir')
+            dir.fromUpslope = new DagNode(dir, 'fromUpslope', U.compass)
+            dir.fromNorth = new DagNode(dir, 'fromNorth', U.compass)
+        }
+        // Additional DagNode for vector
+        vector.dir.fromHead = new DagNode(vector, 'fromHead', U.compass)
+
+        // Axis
+        for (let sub of ['major', 'minor', 'f', 'g', 'h']) {
+            axis[sub] = new DagModule(axis, sub)
+            axis[sub].ros = new DagNode(axis[sub], 'ros', U.fireRos)
+        }
+        axis.eccentricity = new DagNode(axis, 'eccentricity', U.ratio,)
+        axis.lwr = new DagNode(axis, 'lwr', U.ratio)
+
+        // Ignition time and point
+        ignition.time = new DagModule(ignition, 'time')
+        ignition.time.elapsed = new DagNode(ignition.time, 'elapsed', U.fireTime)
+        ignition.point = new DagModule(ignition, 'point')
+        ignition.point.x = new DagNode(ignition.point, 'x', U.factor)
+        ignition.point.y = new DagNode(ignition.point, 'y', U.factor)
+
+        map.area = new DagNode(map, 'area', U.mapArea)
+        map.length = new DagNode(map, 'length', U.mapDist)
+        map.perimeter = new DagNode(map, 'perimeter', U.mapDist)
+        map.width = new DagNode(map, 'width', U.mapDist)
+        
+        size.area = new DagNode(size, 'area', U.fireArea)
+        size.length = new DagNode(size, 'length', U.fireDist)
+        size.perimeter = new DagNode(size, 'perimeter', U.fireDist)
+        size.width = new DagNode(size, 'width', U.fireDist)
+
+        temp.air = new DagNode(temp, 'air', U.temp).input()
+
+        // Fire midflame and effective wind speed
+        // wind.effective = new DagModule(wind, 'effective')
+        // wind.effective.speed = new DagNode(wind.effective, 'speed', U.windSpeed)
+        wind.midflame = new DagModule(this.wind, 'midflame')
+        wind.midflame.speed = new DagNode(wind.midflame, 'speed', U.windSpeed)
+        // wind.midflame.factor = new DagNode(wind.midflame, 'factor', U.windSpeed)
+    }
+
+    config() {
+        const {axis, back, beta5, beta6, head, ignition, left, map, psi, right, size, temp, vector, wind} = this
+        const {fireMod, mapMod, slopeMod} = this._meta.mod
+        const {configFli, configVectors} = this._meta.config
 
         //----------------------------------------------------------------------
         // The following are either bound to a FireModule or are Dag.input
         //----------------------------------------------------------------------
-        this.airTemp = new DagNode(this, 'airTemp', U.temp).input()
-        // Direction of maximum spread
-        this.dir = new DagModule(this, 'direction')
-        this.dir.upslope = new DagNode(this.dir, 'upslope', U.compass)
-            .bind(fireMod.dir.upslope)
-        this.dir.north = new DagNode(this.dir, 'north', U.compass)
-            .bind(fireMod.dir.north)
-        this.flame = new DagNode(this, 'flame', U.fireFlame)
-            .bind(fireMod.flame)
-        this.fli = new DagNode(this, 'fli', U.fireFli)
-            .use(SurfaceFire.firelineIntensityFromFlameLength, [this.flame])
-        this.lwr = new DagNode(this, 'lwr', U.ratio)
-            .bind(fireMod.dir.upslope)
-        this.ros = new DagNode(this, 'ros', U.fireRos)
-            .bind(fireMod.ros)
-
-        // Fire midflame and effective wind speed
-        this.wind = new DagModule(this, 'wind')
-        this.wind.effective = new DagModule(this.wind, 'effective')
-        this.wind.effective.speed = new DagNode(this.wind.effective, 'speed', U.windSpeed)
-            .bind(fireMod.wind.effective.speed)
-        this.wind.midflame = new DagModule(this.wind, 'midflame')
-        this.wind.midflame.speed = new DagNode(this.wind.midflame, 'speed', U.windSpeed)
-            .bind(fireMod.wind.midflame.speed)
-        this.wind.midflame.factor = new DagNode(this.wind.midflame, 'factor', U.windSpeed)
-            .bind(fireMod.wind.midflame.factor)
-
-        // Ignition time and point
-        this.ignition = new DagModule(this, 'ignition')
-        this.ignition.time = new DagModule(this.ignition, 'time')
-        this.ignition.time.elapsed = new DagNode(this.ignition.time, 'elapsed', U.fireTime)
-            .bind(fireMod.ignition.time.elapsed)
-        this.ignition.point = new DagModule(this.ignition, 'point')
-        this.ignition.point.x = new DagNode(this.ignition.point, 'x', U.factor)
-            .bind(fireMod.ignition.point.x)
-        this.ignition.point.y = new DagNode(this.ignition.point, 'y', U.factor)
-            .bind(fireMod.ignition.point.y)
+        if (fireMod) {
+            axis.lwr.bind(fireMod.lwr)
+            head.ros.bind(fireMod.ros)
+            head.dir.fromUpslope.bind(fireMod.dir.fromUpslope)
+            head.dir.fromNorth.bind(fireMod.dir.fromNorth)
+            head.flame.bind(fireMod.flame)
+            head.fli.use(SurfaceFire.firelineIntensityFromFlameLength, [head.flame])
+            // Fire midflame and effective wind speed
+            // wind.effective.speed.bind(fireMod.wind.effective.speed)
+            wind.midflame.speed.bind(fireMod.wind.midflame.speed)
+            // wind.midflame.factor.bind(fireMod.wind.midflame.factor)
+            // Ignition time and point
+            ignition.time.elapsed.bind(fireMod.ignition.time.elapsed)
+            ignition.point.x.bind(fireMod.ignition.point.x)
+            ignition.point.y.bind(fireMod.ignition.point.y)
+        } else {
+            axis.lwr.input()
+            head.ros.input()
+            head.dir.fromUpslope.input()
+            head.dir.fromNorth.input()
+            if(configFli.value===configFli.flame) {
+                head.flame.input(configFli)
+                head.fli.use(SurfaceFire.firelineIntensityFromFlameLength, [this.flame], configFli)
+            } else if (configFli.value===configFli.fli) {
+                head.fli.input(configFli)
+                head.flame.use(SurfaceFire.flameLength, [head.fli], configFli)
+            }
+            ignition.time.elapsed.input()
+            ignition.point.x.input()
+            ignition.point.y.input()
+            temp.air.input()
+            wind.midflame.speed.input()
+        }
 
         //----------------------------------------------------------------------
         // Fire spread vectors from ignition point or ellipse center
         //----------------------------------------------------------------------
+        
+        if (configVectors.value === configVectors.fromNorth) {
+            vector.dir.fromHead.use(Compass.compassDiff, [
+                vector.dir.fromNorth, head.dir.fromNorth], configVectors)
+            vector.dir.fromNorth.input(configVectors)
+            vector.dir.fromUpslope.use(Compass.compassDiff, [
+                vector.dir.fromNorth, slopeMod.dir.upslope], configVectors)
+        }
+        else if (configVectors.value === configVectors.fromHead) {
+            vector.dir.fromHead.input(configVectors)
+            vector.dir.fromNorth.use(Compass.compassSum, [
+                vector.dir.fromHead, head.dir.fromNorth], configVectors)
+            vector.dir.fromUpslope.use(Compass.compassSum, [
+                vector.dir.fromHead, head.dir.fromUpslope], configVectors)
+        }
+        else if (configVectors.value === configVectors.fromUpslope) {
+            vector.dir.fromHead.use(Compass.compassDiff, [
+                vector.dir.fromUpslope, head.dir.fromUpslope], configVectors)
+            vector.dir.fromNorth.use(Compass.compassSum, [
+                vector.dir.fromUpslope, slopeMod.dir.upslope], configVectors)
+            vector.dir.fromUpslope.input(configVectors)
+        }
 
-        const vector = this.vector = new DagModule(this, 'vector')
-        this.vector.fromHead = new DagNode(vector, 'fromHead', U.compass)
-            .input(configVectors)   // if (configVectors.value === configVectors.fromHead)
-            .use(Compass.compassDiff, [ // if (configVectors.value === configVectors.fromUpslope)
-                vector.fromUpslope, this.dir.upslope], configVectors)
-            .use(Compass.compassDiff, [// if (configVectors.value === configVectors.fromNorth)
-                vector.fromNorth, this.dir.north], configVectors)
+        // FireEllipse
+        axis.eccentricity.use(FireEllipse.eccentricity, [axis.lwr])
+        axis.major.ros.use(FireEllipse.majorSpreadRate, [head.ros, back.ros])
+        axis.minor.ros.use(FireEllipse.minorSpreadRate, [axis.major.ros, axis.lwr])
+        axis.f.ros.use(FireEllipse.fSpreadRate, [axis.major.ros])
+        axis.g.ros.use(FireEllipse.gSpreadRate, [axis.major.ros, back.ros])
+        axis.h.ros.use(FireEllipse.hSpreadRate, [axis.minor.ros])
 
-        this.vector.fromNorth = new DagModule(vector, 'fromNorth', U.compass)
-            .input(configVectors)   // if (configVectors.value === configVectors.fromNorth)
-            .use(Compass.compassSum, [   // if (configVectors.value === configVectors.fromHead)
-                vector.fromHead, this.dir.fromNorth])
-                [cfgVectors.fromUpslope, Compass.compassSum, [   // if (configVectors.value === configVectors.fromUpslope)
-                    vector.fromUpslope, upslopeNode]]]],
+        size.area.use(FireEllipse.area, [size.length, axis.lwr])
+        size.length.use(FireEllipse.spreadDistance, [axis.major.ros, ignition.time.elapsed])
+        size.perimeter.use(FireEllipse.perimeter, [size.length, size.width])
+        size.width.use(FireEllipse.spreadDistance, [axis.minor.ros, ignition.time.elapsed])
 
-            [path+P.vectorFromUpslope, 0, U.compass, cfgVectors, [
-                [cfgVectors.fromUpslope, Dag.input, []],
-                [cfgVectors.fromHead, Compass.compassSum, [
-                    path+P.vectorFromHead,
-                    path+P.fireFromUpslope]],
-                [cfgVectors.fromNorth, Compass.compassDiff, [
-                    path+P.vectorFromNorth,
-                    upslopeNode]],
-                [cfgVectors.any, Compass.compassDiff, [
-                    path+P.vectorFromNorth,
-                    upslopeNode]]]],
+        map.area.use(FireEllipse.mapArea, [size.area, mapMod.scale])
+        map.length.use(Calc.divide, [size.length, mapMod.scale])
+        map.perimeter.use(Calc.divide, [size.perimeter, mapMod.scale])
+        map.width.use(Calc.divide, [size.width, mapMod.scale])
+        
+        // All 7 vectors have their own ros computation (head.ros was set above)
+        back.ros.use(FireEllipse.backingSpreadRate, [head.ros, axis.eccentricity])
+        left.ros.use(FireEllipse.flankingSpreadRate, [axis.minor.ros])
+        right.ros.bind(left.ros)
+        beta5.ros.bind(beta6.ros)
+        beta6.ros.use(FireEllipse.betaSpreadRate, [
+            vector.dir.fromHead, head.ros, axis.eccentricity])
+        psi.ros.use(FireEllipse.psiSpreadRate, [
+            vector.dir.fromHead, axis.f.ros, axis.g.ros, axis.h.ros])
 
-            // FireEllipse
-            [path+P.headFli, 0, U.fireFli, null, [
-                [cfg.any, SurfaceFire.firelineIntensityFromFlameLength, [
-                    path+P.headFlame]]]],
+        // All 7 vectors share the following computation equations and parameters
+        for(let node of [head, back, right, left, beta5, beta6, psi]) {
+            node.dist.use(FireEllipse.spreadDistance, [node.ros, ignition.time.elapsed])
+            node.mapDist.use(Calc.divide, [node.dist, mapMod.scale])
+            node.scorch.use(SurfaceFire.scorchHeight, [node.fli, wind.midflame.speed, temp.air])
+            // node.mortality.use(TreeMortality.mortalityRate, [
+            //     canopyMod.tree.species.fofem6.code, canopyMod.tree.dbh',
+            //     canopyMod.crown.height', canopyMod.crown.base', node.scorch])
+        }
 
-            [path+P.eccent, 0, U.ratio, null, [
-                ['', FireEllipse.eccentricity, [
-                    path+P.axisLwr]]]],
+        // fli for all except head.fli, which may be bound, and beta6.fli (see above)
+        for(let node of [back, right, left, beta5, psi]) {
+            // !!! NOT used for head.fli, beta6.fli
+            node.fli.use(FireEllipse.fliAtAzimuth, [head.fli, head.ros, node.ros])
+        }
+        // NOTE: beta6.fli derives the beta6.psiRos for its fireline intensity
+        // using the following computation sequence!
+        beta6.theta.use(FireEllipse.thetaFromBeta, [
+            vector.dir.fromHead, axis.f.ros, axis.g.ros, axis.h.ros])
+        beta6.psi.use(FireEllipse.psiFromTheta, [beta6.theta, axis.f.ros, axis.h.ros])
+        beta6.psiRos.use(FireEllipse.psiSpreadRate, [beta6.psi, axis.f.ros, axis.g.ros, axis.h.ros])
+        beta6.fli.use(FireEllipse.fliAtAzimuth, [head.fli, head.ros, beta6.psiRos])
 
-            [path+P.axisMajRos, 0, U.fireRos, null, [
-                ['', FireEllipse.majorSpreadRate, [
-                    path+P.headRos,
-                    path+P.backRos]]]],
-
-            [path+P.axisMinRos, 0, U.fireRos, null, [
-                ['', FireEllipse.minorSpreadRate, [
-                    path+P.axisMajRos,
-                    path+P.axisLwr]]]],
-            
-            [path+P.axisFRos, 0, U.fireRos, null, [
-                ['', FireEllipse.fSpreadRate, [
-                    path+P.axisMajRos]]]],
-            
-            [path+P.axisGRos, 0, U.fireRos, null, [
-                ['', FireEllipse.gSpreadRate, [
-                    path+P.axisMajRos,
-                    path+P.backRos]]]],
-
-            [path+P.axisHRos, 0, U.fireRos, null, [
-                ['', FireEllipse.hSpreadRate, [
-                    path+P.axisMinRos]]]],
-
-            [path+P.sizeArea, 0, U.fireArea, null, [
-                ['', FireEllipse.area, [
-                    path+P.sizeLength,
-                    path+P.axisLwr]]]],
-
-            [path+P.sizeLength, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.axisMajRos,
-                    path+P.fireTime]]]],
-
-            [path+P.sizePerim, 0, U.fireDist, null, [
-                ['', FireEllipse.perimeter, [
-                    path+P.sizeLength,
-                    path+P.sizeWidth]]]],
-
-            [path+P.sizeWidth, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.axisMinRos,
-                    path+P.fireTime]]]],
-
-            // end path+'size'
-            [path+P.mapArea, 0, U.mapArea, null, [
-                ['', FireEllipse.mapArea, [
-                    path+P.sizeArea,
-                    mapScaleNode]]]],
-
-            [path+P.mapLength, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.sizeLength,
-                    mapScaleNode]]]],
-
-            [path+P.mapPerim, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.sizePerim,
-                    mapScaleNode]]]],
-
-            [path+P.mapWidth, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.sizeWidth,
-                    mapScaleNode]]]],
-
-            // end path+'map'
-            [path+P.backDist, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.backRos,
-                    path+P.fireTime]]]],
-
-            [path+P.backFli, 0, U.fireFli, null, [
-                ['', FireEllipse.fliAtAzimuth, [
-                    path+P.headFli,
-                    path+P.headRos,
-                    path+P.backRos]]]],
-
-            [path+P.backFlame, 0, U.fireFlame, null, [
-                ['', SurfaceFire.flameLength, [
-                    path+P.backFli]]]],
-
-            [path+P.backMap, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.backDist,
-                    mapScaleNode]]]],
-
-            [path+P.backRos, 0, U.fireRos, null, [
-                ['', FireEllipse.backingSpreadRate, [
-                    path+P.headRos,
-                    path+P.eccent]]]],
-
-            [path+P.backScorch, 0, U.fireScorch, null, [
-                ['', SurfaceFire.scorchHeight, [
-                    path+P.backFli,
-                    path+P.fireMidf,
-                    path+P.airTemp]]]],
-
-            // [path+P.backMort, 0, U.fraction, null, [
-            //     ['', TreeMortality.mortalityRate, [
-            //         'site.canopy.tree.species.fofem6.code',
-            //         'site.canopy.tree.dbh',
-            //         'site.canopy.crown.totalHeight',
-            //         'site.canopy.crown.baseHeight',
-            //         path+P.backScorch]]]],
-
-            // end path+'back'
-            [path+P.flankDist, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.flankRos,
-                    path+P.fireTime]]]],
-
-            [path+P.flankFli, 0, U.fireFli, null, [
-                ['', FireEllipse.fliAtAzimuth, [
-                    path+P.headFli,
-                    path+P.headRos,
-                    path+P.flankRos]]]],
-
-            [path+P.flankFlame, 0, U.fireFlame, null, [
-                ['', SurfaceFire.flameLength, [
-                    path+P.flankFli]]]],
-
-            [path+P.flankMap, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.flankDist,
-                    mapScaleNode]]]],
-
-            [path+P.flankRos, 0, U.fireRos, null, [
-                ['', FireEllipse.flankingSpreadRate, [
-                    path+P.axisMinRos]]]],
-
-            [path+P.flankScorch, 0, U.fireScorch, null, [
-                ['', SurfaceFire.scorchHeight, [
-                    path+P.flankFli,
-                    path+P.fireMidf,
-                    path+P.airTemp]]]],
-
-            // [path+P.flankMort, 0, U.fraction, null, [
-            //     ['', TreeMortality.mortalityRate, [
-            //         'site.canopy.tree.species.fofem6.code',
-            //         'site.canopy.tree.dbh',
-            //         'site.canopy.crown.totalHeight',
-            //         'site.canopy.crown.baseHeight',
-            //         path+P.flankScorch]]]],
-
-            // end path+'flank'
-            [path+P.headDist, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.headRos,
-                    path+P.fireTime]]]],
-
-            [path+P.headMap, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.headDist,
-                    mapScaleNode]]]],
-
-            [path+P.headScorch, 0, U.fireScorch, null, [
-                ['', SurfaceFire.scorchHeight, [
-                    path+P.headFli,
-                    path+P.fireMidf,
-                    path+P.airTemp]]]],
-
-            // [path+P.headMort, 0, U.fraction, null, [
-            //     ['', TreeMortality.mortalityRate, [
-            //         'site.canopy.tree.species.fofem6.code',
-            //         'site.canopy.tree.dbh',
-            //         'site.canopy.crown.totalHeight',
-            //         'site.canopy.crown.baseHeight',
-            //         path+P.headScorch]]]],
-
-            // end path+'head'
-            [path+P.psiDist, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.psiRos,
-                    path+P.fireTime]]]],
-
-            [path+P.psiFli, 0, U.fireFli, null, [
-                ['', FireEllipse.fliAtAzimuth, [
-                    path+P.headFli,
-                    path+P.headRos,
-                    path+P.psiRos]]]],
-
-            [path+P.psiFlame, 0, U.fireFlame, null, [
-                ['', SurfaceFire.flameLength, [
-                    path+P.psiFli]]]],
-
-            [path+P.psiMap, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.psiDist,
-                    mapScaleNode]]]],
-
-            [path+P.psiRos, 0, U.fireRos, null, [
-                ['', FireEllipse.psiSpreadRate, [
-                    path+P.vectorFromHead,
-                    path+P.axisFRos,
-                    path+P.axisGRos,
-                    path+P.axisHRos]]]],
-
-            [path+P.psiScorch, 0, U.fireScorch, null, [
-                ['', SurfaceFire.scorchHeight, [
-                    path+P.psiFli,
-                    path+P.fireMidf,
-                    path+P.airTemp]]]],
-
-            // [path+P.psiMort, 0, U.fraction, null, [
-            //     ['', TreeMortality.mortalityRate, [
-            //         'site.canopy.tree.species.fofem6.code',
-            //         'site.canopy.tree.dbh',
-            //         'site.canopy.crown.totalHeight',
-            //         'site.canopy.crown.baseHeight',
-            //         path+P.psiScorch]]]],
-
-            // end pathPsi
-            [path+P.beta5Dist, 0, U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.beta5Ros,
-                    path+P.fireTime]]]],
-
-            [path+P.beta5Fli, 0, U.fireFli, null, [
-                ['', FireEllipse.fliAtAzimuth, [
-                    path+P.headFli,
-                    path+P.headRos,
-                    path+P.betaRos]]]],
-
-            [path+P.beta5Flame, 0, U.fireFlame, null, [
-                ['', SurfaceFire.flameLength, [
-                    path+P.beta5Fli]]]],
-
-            [path+P.beta5Map, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.beta5Dist,
-                    mapScaleNode]]]],
-
-            [path+P.beta5Ros, 0, U.fireRos, null, [
-                ['', Dag.assign, [path+P.betaRos]]]],
-
-            [path+P.beta5Scorch, 0, U.fireScorch, null, [
-                ['', SurfaceFire.scorchHeight, [
-                    path+P.beta5Fli,
-                    path+P.fireMidf,
-                    path+P.airTemp]]]],
-
-            // [path+P.beta5Mort, 0, U.fraction, null, [
-            //     ['', TreeMortality.mortalityRate, [
-            //         'site.canopy.tree.species.fofem6.code',
-            //         'site.canopy.tree.dbh',
-            //         'site.canopy.crown.totalHeight',
-            //         'site.canopy.crown.baseHeight',
-            //         path+P.beta5Scorch]]]],
-
-            // end path+P.beta5+''
-            [path+P.betaDist, 0,  U.fireDist, null, [
-                ['', FireEllipse.spreadDistance, [
-                    path+P.betaRos,
-                    path+P.fireTime]]]],
-
-            [path+P.betaFli, 0, U.fireFli, null, [
-                ['', FireEllipse.fliAtAzimuth, [
-                    path+P.headFli,
-                    path+P.headRos,
-                    path+P.betaPsiRos]]]],
-
-            [path+P.betaFlame, 0, U.fireFlame, null, [
-                ['', SurfaceFire.flameLength, [
-                    path+P.betaFli]]]],
-
-            [path+P.betaMap, 0, U.mapDist, null, [
-                ['', Calc.divide, [
-                    path+P.betaDist,
-                    mapScaleNode]]]],
-
-            [path+P.betaRos, 0, U.fireRos, null, [
-                ['', FireEllipse.betaSpreadRate, [
-                    path+P.vectorFromHead,
-                    path+P.headRos,
-                    path+P.eccent]]]],
-
-            [path+P.betaScorch, 0, U.fireScorch, null, [
-                ['', SurfaceFire.scorchHeight, [
-                    path+P.betaFli,
-                    path+P.fireMidf,
-                    path+P.airTemp]]]],
-
-            // [path+P.betaMort, 0, U.fraction, null, [
-            //     ['', TreeMortality.mortalityRate, [
-            //         'site.canopy.tree.species.fofem6.code',
-            //         'site.canopy.tree.dbh',
-            //         'site.canopy.crown.totalHeight',
-            //         'site.canopy.crown.baseHeight',
-            //         path+P.betaScorch]]]],
-
-            [path+P.betaTheta, 0, U.compass, null, [
-                ['', FireEllipse.thetaFromBeta, [
-                    path+P.vectorFromHead,
-                    path+P.axisFRos,
-                    path+P.axisGRos,
-                    path+P.axisHRos]]]],
-
-            [path+P.betaPsi, 0, U.compass, null, [
-                ['', FireEllipse.psiFromTheta, [
-                    path+P.betaTheta,
-                    path+P.axisFRos,
-                    path+P.axisHRos]]]],
-
-            [path+P.betaPsiRos, 0, U.fireRos, null, [
-                ['', FireEllipse.psiSpreadRate, [
-                    path+P.betaPsi,
-                    path+P.axisFRos,
-                    path+P.axisGRos,
-                    path+P.axisHRos]]]],
-
-            // end path+'beta'
-            [path+P.fireFromNorth, 0, U.compass, null, [
-                ['', Compass.compassSum, [
-                    upslopeNode,
-                    path+P.fireFromUpslope]]]],
-        ]
-        // for(let i=0; i<this.nodes.length; i++) {
-        //     const node = this.nodes[i]
-        //     const [key, value, units, cfg, options] = node
-        //     console.log(i, key)
-        //     if (key.includes('undefined')) {
-        //         console.log(`${this.module} has undefined key at node index ${i} with units "${units.key}"`)
-        //     }
-        // }
+        // flame for all except head.flame, which may be bound
+        for(let node of [back, right, left, beta5, beta6, psi]) {
+            node.flame.use(SurfaceFire.flameLength, [node.fli])
+        }
     }
 }

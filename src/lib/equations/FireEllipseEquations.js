@@ -45,7 +45,7 @@ export class FireEllipseEquations {
    * This calculates the fire spread rate at `beta` degrees from its *point of ignition*,
    * which *is not* the fire rate at `psi` degrees from the center of the ellipse.
    *
-   * NOTE this differs from FireSPread::spreadRateATBeta(), which takes the ellipse
+   * NOTE this differs from FireSpread::spreadRateAtBeta(), which takes the ellipse
    * length-to-width ratio as its second argument.
    *
    * @param betaHead Fire spread vector of interest (degrees clockwise from heading direction).

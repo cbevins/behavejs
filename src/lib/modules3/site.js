@@ -3,6 +3,7 @@ import { DagModule, DagNode, NodeMap } from './DagItems.js'
 import { Util } from './Util.js'
 
 import { CanopyModule } from './CanopyModule.js'
+import { FireEllipseModule } from './FireEllipseModule.js'
 import { FuelMoistureModule } from './FuelMoistureModule.js'
 import { MapModule } from './MapModule.js'
 import { RothermelModule } from './RothermelModule.js'
@@ -33,6 +34,7 @@ function configureSite(site) {
     site.primary.config()
     site.secondary.config()
     site.surface.config()
+    site.ellipse.config()
 }
 
 function buildSite(prop='site') {
@@ -54,6 +56,10 @@ function buildSite(prop='site') {
         Config.fuelDomainSecondary, Config.fuelCuring)
     site.surface = new SurfaceFireModule(site, 'surface',
         site.primary, site.secondary, Config.surfaceFire)
+    site.ellipse = new FireEllipseModule(site, 'ellipse',
+        site.surface, site.slope, site.map,
+        Config.fireVectors, Config.firelineIntensity
+    )
     return site
 }
 //------------------------------------------------------------------------------

@@ -22,6 +22,17 @@ export const fireEffWindLimit = makeConfig('effwindLimit',
         ['applied', 'applied'],
         ['notApplied', 'not applied']])
 
+export  const fireVectors = makeConfig('fireVectors',
+    'ellipse fire vector angles are degrees clockwise from', [
+        ['fromNorth', 'North'],
+        ['fromHead', 'fire heading direction'],
+        ['fromUpslope', 'from upslope direction']])
+
+export const firelineIntensity = makeConfig('firelineIntensity',
+    'when required as an input, fireline intensity is input as', [
+        ['fli', 'fireline intensity'],
+        ['flame', 'flame length']])
+
 export const fuelCuring = makeConfig('fuelCuring',
     'live fuel curing fraction is', [
         ['estimated', 'estimated from live herb moisture content'],

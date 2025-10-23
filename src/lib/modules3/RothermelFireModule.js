@@ -15,8 +15,8 @@ export class RothermelFireModule extends DagModule {
      * @param {WindModule} windMod 
      * @param {SlopeModule} slopeMod 
      * @param {CanopyModule} canopyMod
-     * @param {DagConfig} configWindLimit 
-     * @param {DagConfig} configMidflame
+     * @param {DagConfig} configWindLimit Reference to a Config.fireEffWindLimit
+     * @param {DagConfig} configMidflame Reference to a Config.midflameWindSpeed
      */
     constructor(parentMod, parentProp, fuelMod, windMod, slopeMod, canopyMod,
             configWindLimit, configMidflame) {
