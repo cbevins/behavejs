@@ -96,8 +96,8 @@ export class DagNode extends DagItem {
         this.units      = units     // reference to the Units object
         // console.log(`Node "${prop}" is ${units.key} of ${this.value}`)
         this.consumers  = []
-        this.status     = 0
-        this.dirty      = true
+        this.status     = Dag.ignored
+        this.dirty      = Dag.dirty
         this.constant(value)
         NodeMap.set(this._meta.key, this)
     }

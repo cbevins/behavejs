@@ -16,7 +16,7 @@ export class SlopeModule extends DagModule {
         this.dir.upslope = new DagNode(this.dir, 'upslope', U.compass)
         this.dir.aspect = new DagNode(this.dir, 'aspect', U.compass)
 
-        this.steep = new DagModule(this, 'speed')
+        this.steep = new DagModule(this, 'steep')
         this.steep.degrees = new DagNode(this.steep, 'degrees', U.compass)
         this.steep.ratio = new DagNode(this.steep, 'ratio', U.ratio)
     }

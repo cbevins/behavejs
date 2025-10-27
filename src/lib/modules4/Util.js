@@ -47,7 +47,7 @@ export class Util {
             str += key.padEnd(w0+2)
             str += ('"'+value+'"').padEnd(w1+4)
             str += status.padEnd(w6+2)
-            str += dirty ? 'DIRTY  ' : 'CLEAN  '
+            str += dirty + '  '
             str += (updater.name).padEnd(w3+2)
             str += (''+suppliers.length).padStart(4)
             str += (''+consumers.length).padStart(4)

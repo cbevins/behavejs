@@ -104,7 +104,7 @@ const rosH = surface.rosHarm
 
 // WindModule destructuring
 const wind20 =wind.speed.at20ft
-const windFrom = wind.dir.origin.fromNortth
+const windFrom = wind.dir.origin.fromNorth
 // console.log(primary.fire.wind.midflame.speed)
 
 dag.select(

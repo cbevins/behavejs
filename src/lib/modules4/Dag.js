@@ -291,7 +291,7 @@ export class Dag {
     // and its dirty flag is cleared before returning its updated value.
     get(refOrKey, log=false) {
         const node = this.nodeRef(refOrKey)  // only use node references within _get()!!!
-        if (node.status === Dag.ignore) {
+        if (node.status === Dag.ignored) {
             this._log(Dag.warn, 'get', `attempt to get value of INACTIVE node "${node.key()}"` )
             // node.dirty = Dag.clean   // is this necessary?
             return node.value

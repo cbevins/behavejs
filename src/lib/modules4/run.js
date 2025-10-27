@@ -66,6 +66,9 @@ const {dead:pdead, live:plive, rxi:prxi, sink:psink, source:psource} = pfuel
 const {element1:pd1, element2:pd2, element3:pd3, element4:pd4, element5:pd5} = pdead
 const {element1:pl1, element2:pl2, element3:pl3, element4:pl4, element5:pl5} = plive
 
+const {ros:pros} = pfire
+const pmidflame = pfire.wind.midflame.speed
+
 // FuelMoistureModule destructuring
 const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
@@ -75,11 +78,13 @@ const {herb, stem} = moisture.live
 //------------------------------------------------------------------------------
 
 const dag = new Dag(NodeMap, 'Test')
-dag.select(
-    pdead.area, plive.area,
-    pdead.etam, plive.etam,
-    pfuel.rxvo, pfuel.rxvm, pfuel.rxve,
-    psink, psource, prxi)
+console.log(pd1.mois)
+dag.select(pros)
+    // pdead.area, plive.area,
+    // pdead.etam, plive.etam,
+    // pfuel.rxvo, pfuel.rxvm, pfuel.rxve,
+    // pfuel.sink, pfuel.source, pfuel.rxi,
+    // pfire.ros)
 
 // Set inputs
 dag.set(pfuelKey, '10')
@@ -88,43 +93,50 @@ dag.set(tl10, 0.07)
 dag.set(tl100, 0.09)
 dag.set(herb, 0.5)
 dag.set(stem, 1.5)
+dag.set(site.slope.steep.ratio, 0.25)
+dag.set(site.slope.dir.aspect, 180)
+dag.set(site.wind.dir.origin.fromNorth, 270)
+dag.set(site.primary.fire.wind.midflame.speed, 880)
+
 dag.updateAll()
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
-Util.compare(pdead.load, 0.46)
-Util.compare(plive.load, 0.092)
+// Util.compare(pdead.load, 0.46)
+// Util.compare(plive.load, 0.092)
 
-Util.compare(pdead.area, 9.154)
-Util.compare(plive.area, 4.3125)
+// Util.compare(pdead.area, 9.154)
+// Util.compare(plive.area, 4.3125)
 
-Util.compare(pdead.savr, 1888.860238693467)
-Util.compare(plive.savr, 1500)
+// Util.compare(pdead.savr, 1888.860238693467)
+// Util.compare(plive.savr, 1500)
 
-Util.compare(pdead.mois, 0.051626884422110553)
-Util.compare(plive.mois, 1.5)
+// Util.compare(pdead.mois, 0.051626884422110553)
+// Util.compare(plive.mois, 1.5)
 
-Util.compare(pdead.efol, 0.15704963842638839)
-Util.compare(plive.efol, 0.065920880572788609)
+// Util.compare(pdead.efol, 0.15704963842638839)
+// Util.compare(plive.efol, 0.065920880572788609)
 
-Util.compare(pdead.etas, 0.41739692790939131)
-Util.compare(plive.etas, 0.41739692790939131)
+// Util.compare(pdead.etas, 0.41739692790939131)
+// Util.compare(plive.etas, 0.41739692790939131)
 
-Util.compare(pfuel.bopt, 0.0073478593798598172)
+// Util.compare(pfuel.bopt, 0.0073478593798598172)
 
-Util.compare(pfuel.rxve, 0.35878365060452616)
-Util.compare(pfuel.rxvm, 15.13331887756658)
-Util.compare(pfuel.rxvo, 12.674359628667819)
+// Util.compare(pfuel.rxve, 0.35878365060452616)
+// Util.compare(pfuel.rxvm, 15.13331887756658)
+// Util.compare(pfuel.rxvo, 12.674359628667819)
 
-Util.compare(pfuel.beta, 0.01725)
-Util.compare(pfuel.brat, 2.3476224990480286)
+// Util.compare(pfuel.beta, 0.01725)
+// Util.compare(pfuel.brat, 2.3476224990480286)
 
-Util.compare(pdead.drxi, 5539.9575948899355)
-Util.compare(plive.drxi, 3677.5200629895871)
+// Util.compare(pdead.drxi, 5539.9575948899355)
+// Util.compare(plive.drxi, 3677.5200629895871)
 
-Util.compare(pdead.etam, 0.65206408989980214)
-Util.compare(plive.etam, 0.59341294014849078)
+// Util.compare(pdead.etam, 0.65206408989980214)
+// Util.compare(plive.etam, 0.59341294014849078)
 
-Util.compare(pfuel.sink, 412.34037227937284)
-Util.compare(pfuel.source, 0)
-Util.compare(pfuel.rxi, 5794.6954002291168)
+// Util.compare(pfuel.sink, 412.34037227937284)
+// Util.compare(pfuel.source, 0)
+// Util.compare(pfuel.rxi, 5794.6954002291168)
+
+// Util.compare(pfire.ros, 18.551680325448835)
