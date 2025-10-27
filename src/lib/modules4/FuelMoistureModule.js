@@ -1,13 +1,12 @@
 import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
 
-/**
- * Builds and configures a FuelMoistureModule
- * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
- * @param {string} parentProp Parent's property name for this DagItem
- * @param {Config} configs Module containing all current configuration objects
- */
 export class FuelMoistureModule extends DagModule {
+    /**
+     * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
+     * @param {string} parentProp Parent's property name for this DagItem ('moisture')
+     * @param {Config} configs Module containing all current configuration objects
+     */
     constructor(parentMod, parentProp, configs) {
         super(parentMod, parentProp)
         this._meta.config = configs

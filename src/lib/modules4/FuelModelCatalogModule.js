@@ -14,9 +14,8 @@ import { StandardFuelModelCatalog as Catalog } from '../index.js'
  */
 export class FuelModelCatalogModule extends FuelModelModule {
     /**
-     * Builds and configures a FuelMoistureModule
-     * @param {DagModule} parentMod 
-     * @param {string} parentProp 'catalog'
+     * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
+     * @param {string} parentProp Parent's property name for this DagItem ('catalog')
      * @param {FuelMoistureModule} moistureMod
      * @param {Config} configs Module containing all current configuration objects
      */

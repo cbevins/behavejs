@@ -10,8 +10,9 @@ export class FireVectorModule extends DagModule {
      * .end - .time, .x, .y
      * .time
      * .velocity
-     * @param {DagModule} parentMod
-     * @param {string} parentProp Usually 'ellipse'
+     * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
+     * @param {string} parentProp Parent's property name for this DagItem
+     * @param {Config} configs Module containing all current configuration objects
      */
     constructor(parentMod, parentProp) {
         super(parentMod, parentProp)

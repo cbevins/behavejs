@@ -19,9 +19,9 @@ import { DagModule, DagNode } from './DagItems.js'
  */
 export class FuelModelModule extends DagModule {
     /**
-     * 
-     * @param {DagModule} parentMod FuelCellModule
-     * @param {string} parentProp 'catalog', 'custom', 'chaparral', 'palmetto', 'aspen'
+     * @param {FuelCellModule} parentMod Reference to this DagItem's parent DagModule
+     * @param {string} parentProp Parent's property name for this DagItem,
+     * one of 'catalog', 'custom', 'chaparral', 'palmetto', 'aspen'
      */
     constructor(parentMod, parentProp) {
         super(parentMod, parentProp)

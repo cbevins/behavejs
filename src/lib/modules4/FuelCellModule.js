@@ -5,8 +5,8 @@ import { FuelBedEquations as Bed } from '../index.js'
 
 export class FuelCellModule extends DagModule {
     /**
-     * @param {DagModule} parentMod 
-     * @param {string} parentProp 'fuel'
+     * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
+     * @param {string} parentProp Parent's property name for this DagItem ('fuel')
      * @param {FuelModelModule} fuelModelMod Usually one of the derived classes
      * FuelModel{Catalog|Custom|Chaparral|Palmetto|Aspen}Module
      * @param {Config} configs Module containing all current configuration objects
