@@ -1,5 +1,5 @@
 export class Util {
-    static compare(node, expected=null) {
+        static compare(node, expected=null) {
         const {_meta, value, units, updater, suppliers, config, consumers, dirty, status} = node
         const {key, parent, prop, label, isNode} = _meta
         let str = `Node "${key}" = [${value}] `

@@ -30,13 +30,14 @@ export class SurfaceFireModule extends FireModule {
         this._meta.config = {configSurface}
         this._meta.mod = {roth1Mod, roth2Mod}
 
-        // SurfaceFireModule has the following additional DagNodes
+        // SurfaceFireModule adds the following DagNodes to FireModule
         this.cover1 = new DagNode(this, 'cover1', U.fraction)
         this.cover2 = new DagNode(this, 'cover2', U.fraction)
         this.rosArith = new DagNode(this, 'rosArith', U.fireRos)
-        this.rosHarm  = new DagNode(this, 'rosArith', U.fireRos)
+        this.rosHarm  = new DagNode(this, 'rosHarm', U.fireRos)
     }
 
+    // SurfaceFireModule has its own config() implementation
     config() {
         const {configSurface:config} = this._meta.config
         const {roth1Mod, roth2Mod} = this._meta.mod

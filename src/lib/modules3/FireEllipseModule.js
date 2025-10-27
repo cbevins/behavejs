@@ -65,7 +65,7 @@ export class FireEllipseModule extends DagModule {
             sub.dist = new DagNode(sub, 'dist', U.distance)
             sub.mapDist = new DagNode(sub, 'mapDist', U.mapDist)
         }
-        // Additional DagNodes for beta6
+        // Additional DagNodes for beta6, which uses psi ros for its fli calc
         beta6.theta = new DagNode(beta6, 'theta', U.compass)
         beta6.psi = new DagNode(beta6, 'psi', U.compass)
         beta6.psiRos = new DagNode(beta6, 'psiRos', U.fireRos)
@@ -75,7 +75,7 @@ export class FireEllipseModule extends DagModule {
             dir.fromUpslope = new DagNode(dir, 'fromUpslope', U.compass)
             dir.fromNorth = new DagNode(dir, 'fromNorth', U.compass)
         }
-        // Additional DagNode for vector
+        // Additional DagNode for vector angle from fire head
         vector.dir.fromHead = new DagNode(vector, 'fromHead', U.compass)
 
         // Axis

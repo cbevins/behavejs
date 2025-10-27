@@ -46,6 +46,7 @@ function buildSite(prop='site') {
     site.slope = new SlopeModule(site, 'slope', Config.slopeDirection, Config.slopeSteepness)
     site.wind = new WindModule(site, 'wind', site.slope, Config.windDirection, Config.windSpeed)
 
+    // SurfaceFireModule with a primary and secondary RothermelModule
     site.primary = new RothermelModule(site, 'primary',
         site.moisture, site.wind, site.slope, site.canopy,
         Config.fireEffWindLimit, Config.midflameWindSpeed,
@@ -56,6 +57,8 @@ function buildSite(prop='site') {
         Config.fuelDomainSecondary, Config.fuelCuring)
     site.surface = new SurfaceFireModule(site, 'surface',
         site.primary, site.secondary, Config.surfaceFire)
+        
+    // FireEllipseModule for the SurfaceFireModule
     site.ellipse = new FireEllipseModule(site, 'ellipse',
         site.surface, site.slope, site.map,
         Config.fireVectors, Config.firelineIntensity
@@ -109,7 +112,9 @@ dag.select(
     steep, aspect,
     windFrom, // wind20,
     // canopyBase, canopyHeight, canopyRatio,
-    ros1, ros2, ros3, rosA, rosH
+    ros1, ros2, ros3, rosA, rosH,
+    primary.fuel.dead.savr,
+    primary.fuel.live.savr,
 )
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
@@ -144,3 +149,5 @@ dump(ros2, xros2)
 dump(rosA, xrosA)
 dump(rosH, xrosH)
 dump(ros3, xrosA)
+dump(primary.fuel.dead.savr, 1888.860238693467)
+dump(primary.fuel.live.savr, 1500)

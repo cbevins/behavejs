@@ -13,8 +13,9 @@ export class Units {
     static load     = {key: 'load',     type: 'load',       value: 0,       units: ['lb/ft2', 't/ac', 'kg/m2', 'T/ha']}
     static ratio    = {key: 'ratio',    type: 'ratio',      value: 1,       units: ['ratio']} // any rational number, no percent option
     static set      = {key: 'set',      type: 'set',        value: '',      units: []} // must be defined by each derived type
-    static temp     = {key: 'temperature', type: 'temperature',             value: 0, units: ['F', 'C']}
+    static temperature = {key: 'temperature', type: 'temperature',value: 0, units: ['F', 'C']}
     static time     = {key: 'time',     type: 'time',       value: 0,       units: ['min', 's', 'h', 'd', 'ms']}
+    static velocity = {key: 'velocity', type: 'velocity',   value: 0,       units: ['ft/min', 'ch/h', 'mi/h', 'm/min', 'km/h']}
 
     // Derived units-of-measure.  These may specify a subset of their parent's units
     static fireArea   = {key: 'fire area',              type: 'area',       value: 0, units: ['ft2', 'ac', 'mi2', 'm2', 'ha', 'km2']}

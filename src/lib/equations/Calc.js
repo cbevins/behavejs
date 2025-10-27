@@ -5,9 +5,15 @@
  * @license MIT
  */
 export class Calc {
+    static degrees(radians) { return radians * (180 / Math.PI) }
+
     static divide = (...numbers) =>
         numbers.reduce((a, b) => (b === 0 ? 0 : a / b), numbers[0] * numbers[0])
+        
+    static dx(degrees, distance) { return distance * Math.cos(Calc.radians(degrees)) }
 
+    static dy(degrees, distance) { return distance * Math.sin(Calc.radians(degrees)) }
+    
     // Ensures number is in the range [0,1]
     static fraction = number => Math.max(0, Math.min(1, number))
 
@@ -23,6 +29,8 @@ export class Calc {
 
     // Ensure number is >= 0
     static positive = number => Math.max(0, number)
+
+    static radians(degrees) { return degrees * (Math.PI / 180) }
 
     static subtract = (...numbers) =>
         numbers.reduce((a, b) => a - b, 2 * numbers[0])
