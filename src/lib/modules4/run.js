@@ -89,7 +89,7 @@ const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = catalog1
 const {dead:dead1, live:live1, rxi:rxi1, sink:sink1, source:source1} = fuel1
 const {ros:ros1, fli:fli1, flame:flame1, lwr:lwr1, hpua:hpua1} = fire1
 const {fromUpslope:headUpslope1, fromNorth:headNorth1} = fire1.dir
-const midflame1 = fire1.wind.midflame.speed
+const midflame1 = fire1.midflame
 
 // Secondary FireCellModule destructuring
 const {model:model2, fuel:fuel2, fire:fire2} = secondary
@@ -98,12 +98,12 @@ const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = catalog2
 const {dead:dead2, live:live2, rxi:rxi2, sink:sink2, source:source2} = fuel2
 const {ros:ros2, fli:fli2, flame:flame2, lwr:lwr2, hpua:hpua2} = fire2
 const {fromUpslope:headUpslope2, fromNorth:headNorth2} = fire2.dir
-const midflame2 = fire2.wind.midflame.speed
+const midflame2 = fire2.midflame
 
 // WeightedFireModule destructuring
 const {ros:ros3, rosArith:rosA, rosHarm:rosH, fli:fli3, flame:flame3, lwr:lwr3, hpua:hpua3} = surface
 const {fromUpslope:headUpslope3, fromNorth:headNorth3} = surface.dir
-const midflame3 = surface.wind.midflame.speed
+const midflame3 = surface.midflame
 
 // FuelMoistureModule destructuring
 const {tl1, tl10, tl100} = moisture.dead

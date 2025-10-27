@@ -1,12 +1,17 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
+import { DagModule } from './DagItems.js'
 import { CommonNodes as Common } from './CommonNodes.js'
+import { FireCharModule } from './FireCharModule.js'
 
 import { Calc, CompassEquations as Compass } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { SurfaceFireEquations as Fire } from '../index.js'
 
-export class FireCellModule extends DagModule {
+/**
+ * FireCellModule extends FireCharModule by calculating the spread rate,
+ * direction, and intensity for the fire behavior stack
+ * from a set of fuel, wind, slope, canopy, and moisture modules.
+ */
+export class FireCellModule extends FireCharModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem
@@ -22,14 +27,17 @@ export class FireCellModule extends DagModule {
         this._meta.configs = configs
         this._meta.modules = {canopyMod, fuelMod, slopeMod, windMod}
 
-        this.slopeK = new DagNode(this, 'slopeK', U.factor)
-        this.windB = new DagNode(this, 'windB', U.factor)
-        this.windC = new DagNode(this, 'windC', U.factor)
-        this.windE = new DagNode(this, 'windE', U.factor)
-        this.windI = new DagNode(this, 'windI', U.factor)
-        this.windK = new DagNode(this, 'windK', U.factor)
-        this.phiW = new DagNode(this, 'phiW', U.factor)
-        this.phiS = new DagNode(this, 'phiS', U.factor)
+        // FireCellModules adds the following nodes to FireCharModule
+        // The wind factors *could* be moved back into the FuelCellModule
+        // if its results are used for memento pattern
+        this.slopeK = Common.slopeK(this)
+        this.windB = Common.windB(this)
+        this.windC = Common.windC(this)
+        this.windE = Common.windE(this)
+        this.windI = Common.windI(this)
+        this.windK = Common.windK(this)
+        this.phiW = Common.phiW(this)
+        this.phiS = Common.phiS(this)
 
         const p1 = this.part1 = new DagModule(this, 'part1', '1 no-wind no-slope')
         const p2 = this.part2 = new DagModule(this, 'part2', '2 wind-slope additional')
@@ -39,40 +47,18 @@ export class FireCellModule extends DagModule {
         const p6 = this.part6 = new DagModule(this, 'part6', '6 ros limit applied')
         const p7 = this.part7 = new DagModule(this, 'part7', '7 both limits applied')
         for(let p of [p1, p3, p4, p5, p6, p7]) {
-            p.ros = new DagNode(p, 'ros', U.fireRos)
-            p.phiE = new DagNode(p, 'phiE', U.factor)
-            p.weff = new DagNode(p, 'weff', U.windSpeed)
+            p.ros = Common.ros(p)
+            p.phiE = Common.phiE(p)
+            p.weff = Common.weff(p)
         }
         // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread
-        // p1.rsa = new DagNode(p1, 'rsa', U.fireRos)
+        // p1.rsa = Common.ros(p1)
 
-        p2.rosSlope = new DagNode(p2, 'rosSlope', U.fireRos)
-        p2.rosWind = new DagNode(p2, 'rosWind', U.fireRos)
-        p2.rosXcomp = new DagNode(p2, 'roxXcomp', U.factor)
-        p2.rosYcomp = new DagNode(p2, 'rosYcomp', U.factor)
-        p2.ros = new DagNode(p2, 'ros', U.fireRos)
-
-        // FireCellModule implemented below here with the final fire parameters
-        this.dir = new DagModule(this, 'dir')
-        this.dir.fromUpslope = new DagNode(this.dir, 'fromUpslope', U.compass)
-        this.dir.fromNorth = new DagNode(this.dir, 'fromNorth', U.compass)
-        this.taur = new DagNode(this, 'taur', U.fireTaur)
-        this.hpua = new DagNode(this, 'hpua', U.fireHpua)
-        this.lwr = new DagNode(this, 'lwr', U.ratio)
-        this.fli = new DagNode(this, 'fli', U.fireFli)
-        this.flame = new DagNode(this, 'flame', U.fireFlame)
-        this.ros = new DagNode(this, 'ros', U.fireRos)
-        this.rxi = new DagNode(this, 'rxi', U.fireRxi)
-        
-        this.wind = new DagModule(this, 'wind')
-        this.wind.effective = new DagModule(this.wind, 'effective')
-        this.wind.effective.phi = new DagNode(this.wind.effective, 'phi', U.factor)
-        this.wind.effective.speed = new DagNode(this.wind.effective, 'speed', U.windSpeed)
-        this.wind.effective.limit = new DagNode(this.wind.effective, 'limit', U.windSpeed)
-        this.wind.effective.exceeded = new DagNode(this.wind.effective, 'exceeded', U.bool)
-        this.wind.midflame = new DagModule(this.wind, 'midflame')
-        this.wind.midflame.speed = new DagNode(this.wind.midflame, 'speed', U.windSpeed)
-        this.wind.midflame.factor = new DagNode(this.wind.midflame, 'factor', U.windSpeed)
+        p2.rosSlope = Common.rosSlope(p2)
+        p2.rosWind = Common.rosWind(p2)
+        p2.rosXcomp = Common.rosXcomp(p2)
+        p2.rosYcomp = Common.rosYcomp(p2)
+        p2.ros = Common.ros(p2)
     }
 
     config() {
@@ -88,7 +74,7 @@ export class FireCellModule extends DagModule {
         this.windI.use(Bed.windI, [fuel.brat, this.windE, this.windC])
         this.windK.use(Bed.windK, [fuel.brat, this.windE, this.windC])
 
-        this.phiW.use(Fire.phiWind, [this.wind.midflame.speed, this.windB, this.windK])
+        this.phiW.use(Fire.phiWind, [this.midflame, this.windB, this.windK])
         this.phiS.use(Fire.phiSlope, [slopeMod.steep.ratio, this.slopeK])
 
         // Part 1 - No-wind, no-slope fire spread rate and effective wind
@@ -136,37 +122,37 @@ export class FireCellModule extends DagModule {
         p7.phiE.use(Fire.effectiveWindSpeedCoefficientInferred, [p1.ros, p7.ros])
         p7.weff.use(Fire.effectiveWindSpeed, [p7.phiE, this.windB, this.windI])
 
-        // Part 8 apply either Part 6 or Part 7 if EWS limit is applied
+        // Part 8 - Configure the base class fireCharModule nodes
+        // apply either Part 6 or Part 7 if EWS limit is applied
         const p = (cfgWeffLimit.value === cfgWeffLimit.applied) ? p7 : p6
         this.ros.bind(p.ros, cfgWeffLimit)
-        this.wind.effective.phi.bind(p.phiE, cfgWeffLimit)
-        this.wind.effective.speed.bind(p.weff, cfgWeffLimit)
-        this.wind.effective.limit.bind(p4.weff, cfgWeffLimit)
-        this.wind.effective.exceeded.use(Calc.greaterThan, [p3.weff, p4.weff])
+        this.phiE.bind(p.phiE, cfgWeffLimit)
+        this.weff.bind(p.weff, cfgWeffLimit)
+        this.weffLimit.bind(p4.weff, cfgWeffLimit)
+        this.weffExceeded.use(Calc.greaterThan, [p3.weff, p4.weff])
 
         // Direction of maximum spread
         this.dir.fromUpslope.use(Fire.spreadDirectionFromUpslope, [p2.rosXcomp, p2.rosYcomp, p2.ros])
         this.dir.fromNorth.use(Compass.compassSum, [slopeMod.dir.upslope, this.dir.fromUpslope])
         this.hpua.use(Bed.heatPerUnitArea, [fuel.rxi, this.taur])
-        this.lwr.use(Fire.lengthToWidthRatio, [this.wind.effective.speed])
+        this.lwr.use(Fire.lengthToWidthRatio, [this.weff])
         this.fli.use(Fire.firelineIntensity, [this.ros, fuel.rxi, this.taur])
         this.flame.use(Fire.flameLength, [this.fli])
         this.rxi.bind(fuel.rxi)
         this.taur.use(Bed.fireResidenceTime, [fuel.savr])
 
-        const midflame = this.wind.midflame
         if(cfgMidflame.value === cfgMidflame.input) {
-            midflame.speed.input(cfgMidflame)
-            midflame.factor.constant(1, cfgMidflame)
+            this.midflame.input(cfgMidflame)
+            this.wsrf.constant(1, cfgMidflame)
         } else {
             if(cfgMidflame.value === cfgMidflame.wsrf) {
-                midflame.factor.input(cfgMidflame)
+                this.wsrf.input(cfgMidflame)
             } else if(cfgMidflame.value === cfgMidflame.fuelbed) {
-                midflame.factor.bind(fuel.wsrf, cfgMidflame)
+                this.wsrf.bind(fuel.fuelWsrf, cfgMidflame)
             } else if(cfgMidflame.value === cfgMidflame.canopy) {
-                midflame.factor.bind(canopyMod.wsrf, cfgMidflame)
+                this.wsrf.bind(canopyMod.wsrf, cfgMidflame)
             }
-            midflame.speed.use(Calc.multiply, [midflame.factor, windMod.speed.at20ft], cfgMidflame)
+            this.midflame.use(Calc.multiply, [this.wsrf, windMod.speed.at20ft], cfgMidflame)
         }
 
         // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread

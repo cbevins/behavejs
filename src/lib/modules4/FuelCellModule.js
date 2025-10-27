@@ -38,7 +38,7 @@ export class FuelCellModule extends DagModule {
         this.savr15 = Common.savr15(this)
         this.sink   = Common.sink(this)
         this.source = Common.source(this)
-        this.wsrf   = Common.wsrf(this)
+        this.fuelWsrf = Common.fuelWsrf(this)
         this.xi     = Common.xi(this)
 
         // this.<lcat>
@@ -121,7 +121,7 @@ export class FuelCellModule extends DagModule {
         this.sink.use(Bed.heatSink, [this.bulk, this.qig], domain)
         this.rxi.use(Bed.reactionIntensity, [this.dead.rxi, this.live.rxi], domain)
         this.source.use(Bed.heatSource, [this.rxi, this.xi], domain)
-        this.wsrf.use(Bed.openWindSpeedAdjustmentFactor, [this.depth], domain)
+        this.fuelWsrf.use(Bed.openWindSpeedAdjustmentFactor, [this.depth], domain)
         this.xi.use(Bed.propagatingFluxRatio, [this.savr, this.beta], domain)
 
         // Fuel life category nodes
