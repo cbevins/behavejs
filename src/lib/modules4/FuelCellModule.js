@@ -7,14 +7,19 @@ export class FuelCellModule extends DagModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem ('fuel')
-     * @param {FuelModelModule} fuelModelMod Usually one of the derived classes
-     * FuelModel{Catalog|Custom|Chaparral|Palmetto|Aspen}Module
+     * @param {FuelModelCatalogModule} catalogMod
+     * @param {FuelModelCustomModule} customMod
+     * @param {FuelModelChaparralModule} chaparralMod
+     * @param {FuelModelPalmettoModule} palmettoMod
+     * @param {FuelModelAspenModule} aspenMod
      * @param {Config} configs Module containing all current configuration objects
      */
-    constructor(parentMod, parentProp, fuelModelMod, configs) {
+    constructor(parentMod, parentProp, catalogMod, customMod, chaparralMod,
+            palmettoMod, aspenMod, configs) {
         super(parentMod, parentProp)
         this._meta.configs = configs
-        this._meta.modules = {fuelModelMod}
+        this._meta.modules = {catalogMod, customMod, chaparralMod, 
+            palmettoMod, aspenMod}
 
         this.area   = new DagNode(this, 'area', U.fuelArea)
         this.bulk   = new DagNode(this, 'bulk', U.fuelBulk)
@@ -94,7 +99,7 @@ export class FuelCellModule extends DagModule {
 
     config() {
         const {fuelDomain: domain} = this._meta.configs
-        const {fuelModelMod: model} = this._meta.modules
+        const {catalogMod, customMod, chaparralMod, palmettoMod, aspenMod} = this._meta.modules
 
         // Fuel bed nodes
         this.area.use(Calc.sum, [this.dead.area,  this.live.area], domain)
@@ -175,6 +180,17 @@ export class FuelCellModule extends DagModule {
                 p1.seff, p2.seff, p3.seff, p4.seff, p5.seff], domain)
             lcat.vol.use(Calc.sum, [p1.vol, p2.vol, p3.vol, p4.vol, p5.vol], domain)
         }
+        // This is where the FuelCellModule is bound to a fuel domain
+        let model
+        if (domain.value === domain.catalog) model = catalogMod
+        else if (domain.value === domain.custom) model = customMod
+        else if (domain.value === domain.chaparral) model = chaparralMod
+        else if (domain.value === domain.palmetto) model = palmettoMod
+        else if (domain.value === domain.aspen) model = aspenMod
+        else throw new Error(`Unknown config "${domain.key}" value "${domain.value}"`)
+        if (!model)
+            throw new Error(`The fuel domain "${domain.value}" is not yet implemented.`)
+        
         // Fuel element nodes
         this.depth.bind(model.depth, domain)
         this.dead.mext.bind(model.dead.mext)

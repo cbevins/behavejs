@@ -10,6 +10,7 @@ import { FuelCellModule } from './FuelCellModule.js'
 import { FuelModelCatalogModule } from './FuelModelCatalogModule.js'
 import { FuelMoistureModule } from './FuelMoistureModule.js'
 import { SlopeModule } from './SlopeModule.js'
+import { WeightedFireModule } from './WeightedFireModule.js'
 import { WindModule } from './WindModule.js'
 import * as Config from './Configs.js'
 
@@ -24,10 +25,30 @@ function buildSite(prop='site') {
 
     const primary = site.primary = new DagModule(site, 'primary')
     primary.model = new DagModule(primary, 'model')
-    primary.model.catalog = new FuelModelCatalogModule(primary.model, 'catalog', site.moisture, Config)
-    primary.fuel = new FuelCellModule(primary, 'fuel', primary.model.catalog, Config)
+    primary.model.catalog = new FuelModelCatalogModule(primary.model, 'catalog',
+        site.moisture, Config)
+    // The following fuel domains are not yet implemented
+    const custom = null
+    const chaparral = null
+    const palmetto = null
+    const aspen = null
+
+    primary.fuel = new FuelCellModule(primary, 'fuel',
+        primary.model.catalog, custom, chaparral, palmetto, aspen, Config)
     primary.fire = new FireCellModule(primary, 'fire',
         primary.fuel, site.wind, site.slope, site.canopy, Config)
+
+    const secondary = site.secondary = new DagModule(site, 'secondary')
+    secondary.model = new DagModule(secondary, 'model')
+    secondary.model.catalog = new FuelModelCatalogModule(secondary.model, 'catalog',
+        site.moisture, Config)
+    secondary.fuel = new FuelCellModule(secondary, 'fuel',
+        secondary.model.catalog, custom, chaparral, palmetto, aspen, Config)
+    secondary.fire = new FireCellModule(secondary, 'fire',
+        secondary.fuel, site.wind, site.slope, site.canopy, Config)
+
+    const surface = site.surface = new WeightedFireModule(site, 'surface',
+        primary.fire, secondary.fire, Config)
     return site
 }
 
@@ -40,6 +61,10 @@ function configureSite(site) {
     site.primary.model.catalog.config()
     site.primary.fuel.config()
     site.primary.fire.config()
+    site.secondary.model.catalog.config()
+    site.secondary.fuel.config()
+    site.secondary.fire.config()
+    site.surface.config()
 }
 
 //------------------------------------------------------------------------------
@@ -55,88 +80,92 @@ configureSite(site)
 // Site destructuring
 //------------------------------------------------------------------------------
 
-const {canopy,  moisture, primary, slope, wind} = site
+const {canopy,  moisture, primary, secondary, surface, slope, wind} = site
 
 // Primary FireCellModule destructuring
-const {model:pmodel, fuel:pfuel, fire:pfire} = primary
-const {catalog:pcatalog} = pmodel
-const {fuelKey:pfuelKey, cured:pcured, depth:pdepth} = pcatalog
+const {model:model1, fuel:fuel1, fire:fire1} = primary
+const {catalog:catalog1} = model1
+const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = catalog1
+const {dead:dead1, live:live1, rxi:rxi1, sink:sink1, source:source1} = fuel1
+const {ros:ros1, fli:fli1, flame:flame1, lwr:lwr1, hpua:hpua1} = fire1
+const {fromUpslope:headUpslope1, fromNorth:headNorth1} = fire1.dir
+const midflame1 = fire1.wind.midflame.speed
 
-const {dead:pdead, live:plive, rxi:prxi, sink:psink, source:psource} = pfuel
-const {element1:pd1, element2:pd2, element3:pd3, element4:pd4, element5:pd5} = pdead
-const {element1:pl1, element2:pl2, element3:pl3, element4:pl4, element5:pl5} = plive
+// Secondary FireCellModule destructuring
+const {model:model2, fuel:fuel2, fire:fire2} = secondary
+const {catalog:catalog2} = model2
+const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = catalog2
+const {dead:dead2, live:live2, rxi:rxi2, sink:sink2, source:source2} = fuel2
+const {ros:ros2, fli:fli2, flame:flame2, lwr:lwr2, hpua:hpua2} = fire2
+const {fromUpslope:headUpslope2, fromNorth:headNorth2} = fire2.dir
+const midflame2 = fire2.wind.midflame.speed
 
-const {ros:pros} = pfire
-const pmidflame = pfire.wind.midflame.speed
+// WeightedFireModule destructuring
+const {ros:ros3, rosArith:rosA, rosHarm:rosH, fli:fli3, flame:flame3, lwr:lwr3, hpua:hpua3} = surface
+const {fromUpslope:headUpslope3, fromNorth:headNorth3} = surface.dir
+const midflame3 = surface.wind.midflame.speed
 
 // FuelMoistureModule destructuring
 const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
+
+// SlopeModule destructuring
+const aspect = site.slope.dir.aspect
+const steepness = site.slope.steep.ratio
+
+// WindModule destructuring
+const windSpeed = site.wind.speed.at20ft
+const windFrom = site.wind.dir.origin.fromNorth
 
 //------------------------------------------------------------------------------
 // Dag construction and use
 //------------------------------------------------------------------------------
 
 const dag = new Dag(NodeMap, 'Test')
-console.log(pd1.mois)
-dag.select(pros)
-    // pdead.area, plive.area,
-    // pdead.etam, plive.etam,
-    // pfuel.rxvo, pfuel.rxvm, pfuel.rxve,
-    // pfuel.sink, pfuel.source, pfuel.rxi,
-    // pfire.ros)
+dag.select(
+    ros1, headUpslope1, headNorth1, fli1, flame1, lwr1, hpua1,
+    ros2, headUpslope2, headNorth2, fli2, flame2, lwr2, hpua2,
+    ros3, headUpslope3, headNorth3, fli3, flame3, lwr3, hpua3, rosA, rosH)
 
 // Set inputs
-dag.set(pfuelKey, '10')
+dag.set(surface.cover1, 0.6)
+dag.set(fuelKey1, '10')
+dag.set(fuelKey2, '124')
 dag.set(tl1, 0.05)
 dag.set(tl10, 0.07)
 dag.set(tl100, 0.09)
 dag.set(herb, 0.5)
 dag.set(stem, 1.5)
-dag.set(site.slope.steep.ratio, 0.25)
-dag.set(site.slope.dir.aspect, 180)
-dag.set(site.wind.dir.origin.fromNorth, 270)
-dag.set(site.primary.fire.wind.midflame.speed, 880)
+dag.set(steepness, 0.25)
+dag.set(aspect, 180)
+dag.set(windFrom, 270)
+dag.set(midflame1, 880)
+dag.set(midflame2, 880)
 
 dag.updateAll()
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
-// Util.compare(pdead.load, 0.46)
-// Util.compare(plive.load, 0.092)
+Util.compare(rxi1, 5794.6954002291168)
+Util.compare(rxi2, 12976.692888496578)
+Util.compare(ros1, 18.551680325448835)
+Util.compare(ros2, 48.47042599399056)
+Util.compare(headUpslope1, 87.573367385837855)
+Util.compare(headUpslope2, 87.613728665173383)
+Util.compare(flame1, 6.9996889013229229)
+Util.compare(flame2, 16.35631663)
+Util.compare(lwr1, 3.5015680219321221)
+Util.compare(lwr2, 3.501581941)
 
-// Util.compare(pdead.area, 9.154)
-// Util.compare(plive.area, 4.3125)
-
-// Util.compare(pdead.savr, 1888.860238693467)
-// Util.compare(plive.savr, 1500)
-
-// Util.compare(pdead.mois, 0.051626884422110553)
-// Util.compare(plive.mois, 1.5)
-
-// Util.compare(pdead.efol, 0.15704963842638839)
-// Util.compare(plive.efol, 0.065920880572788609)
-
-// Util.compare(pdead.etas, 0.41739692790939131)
-// Util.compare(plive.etas, 0.41739692790939131)
-
-// Util.compare(pfuel.bopt, 0.0073478593798598172)
-
-// Util.compare(pfuel.rxve, 0.35878365060452616)
-// Util.compare(pfuel.rxvm, 15.13331887756658)
-// Util.compare(pfuel.rxvo, 12.674359628667819)
-
-// Util.compare(pfuel.beta, 0.01725)
-// Util.compare(pfuel.brat, 2.3476224990480286)
-
-// Util.compare(pdead.drxi, 5539.9575948899355)
-// Util.compare(plive.drxi, 3677.5200629895871)
-
-// Util.compare(pdead.etam, 0.65206408989980214)
-// Util.compare(plive.etam, 0.59341294014849078)
-
-// Util.compare(pfuel.sink, 412.34037227937284)
-// Util.compare(pfuel.source, 0)
-// Util.compare(pfuel.rxi, 5794.6954002291168)
-
-// Util.compare(pfire.ros, 18.551680325448835)
+// Expected results
+const xros1 = 18.551680325448835
+const xros2 = 48.47042599399056
+const xcover1 = 0.6
+const xrosH = 1 / (xcover1 / xros1 + (1 - xcover1) / xros2)
+const xrosA = xcover1 * xros1 + (1-xcover1) * xros2
+console.log('Weighted Results:')
+Util.compare(ros1, xros1)
+Util.compare(ros2, xros2)
+Util.compare(rosA, xrosA)
+Util.compare(rosH, xrosH)
+Util.compare(ros3, xrosA)

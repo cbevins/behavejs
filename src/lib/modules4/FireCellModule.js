@@ -51,11 +51,7 @@ export class FireCellModule extends DagModule {
         p2.rosYcomp = new DagNode(p2, 'rosYcomp', U.factor)
         p2.ros = new DagNode(p2, 'ros', U.fireRos)
 
-        // FireModule implemented below here
-        // Final fire parameters
-        this.ros = new DagNode(this, 'ros', U.fireRos)
-
-        // Direction of maximum spread
+        // FireCellModule implemented below here with the final fire parameters
         this.dir = new DagModule(this, 'dir')
         this.dir.fromUpslope = new DagNode(this.dir, 'fromUpslope', U.compass)
         this.dir.fromNorth = new DagNode(this.dir, 'fromNorth', U.compass)
@@ -64,6 +60,7 @@ export class FireCellModule extends DagModule {
         this.lwr = new DagNode(this, 'lwr', U.ratio)
         this.fli = new DagNode(this, 'fli', U.fireFli)
         this.flame = new DagNode(this, 'flame', U.fireFlame)
+        this.ros = new DagNode(this, 'ros', U.fireRos)
         this.rxi = new DagNode(this, 'rxi', U.fireRxi)
         
         this.wind = new DagModule(this, 'wind')
