@@ -1,5 +1,6 @@
 import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
+import { CommonNodes as Common } from './CommonNodes.js'
 
 import { Calc, CompassEquations as Compass } from '../index.js'
 import { FuelBedEquations as Bed } from '../index.js'
