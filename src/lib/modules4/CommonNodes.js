@@ -16,6 +16,7 @@ export class CommonNodes {
     static rxi(p) {return new DagNode(p, 'rxi', U.fireRxi, 'reaction intensity')}
     static midflame(p) {return new DagNode(p, 'speed', U.windSpeed, 'midflame wind speed')}
     static phiE(p) {return new DagNode(p, 'phiE', U.factor, 'spread rate effective wind coefficient')}
+    static scorch(p) {return new DagNode(p, 'scorch', U.fireScorch, 'scorch height')}
     static weff(p) {return new DagNode(p, 'weff', U.windSpeed, 'effective wind speed')}
     static weffLimit(p) {return new DagNode(p, 'weffLimit', U.windSpeed, 'effective wind speed limit')}
     static weffExceeded(p) {return new DagNode(p, 'weffExceeded', U.bool, 'effective wind speed limit exceeded')}

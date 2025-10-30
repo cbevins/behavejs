@@ -140,6 +140,7 @@ export class FireCellModule extends FireCharModule {
         this.fli.use(Fire.firelineIntensity, [this.ros, fuel.rxi, this.taur])
         this.flame.use(Fire.flameLength, [this.fli])
         this.rxi.bind(fuel.rxi)
+        this.scorch.use(Fire.scorchHeight, [this.fli, this.midflame, air.temp])
         this.taur.use(Bed.fireResidenceTime, [fuel.savr])
 
         if(cfgMidflame.value === cfgMidflame.input) {

@@ -25,6 +25,7 @@ export class FireCharModule extends DagModule {
         this.phiE = Common.phiE(this)
         this.ros = Common.ros(this)
         this.rxi = Common.rxi(this)
+        this.scorch = Common.scorch(this)
         this.weff = Common.weff(this)
         this.weffExceeded = Common.weffExceeded(this)
         this.weffLimit = Common.weffLimit(this)

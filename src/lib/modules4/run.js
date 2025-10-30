@@ -23,7 +23,8 @@ function buildSite(prop='site') {
     site.terrain = new TerrainModule(site, 'terrain', Config)
     site.weather = new WeatherModule(site, 'weather', Config, site.terrain, Config)
 
-    const primary = site.primary = new DagModule(site, 'primary')
+    const surface = site.surface = new DagModule(site, 'surface')
+    const primary = surface.primary = new DagModule(surface, 'primary')
     primary.model = new DagModule(primary, 'model')
     primary.model.catalog = new FuelModelCatalogModule(primary.model, 'catalog',
         Config, site.moisture)
@@ -38,7 +39,7 @@ function buildSite(prop='site') {
     primary.fire = new FireCellModule(primary, 'fire', Config,
         primary.fuel, site.weather, site.terrain, site.canopy)
 
-    const secondary = site.secondary = new DagModule(site, 'secondary')
+    const secondary = surface.secondary = new DagModule(surface, 'secondary')
     secondary.model = new DagModule(secondary, 'model')
     secondary.model.catalog = new FuelModelCatalogModule(secondary.model, 'catalog',
         Config, site.moisture)
@@ -47,7 +48,7 @@ function buildSite(prop='site') {
     secondary.fire = new FireCellModule(secondary, 'fire', Config,
         secondary.fuel, site.weather, site.terrain, site.canopy)
 
-    const surface = site.surface = new WeightedFireModule(site, 'surface', Config,
+    surface.weighted = new WeightedFireModule(surface, 'weighted', Config,
         primary.fire, secondary.fire)
     return site
 }
@@ -58,13 +59,13 @@ function configureSite(site) {
     site.terrain.config()
     site.weather.config()
 
-    site.primary.model.catalog.config()
-    site.primary.fuel.config()
-    site.primary.fire.config()
-    site.secondary.model.catalog.config()
-    site.secondary.fuel.config()
-    site.secondary.fire.config()
-    site.surface.config()
+    site.surface.primary.model.catalog.config()
+    site.surface.primary.fuel.config()
+    site.surface.primary.fire.config()
+    site.surface.secondary.model.catalog.config()
+    site.surface.secondary.fuel.config()
+    site.surface.secondary.fire.config()
+    site.surface.weighted.config()
 }
 
 //------------------------------------------------------------------------------
@@ -80,9 +81,12 @@ configureSite(site)
 // Site destructuring
 //------------------------------------------------------------------------------
 
-const {canopy, moisture, primary, secondary, surface, terrain, weather} = site
+const {canopy, moisture, surface, terrain, weather} = site
 
-// Primary FireCellModule destructuring
+// site.surface SurfaceModule destructuring
+const {primary, secondary, weighted} = surface
+
+// site.surface.primary Primary FireCellModule destructuring
 const {model:model1, fuel:fuel1, fire:fire1} = primary
 const {catalog:catalog1} = model1
 const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = catalog1
@@ -91,7 +95,7 @@ const {ros:ros1, fli:fli1, flame:flame1, lwr:lwr1, hpua:hpua1} = fire1
 const {fromUpslope:headUpslope1, fromNorth:headNorth1} = fire1.dir
 const midflame1 = fire1.midflame
 
-// Secondary FireCellModule destructuring
+// site.surface.secondary Secondary FireCellModule destructuring
 const {model:model2, fuel:fuel2, fire:fire2} = secondary
 const {catalog:catalog2} = model2
 const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = catalog2
@@ -100,16 +104,16 @@ const {ros:ros2, fli:fli2, flame:flame2, lwr:lwr2, hpua:hpua2} = fire2
 const {fromUpslope:headUpslope2, fromNorth:headNorth2} = fire2.dir
 const midflame2 = fire2.midflame
 
-// WeightedFireModule destructuring
-const {ros:ros3, rosArith:rosA, rosHarm:rosH, fli:fli3, flame:flame3, lwr:lwr3, hpua:hpua3} = surface
-const {fromUpslope:headUpslope3, fromNorth:headNorth3} = surface.dir
-const midflame3 = surface.midflame
+// site.surface.fire WeightedFireModule destructuring
+const {ros:ros3, rosArith:rosA, rosHarm:rosH, fli:fli3, flame:flame3, lwr:lwr3, hpua:hpua3} = weighted
+const {fromUpslope:headUpslope3, fromNorth:headNorth3} = weighted.dir
+const midflame3 = weighted.midflame
 
-// FuelMoistureModule destructuring
+// site.moisture FuelMoistureModule destructuring
 const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
 
-// TerrainModule destructuring
+// site.terrain TerrainModule destructuring
 const {aspect, elevation, geo, slope, upslope} = terrain
 const steepness = slope.ratio
 
@@ -129,7 +133,7 @@ dag.select(
     ros3, headUpslope3, headNorth3, fli3, flame3, lwr3, hpua3, rosA, rosH)
 
 // Set inputs
-dag.set(surface.cover1, 0.6)
+dag.set(weighted.cover1, 0.6)
 dag.set(fuelKey1, '10')
 dag.set(fuelKey2, '124')
 dag.set(tl1, 0.05)
