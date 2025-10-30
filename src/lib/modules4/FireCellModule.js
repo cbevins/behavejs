@@ -9,23 +9,23 @@ import { SurfaceFireEquations as Fire } from '../index.js'
 /**
  * FireCellModule extends FireCharModule by calculating the spread rate,
  * direction, and intensity for the fire behavior stack
- * from a set of fuel, wind, slope, canopy, and moisture modules.
+ * from a set of fuel, wind, sterrain, canopy, and moisture modules.
  */
 export class FireCellModule extends FireCharModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem
      *  ('fire', 'primary', 'secondary', 'crown')
-     * @param {FuelCellModule} fuelMod
-     * @param {WindModule} windMod
-     * @param {SlopeModule} slopeMod
-     * @param {CanopyModule} canopyModMod
      * @param {Config} configs Module containing all current configuration objects
+     * @param {FuelCellModule} fuelMod
+     * @param {WeatherModule} weatherMod
+     * @param {TerrainModule} terrainMod
+     * @param {CanopyModule} canopyMod
      */
-    constructor(parentMod, parentProp, fuelMod, windMod, slopeMod, canopyMod, configs) {
+    constructor(parentMod, parentProp, configs, fuelMod, weatherMod, terrainMod, canopyMod) {
         super(parentMod, parentProp)
         this._meta.configs = configs
-        this._meta.modules = {canopyMod, fuelMod, slopeMod, windMod}
+        this._meta.modules = {canopyMod, fuelMod, terrainMod, weatherMod}
 
         // FireCellModules adds the following nodes to FireCharModule
         // The wind factors *could* be moved back into the FuelCellModule
@@ -63,7 +63,8 @@ export class FireCellModule extends FireCharModule {
 
     config() {
         const {fireEffWindLimit:cfgWeffLimit, midflameWindSpeed:cfgMidflame} = this._meta.configs
-        const {canopyMod, windMod, slopeMod, fuelMod: fuel} = this._meta.modules
+        const {canopyMod, fuelMod:fuel, terrainMod, weatherMod} = this._meta.modules
+        const {air, ppt, wind} = weatherMod
         const {part1:p1, part2:p2, part3:p3, part4:p4, part5:p5, part6:p6, part7:p7} = this
 
         // Wind and slope factors
@@ -75,7 +76,7 @@ export class FireCellModule extends FireCharModule {
         this.windK.use(Bed.windK, [fuel.brat, this.windE, this.windC])
 
         this.phiW.use(Fire.phiWind, [this.midflame, this.windB, this.windK])
-        this.phiS.use(Fire.phiSlope, [slopeMod.steep.ratio, this.slopeK])
+        this.phiS.use(Fire.phiSlope, [terrainMod.slope.ratio, this.slopeK])
 
         // Part 1 - No-wind, no-slope fire spread rate and effective wind
         p1.ros.use(Bed.noWindNoSlopeSpreadRate, [fuel.source, fuel.sink])
@@ -85,8 +86,8 @@ export class FireCellModule extends FireCharModule {
         // Part 2 - *ADDITIONAL* fire spread rate due to wind and slope ADDED to no-wind, no-slope case
         p2.rosSlope.use(Fire.maximumDirectionSlopeSpreadRate, [p1.ros, this.phiS])
         p2.rosWind.use(Fire.maximumDirectionWindSpreadRate, [p1.ros, this.phiW])
-        p2.rosXcomp.use(Fire.maximumDirectionXComponent, [p2.rosWind, p2.rosSlope, windMod.dir.heading.fromUpslope])
-        p2.rosYcomp.use(Fire.maximumDirectionYComponent, [p2.rosWind, windMod.dir.heading.fromUpslope])
+        p2.rosXcomp.use(Fire.maximumDirectionXComponent, [p2.rosWind, p2.rosSlope, wind.dir.heading.fromUpslope])
+        p2.rosYcomp.use(Fire.maximumDirectionYComponent, [p2.rosWind, wind.dir.heading.fromUpslope])
         p2.ros.use(Fire.maximumDirectionSpreadRate, [p2.rosXcomp, p2.rosYcomp])
 
         // Part 3 - (was step 2) fire spread rate and effective wind for the cross-slope wind condition
@@ -133,7 +134,7 @@ export class FireCellModule extends FireCharModule {
 
         // Direction of maximum spread
         this.dir.fromUpslope.use(Fire.spreadDirectionFromUpslope, [p2.rosXcomp, p2.rosYcomp, p2.ros])
-        this.dir.fromNorth.use(Compass.compassSum, [slopeMod.dir.upslope, this.dir.fromUpslope])
+        this.dir.fromNorth.use(Compass.compassSum, [terrainMod.upslope, this.dir.fromUpslope])
         this.hpua.use(Bed.heatPerUnitArea, [fuel.rxi, this.taur])
         this.lwr.use(Fire.lengthToWidthRatio, [this.weff])
         this.fli.use(Fire.firelineIntensity, [this.ros, fuel.rxi, this.taur])
@@ -152,7 +153,7 @@ export class FireCellModule extends FireCharModule {
             } else if(cfgMidflame.value === cfgMidflame.canopy) {
                 this.wsrf.bind(canopyMod.wsrf, cfgMidflame)
             }
-            this.midflame.use(Calc.multiply, [this.wsrf, windMod.speed.at20ft], cfgMidflame)
+            this.midflame.use(Calc.multiply, [this.wsrf, wind.speed.at20ft], cfgMidflame)
         }
 
         // Scott & Reinhardt's rSa, surface ros when 20-ft wind is at critical speed for crown fire spread

@@ -8,15 +8,15 @@ export class FuelCellModule extends DagModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem ('fuel')
+     * @param {Config} configs Module containing all current configuration objects
      * @param {FuelModelCatalogModule} catalogMod
      * @param {FuelModelCustomModule} customMod
      * @param {FuelModelChaparralModule} chaparralMod
      * @param {FuelModelPalmettoModule} palmettoMod
      * @param {FuelModelAspenModule} aspenMod
-     * @param {Config} configs Module containing all current configuration objects
      */
-    constructor(parentMod, parentProp, catalogMod, customMod, chaparralMod,
-            palmettoMod, aspenMod, configs) {
+    constructor(parentMod, parentProp, configs, catalogMod, customMod, chaparralMod,
+            palmettoMod, aspenMod) {
         super(parentMod, parentProp)
         this._meta.configs = configs
         this._meta.modules = {catalogMod, customMod, chaparralMod, 

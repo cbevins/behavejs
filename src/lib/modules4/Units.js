@@ -1,20 +1,29 @@
 export class Units {
+    // Basic node types
+    static bool     = {key: 'boolean',  type: 'boolean',    value: false,   units: []}
+    static fraction = {key: 'fraction', type: 'fraction',   value: 0,       units: ['ratio', 'percent']} // real in range [0..1]
+    static integer  = {key: 'integer',  type: 'integer',    value: 0,       units: []}
+    static ratio    = {key: 'ratio',    type: 'ratio',      value: 1,       units: ['ratio']} // any rational number, no percent option
+    static real     = {key: 'real',     type: 'real',       value: 0,       units: []}
+    static string   = {key: 'string',   type: 'string',     value: '',      units: []}
+
+    // Scalar quantities
+    // NOTE -DEPRECATE 'degrees', PREFER 'angle'
+    static angle        = {key: 'angle',        type: 'angle',      value: 0, units: ['degrees', 'radians']} // real number in range [0..360]
+    static degrees      = {key: 'degrees',      type: 'compass',    value: 0, units: ['degrees', 'radians']} // real number in range [0..360]
+    static distance     = {key: 'distance',     type: 'distance',   value: 0, units: ['ft',  'in', 'yd', 'mi', 'ch', 'm', 'cm', 'km']}
+    static temperature  = {key: 'temperature',  type: 'temperature',value: 0, units: ['F', 'C']}
+    static time         = {key: 'time',         type: 'time',       value: 0, units: ['min', 's', 'h', 'd', 'ms']}
+
     // Base units that define the 'type' prop of all other units
     static area     = {key: 'area',     type: 'area',       value: 0,       units: ['ft2', 'ac', 'in2', 'yd2', 'mi2', 'm2', 'ha', 'cm2', 'km2']}
-    static bool     = {key: 'boolean',  type: 'boolean',    value: false,   units: []}
     static compass  = {key: 'compass',  type: 'compass',    value: 0,       units: ['degrees', 'radians']} // real number in range [0..360]
-    static degrees  = {key: 'degrees',  type: 'compass',    value: 0,       units: ['degrees', 'radians']} // real number in range [0..360]
-    static factor   = {key: 'factor',   type: 'real',       value: 1,       units: []} // any number
     static density  = {key: 'density',  type: 'density',    value: 0,       units: ['lb/ft3', 'kg/m3']}
-    static distance = {key: 'distance', type: 'distance',   value: 0,       units: ['ft',  'in', 'yd', 'mi', 'ch', 'm', 'cm', 'km']}
-    static fraction = {key: 'fraction', type: 'fraction',   value: 0,       units: ['ratio', 'percent']} // real in range [0..1]
-    static geocoord = {key: 'geocoord', type: 'geocoord',   value: 0,       units: []}
-    static integer  = {key: 'integer',  type: 'integer',    value: 0,       units: []}
+    static elevation= {key: 'eleveation',type:'distance',   value: 0,       units: ['ft', 'm']}
+    static factor   = {key: 'factor',   type: 'real',       value: 1,       units: []} // any number
+    static geocoord = {key: 'geocoord', type: 'real',       value: 0,       units: []}
     static load     = {key: 'load',     type: 'load',       value: 0,       units: ['lb/ft2', 't/ac', 'kg/m2', 'T/ha']}
-    static ratio    = {key: 'ratio',    type: 'ratio',      value: 1,       units: ['ratio']} // any rational number, no percent option
     static set      = {key: 'set',      type: 'set',        value: '',      units: []} // must be defined by each derived type
-    static temperature = {key: 'temperature', type: 'temperature',value: 0, units: ['F', 'C']}
-    static time     = {key: 'time',     type: 'time',       value: 0,       units: ['min', 's', 'h', 'd', 'ms']}
     static velocity = {key: 'velocity', type: 'velocity',   value: 0,       units: ['ft/min', 'ch/h', 'mi/h', 'm/min', 'km/h']}
 
     // Derived units-of-measure.  These may specify a subset of their parent's units

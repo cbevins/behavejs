@@ -14,7 +14,7 @@ export class FireVectorModule extends DagModule {
      * @param {string} parentProp Parent's property name for this DagItem
      * @param {Config} configs Module containing all current configuration objects
      */
-    constructor(parentMod, parentProp) {
+    constructor(parentMod, parentProp, configs=null) {
         super(parentMod, parentProp)
 
         for(let mod of ['degrees', 'beg', 'end'])

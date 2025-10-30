@@ -11,7 +11,7 @@ export class FireCharModule extends DagModule {
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem
      */
-    constructor(parentMod, parentProp) {
+    constructor(parentMod, parentProp, configs=null) {
         super(parentMod, parentProp)
         this.dir = new DagModule(this, 'dir', 'fire heading')
         this.dir.fromUpslope = Common.fromUpslope(this.dir)

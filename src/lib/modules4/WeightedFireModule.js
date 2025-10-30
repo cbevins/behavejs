@@ -1,22 +1,20 @@
-import { Units as U } from './Units.js'
 import { DagModule } from './DagItems.js'
 import { FireCharModule } from './FireCharModule.js'
-
 import { CommonNodes as Common } from './CommonNodes.js'
 import { Calc, SurfaceFireEquations as Fire } from '../index.js'
 
 /**
- * Extends the FireCharModule by weighting the results of two FireCellModules.
+ * Extends the FireCharModule with the weighted the results of two FireCellModules.
  */
 export class WeightedFireModule extends FireCharModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem ('site')
+     * @param {Config} configs Module containing all current configuration objects
      * @param {FireCellModule} fire1Mod Primary FireCellModule
      * @param {FireCellModule} fire2Mod Secondary FireCellModule
-     * @param {Config} configs Module containing all current configuration objects
      */
-    constructor(parentMod, parentProp, fire1Mod, fire2Mod, configs) {
+    constructor(parentMod, parentProp, configs, fire1Mod, fire2Mod) {
         super(parentMod, parentProp)
         this._meta.configs = configs
         this._meta.modules = {fire1Mod, fire2Mod}

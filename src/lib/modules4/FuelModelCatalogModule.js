@@ -16,10 +16,10 @@ export class FuelModelCatalogModule extends FuelModelModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem ('catalog')
-     * @param {FuelMoistureModule} moistureMod
      * @param {Config} configs Module containing all current configuration objects
+     * @param {FuelMoistureModule} moistureMod
      */
-    constructor(parentMod, parentProp, moistureMod, configs) {
+    constructor(parentMod, parentProp, configs, moistureMod) {
         super(parentMod, parentProp)
         this._meta.configs = configs
         this._meta.modules = {moistureMod}

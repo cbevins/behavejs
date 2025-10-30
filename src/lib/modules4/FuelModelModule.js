@@ -23,7 +23,7 @@ export class FuelModelModule extends DagModule {
      * @param {string} parentProp Parent's property name for this DagItem,
      * one of 'catalog', 'custom', 'chaparral', 'palmetto', 'aspen'
      */
-    constructor(parentMod, parentProp) {
+    constructor(parentMod, parentProp, configs=null) {
         super(parentMod, parentProp)
         this.depth = new DagNode(this, 'depth', U.fuelDepth)
         this.dead = new DagModule(this, 'dead')

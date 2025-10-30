@@ -9,9 +9,9 @@ import { FireVectorModule } from './FireVectorModule.js'
 import { FuelCellModule } from './FuelCellModule.js'
 import { FuelModelCatalogModule } from './FuelModelCatalogModule.js'
 import { FuelMoistureModule } from './FuelMoistureModule.js'
-import { SlopeModule } from './SlopeModule.js'
+import { TerrainModule } from './TerrainModule.js'
 import { WeightedFireModule } from './WeightedFireModule.js'
-import { WindModule } from './WindModule.js'
+import { WeatherModule } from './WeatherModule.js'
 import * as Config from './Configs.js'
 
 console.log(new Date())
@@ -20,43 +20,43 @@ function buildSite(prop='site') {
     const site = new DagModule(null, prop)
     site.canopy = new CanopyModule(site, 'canopy', Config)
     site.moisture = new FuelMoistureModule(site, 'moisture', Config)
-    site.slope = new SlopeModule(site, 'slope', Config)
-    site.wind = new WindModule(site, 'wind', site.slope, Config)
+    site.terrain = new TerrainModule(site, 'terrain', Config)
+    site.weather = new WeatherModule(site, 'weather', Config, site.terrain, Config)
 
     const primary = site.primary = new DagModule(site, 'primary')
     primary.model = new DagModule(primary, 'model')
     primary.model.catalog = new FuelModelCatalogModule(primary.model, 'catalog',
-        site.moisture, Config)
+        Config, site.moisture)
     // The following fuel domains are not yet implemented
     const custom = null
     const chaparral = null
     const palmetto = null
     const aspen = null
 
-    primary.fuel = new FuelCellModule(primary, 'fuel',
-        primary.model.catalog, custom, chaparral, palmetto, aspen, Config)
-    primary.fire = new FireCellModule(primary, 'fire',
-        primary.fuel, site.wind, site.slope, site.canopy, Config)
+    primary.fuel = new FuelCellModule(primary, 'fuel', Config,
+        primary.model.catalog, custom, chaparral, palmetto, aspen)
+    primary.fire = new FireCellModule(primary, 'fire', Config,
+        primary.fuel, site.weather, site.terrain, site.canopy)
 
     const secondary = site.secondary = new DagModule(site, 'secondary')
     secondary.model = new DagModule(secondary, 'model')
     secondary.model.catalog = new FuelModelCatalogModule(secondary.model, 'catalog',
-        site.moisture, Config)
-    secondary.fuel = new FuelCellModule(secondary, 'fuel',
-        secondary.model.catalog, custom, chaparral, palmetto, aspen, Config)
-    secondary.fire = new FireCellModule(secondary, 'fire',
-        secondary.fuel, site.wind, site.slope, site.canopy, Config)
+        Config, site.moisture)
+    secondary.fuel = new FuelCellModule(secondary, 'fuel', Config,
+        secondary.model.catalog, custom, chaparral, palmetto, aspen)
+    secondary.fire = new FireCellModule(secondary, 'fire', Config,
+        secondary.fuel, site.weather, site.terrain, site.canopy)
 
-    const surface = site.surface = new WeightedFireModule(site, 'surface',
-        primary.fire, secondary.fire, Config)
+    const surface = site.surface = new WeightedFireModule(site, 'surface', Config,
+        primary.fire, secondary.fire)
     return site
 }
 
 function configureSite(site) {
     site.canopy.config()
     site.moisture.config()
-    site.slope.config()
-    site.wind.config()
+    site.terrain.config()
+    site.weather.config()
 
     site.primary.model.catalog.config()
     site.primary.fuel.config()
@@ -80,7 +80,7 @@ configureSite(site)
 // Site destructuring
 //------------------------------------------------------------------------------
 
-const {canopy,  moisture, primary, secondary, surface, slope, wind} = site
+const {canopy, moisture, primary, secondary, surface, terrain, weather} = site
 
 // Primary FireCellModule destructuring
 const {model:model1, fuel:fuel1, fire:fire1} = primary
@@ -109,13 +109,14 @@ const midflame3 = surface.midflame
 const {tl1, tl10, tl100} = moisture.dead
 const {herb, stem} = moisture.live
 
-// SlopeModule destructuring
-const aspect = site.slope.dir.aspect
-const steepness = site.slope.steep.ratio
+// TerrainModule destructuring
+const {aspect, elevation, geo, slope, upslope} = terrain
+const steepness = slope.ratio
 
-// WindModule destructuring
-const windSpeed = site.wind.speed.at20ft
-const windFrom = site.wind.dir.origin.fromNorth
+// WeatherModule destructuring
+const {air, ppt, wind} = weather
+const windSpeed = wind.speed.at20ft
+const windFrom = wind.dir.origin.fromNorth
 
 //------------------------------------------------------------------------------
 // Dag construction and use

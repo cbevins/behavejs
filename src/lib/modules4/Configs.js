@@ -70,11 +70,12 @@ export const midflameWindSpeed = makeConfig('midflameWindSpeed',
         ['fuelbed', 'calculated from the fuel bed no-canopy wind speed reduction factor applied to the 20-ft wind speed'],
         ['canopy', 'calculated from the canopy wind speed reduction factor applied to the 20-ft wind speed']])
 
+// Replaced by terrainAspect
 export const slopeDirection = makeConfig('slopeDirection',
     'slope direction is specified as', [
         ['aspect', 'down-slope direction (aspect)'],
         ['upslope', 'up-slope direction']])
-
+// Replaced by terrainSlope
 export const slopeSteepness = makeConfig('slopeSteepness',
     'slope steepness is specified as', [
         ['ratio', 'ratio of vertical rise to horizontal reach'],
@@ -86,6 +87,19 @@ export const surfaceFire = makeConfig('surfaceFire',
         ['onefuel', 'a single fuel model only'],
         ['harmonic', 'two fuel models with a harmonic mean spread rate'],
         ['arithmetic', 'two fuel models with an arithmetic mean spread rate']])
+
+        // Replaces slope
+        
+export const terrainAspect = makeConfig('terrainAspect',
+    'terrain aspect is specified as the ', [
+        ['aspect', 'down-slope direction from north'],
+        ['upslope', 'up-slope direction from north']])
+
+export const terrainSlope = makeConfig('terrainSlope',
+    'terrain slope steepness is specified as', [
+        ['ratio', 'ratio of vertical rise to horizontal reach'],
+        ['degrees', 'degrees of incline above horizontal'],
+        ['map', 'estimated from map measurements']])
 
 export const windDirection = makeConfig('windDirection',
     'the wind direction is specified as', [

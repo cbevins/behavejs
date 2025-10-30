@@ -1,41 +1,53 @@
 import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
-import { WindEquations as Wind } from '../index.js'
+import { CommonNodes as Common } from './CommonNodes.js'
 import { CompassEquations as Compass } from '../index.js'
+import { WindEquations as Wind } from '../index.js'
 
-export class WindModule extends DagModule {
+export class WeatherModule extends DagModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
-     * @param {string} parentProp Parent's property name for this DagItem ('wind')
-     * @param {SlopeModule} slopeMod Reference to a SlopeModule
+     * @param {string} parentProp Parent's property name for this DagItem  ('slope')
      * @param {Config} configs Module containing all current configuration objects
+     * @param {TerrainModule} terrainMod Supplies aspect to determine wind dir from upslope
      */
-    constructor(parentMod, parentProp, slopeMod, configs) {
+    constructor(parentMod, parentProp, configs, terrainMod) {
         super(parentMod, parentProp)
         this._meta.configs = configs
-        this._meta.modules = {slopeMod}
+        this._meta.modules = {terrainMod}
 
-        this.dir = new DagModule(this, 'dir')
-        
-        this.dir.origin = new DagModule(this.dir, 'origin')
-        this.dir.origin.fromNorth = new DagNode(this.dir.origin, 'fromNorth', U.compass)
-        this.dir.origin.fromUpslope = new DagNode(this.dir.origin, 'fromUpslope', U.compass)
+        const air = this.air = new DagModule(this, 'air')
+        air.temp = new DagNode(air, 'temp', U.temperature, 'temperature')
+        air.rh = new DagNode(air, 'rh', U.fraction, 'relative humidity')
 
-        this.dir.heading = new DagModule(this.dir, 'heading')
-        this.dir.heading.fromNorth = new DagNode(this.dir.heading, 'fromNorth', U.compass)
-        this.dir.heading.fromUpslope = new DagNode(this.dir.heading, 'fromUpslope', U.compass)
+        this.ppt = new DagModule(this, 'ppt', 'precipitation')
 
-        this.speed = new DagModule(this, 'speed')
-        this.speed.at10m = new DagNode(this.speed, 'at10m', U.windSpeed)
-        this.speed.at20ft = new DagNode(this.speed, 'at20ft', U.windSpeed)
+        const wind = this.wind = new DagModule(this, 'wind')
+
+        wind.dir = new DagModule(this, 'dir')
+        wind.dir.origin = new DagModule(wind.dir, 'origin')
+        wind.dir.origin.fromNorth = Common.fromNorth(wind.dir.origin, 'fromNorth', U.compass)
+        wind.dir.origin.fromUpslope = new DagNode(wind.dir.origin, 'fromUpslope', U.compass)
+        wind.dir.heading = new DagModule(wind.dir, 'heading')
+        wind.dir.heading.fromNorth = new DagNode(wind.dir.heading, 'fromNorth', U.compass)
+        wind.dir.heading.fromUpslope = new DagNode(wind.dir.heading, 'fromUpslope', U.compass)
+
+        wind.speed = new DagModule(this, 'speed')
+        wind.speed.at10m = new DagNode(wind.speed, 'at10m', U.windSpeed)
+        wind.speed.at20ft = new DagNode(wind.speed, 'at20ft', U.windSpeed)
     }
 
     config() {
         const {windDirection:configDir, windSpeed: configSpeed} = this._meta.configs
-        const {slopeMod} = this._meta.modules
-        const upslopeNode = slopeMod.dir.upslope
-        const {dir, speed} = this
+        const {terrainMod} = this._meta.modules
+        const upslopeNode = terrainMod.upslope
+
+        const {air, ppt, wind} = this
+        const {dir, speed} = wind
         const {origin, heading} = dir
+
+        air.temp.input()
+        air.rh.input()
 
         // No config required for this node
         dir.origin.fromUpslope.use(Compass.compassOpposite, [dir.heading.fromUpslope])
