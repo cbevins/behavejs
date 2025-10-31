@@ -9,11 +9,15 @@ export class FuelCellModule extends DagModule {
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem ('fuel')
      * @param {Config} configs Module containing all current configuration objects
-     * @param {FuelModelCatalogModule} catalogMod
-     * @param {FuelModelCustomModule} customMod
-     * @param {FuelModelChaparralModule} chaparralMod
-     * @param {FuelModelPalmettoModule} palmettoMod
-     * @param {FuelModelAspenModule} aspenMod
+     * @param {FuelModelCatalogModule} catalogMod (see below)
+     * @param {FuelModelCustomModule} customMod (see below)
+     * @param {FuelModelChaparralModule} chaparralMod (see below)
+     * @param {FuelModelPalmettoModule} palmettoMod (see below)
+     * @param {FuelModelAspenModule} aspenMod (see below)
+     * 
+     * Depending upon the configs.fuelDomain value, *this* FuelCellModule's
+     * depth, dead.mext, and all dead and live fuel element properties are bound
+     * to one of these 5 fuel model providers.
      */
     constructor(parentMod, parentProp, configs, catalogMod, customMod, chaparralMod,
             palmettoMod, aspenMod) {

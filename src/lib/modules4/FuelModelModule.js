@@ -2,20 +2,20 @@ import { Units as U } from './Units.js'
 import { DagModule, DagNode } from './DagItems.js'
 
 /**
- * The FuelCellModule binds to one of the sets of fuel domain model parameters.
+ * The FuelCellModule binds to one of the 5 sets of fuel domain model parameters.
  * The required *model* parameters are:
- * - 5 dead FuelElementModules (dead.element1, ... dead.element5),
- * - 5 live FuelElementModules (live.element1, ... live.element5),
- * - a fuel bed depth (.depth), and
- * - a dead fuel extinction moisture content (.dead.mext)
+ * - a fuel bed depth (.depth),
+ * - a dead fuel extinction moisture content (.dead.mext),
+ * - 5 dead FuelElementModules (dead.element1, ... dead.element5), and
+ * - 5 live FuelElementModules (live.element1, ... live.element5).
  * 
  * FuelModelModule is a base class that must be extended for each fuel domain.
  * All fuel model domains (catalog, custom, chaparral, palmetto, aspen) should also
  * add their own specific nodes such as catalog key, age, basal area, etc.
  * 
- * This is basically the interface between fuel domains and a FuelCell.  The
- * FuelCell will add and configure all the derived element and life category nodes
- * behind the scenes and hidden from the fuel domain model.
+ * This is basically the interface between fuel domains and a FuelCellModule.
+ * The FuelCellModule will add and configure all the derived element and life
+ * category nodes behind the scenes and hidden from the fuel domain model.
  */
 export class FuelModelModule extends DagModule {
     /**

@@ -1,5 +1,5 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
+import { DagModule } from './DagItems.js'
+import { CommonNodes as Common } from './CommonNodes.js'
 
 export class FuelMoistureModule extends DagModule {
     /**
@@ -12,12 +12,16 @@ export class FuelMoistureModule extends DagModule {
         this._meta.config = configs
 
         this.dead = new DagModule(this, 'dead')
-        for(let prop of ['category', 'tl1', 'tl10', 'tl100'])
-            this.dead[prop] = new DagNode(this.dead, prop, U.fuelMois)
+        this.dead.category = Common.mcat(this.dead)
+        this.dead.tl1 = Common.tl1(this.dead)
+        this.dead.tl10 = Common.tl10(this.dead)
+        this.dead.tl100 = Common.tl100(this.dead)
+        this.dead.category = Common.mcat(this.dead)
 
         this.live = new DagModule(this, 'live')
-        for(let prop of ['category', 'herb', 'stem'])
-            this.live[prop] = new DagNode(this.live, prop, U.fuelMois)
+        this.live.category = Common.mcat(this.live)
+        this.live.herb = Common.herb(this.live)
+        this.live.stem = Common.stem(this.live)
     }
     
     config() {

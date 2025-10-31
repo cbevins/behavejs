@@ -1,5 +1,5 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
+import { DagModule } from './DagItems.js'
+import { CommonNodes as Common } from './CommonNodes.js'
 import { CompassEquations as Compass } from '../index.js'
 
 export class TerrainModule extends DagModule {
@@ -12,25 +12,19 @@ export class TerrainModule extends DagModule {
         super(parentMod, parentProp)
         this._meta.configs = configs
 
-        this.aspect = new DagNode(this, 'aspect', U.compass)
-        this.elevation = new DagNode(this, 'elevation', U.elevation)
-        this.upslope = new DagNode(this, 'upslope', U.compass)
-
-        this.geo = new DagModule(this, 'geo')
-        this.geo.x = new DagNode(this.geo, 'x', U.geocoord)
-        this.geo.y = new DagNode(this.geo, 'y', U.geocoord)
+        this.aspect = Common.aspect(this)
+        this.elevation = Common.elevation(this)
+        this.upslope = Common.upslope(this)
 
         this.slope = new DagModule(this, 'slope')
-        this.slope.degrees = new DagNode(this.slope, 'degrees', U.compass)
-        this.slope.ratio = new DagNode(this.slope, 'ratio', U.ratio)
+        this.slope.degrees = Common.slopeDegrees(this.slope)
+        this.slope.ratio = Common.slopeRatio(this.slope)
     }
 
     config() {
         const {terrainAspect:configAspect, terrainSlope:configSlope} = this._meta.configs
 
         this.elevation.input()
-        this.geo.x.input()
-        this.geo.y.input()
 
         if (configAspect.value === configAspect.upslope) {
             this.upslope.input(configAspect)

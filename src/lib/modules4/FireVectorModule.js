@@ -17,10 +17,10 @@ export class FireVectorModule extends DagModule {
     constructor(parentMod, parentProp, configs=null) {
         super(parentMod, parentProp)
 
-        for(let mod of ['degrees', 'beg', 'end'])
+        for(let mod of ['angle', 'beg', 'end'])
             this[mod] = new DagModule(this, 'mod')
 
-        this.degrees.fromNorth = new DagNode(this.degrees, 'fromNorth', U.compass)
+        this.angle.fromNorth = new DagNode(this.angle, 'fromNorth', U.compass)
         this.distance = new DagNode(this, 'distance', U.distance)
         this.dt = new DagNode(this, 'dt', U.time, 'elapsed time')
         this.dx = new DagNode(this, 'dx', U.distance)

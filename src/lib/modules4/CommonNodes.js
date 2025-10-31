@@ -14,7 +14,7 @@ export class CommonNodes {
     static mort(p) {return new DagNode(p, 'mort', U.fraction, 'fire induced tree mortality rate')}
     static ros(p) {return new DagNode(p, 'ros', U.fireRos, 'spread rate')}
     static rxi(p) {return new DagNode(p, 'rxi', U.fireRxi, 'reaction intensity')}
-    static midflame(p) {return new DagNode(p, 'speed', U.windSpeed, 'midflame wind speed')}
+    static midflame(p) {return new DagNode(p, 'midflame', U.windSpeed, 'midflame wind speed')}
     static phiE(p) {return new DagNode(p, 'phiE', U.factor, 'spread rate effective wind coefficient')}
     static scorch(p) {return new DagNode(p, 'scorch', U.fireScorch, 'scorch height')}
     static weff(p) {return new DagNode(p, 'weff', U.windSpeed, 'effective wind speed')}
@@ -69,7 +69,13 @@ export class CommonNodes {
     static fuelWsrf(p) {return new DagNode(p, 'fuelWsrf', U.fraction, 'open canopy wind speed reduction factor', '')}
     static xi(p) {return new DagNode(p, 'xi', U.ratio, 'propagating flux ratio')}
 
-    // Additiona FireCellModule nodes
+    //
+    static fuelKey(p) {return new DagNode(p, 'fuelKey', U.fuelKey, 'fuel model key')}
+    static cured(p) {return new DagNode(p, 'cured', U.fraction, 'cured herb applied')}
+    static curedEst(p) {return new DagNode(p, 'curedEst', U.fraction, 'cured herb estimated')}
+    static curedInp(p) {return new DagNode(p, 'curedInp', U.fraction, 'cured herb input')}
+
+    // Additional FireCellModule nodes
     static phiS(p) {return new DagNode(p, 'phiS', U.factor, 'spread rate slope coefficient')}
     static phiW(p) {return new DagNode(p, 'phiW', U.factor, 'spread rate wind coefficient')}
     static rosSlope(p) {return new DagNode(p, 'rosSlope', U.fireRos, 'slope-only spread rate')}
@@ -88,4 +94,30 @@ export class CommonNodes {
     static cover2(p) {return new DagNode(p, 'cover2', U.fraction, 'secondary fuel cover')}
     static rosArith(p) {return new DagNode(p, 'rosArith', U.fireRos, 'arithmetic mean spread rate')}
     static rosHarm(p) {return new DagNode(p, 'rosHarm', U.fireRos, 'harmonic mean spread rate')}
+
+    static elapsed(p) {return new DagNode(p, 'elapsed', U.time, 'elapsed')}
+    static t(p) {return new DagNode(p, 't', U.time, 'elapsed time')}
+    static x(p) {return new DagNode(p, 'x', U.geocoord, 'x-coordinate')}
+    static y(p) {return new DagNode(p, 'y', U.geocoord, 'y-coordinate')}
+
+    // FuelMoisture
+    static tl1(p) {return new DagNode(p, 'tl1', U.fuelMois, '1-h time-lag')}
+    static tl10(p) {return new DagNode(p, 'tl10', U.fuelMois, '10-h time-lag')}
+    static tl100(p) {return new DagNode(p, 'tl100', U.fuelMois, '100-h time-lag')}
+    static mcat(p) {return new DagNode(p, 'category', U.fuelMois, 'category')}
+    static herb(p) {return new DagNode(p, 'herb', U.fuelMois, 'herbaceous')}
+    static stem(p) {return new DagNode(p, 'stem', U.fuelMois, 'stem wood')}
+
+    // Terrain
+    static aspect(p) {return new DagNode(p, 'aspect', U.compass, 'aspect')}
+    static elevation(p) {return new DagNode(p, 'elevation', U.elevation, 'elevation')}
+    static upslope(p) {return new DagNode(p, 'upslope', U.compass, 'upslope direction from north')}
+    static slopeDegrees(p) {return new DagNode(p, 'degrees', U.compass, 'incline above horizontal')}
+    static slopeRatio(p) {return new DagNode(p, 'ratio', U.ratio, 'rise-to-reach ratio')}
+
+    // Wind
+    static at10m(p) {return new DagNode(p, 'at10m', U.windSpeed, 'at 10-m')}
+    static at20ft(p) {return new DagNode(p, 'at20ft', U.windSpeed, 'at 20-ft')}
+    static rh(p) {return new DagNode(p, 'rh', U.fraction, 'relative humidity')}
+    static temp(p) {return new DagNode(p, 'temp', U.temperature, 'temperature')}
 }

@@ -1,5 +1,4 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
+import { DagModule } from './DagItems.js'
 import { CommonNodes as Common } from './CommonNodes.js'
 import { CompassEquations as Compass } from '../index.js'
 import { WindEquations as Wind } from '../index.js'
@@ -9,7 +8,8 @@ export class WeatherModule extends DagModule {
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem  ('slope')
      * @param {Config} configs Module containing all current configuration objects
-     * @param {TerrainModule} terrainMod Supplies aspect to determine wind dir from upslope
+     * @param {TerrainModule} terrainMod Reference to a module with the following properties:
+     *  - .slope, used to determine wind direction from upslope
      */
     constructor(parentMod, parentProp, configs, terrainMod) {
         super(parentMod, parentProp)
@@ -17,8 +17,8 @@ export class WeatherModule extends DagModule {
         this._meta.modules = {terrainMod}
 
         const air = this.air = new DagModule(this, 'air')
-        air.temp = new DagNode(air, 'temp', U.temperature, 'temperature')
-        air.rh = new DagNode(air, 'rh', U.fraction, 'relative humidity')
+        air.temp = Common.temp(air)
+        air.rh = Common.rh(air)
 
         this.ppt = new DagModule(this, 'ppt', 'precipitation')
 
@@ -26,15 +26,15 @@ export class WeatherModule extends DagModule {
 
         wind.dir = new DagModule(this, 'dir')
         wind.dir.origin = new DagModule(wind.dir, 'origin')
-        wind.dir.origin.fromNorth = Common.fromNorth(wind.dir.origin, 'fromNorth', U.compass)
-        wind.dir.origin.fromUpslope = new DagNode(wind.dir.origin, 'fromUpslope', U.compass)
+        wind.dir.origin.fromNorth = Common.fromNorth(wind.dir.origin)
+        wind.dir.origin.fromUpslope = Common.fromUpslope(wind.dir.origin)
         wind.dir.heading = new DagModule(wind.dir, 'heading')
-        wind.dir.heading.fromNorth = new DagNode(wind.dir.heading, 'fromNorth', U.compass)
-        wind.dir.heading.fromUpslope = new DagNode(wind.dir.heading, 'fromUpslope', U.compass)
+        wind.dir.heading.fromNorth = Common.fromNorth(wind.dir.heading)
+        wind.dir.heading.fromUpslope = Common.fromUpslope(wind.dir.heading)
 
         wind.speed = new DagModule(this, 'speed')
-        wind.speed.at10m = new DagNode(wind.speed, 'at10m', U.windSpeed)
-        wind.speed.at20ft = new DagNode(wind.speed, 'at20ft', U.windSpeed)
+        wind.speed.at10m = Common.at10m(wind.speed)
+        wind.speed.at20ft = Common.at20ft(wind.speed)
     }
 
     config() {

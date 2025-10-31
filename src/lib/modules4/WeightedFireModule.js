@@ -1,6 +1,6 @@
 import { DagModule } from './DagItems.js'
-import { FireCharModule } from './FireCharModule.js'
 import { CommonNodes as Common } from './CommonNodes.js'
+import { FireCharModule } from './FireCharModule.js'
 import { Calc, SurfaceFireEquations as Fire } from '../index.js'
 
 /**

@@ -17,10 +17,23 @@ export class FireCellModule extends FireCharModule {
      * @param {string} parentProp Parent's property name for this DagItem
      *  ('fire', 'primary', 'secondary', 'crown')
      * @param {Config} configs Module containing all current configuration objects
-     * @param {FuelCellModule} fuelMod
-     * @param {WeatherModule} weatherMod
-     * @param {TerrainModule} terrainMod
-     * @param {CanopyModule} canopyMod
+     * @param {FuelCellModule} fuelMod Reference to a Module with the following properties:
+     *  - .beta used to determine the spread rate slope coefficient
+     *  - .brat used to determine windI and windK
+     *  - .rxi used to determine fireline intensity, effective wind speed limit, hpua
+     *  - .savr used to determine windB, windC, windE, and taur
+     *  - .sink used to determine spread rate
+     *  - .source used to determine spread rate
+     *  - .fuelWsrf used to determine wind speed reduction factor
+     * @param {WeatherModule} weatherMod Reference to a Module with the following properties:
+     *  - .air.temp to determine scorch height
+     *  - .wind.dir.heading.fromUpslope to determine fire direction of maximum spread
+     *  - .wind.speed.at20ft to determine wind speed at midflame height
+     * @param {TerrainModule} terrainMod Reference to a Module with the following properties:
+     *  - .upslope to determine fire direction of maximum spread
+     *  - .slope.ratio to determine spread rate slope coefficient
+     * @param {CanopyModule} canopyMod Reference to a Module with the following properties:
+     *  - .wsrf to determine wind speed reduction factor
      */
     constructor(parentMod, parentProp, configs, fuelMod, weatherMod, terrainMod, canopyMod) {
         super(parentMod, parentProp)

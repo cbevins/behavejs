@@ -1,23 +1,27 @@
-import { Dag } from './Dag.js'
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
+import { DagModule } from './DagItems.js'
+import { CommonNodes as Common } from './CommonNodes.js'
 import { FuelModelModule } from './FuelModelModule.js'
 import { FuelBedEquations as Bed } from '../index.js'
 import { StandardFuelModelCatalog as Catalog } from '../index.js'
 
 /**
  * FuelModelCatalogModule provides the FuelCellModule with the required:
- * - 5 dead FuelParticleModules (dead.element1, ... dead.element5),
- * - 5 live FuelParticleModules (live.element1, ... live.element5),
- * - a fuel bed depth, and
- * - a dead fuel extinction moisture content
+ * - a fuel bed depth,
+ * - a dead fuel extinction moisture content,
+ * - 5 dead FuelParticleModules (dead.element1, ... dead.element5), and
+ * - 5 live FuelParticleModules (live.element1, ... live.element5).
  */
 export class FuelModelCatalogModule extends FuelModelModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem ('catalog')
      * @param {Config} configs Module containing all current configuration objects
-     * @param {FuelMoistureModule} moistureMod
+     * @param {FuelMoistureModule} moistureMod Reference to a Module with the following properties:
+     *  - .dead.tl1
+     *  - .dead.tl10
+     *  - .dead.tl100
+     *  - .live.herb
+     *  - .live.stem
      */
     constructor(parentMod, parentProp, configs, moistureMod) {
         super(parentMod, parentProp)
@@ -25,10 +29,10 @@ export class FuelModelCatalogModule extends FuelModelModule {
         this._meta.modules = {moistureMod}
 
         // Additional nodes used by the standard fuel model catalog
-        this.fuelKey = new DagNode(this, 'key', U.fuelKey)
-        this.cured = new DagNode(this, 'cured', U.fraction)
-        this.curedEst = new DagNode(this, 'curedEst', U.fraction)
-        this.curedInp = new DagNode(this, 'curedInp', U.fraction)
+        this.fuelKey = Common.fuelKey(this)
+        this.cured = Common.cured(this)
+        this.curedEst = Common.curedEst(this)
+        this.curedInp = Common.curedInp(this)
     }
 
     config() {

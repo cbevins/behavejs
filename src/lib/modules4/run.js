@@ -91,7 +91,7 @@ const {model:model1, fuel:fuel1, fire:fire1} = primary
 const {catalog:catalog1} = model1
 const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = catalog1
 const {dead:dead1, live:live1, rxi:rxi1, sink:sink1, source:source1} = fuel1
-const {ros:ros1, fli:fli1, flame:flame1, lwr:lwr1, hpua:hpua1} = fire1
+const {ros:ros1, fli:fli1, flame:flame1, lwr:lwr1, hpua:hpua1, scorch:scorch1} = fire1
 const {fromUpslope:headUpslope1, fromNorth:headNorth1} = fire1.dir
 const midflame1 = fire1.midflame
 
@@ -100,7 +100,7 @@ const {model:model2, fuel:fuel2, fire:fire2} = secondary
 const {catalog:catalog2} = model2
 const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = catalog2
 const {dead:dead2, live:live2, rxi:rxi2, sink:sink2, source:source2} = fuel2
-const {ros:ros2, fli:fli2, flame:flame2, lwr:lwr2, hpua:hpua2} = fire2
+const {ros:ros2, fli:fli2, flame:flame2, lwr:lwr2, hpua:hpua2, scorch:scorch2} = fire2
 const {fromUpslope:headUpslope2, fromNorth:headNorth2} = fire2.dir
 const midflame2 = fire2.midflame
 
@@ -128,8 +128,8 @@ const windFrom = wind.dir.origin.fromNorth
 
 const dag = new Dag(NodeMap, 'Test')
 dag.select(
-    ros1, headUpslope1, headNorth1, fli1, flame1, lwr1, hpua1,
-    ros2, headUpslope2, headNorth2, fli2, flame2, lwr2, hpua2,
+    ros1, headUpslope1, headNorth1, fli1, flame1, lwr1, hpua1, scorch1,
+    ros2, headUpslope2, headNorth2, fli2, flame2, lwr2, hpua2, scorch2,
     ros3, headUpslope3, headNorth3, fli3, flame3, lwr3, hpua3, rosA, rosH)
 
 // Set inputs
@@ -146,6 +146,7 @@ dag.set(aspect, 180)
 dag.set(windFrom, 270)
 dag.set(midflame1, 880)
 dag.set(midflame2, 880)
+dag.set(air.temp, 95)
 
 dag.updateAll()
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
@@ -161,6 +162,8 @@ Util.compare(flame1, 6.9996889013229229)
 Util.compare(flame2, 16.35631663)
 Util.compare(lwr1, 3.5015680219321221)
 Util.compare(lwr2, 3.501581941)
+Util.compare(scorch1, 39.580182)
+Util.compare(scorch2, 215.682771)
 
 // Expected results
 const xros1 = 18.551680325448835
