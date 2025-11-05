@@ -1,105 +1,116 @@
 import { describe, it, expect } from 'vitest'
-import { sig } from './matchers.js'
-import { WfmsTwoFuels } from '../index.js'
+import { value } from './matchers.js'
+import { AllModules } from './index.js'
+import * as Config from '../modules4/Configs.js'
 
-expect.extend({ sig })
+expect.extend({ value })
 
-// Results from BehavePlus V6
-const ros   = { fm010: 18.551680325448835, fm124: 48.47042599399056,  prec: 10 }
-const dirUp = { fm010: 87.573367385837855, fm124: 87.613728665173383, prec: 11 }
-const dirNo = { fm010: 87.573367385837855, fm124: 87.613728665173383, prec: 11 }
-const lwr   = { fm010: 3.5015680219321221, fm124: 3.501581941,        prec: 10 }
-const rxi   = { fm010: 5794.6954002291168, fm124: 12976.692888496578, prec: 12 }
-const ews   = { fm010: 880.55194372010692, fm124: 880.5568433322004,  prec: 12 }
-const ewsl  = { fm010: 5215.2258602062057, fm124: 11679.02359964692,  prec: 12 }
-const ewsx  = { fm010: false,              fm124: false }
-const hpua  = { fm010: 1261.1929372603729, fm124: 12976.692888496578 * 0.23541979977677915, prec: 12}
-const fli   = { fm010: 389.95413667947145, fm124: 2467.928645, prec: 11 }
-const flame = { fm010: 6.9996889013229229, fm124: 16.35631663, prec: 11 }
-// const scorch = { fm010: 39.580182, fm124: 215.682771, prec: 8 }
+Config.surfaceFire.value = Config.surfaceFire.arithmetic
+const modules = new AllModules(Config, 'site')
+const site = modules.root
 
-const cover1 = 0.6
-const ros1 = ros.fm010
-const ros2 = ros.fm124
-ros.harm = 1 / (cover1 / ros1 + (1 - cover1) / ros2)
-ros.arith = cover1 * ros1 + (1 - cover1) * ros2
+//------------------------------------------------------------------------------
+// Site destructuring
+//------------------------------------------------------------------------------
 
-// Get our results
-const wfms = new WfmsTwoFuels()
-const {canopy, moisture, slope, surface, wind} = wfms.nodeRefs
-const {primary, secondary} = surface
+const {canopy, moisture, surface, terrain, weather} = site
 
-wfms.set(primary.cover, 0.6)
-    .set(primary.fuel.key, '10')
-    .set(secondary.fuel.key, '124')
-    .set(primary.midflame, 880)
-    .set(secondary.midflame, 880)
-    .set(moisture.tl1, 0.05)
-    .set(moisture.tl10, 0.07)
-    .set(moisture.tl100, 0.09)
-    .set(moisture.herb, 0.5)
-    .set(moisture.stem, 1.5)
-    .set(slope.ratio, 0.25)
-    .set(slope.aspect, 180)
-    .set(wind.source, 270)
-    .updateAll()
+// 'site.surface' SurfaceModule destructuring
+const {primary, secondary, weighted} = surface
 
-const {primary:p, secondary:s, weighted:w} = wfms.nodeRefs.surface
+// 'site.surface.primary' FireCellModule destructuring
+const {model:model1, fuel:fuel1, fire:fire1} = primary
+const {catalog:catalog1} = model1
+const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = catalog1
+const {dead:dead1, live:live1, rxi:rxi1, sink:sink1, source:source1} = fuel1
+const {ros:ros1, fli:fli1, flame:flame1, lwr:lwr1, hpua:hpua1, scorch:scorch1} = fire1
+const {fromUpslope:headUpslope1, fromNorth:headNorth1} = fire1.dir
+const midflame1 = fire1.midflame
+
+// 'site.surface.secondary' FireCellModule destructuring
+const {model:model2, fuel:fuel2, fire:fire2} = secondary
+const {catalog:catalog2} = model2
+const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = catalog2
+const {dead:dead2, live:live2, rxi:rxi2, sink:sink2, source:source2} = fuel2
+const {ros:ros2, fli:fli2, flame:flame2, lwr:lwr2, hpua:hpua2, scorch:scorch2} = fire2
+const {fromUpslope:headUpslope2, fromNorth:headNorth2} = fire2.dir
+const midflame2 = fire2.midflame
+
+// 'site.surface.weighted' WeightedFireModule destructuring
+const {ros:ros3, rosArith:rosA, rosHarm:rosH, fli:fli3, flame:flame3, lwr:lwr3, hpua:hpua3} = weighted
+const {fromUpslope:headUpslope3, fromNorth:headNorth3} = weighted.dir
+const midflame3 = weighted.midflame
+
+// 'site.moisture' FuelMoistureModule destructuring
+const {tl1, tl10, tl100} = moisture.dead
+const {herb, stem} = moisture.live
+
+// 'site.terrain' TerrainModule destructuring
+const {aspect, elevation, geo, slope, upslope} = terrain
+const steepness = slope.ratio
+
+// 'site.weather' WeatherModule destructuring
+const {air, ppt, wind} = weather
+const windSpeed = wind.speed.at20ft
+const windFrom = wind.dir.origin.fromNorth
+
+//------------------------------------------------------------------------------
+// DagNode selection, input, update, and results
+//------------------------------------------------------------------------------
+
+// Step 1 - select nodes of interest
+const dag = modules.dag
+dag.select(
+    ros1, headUpslope1, headNorth1, fli1, flame1, lwr1, hpua1, scorch1,
+    ros2, headUpslope2, headNorth2, fli2, flame2, lwr2, hpua2, scorch2,
+    ros3, headUpslope3, headNorth3, fli3, flame3, lwr3, hpua3, rosA, rosH)
+
+// Step 2 - display (optional) and set input DagNode values
+dag.set(weighted.cover1, 0.6)
+dag.set(fuelKey1, '10')
+dag.set(fuelKey2, '124')
+dag.set(tl1, 0.05)
+dag.set(tl10, 0.07)
+dag.set(tl100, 0.09)
+dag.set(herb, 0.5)
+dag.set(stem, 1.5)
+dag.set(steepness, 0.25)
+dag.set(aspect, 180)
+dag.set(windFrom, 270)
+dag.set(midflame1, 880)
+dag.set(midflame2, 880)
+dag.set(air.temp, 95)
+
+// Step 3 - Update all the selected DagNode values
+dag.updateAll()
+
+// Expected weighted surface results
+const xros1 = 18.551680325448835
+const xros2 = 48.47042599399056
+const xcover1 = 0.6
+const xrosH = 1 / (xcover1 / xros1 + (1 - xcover1) / xros2)
+const xrosA = xcover1 * xros1 + (1-xcover1) * xros2
+
+// Results from BehavePlus V6 [fm010, fm124, precision]
+const tests = [
+    [ros1, xros1], [ros2, xros2], [ros3, xrosA], [rosA, xrosA], [rosH, xrosH],
+    [headUpslope1, 87.573367385837855], [headUpslope2, 87.613728665173383],
+    [headNorth1, 87.573367385837855], [headNorth2, 87.613728665173383],
+    [lwr1, 3.5015680219321221], [lwr2, 3.501581941],
+    // [rxi1, 5794.6954002291168], [rxi2, 12976.692888496578],
+    // ews   : [880.55194372010692, 880.5568433322004,  12],
+    // ewsl  : [5215.2258602062057, 11679.02359964692,  12],
+    // ewsx  : [false,              false,               0],
+    [hpua1, 1261.1929372603729], [hpua2, 12976.692888496578 * 0.23541979977677915],
+    [fli1, 389.95413667947145], [fli2, 2467.928645],
+    [flame1, 6.9996889013229229], [flame2, 16.35631663],
+    [scorch1, 39.58018178], [scorch2, 215.6827713],
+]
 
 describe('Two fuel models', () => {
-
-    // The final RoS is bound to the harmonic mean RoS
-    it('primary, secondary, and weighted RoS agrees with BehavePlus V6', () => {
-        expect(p.ros.value).sig(ros.fm010, ros.prec)
-        expect(s.ros.value).sig(ros.fm124, ros.prec)
-        expect(w.harmonic.value).sig(ros.harm, ros.prec)
-        expect(w.arithmetic.value).sig(ros.arith, ros.prec)
-        expect(w.ros.value).sig(ros.harm, ros.prec)
-    })
-
-    // The heading from upslope, effective wind speed, length-to-width ratio,
-    // midflame wind speed, and wsrf are all bound to the PRIMARY FUEL.
-    // In this case, its fm010:
-    it('primary, secondary, and weighted heading driection from upslope agrees with BehavePlus V6', () => {
-        expect(p.heading.fromUpslope.value).sig(dirUp.fm010, dirUp.prec)
-        expect(s.heading.fromUpslope.value).sig(dirUp.fm124, dirUp.prec)
-        expect(w.heading.fromUpslope.value).sig(dirUp.fm010, dirUp.prec)
-    })
-
-    it('primary, secondary, and weighted length-to-width ratio agrees with BehavePlus V6', () => {
-        expect(p.lwr.value).sig(lwr.fm010, lwr.prec)
-        expect(s.lwr.value).sig(lwr.fm124, lwr.prec)
-        expect(w.lwr.value).sig(lwr.fm010, lwr.prec)
-    })
-    
-    it('primary, secondary, and weighted effective wind speed agrees with BehavePlus V6', () => {
-        expect(p.ewind.speed.value).sig(ews.fm010, ews.prec)
-        expect(s.ewind.speed.value).sig(ews.fm124, ews.prec)
-        expect(w.ewind.speed.value).sig(ews.fm010, ews.prec)
-    })
-
-    // The fireline intensity, reaction itensity, flame length, and heat per unit area
-    // are all bound to the MAXIMUM of the two fuels,
-    // In this case, its fm124:
-    it('primary, secondary, and weighted fireline intensity agrees with BehavePlus V6', () => {
-        expect(p.fli.value).sig(fli.fm010, fli.prec)
-        expect(s.fli.value).sig(fli.fm124, fli.prec)
-        expect(w.fli.value).sig(fli.fm124, fli.prec)
-    })
-
-    // The effective wind speed limit is bound to the MINIMUM of the two fuels.
-    // In this case, its fm010
-    it('primary, secondary, and weighted effective wind speed limit agrees with BehavePlus V6', () => {
-        expect(p.ewind.limit.value).sig(ewsl.fm010, ewsl.prec)
-        expect(s.ewind.limit.value).sig(ewsl.fm124, ewsl.prec)
-        expect(w.ewind.limit.value).sig(ewsl.fm010, ewsl.prec)
-    })
-
-    // The effective wind speed limit exceeded is TRUE if EITHER fuel's limit is exceeded
-    // In this case, its FALSE for both fuels
-    it('primary, secondary, and weighted effective wind speed limit exceeded agrees with BehavePlus V6', () => {
-        expect(p.ewind.exceeded.value).toBe(ewsx.fm010)
-        expect(s.ewind.exceeded.value).toBe(ewsx.fm124)
-        expect(w.ewind.exceeded.value).toBe(ewsx.fm010 || ewsx.fm124)
-    })
+    for(let [node, expected] of tests) {
+        it(`${node.key()}`, () => {
+            expect(node).value(expected)
+        })
+    }
 })

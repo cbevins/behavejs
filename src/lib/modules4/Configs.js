@@ -22,7 +22,7 @@ export const fireEffWindLimit = makeConfig('effwindLimit',
         ['applied', 'applied'],
         ['notApplied', 'not applied']])
 
-export  const fireVectors = makeConfig('fireVectors',
+export const fireVectors = makeConfig('fireVectors',
     'ellipse fire vector angles are degrees clockwise from', [
         ['fromNorth', 'North'],
         ['fromHead', 'fire heading direction'],

@@ -107,11 +107,11 @@ export class FireEllipseEquations {
    * Calculate the fire ellipse distance or rate at `G`.
    *
    * @param rosMajor Fire ellipse major axis spread rate or length
-   *  (in arbitrary distance or velcoity units-of-measure).
+   *  (in arbitrary distance or velocity units-of-measure).
    *
    * @param rosBack Portion of the total major axis rate or distance
    *  attributable to the backing rate or distance (in the same atbitrary
-   *  distance or velcoity units-of-measure as majorAxisRateOrDistance).
+   *  distance or velocity units-of-measure as majorAxisRateOrDistance).
    *
    * @return Fire ellipse `G` used to determine spread rates at arbitrary psi.
    */
@@ -123,7 +123,7 @@ export class FireEllipseEquations {
    * Calculate the fire ellipse distance or rate at `H`.
    *
    * @param rosMinor Fire ellipse minor axis spread rate or length
-   *  (in arbitrary distance or velcoity units-of-measure).
+   *  (in arbitrary distance or velocity units-of-measure).
    *
    * @return Fire ellipse `H` used to determine spread rates at arbitrary psi.
    */

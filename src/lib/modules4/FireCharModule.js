@@ -13,19 +13,29 @@ export class FireCharModule extends DagModule {
      */
     constructor(parentMod, parentProp, configs=null) {
         super(parentMod, parentProp)
+
+        // Mandatory properties
         this.dir = new DagModule(this, 'dir', 'fire heading')
         this.dir.fromUpslope = Common.fromUpslope(this.dir)
         this.dir.fromNorth = Common.fromNorth(this.dir)
-        this.taur = Common.taur(this)
-        this.hpua = Common.hpua(this)
-        this.lwr = Common.lwr(this)
         this.fli = Common.fli(this)
-        this.flame = Common.flame(this)
-        this.midflame = Common.midflame(this)
-        this.phiE = Common.phiE(this)
+        this.lwr = Common.lwr(this)
         this.ros = Common.ros(this)
-        this.rxi = Common.rxi(this)
+
+        // Calculated from above
+        this.flame = Common.flame(this)
+        this.mort = Common.mort(this)
         this.scorch = Common.scorch(this)
+
+        // Required for scorch height
+        this.midflame = Common.midflame(this)
+
+        // Optional or special use case such as S&R crown fire,
+        // these are all set by FireCellModule
+        this.hpua = Common.hpua(this)
+        this.phiE = Common.phiE(this)
+        this.rxi = Common.rxi(this)
+        this.taur = Common.taur(this)
         this.weff = Common.weff(this)
         this.weffExceeded = Common.weffExceeded(this)
         this.weffLimit = Common.weffLimit(this)

@@ -8,7 +8,7 @@ export class CommonNodes {
     static fromUpslope(p) {return new DagNode(p, 'fromUpslope', U.compass, 'degrees clockwise from up-slope')}
     static taur(p) {return new DagNode(p, 'taur', U.fireTaur, 'residence time')}
     static hpua(p) {return new DagNode(p, 'hpua', U.fireHpua, 'heat per unit area')}
-    static lwr(p) {return new DagNode(p, 'lwr', U.ratio, 'length-to-width area')}
+    static lwr(p) {return new DagNode(p, 'lwr', U.ratio, 'length-to-width ratio')}
     static fli(p) {return new DagNode(p, 'fli', U.fireFli, 'fireline intensity')}
     static flame(p) {return new DagNode(p, 'flame', U.fireFlame, 'flame length')}
     static mort(p) {return new DagNode(p, 'mort', U.fraction, 'fire induced tree mortality rate')}
@@ -95,12 +95,7 @@ export class CommonNodes {
     static rosArith(p) {return new DagNode(p, 'rosArith', U.fireRos, 'arithmetic mean spread rate')}
     static rosHarm(p) {return new DagNode(p, 'rosHarm', U.fireRos, 'harmonic mean spread rate')}
 
-    static elapsed(p) {return new DagNode(p, 'elapsed', U.time, 'elapsed')}
-    static t(p) {return new DagNode(p, 't', U.time, 'elapsed time')}
-    static x(p) {return new DagNode(p, 'x', U.geocoord, 'x-coordinate')}
-    static y(p) {return new DagNode(p, 'y', U.geocoord, 'y-coordinate')}
-
-    // FuelMoisture
+    // FuelMoistureModule
     static tl1(p) {return new DagNode(p, 'tl1', U.fuelMois, '1-h time-lag')}
     static tl10(p) {return new DagNode(p, 'tl10', U.fuelMois, '10-h time-lag')}
     static tl100(p) {return new DagNode(p, 'tl100', U.fuelMois, '100-h time-lag')}
@@ -108,14 +103,51 @@ export class CommonNodes {
     static herb(p) {return new DagNode(p, 'herb', U.fuelMois, 'herbaceous')}
     static stem(p) {return new DagNode(p, 'stem', U.fuelMois, 'stem wood')}
 
-    // Terrain
+    // TerrainModule
     static aspect(p) {return new DagNode(p, 'aspect', U.compass, 'aspect')}
     static elevation(p) {return new DagNode(p, 'elevation', U.elevation, 'elevation')}
     static upslope(p) {return new DagNode(p, 'upslope', U.compass, 'upslope direction from north')}
     static slopeDegrees(p) {return new DagNode(p, 'degrees', U.compass, 'incline above horizontal')}
     static slopeRatio(p) {return new DagNode(p, 'ratio', U.ratio, 'rise-to-reach ratio')}
 
-    // Wind
+    // FireEllipseModule
+    static angle(p) {return new DagNode(p, 'angle', U.fireDist, 'angle')}
+    static angleCenter(p) {return new DagNode(p, 'center', U.fireDist, 'angle from ellipse center')}
+    static angleIgnPt(p) {return new DagNode(p, 'igntPt', U.fireDist, 'angle from ignition point')}
+    static beta6Psi(p) {return new DagNode(p, 'psi', U.compass, 'ellipse psi')}
+    static beta6PsiRos(p) {return new DagNode(p, 'psiRos', U.fireRos, 'ellipse spread rate at psi')}
+    static beta6Theta(p) {return new DagNode(p, 'theta', U.compass, 'ellipse theta')}
+    static eccentricity(p) {return new DagNode(p, 'eccentricity', U.real, 'eccentricity')}
+    static fireDistCenter(p) {return new DagNode(p, 'distCenter', U.fireDist, 'distance from center')}
+    static fireDistIgnPt(p) {return new DagNode(p, 'distIgnPt', U.fireDist, 'distance from ignition pt')}
+    
+    static fireArea(p) {return new DagNode(p, 'area', U.fuelArea, 'area')}
+    static fireDist(p) {return new DagNode(p, 'dist', U.fireDist, 'distance')}
+    static fireLength(p) {return new DagNode(p, 'length', U.fireDist, 'length')}
+    static firePerimeter(p) {return new DagNode(p, 'perimeter', U.fireDist, 'perimeter')}
+    static fireWidth(p) {return new DagNode(p, 'width', U.fireDist, 'width')}
+
+    static elapsed(p) {return new DagNode(p, 'elapsed', U.time, 'elapsed')}
+    static t(p) {return new DagNode(p, 't', U.time, 'elapsed time')}
+    static x(p) {return new DagNode(p, 'x', U.geocoord, 'x-coordinate')}
+    static y(p) {return new DagNode(p, 'y', U.geocoord, 'y-coordinate')}
+    static dx(p) {return new DagNode(p, 'dx', U.geocoord, 'delta-x')}
+    static dy(p) {return new DagNode(p, 'dy', U.geocoord, 'delta-y')}
+
+    // MapModule
+    static mapArea(p) {return new DagNode(p, 'mapArea', U.fuelArea, 'map area')}
+    static mapContours(p) {return new DagNode(p, 'contours', U.integer, 'number of contours')}
+    static mapDist(p) {return new DagNode(p, 'dist', U.mapDist, 'map distance')}
+    static mapFactor(p) {return new DagNode(p, 'factor', U.factor, 'map scale factor')}
+    static mapInterval(p) {return new DagNode(p, 'interval', U.fireDist, 'contour interval')}
+    static mapLength(p) {return new DagNode(p, 'mapLength', U.fireDist, 'map length')}
+    static mapPerimeter(p) {return new DagNode(p, 'mapPerimeter', U.fireDist, 'map perimeter')}
+    static mapReach(p) {return new DagNode(p, 'reach', U.fireDist, 'slope reach')}
+    static mapRise(p) {return new DagNode(p, 'rise', U.fireDist, 'slope rise')}
+    static mapScale(p) {return new DagNode(p, 'scale', U.mapScale, 'map scale')}
+    static mapWidth(p) {return new DagNode(p, 'mapWidth', U.fireDist, 'map width')}
+
+    // WeatherModule
     static at10m(p) {return new DagNode(p, 'at10m', U.windSpeed, 'at 10-m')}
     static at20ft(p) {return new DagNode(p, 'at20ft', U.windSpeed, 'at 20-ft')}
     static rh(p) {return new DagNode(p, 'rh', U.fraction, 'relative humidity')}

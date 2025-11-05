@@ -1,8 +1,7 @@
 import { DagModule } from './DagItems.js'
 import { CommonNodes as Common } from './CommonNodes.js'
-import { CompassEquations as Compass } from '../index.js'
 
-export class FireIgnitionModule extends DagModule {
+export class FirePointModule extends DagModule {
     /**
      * @param {DagModule} parentMod Reference to this DagItem's parent DagModule
      * @param {string} parentProp Parent's property name for this DagItem  ('slope')
@@ -12,17 +11,15 @@ export class FireIgnitionModule extends DagModule {
         super(parentMod, parentProp)
         this._meta.configs = configs
 
-        this.location = new DagModule(this, 'location')
-        this.location.x = Common.x(this)
-        this.location.y = Common.y(this)
-
-        this.time = new DagModule(this, 'time')
-        this.time.elapsed = CommonNodes.elasped(this.time)
+        this.t = Common.t(this)
+        this.x = Common.x(this)
+        this.y = Common.y(this)
     }
 
     config() {
-        this.location.x.input()
-        this.location.y.input()
+        this.t.input()
+        this.x.input()
+        this.y.input()
         return this
     }
 }
