@@ -1,3 +1,4 @@
+import { StandardFuelModels } from '../index.js'
 export class Base {
     constructor(key, value) {
         this.key = key
@@ -401,7 +402,13 @@ export class PowerOfFire extends Quantity {
 export class FuelKey extends BaseString {
     constructor(key='fuel model key', value='10') {
         super(key, value)
-        this.members = ['10', '124']
+        this.members = []
+        for(let mod of StandardFuelModels) {
+            const [num, key] = mod
+            const numkey = ''+num
+            this.members.push(key)
+            if (numkey !== key) this.members.push(numkey)
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { WfmsUseCases } from '../index.js'
+import { WfmsUseCases } from '../../index.js'
 
 const wfms = new WfmsUseCases()
 const dag = wfms.dag

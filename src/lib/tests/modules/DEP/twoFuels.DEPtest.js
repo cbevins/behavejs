@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { sig } from './matchers.js'
-import { WfmsTwoFuels } from '../index.js'
+import { WfmsTwoFuels } from '../../index.js'
 
 expect.extend({ sig })
 

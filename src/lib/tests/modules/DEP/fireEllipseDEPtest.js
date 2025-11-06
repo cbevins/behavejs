@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { sig } from './matchers.js'
-import { Wfms, WfmsFireEllipse, Util } from '../index.js'
-import { SurfaceFireEquations } from '../index.js'
+import { sig } from '../../matchers.js'
+import { Wfms, WfmsFireEllipse, Util } from '../../../index.js'
+import { SurfaceFireEquations } from '../../../index.js'
 
 expect.extend({ sig })
 

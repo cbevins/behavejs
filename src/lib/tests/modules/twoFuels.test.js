@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { value } from './matchers.js'
-import { AllModules } from './index.js'
-import * as Config from '../modules4/Configs.js'
+import { value } from '../matchers.js'
+import { AllModules } from '../index.js'
+import * as Config from '../../modules4/Configs.js'
 
 expect.extend({ value })
 
