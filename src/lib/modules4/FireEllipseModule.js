@@ -78,7 +78,7 @@ export class FireEllipseModule extends DagModule {
             // Fire perimeter stack
             sub.dist = Common.fireDist(sub) // distance from center or ignition pt
             sub.mapDist = Common.mapDist(sub)
-            sub.t = Common.elapsed(sub)
+            sub.t = Common.t(sub)
             sub.dx = Common.dx(sub)
             sub.dy = Common.dy(sub)
             sub.x = Common.x(sub)

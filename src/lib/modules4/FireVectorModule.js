@@ -22,15 +22,15 @@ export class FireVectorModule extends DagModule {
 
         this.angle.fromNorth = new DagNode(this.angle, 'fromNorth', U.compass)
         this.distance = new DagNode(this, 'distance', U.distance)
-        this.dt = new DagNode(this, 'dt', U.time, 'elapsed time')
+        this.dt = new DagNode(this, 'dt', U.fireTime, 'elapsed time')
         this.dx = new DagNode(this, 'dx', U.distance)
         this.dy = new DagNode(this, 'dy', U.distance)
         this.velocity = new DagNode(this, 'velocity', U.velocity)
 
         for(let mod of [this.beg, this.end]) {
-            mod.t = new DagNode(mod, 't', U.time)
-            mod.x = new DagNode(mod, 'x', U.geocoord)
-            mod.y = new DagNode(mod, 'y', U.geocoord)
+            mod.t = new DagNode(mod, 't', U.fireTime)
+            mod.x = new DagNode(mod, 'x', U.firePoint)
+            mod.y = new DagNode(mod, 'y', U.firePoint)
         }
     }
     

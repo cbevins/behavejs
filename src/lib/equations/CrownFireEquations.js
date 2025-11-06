@@ -208,7 +208,7 @@ export class CrownFireEquations {
   }
 
   /**
-   * Calculate the crown fire power-of-the-fire(ft+11 lb+1 ft-2 s-1).
+   * Calculate the crown fire power-of-the-fire(ft+1 lb+1 ft-2 s-1).
    *
    * @param fliActive Crown fire active fireline intensity (Btu+1 ft-1 s-1).
    * @return Rothermel's power of the fire (ft+1 lb+1 ft-2 s-1).
@@ -223,7 +223,7 @@ export class CrownFireEquations {
    * See Rothermel (1991) equations 6 & 7 (p 14).
    *
    * @param wspd20 Wind speed at 20-ft (ft+1 min-1).
-   * @param rActive Actiuve crown fire spread rate (ft+1 min-1).
+   * @param rActive Active crown fire spread rate (ft+1 min-1).
    * @return Rothermel's power of the wind (ft+1 lb+1 ft-2 s-1).
    */
   static powerOfTheWind (wspd20, rActive) {

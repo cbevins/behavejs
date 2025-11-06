@@ -127,12 +127,12 @@ export class CommonNodes {
     static firePerimeter(p) {return new DagNode(p, 'perimeter', U.fireDist, 'perimeter')}
     static fireWidth(p) {return new DagNode(p, 'width', U.fireDist, 'width')}
 
-    static elapsed(p) {return new DagNode(p, 'elapsed', U.time, 'elapsed')}
-    static t(p) {return new DagNode(p, 't', U.time, 'elapsed time')}
-    static x(p) {return new DagNode(p, 'x', U.geocoord, 'x-coordinate')}
-    static y(p) {return new DagNode(p, 'y', U.geocoord, 'y-coordinate')}
-    static dx(p) {return new DagNode(p, 'dx', U.geocoord, 'delta-x')}
-    static dy(p) {return new DagNode(p, 'dy', U.geocoord, 'delta-y')}
+    // static elapsed(p) {return new DagNode(p, 'elapsed', U.fireTime, 'elapsed')}
+    static t(p) {return new DagNode(p, 't', U.fireTime, 'elapsed time')}
+    static x(p) {return new DagNode(p, 'x', U.firePoint, 'x-coordinate')}
+    static y(p) {return new DagNode(p, 'y', U.firePoint, 'y-coordinate')}
+    static dx(p) {return new DagNode(p, 'dx', U.firePoint, 'delta-x')}
+    static dy(p) {return new DagNode(p, 'dy', U.firePoint, 'delta-y')}
 
     // MapModule
     static mapArea(p) {return new DagNode(p, 'mapArea', U.fuelArea, 'map area')}

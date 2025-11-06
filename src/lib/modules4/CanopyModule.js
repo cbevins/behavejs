@@ -13,11 +13,11 @@ export class CanopyModule extends DagModule {
         this._meta.configs = configs
 
         const crown = this.crown = new DagModule(this, 'crown')
-        crown.base   = new DagNode(crown, 'base', U.treeLeng)
+        crown.base   = new DagNode(crown, 'base', U.treeHeight)
         crown.cover  = new DagNode(crown, 'cover',U.fraction)
         crown.fill   = new DagNode(crown, 'fill', U.fraction)
-        crown.height = new DagNode(crown, 'height', U.treeLeng)
-        crown.length = new DagNode(crown, 'length', U.treeLeng)
+        crown.height = new DagNode(crown, 'height', U.treeHeight)
+        crown.length = new DagNode(crown, 'length', U.treeHeight)
         crown.ratio  = new DagNode(crown, 'ratio', U.fraction)
 
         const fuel = this.fuel = new DagModule(this, 'fuel')
