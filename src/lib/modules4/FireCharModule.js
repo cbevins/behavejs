@@ -3,8 +3,7 @@ import { CommonNodes as Common } from './CommonNodes.js'
 
 /**
  * FireCharModule defines the basic stack of fire behavior characteristic nodes.
- * It is a base class that is extended by FireCellModule, WeightedFireModule,
- * FireInputModule, FireVectorModule, etc.
+ * It is a base class that is extended by FireCellModule and WeightedFireModule,
  */
 export class FireCharModule extends DagModule {
     /**
@@ -29,7 +28,6 @@ export class FireCharModule extends DagModule {
 
         // Required for scorch height
         this.midflame = Common.midflame(this)
-
         // Optional or special use case such as S&R crown fire,
         // these are all set by FireCellModule
         this.hpua = Common.hpua(this)

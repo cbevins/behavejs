@@ -48,8 +48,10 @@ export const fuelDomain = makeConfig('fuelDomain',
 
 export const fuelDomainCrown = {...fuelDomain, key: 'fuelDomainCrown',
     options: [fuelDomain.standard], value: fuelDomain.standard}
+
 export const fuelDomainPrimary = {...fuelDomain, key: 'fuelDomainPrimary',
     prompt: 'primary fuel parameters are provided by the'}
+
 export const fuelDomainSecondary = {...fuelDomain, key: 'fuelDomainSecondary',
     prompt: 'secondary fuel parameters are provided by the'}
 

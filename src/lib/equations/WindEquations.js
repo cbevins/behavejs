@@ -21,6 +21,7 @@ export class WindEquations {
     }
 
     static windSpeedAt20ftFromMidflame (atMidflame, midflameTo20ftRatio) {
+        if (midflameTo20ftRatio <= 0) return atMidflame
         return Calc.divide(atMidflame, midflameTo20ftRatio)
     }
 

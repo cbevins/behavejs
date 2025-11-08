@@ -8,21 +8,31 @@ import { SurfaceFireEquations as SurfaceFire } from '../index.js'
 
 /**
  * FireEllipseModule provides a FireCharModule-like stack of fire behaviors
- * at a specific elapsed time and angle along the fire ellipse perimeter.
+ * at any point along the fire ellipse perimeter at a specific elapsed time
+ * and angle from either the fire ignition or current ellipse center point.
  * 
- * Vector angles may be specified from the fire head, from upslope, or from north.
+ * Vector angles may be specified as degrees clockwise from the fire head,
+ * from the upslope direction, or from north.
  * 
- * There are 7 options available.  The 'head', 'right', 'back', and 'left' options
- * have a fixed angle from the fire head (0, 90, 180, 270 degrees, respectively)
- * but the client may configure their input relative to upslope or north.
+ * There are 7 angle options available.  The 'head', 'right', 'back', and 'left' options
+ * have a fixed angle from the fire head (0, 90, 180, 270 degrees, respectively).
  * 
- * The 'beta5' option is an angle from the ellipse *ignition point*, and calculates fireline
- * intensity based upon that vector's spread rate (as per BehavePlus Version 5 and earlier)
+ * The 'psi' option calculates fire behavior at the ellipse perimeter at an angle psi
+ * from the fire's *current ellipse center* (which varies over time as the ellipse expands).
  * 
- * The 'beta6' option is also an angle from the ellipse *ignition point*, but 
- * calculates fireline intensity based upon the spread rate from the ellipse center.
+ * The 2 'beta' options calculate fire behavior at the ellipse perimeter at an angle
+ * beta from the fire's *ignition point*, (which is fixed over time).
+ * There are 2 methods of calculating fire behavior at angle beta.  While both methods
+ * calculate *spread rate* and distance from the ignition point to the perimeter
+ * point at angle 'beta', their calculations of *fireline intensity* differ.
  * 
- * The 'psi' option is an angle from the ellipse center at the elapsed time.
+ * The 'beta5' method calculates *fireline intensity* based upon the vector length from
+ * the *ignition point* to the perimeter point at angle 'beta' from the ignition point
+ * (as per BehavePlus Version 5 and earlier).
+ * 
+ * The 'beta6' method calculates *fireline intensity* based upon the vector length from
+ * the *ellipse center* to the perimeter point at angle 'a' from the ignition point
+ * (as per BehavePlus Version 6).
  * 
  * The client may request any or all of the 7 options as output.
  * But each option must have its own angle specified.
@@ -144,7 +154,7 @@ export class FireEllipseModule extends DagModule {
             } else if (configFli.value===configFli.fli) {
                 head.fli.input(configFli)
                 head.flame.use(SurfaceFire.flameLength, [head.fli], configFli)
-            }
+            } else throw new Error(`Unknown config "${configFli.key}" value "${configFli.value}"`)
             this.midflame.input()
         }
 

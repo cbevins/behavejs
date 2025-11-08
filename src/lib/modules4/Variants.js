@@ -279,6 +279,26 @@ export class TreeHeight extends Distance {
 }
 
 //------------------------------------------------------------------------------
+// Work and its specializations
+//------------------------------------------------------------------------------
+// Work is transfer of energy (work = power * time or force * distance) 
+// i.e., work is the change in energy (delta E)
+// Work is measured in Joules (J) and KwH, and BTU (1055.05 J)
+//
+// Power is work/time (or force*distance/time, or force*velocity)
+// Power is measured in Watts, where 1 W = 1 J/s (also horsepower, ft-lb/min)
+// 1 W = 1 J/s = 1 N m/s = 1 kg m2 / s3
+// 1 hp = 745.7 W
+//------------------------------------------------------------------------------
+
+export class Work extends Quantity {
+    constructor(key='work', value=0) {
+        super(key, value)
+        this.units = ['BTU', 'J', 'kWh']
+    }
+}
+
+//------------------------------------------------------------------------------
 // Heat (BTU) content and its specializations
 //------------------------------------------------------------------------------
 
@@ -385,9 +405,26 @@ export class Mass extends Quantity {
 //------------------------------------------------------------------------------
 // Power and its specializations
 //------------------------------------------------------------------------------
+// Work is transfer of energy (work = power * time or force * distance) 
+// i.e., work is the change in energy (delta E)
+// Work is measured in Joules (J) and KwH, and BTU (1055.05 J)
+//
+// Power is work/time (or force*distance/time, or force*velocity)
+// Power is measured in Watts, where 1 W = 1 J/s
+// 1 W = 1 J/s = 1 N m/s = 1 kg m2 / s3
+// 1 hp = 745.7 W
+//------------------------------------------------------------------------------
 
-// The power of the fire is the rate at which energy is released (ft lb/s),
-// and is calculated on a unit area basis, ft lb/(s ft2), which reduces to lb/ft/s
+export class Power extends Quantity {
+    constructor(key='power', value=0) {
+        super(key, value)
+        this.units = ['W', 'ft lb/min', 'hp']
+    }
+}
+
+// From Rothermel, the 'power of the fire' is the rate at which energy is released
+// (ft lb/s), and is calculated on a unit area basis, i.e., ft lb/(s ft2),
+//  which reduces to lb/ft/s
 export class PowerOfFire extends Quantity {
     constructor(key='power of the fire', value=0) {
         super(key, value)
