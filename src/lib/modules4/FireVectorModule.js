@@ -1,6 +1,5 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
-import { Calc, CompassEquations as Compass } from '../index.js'
+import { DagModule, DagNode , Units as U} from '../core.js'
+import { Calc, CompassEquations as Compass } from '../core.js'
 
 export class FireVectorModule extends DagModule {
     /**

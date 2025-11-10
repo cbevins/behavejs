@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { FireEllipseEquations as FE } from '../../index.js'
+import { FireEllipseEquations as FE } from '../../core.js'
 
 const test = it
 describe('FireEllipseEquations.js tests', () => {

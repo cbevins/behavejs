@@ -1,5 +1,4 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
 
 export class FirePointModule extends DagModule {
     /**

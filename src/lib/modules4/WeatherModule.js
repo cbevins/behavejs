@@ -1,7 +1,6 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
-import { CompassEquations as Compass } from '../index.js'
-import { WindEquations as Wind } from '../index.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
+import { CompassEquations as Compass } from '../core.js'
+import { WindEquations as Wind } from '../core.js'
 
 export class WeatherModule extends DagModule {
     /**

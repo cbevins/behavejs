@@ -1,4 +1,4 @@
-import { StandardFuelModels } from '../index.js'
+import { StandardFuelModels } from '../equations/StandardFuelModels.js'
 export class Base {
     constructor(key, value) {
         this.key = key

@@ -1,7 +1,6 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
 import { FireCharModule } from './FireCharModule.js'
-import { Calc, SurfaceFireEquations as Fire } from '../index.js'
+import { Calc, SurfaceFireEquations as Fire } from '../core.js'
 
 /**
  * Extends the FireCharModule with the weighted the results of two FireCellModules.

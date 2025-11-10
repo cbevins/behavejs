@@ -1,10 +1,9 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
+import { DagModule, CommonNodes as Common } from '../core.js'
 import { FireCharModule } from './FireCharModule.js'
 
-import { Calc, CompassEquations as Compass } from '../index.js'
-import { FuelBedEquations as Bed } from '../index.js'
-import { SurfaceFireEquations as Fire } from '../index.js'
+import { Calc, CompassEquations as Compass } from '../core.js'
+import { FuelBedEquations as Bed } from '../core.js'
+import { SurfaceFireEquations as Fire } from '../core.js'
 
 /**
  * FireCellModule extends FireCharModule by calculating the spread rate,

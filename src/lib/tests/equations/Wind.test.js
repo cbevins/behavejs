@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { WindEquations as Wind } from '../../index.js'
+import { WindEquations as Wind } from '../../core.js'
 
 const test = it
 describe('WindEquations.js tests', () => {

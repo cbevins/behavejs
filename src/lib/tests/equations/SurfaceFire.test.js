@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { SurfaceFireEquations as SF } from '../../index.js'
+import { SurfaceFireEquations as SF } from '../../core.js'
 
 const test = it
 describe('SurfaceFireEquations.js tests', () => {

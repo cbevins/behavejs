@@ -1,9 +1,8 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
 
-import { Calc, CompassEquations as Compass } from '../index.js'
-import { FireEllipseEquations as FireEllipse } from '../index.js'
-import { SurfaceFireEquations as SurfaceFire } from '../index.js'
+import { Calc, CompassEquations as Compass } from '../core.js'
+import { FireEllipseEquations as FireEllipse } from '../core.js'
+import { SurfaceFireEquations as SurfaceFire } from '../core.js'
 // import { TreeMortalityEquations as TreeMortality } from '../index.js'
 
 /**

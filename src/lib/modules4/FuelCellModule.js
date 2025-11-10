@@ -1,8 +1,6 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
-
-import { Calc, FuelElementEquations as Fuel } from '../index.js'
-import { FuelBedEquations as Bed } from '../index.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
+import { Calc, FuelElementEquations as Fuel } from '../core.js'
+import { FuelBedEquations as Bed } from '../core.js'
 
 export class FuelCellModule extends DagModule {
     /**

@@ -1,6 +1,5 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
-import { CanopyEquations as Canopy} from '../index.js'
+import { DagModule, DagNode, Units as U } from '../core.js'
+import { CanopyEquations as Canopy} from '../core.js'
 
 export class CanopyModule extends DagModule {
     /**

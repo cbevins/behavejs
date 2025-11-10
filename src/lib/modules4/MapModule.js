@@ -1,6 +1,5 @@
-import { CommonNodes as Common } from './CommonNodes.js'
-import { DagModule } from './DagItems.js'
-import { Calc, CompassEquations as Compass } from '../index.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
+import { Calc, CompassEquations as Compass } from '../core.js'
 
 export class MapModule extends DagModule {
     constructor(parentMod, parentProp) {

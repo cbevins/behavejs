@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { Calc, CompassEquations as Compass } from '../../index.js'
+import { Calc, CompassEquations as Compass } from '../../core.js'
 
 const test = it
 describe('Calc.js and CompassEquations.js tests', () => {

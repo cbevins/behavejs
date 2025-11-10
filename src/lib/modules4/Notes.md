@@ -1,3 +1,18 @@
+# Notes
+
+1 Convert Units as U usage to CommonNodes in Canopy.js, FuelModelModule.js, etc
+
+2 Create ellipse/ demo with tests
+
+3 Create fuel model table with following o help with effective wind speed estimation
+- wtg av savr
+- packing ratio, optimum, ratio
+- bulk density
+- dry reaction intensity (total, dead, live)
+- net fuel load
+- slopeK
+- wind factors
+
 # Modules
 
 Terrain--------

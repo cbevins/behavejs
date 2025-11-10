@@ -1,5 +1,4 @@
-import { Units as U } from './Units.js'
-import { DagModule, DagNode } from './DagItems.js'
+import { DagModule, DagNode, Units as U } from '../core.js'
 
 /**
  * The FuelCellModule binds to one of the 5 sets of fuel domain model parameters.

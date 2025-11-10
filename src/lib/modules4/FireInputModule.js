@@ -1,7 +1,6 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
-import { Calc, CompassEquations as Compass } from '../index.js'
-import { SurfaceFireEquations as SurfaceFire } from '../index.js'
+import { CommonNodes as Common, DagModule } from '..core.js'
+import { Calc, CompassEquations as Compass } from '../core.js'
+import { SurfaceFireEquations as SurfaceFire } from '../core.js'
 
 export class FireInputModule extends DagModule {
     constructor(parentMod, parentProp, configs, terrainMod) {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { FuelBedEquations as FB } from '../../index.js'
+import { FuelBedEquations as FB } from '../../core.js'
 
 const test = it
 describe('CalcBedEquations.js tests', () => {

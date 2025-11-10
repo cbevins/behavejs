@@ -1,8 +1,7 @@
-import { DagModule } from './DagItems.js'
-import { CommonNodes as Common } from './CommonNodes.js'
+import { CommonNodes as Common, DagModule } from '../core.js'
 import { FuelModelModule } from './FuelModelModule.js'
-import { FuelBedEquations as Bed } from '../index.js'
-import { StandardFuelModelCatalog as Catalog } from '../index.js'
+import { FuelBedEquations as Bed } from '../core.js'
+import { StandardFuelModelCatalog as Catalog } from '../core.js'
 
 /**
  * FuelModelCatalogModule provides the FuelCellModule with the required:

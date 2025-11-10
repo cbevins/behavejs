@@ -1,5 +1,5 @@
-import { Dag } from './Dag.js'
-import { DagModule, NodeMap } from './DagItems.js'
+import { Dag } from '../core.js'
+import { DagModule, NodeMap } from '../core.js'
 
 import { CanopyModule } from './CanopyModule.js'
 import { FireCellModule } from './FireCellModule.js'
