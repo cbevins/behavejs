@@ -1,6 +1,6 @@
 // Dag
 export {Dag} from './dag/Dag.js'
-export {dfsSort, kahnSort} from './dag/dagTopoSort.js'
+export {dfsSort, kahnSort} from './core/dagTopoSort.js'
 
 // Dag Node Modules
 export {Wfms} from './modules/Wfms.js'

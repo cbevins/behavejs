@@ -56,6 +56,7 @@ export class WeightedFireModule extends FireCharModule {
             this.fli.use(Math.max, [fire1.fli, fire2.fli], config)
             this.flame.use(Math.max, [fire1.flame, fire2.flame], config)
             this.hpua.use(Math.max, [fire1.hpua, fire2.hpua], config)
+            this.scorch.use(Math.max, [fire1.scorch, fire2.scorch], config)
             // Final ros
             const rosFinal = (config.value === config.harmonic) ? this.rosHarm : this.rosArith
             this.ros.bind(rosFinal, config)

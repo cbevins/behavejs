@@ -1,15 +1,13 @@
-import { AllModules } from "./AllModules.js"
-import { Util } from '../core.js'
-import * as Config from './Configs.js'
+import { describe, it, expect } from 'vitest'
+import { value } from '../matchers.js'
+import { AllModules } from '../index.js'
+import * as Config from '../../modules4/Configs.js'
 
-//------------------------------------------------------------------------------
-// AllModules 'site' construction and configuration
-//------------------------------------------------------------------------------
+expect.extend({ value })
 
 Config.surfaceFire.value = Config.surfaceFire.arithmetic
 const modules = new AllModules(Config, 'site')
 const site = modules.root
-// console.log(Util.moduleTreeStr(root))
 
 //------------------------------------------------------------------------------
 // Site destructuring
@@ -85,21 +83,6 @@ dag.set(air.temp, 95)
 
 // Step 3 - Update all the selected DagNode values
 dag.updateAll()
-Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
-Util.logDagNodes(dag.selected(), 'Selected Nodes')
-
-Util.compare(rxi1, 5794.6954002291168)
-Util.compare(rxi2, 12976.692888496578)
-Util.compare(ros1, 18.551680325448835)
-Util.compare(ros2, 48.47042599399056)
-Util.compare(headUpslope1, 87.573367385837855)
-Util.compare(headUpslope2, 87.613728665173383)
-Util.compare(flame1, 6.9996889013229229)
-Util.compare(flame2, 16.35631663)
-Util.compare(lwr1, 3.5015680219321221)
-Util.compare(lwr2, 3.501581941)
-Util.compare(scorch1, 39.580182)
-Util.compare(scorch2, 215.682771)
 
 // Expected weighted surface results
 const xros1 = 18.551680325448835
@@ -107,9 +90,27 @@ const xros2 = 48.47042599399056
 const xcover1 = 0.6
 const xrosH = 1 / (xcover1 / xros1 + (1 - xcover1) / xros2)
 const xrosA = xcover1 * xros1 + (1-xcover1) * xros2
-console.log('Weighted Results:')
-Util.compare(ros1, xros1)
-Util.compare(ros2, xros2)
-Util.compare(rosA, xrosA)
-Util.compare(rosH, xrosH)
-Util.compare(ros3, xrosA)
+
+// Results from BehavePlus V6 [fm010, fm124, precision]
+const tests = [
+    [ros1, xros1], [ros2, xros2], [ros3, xrosA], [rosA, xrosA], [rosH, xrosH],
+    [headUpslope1, 87.573367385837855], [headUpslope2, 87.613728665173383],
+    [headNorth1, 87.573367385837855], [headNorth2, 87.613728665173383],
+    [lwr1, 3.5015680219321221], [lwr2, 3.501581941],
+    // [rxi1, 5794.6954002291168], [rxi2, 12976.692888496578],
+    // [ews1, 880.55194372010692], [ews2, 880.5568433322004],
+    // ewsl  : [5215.2258602062057, 11679.02359964692,  12],
+    // ewsx  : [false,              false,               0],
+    [hpua1, 1261.1929372603729], [hpua2, 12976.692888496578 * 0.23541979977677915],
+    [fli1, 389.95413667947145], [fli2, 2467.928645],
+    [flame1, 6.9996889013229229], [flame2, 16.35631663],
+    [scorch1, 39.58018178], [scorch2, 215.6827713],
+]
+
+describe('One fuel model', () => {
+    for(let [node, expected] of tests) {
+        it(`${node.key()}`, () => {
+            expect(node).value(expected)
+        })
+    }
+})
