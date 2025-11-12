@@ -137,18 +137,26 @@ describe('Two fuel models', () => {
         })
     }
     for(let [node, expected] of test2) {
-        it(`always bound to primary fuel > ${node.key()}`, () => {
+        it(`final value is bound to primary fuel > ${node.key()}`, () => {
             expect(node).value(expected)
         })
     }
     for(let [node, expected] of test3) {
-        it(`effective wind limit is minimum and exceeded if either > ${node.key()}`, () => {
+        it(`final effective wind limit is minimum and exceeded if either > ${node.key()}`, () => {
             expect(node).value(expected)
         })
     }
     for(let [node, expected] of test4) {
-        it(`always bound to the maximum of the two fuels > ${node.key()}`, () => {
+        it(`final value is bound to the maximum of the two fuels > ${node.key()}`, () => {
             expect(node).value(expected)
         })
     }
+    it('final effective wind limit is exceeded if either is exceeded', () => {
+        dag.set(midflame1, 6000)
+        dag.updateAll()
+            expect(weffl1).value(5215.2258602062057)
+            expect(weffx1).value(true)
+            expect(weffx2).value(false)
+            expect(weffx3).value(true)
+    })
 })

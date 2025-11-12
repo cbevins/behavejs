@@ -263,7 +263,7 @@ export class Dag {
         node.dirty = Dag.dirty
         this._propagateDirtyToConsumers(node)
         let n = 0
-        console.log(this.activeDirtyCount(), 'dirty active nodes after set', node.key())
+        // console.log(this.activeDirtyCount(), 'dirty active nodes after set', node.key())
         return this
     }
 

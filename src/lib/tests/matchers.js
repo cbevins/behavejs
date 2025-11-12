@@ -14,56 +14,39 @@
  * @returns 
  */
 export const value = function (node, expected, msg = '') {
-  const received = node.value
-  console.log()
-  if (typeof expected === 'number' && typeof received === 'number') {
+  const received = (typeof node === 'object') ? node.value : node
+  if (typeof expected === 'number' && typeof received === 'number')
+    return numericValue(node.value, expected, msg)
+  else if (typeof expected === 'boolean' && typeof received === 'boolean')
+    return booleanValue(node.value, expected, msg)
+  else if (typeof expected === 'string' && typeof received === 'string') 
+    return stringValue(node.value, expected, msg)
+  throw new Error('Attempt to test value() matcher on unsupported type pairs:\n'
+    + `expected is '${typeof expected}'\n`
+    + `received is '${typeof received}'`)
+}
+// Numeric
+const numericValue = function (received, expected, msg = '') {
     const ppb = (expected === 0 ) 
       ? Math.abs(received - expected)
       : Math.abs((received - expected)/expected)
-
-    if (ppb < 0.000000001) {
-      return {
-        message: () =>
-          `${msg} difference SHOULD exceed 1 part per billion\nexpected: ${expected}\nreceived: ${received}\n`,
-        pass: true
-      }
-    } else {
-      return {
-        message: () =>
-          `${msg} difference exceeds 1 part per billion\nexpected: ${expected}\nreceived: ${received}\n`,
-        pass: false
-      }
+    return {
+      message: () =>
+        `${msg} difference exceeds 1 part per billion\nexpected: ${expected}\nreceived: ${received}\n`,
+      pass: (ppb < 0.000000001)
     }
+}
+// Boolean
+const booleanValue = function (received, expected, msg = '') {
+  return {
+    message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
+    pass: (received === expected)
   }
-  // Boolean
-  else if (typeof expected === 'boolean' && typeof received === 'boolean') {
-    if (received === expected) {
-      return {
-        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
-        pass: true
-      }
-    } else {
-      return {
-        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
-        pass: false
-      }
-    }
+}
+// String
+const stringValue = function (received, expected, msg = '') {
+  return {
+    message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
+    pass: (received === expected)
   }
-  // String
-  else if (typeof expected === 'string' && typeof received === 'string') {
-    if (received === expected) {
-      return {
-        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
-        pass: true
-      }
-    } else {
-      return {
-        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
-        pass: false
-      }
-    }
-  }
-  throw new Error('Attempt to run value() matcher on mismatched types:\n'
-    + `expected is '${typeof expected}'\n`
-    + `received is '${typeof received}'`)
 }
