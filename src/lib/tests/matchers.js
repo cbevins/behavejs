@@ -15,12 +15,13 @@
  */
 export const value = function (node, expected, msg = '') {
   const received = node.value
+  console.log()
   if (typeof expected === 'number' && typeof received === 'number') {
-    const parts = (expected === 0 ) 
+    const ppb = (expected === 0 ) 
       ? Math.abs(received - expected)
       : Math.abs((received - expected)/expected)
 
-    if (parts < 0.000000001) {
+    if (ppb < 0.000000001) {
       return {
         message: () =>
           `${msg} difference SHOULD exceed 1 part per billion\nexpected: ${expected}\nreceived: ${received}\n`,
@@ -34,5 +35,35 @@ export const value = function (node, expected, msg = '') {
       }
     }
   }
-  throw new Error('Attempt to run ppm() test on non-numerics')
+  // Boolean
+  else if (typeof expected === 'boolean' && typeof received === 'boolean') {
+    if (received === expected) {
+      return {
+        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
+        pass: true
+      }
+    } else {
+      return {
+        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
+        pass: false
+      }
+    }
+  }
+  // String
+  else if (typeof expected === 'string' && typeof received === 'string') {
+    if (received === expected) {
+      return {
+        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
+        pass: true
+      }
+    } else {
+      return {
+        message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
+        pass: false
+      }
+    }
+  }
+  throw new Error('Attempt to run value() matcher on mismatched types:\n'
+    + `expected is '${typeof expected}'\n`
+    + `received is '${typeof received}'`)
 }

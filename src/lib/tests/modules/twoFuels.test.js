@@ -100,23 +100,29 @@ const xrosA = xcover1 * xros1 + (1-xcover1) * xros2
 const xhpua2 = 12976.692888496578 * 0.23541979977677915
 
 // Results from BehavePlus V6 [fm010, fm124, precision]
-const tests = [
-    // Weighted result
-    [ros1, xros1], [ros2, xros2], [ros3, xrosA], [rosA, xrosA], [rosH, xrosH],
-    // The following 6 nodes are always bound to the primary fuel
+// Weighted result
+const test1 = [
+    [ros1, xros1], [ros2, xros2], [ros3, xrosA], [rosA, xrosA], [rosH, xrosH]
+]
+// The following 6 nodes are always bound to the primary fuel
+const test2 = [
     [headUpslope1, 87.573367385837855], [headUpslope2, 87.613728665173383], [headUpslope3, headUpslope1.value],
     [headNorth1, 87.573367385837855], [headNorth2, 87.613728665173383], [headNorth3, headNorth1.value],
     [lwr1, 3.5015680219321221], [lwr2, 3.501581941], [lwr3, lwr1.value],
     [midflame1, 880], [midflame2, 880], [midflame3, 880],
     [weff1, 880.55194372010692], [weff2, 880.5568433322004], [weff3, weff1.value],
-    [wsrf1, 1], [wsrf2, 1], [wsrf3, 1],
+    [wsrf1, 1], [wsrf2, 1], [wsrf3, 1]
+]
 
-    // The effective wind speed limit is the minimum of either
+// The effective wind speed limit is the minimum of the 2 fuels
+const test3 = [
     [weffl1, 5215.2258602062057], [weffl2, 11679.02359964692],
     // The effective wind speed limit is exceeded if EITHER are exceeded
-    //[weffx1, false], [weffx2, false], [weff3, false], // requires adding bool test to matchers
+    [weffx1, false], [weffx2, false], [weffx3, false],
+]
 
-    // The following 5 are always bound to the max of the 2 fuels
+// The following 5 are always bound to the max of the 2 fuels
+const test4 = [
     [rxi1, 5794.6954002291168], [rxi2, 12976.692888496578], [rxi3, rxi2.value],
     [hpua1, 1261.1929372603729], [hpua2, xhpua2],
     [fli1, 389.95413667947145], [fli2, 2467.928645], [fli3, fli2.value],
@@ -125,8 +131,23 @@ const tests = [
 ]
 
 describe('Two fuel models', () => {
-    for(let [node, expected] of tests) {
-        it(`${node.key()}`, () => {
+    for(let [node, expected] of test1) {
+        it(`primary, secondary, weighted, and mean ros > ${node.key()}`, () => {
+            expect(node).value(expected)
+        })
+    }
+    for(let [node, expected] of test2) {
+        it(`always bound to primary fuel > ${node.key()}`, () => {
+            expect(node).value(expected)
+        })
+    }
+    for(let [node, expected] of test3) {
+        it(`effective wind limit is minimum and exceeded if either > ${node.key()}`, () => {
+            expect(node).value(expected)
+        })
+    }
+    for(let [node, expected] of test4) {
+        it(`always bound to the maximum of the two fuels > ${node.key()}`, () => {
             expect(node).value(expected)
         })
     }
