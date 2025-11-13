@@ -21,8 +21,8 @@ export class WeightedFireModule extends FireCharModule {
         // SurfaceFireModule adds the following to FireModule
         this.cover1 = Common.cover1(this)
         this.cover2 = Common.cover2(this)
-        this.rosArith = Common.ros(this)
-        this.rosHarm  = Common.ros(this)
+        this.rosArith = Common.rosArith(this)
+        this.rosHarm  = Common.rosHarm(this)
     }
 
     config() {
@@ -47,7 +47,8 @@ export class WeightedFireModule extends FireCharModule {
             this.rosArith.bind(fire1.ros, config)
             this.rosHarm.bind(fire1.ros, config)
             this.rxi.bind(fire1.rxi, config)
-            this.weffLimit.bind(fire1.weffLimit)
+            this.scorch.bind(fire1.scorch, config)
+            this.weffLimit.bind(fire1.weffLimit, config)
         } else {
             this.cover1.input(config)
             this.cover2.use(Calc.fromOne, [this.cover1], config)
