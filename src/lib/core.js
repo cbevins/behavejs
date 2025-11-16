@@ -19,3 +19,7 @@ export {StandardFuelModelCatalog} from './equations/StandardFuelModelCatalog.js'
 export {SurfaceFireEquations} from './equations/SurfaceFireEquations.js'
 export {TreeMortalityEquations} from './equations/TreeMortalityEquations.js'
 export {WindEquations} from './equations/WindEquations.js'
+
+// Modules
+export {AllModules} from './modules4/AllModules.js'
+export * from './modules4/Configs.js'

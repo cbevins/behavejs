@@ -39,12 +39,12 @@ export const fuelCuring = makeConfig('fuelCuring',
         ['input', 'an input parameter']])
 
 export const fuelDomain = makeConfig('fuelDomain',
-        ' fuel parameters are provided by entering', [
-            ['catalog', 'a key to the catalog of Albini (1976) and Scott & Burgan (2005) "standard" fire behavior fuel models'],
-            ['custom', 'all parameters for a "custom" standard fuel model'],
-            ['chaparral', 'parameters for the Rothermel and Philpot (1973) chaparral fuel model'],
-            ['palmetto', 'parameters for the Hough and Albini (1978) palmetto-gallberry fuel model'],
-            ['aspen', 'parameters for the Brown and Simmerman (1986) western aspen fuel model']])
+    ' fuel parameters are provided by entering', [
+        ['catalog', 'a key to the catalog of Albini (1976) and Scott & Burgan (2005) "standard" fire behavior fuel models'],
+        ['custom', 'all parameters for a "custom" standard fuel model'],
+        ['chaparral', 'parameters for the Rothermel and Philpot (1973) chaparral fuel model'],
+        ['palmetto', 'parameters for the Hough and Albini (1978) palmetto-gallberry fuel model'],
+        ['aspen', 'parameters for the Brown and Simmerman (1986) western aspen fuel model']])
 
 export const fuelDomainCrown = {...fuelDomain, key: 'fuelDomainCrown',
     options: [fuelDomain.standard], value: fuelDomain.standard}
@@ -90,8 +90,7 @@ export const surfaceFire = makeConfig('surfaceFire',
         ['harmonic', 'two fuel models with a harmonic mean spread rate'],
         ['arithmetic', 'two fuel models with an arithmetic mean spread rate']])
 
-        // Replaces slope
-        
+// Replaces slope
 export const terrainAspect = makeConfig('terrainAspect',
     'terrain aspect is specified as the ', [
         ['aspect', 'down-slope direction from north'],

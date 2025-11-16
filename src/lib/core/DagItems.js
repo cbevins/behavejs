@@ -27,8 +27,10 @@ export class DagItem {
     isModule() { return ! this._meta.isNode }
     isNode() { return this._meta.isNode }
     key() { return this._meta.key }
+    label() { return this._meta.label }
     parent() { return this._meta.parent }
     prop() { return this._meta.prop }
+    setLabel(label) { this._meta.label = label; return this }
 
     // Returns an array of the module's immediate child DagItems (both modules and nodes) as [prop, node] pairs
     items() {

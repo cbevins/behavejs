@@ -19,14 +19,12 @@ const {canopy, ignition, map, moisture, surface, terrain, weather} = site
 const {ellipse, primary, secondary, weighted:wtd} = surface
 
 // 'site.surface.primary' FireCellModule destructuring
-const {model:model1, fuel:fuel1, fire:fire1} = primary
-const {catalog:catalog1} = model1
-const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = catalog1
+const fire1 = primary.fire
+const {fuelKey:fuelKey1, cured:cured1, depth:depth1} = primary.model.catalog
 
 // 'site.surface.secondary' FireCellModule destructuring
-const {model:model2, fuel:fuel2, fire:fire2} = secondary
-const {catalog:catalog2} = model2
-const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = catalog2
+const fire2 = secondary.fire
+const {fuelKey:fuelKey2, cured:cured2, depth:depth2} = secondary.model.catalog
 
 // 'site.moisture' FuelMoistureModule destructuring
 const {tl1, tl10, tl100} = moisture.dead

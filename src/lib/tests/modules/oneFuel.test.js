@@ -91,7 +91,7 @@ const tests = [
     [fire.scorch, 39.58018178],              [wtd.scorch, 39.58018178],
 ]
 
-describe('Two fuel models', () => {
+describe('One fuel model', () => {
     for(let [node, expected] of tests) {
         it(`primary and final weighted results are the same > ${node.key()}`, () => {
             expect(node).value(expected)

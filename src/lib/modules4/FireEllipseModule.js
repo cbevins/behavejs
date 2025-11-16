@@ -130,33 +130,6 @@ export class FireEllipseModule extends DagModule {
         const {fireMod, ignMod, mapMod, terrainMod, weatherMod} = this._meta.modules
         const {firelineIntensity:configFli, fireVectors:configVectors} = this._meta.configs
 
-        //----------------------------------------------------------------------
-        // The following are either bound to a FireModule or are Dag.input
-        //----------------------------------------------------------------------
-
-        if (fireMod) {
-            axis.lwr.bind(fireMod.lwr)
-            head.ros.bind(fireMod.ros)
-            head.dir.fromUpslope.bind(fireMod.dir.fromUpslope)
-            head.dir.fromNorth.bind(fireMod.dir.fromNorth)
-            head.flame.bind(fireMod.flame)
-            head.fli.use(SurfaceFire.firelineIntensityFromFlameLength, [head.flame])
-            this.midflame.bind(fireMod.midflame)
-        } else {
-            axis.lwr.input()
-            head.ros.input()
-            head.dir.fromUpslope.input()
-            head.dir.fromNorth.input()
-            if(configFli.value===configFli.flame) {
-                head.flame.input(configFli)
-                head.fli.use(SurfaceFire.firelineIntensityFromFlameLength, [this.flame], configFli)
-            } else if (configFli.value===configFli.fli) {
-                head.fli.input(configFli)
-                head.flame.use(SurfaceFire.flameLength, [head.fli], configFli)
-            } else throw new Error(`Unknown config "${configFli.key}" value "${configFli.value}"`)
-            this.midflame.input()
-        }
-
         this.t.bind(ignMod.t)
         this.x.bind(ignMod.x)
         this.y.bind(ignMod.y)
@@ -194,6 +167,34 @@ export class FireEllipseModule extends DagModule {
         this.back.dir.fromHead.constant(180)
         this.right.dir.fromHead.constant(90)
         this.left.dir.fromHead.constant(270)
+
+        //----------------------------------------------------------------------
+        // The following are either bound to a FireModule or are Dag.input
+        // NOTE: head.dir.{fromNorth|fromUpslope} configs are overwritten from above
+        //----------------------------------------------------------------------
+
+        if (fireMod) {
+            axis.lwr.bind(fireMod.lwr)
+            head.ros.bind(fireMod.ros)
+            head.dir.fromUpslope.bind(fireMod.dir.fromUpslope)
+            head.dir.fromNorth.bind(fireMod.dir.fromNorth)
+            head.flame.bind(fireMod.flame)
+            head.fli.use(SurfaceFire.firelineIntensityFromFlameLength, [head.flame])
+            this.midflame.bind(fireMod.midflame)
+        } else {
+            axis.lwr.input()
+            head.ros.input()
+            head.dir.fromUpslope.input()
+            head.dir.fromNorth.input()
+            if(configFli.value===configFli.flame) {
+                head.flame.input(configFli)
+                head.fli.use(SurfaceFire.firelineIntensityFromFlameLength, [this.flame], configFli)
+            } else if (configFli.value===configFli.fli) {
+                head.fli.input(configFli)
+                head.flame.use(SurfaceFire.flameLength, [head.fli], configFli)
+            } else throw new Error(`Unknown config "${configFli.key}" value "${configFli.value}"`)
+            this.midflame.input()
+        }
 
         // FireEllipse
         axis.eccentricity.use(FireEllipse.eccentricity, [axis.lwr])
