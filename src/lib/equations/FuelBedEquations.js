@@ -17,6 +17,12 @@ export class FuelBedEquations {
         return Calc.divide(totalOvendryLoad, bedDepth)
     }
 
+    /**
+     * Curing herb fraction is 1 at moisture content of 0.3,
+     * and is 0.001 at moisture content of 1.20
+     * @param {float} liveHerbMc (fraction)
+     * @returns Fraction of cured herb
+     */
     static curedHerbFraction (liveHerbMc) {
         const fraction = 1.333 - 1.11 * liveHerbMc
         return Calc.fraction(fraction)
