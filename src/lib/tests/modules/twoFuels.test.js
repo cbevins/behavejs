@@ -51,6 +51,8 @@ for(let mod of [fire1, fire2, wtd]) {
         mod.hpua, mod.lwr, mod.midflame, mod.rxi, mod.scorch,
         mod.weff, mod.weffLimit, mod.weffExceeded, mod.wsrf)
 }
+const {head} = ellipse
+dag.select(head.ros)
 dag.select(wtd.rosArith, wtd.rosHarm)
 
 // Step 2 - display (optional) and set input DagNode values

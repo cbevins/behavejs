@@ -92,6 +92,13 @@ export class Dag {
         return [...results]
     }
     allPossibleInputsByKey() { return this.allPossibleInputs().sort((a, b) => a.key.localeCompare(b.key))}
+    
+    dirtyNodes() {
+        const dirty = []
+        for(let node of this.nodeMap.values())
+            if (node.status !== Dag.ignored && node.dirty === Dag.dirty) dirty.push(node)
+        return dirty
+    }
 
     leafNodes() {
         const active = []

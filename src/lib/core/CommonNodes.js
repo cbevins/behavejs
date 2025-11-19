@@ -121,11 +121,11 @@ export class CommonNodes {
     static fireDistCenter(p) {return new DagNode(p, 'distCenter', U.fireDist, 'distance from center')}
     static fireDistIgnPt(p) {return new DagNode(p, 'distIgnPt', U.fireDist, 'distance from ignition pt')}
     
-    static fireArea(p) {return new DagNode(p, 'area', U.fuelArea, 'area')}
-    static fireDist(p) {return new DagNode(p, 'dist', U.fireDist, 'distance')}
-    static fireLength(p) {return new DagNode(p, 'length', U.fireDist, 'length')}
-    static firePerimeter(p) {return new DagNode(p, 'perimeter', U.fireDist, 'perimeter')}
-    static fireWidth(p) {return new DagNode(p, 'width', U.fireDist, 'width')}
+    static fireArea(p) {return new DagNode(p, 'area', U.fuelArea, 'fire area')}
+    static fireDist(p) {return new DagNode(p, 'fireDist', U.fireDist, 'fire distance')}
+    static fireLength(p) {return new DagNode(p, 'length', U.fireDist, 'fire length')}
+    static firePerimeter(p) {return new DagNode(p, 'perimeter', U.fireDist, 'fire perimeter')}
+    static fireWidth(p) {return new DagNode(p, 'width', U.fireDist, 'fire width')}
 
     // static elapsed(p) {return new DagNode(p, 'elapsed', U.fireTime, 'elapsed')}
     static t(p) {return new DagNode(p, 't', U.fireTime, 'elapsed time')}
@@ -137,7 +137,7 @@ export class CommonNodes {
     // MapModule
     static mapArea(p) {return new DagNode(p, 'mapArea', U.fuelArea, 'map area')}
     static mapContours(p) {return new DagNode(p, 'contours', U.integer, 'number of contours')}
-    static mapDist(p) {return new DagNode(p, 'dist', U.mapDist, 'map distance')}
+    static mapDist(p) {return new DagNode(p, 'mapDist', U.mapDist, 'map distance')}
     static mapFactor(p) {return new DagNode(p, 'factor', U.factor, 'map scale factor')}
     static mapInterval(p) {return new DagNode(p, 'interval', U.fireDist, 'contour interval')}
     static mapLength(p) {return new DagNode(p, 'mapLength', U.fireDist, 'map length')}

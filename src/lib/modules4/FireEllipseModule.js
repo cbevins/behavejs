@@ -85,7 +85,7 @@ export class FireEllipseModule extends DagModule {
             sub.ros = Common.ros(sub)
             sub.scorch = Common.scorch(sub)
             // Fire perimeter stack
-            sub.dist = Common.fireDist(sub) // distance from center or ignition pt
+            sub.fireDist = Common.fireDist(sub) // distance from center or ignition pt
             sub.mapDist = Common.mapDist(sub)
             sub.t = Common.t(sub)
             sub.dx = Common.dx(sub)
@@ -226,8 +226,8 @@ export class FireEllipseModule extends DagModule {
 
         // All 7 vectors share the following computation equations and parameters
         for(let node of [head, back, right, left, beta5, beta6, psi]) {
-            node.dist.use(FireEllipse.spreadDistance, [node.ros, ignMod.t])
-            node.mapDist.use(Calc.divide, [node.dist, mapMod.scale])
+            node.fireDist.use(FireEllipse.spreadDistance, [node.ros, ignMod.t])
+            node.mapDist.use(Calc.divide, [node.fireDist, mapMod.scale])
             node.scorch.use(SurfaceFire.scorchHeight, [node.fli, this.midflame, this.temp])
             // node.mortality.use(TreeMortality.mortalityRate, [
             //     canopyMod.tree.species.fofem6.code, canopyMod.tree.dbh,

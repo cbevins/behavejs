@@ -1,5 +1,6 @@
 import { AllModules, Util } from "../core.js"
 import * as Config from '../core.js'
+console.log('Lists surface.primary, surface.weighted, and surface.ellipse common inputs')
 
 //------------------------------------------------------------------------------
 // AllModules 'site' construction and configuration
@@ -67,15 +68,4 @@ dag.updateAll()
 Util.logDagNodes(dag.activeInputs(), 'Active Input Nodes')
 Util.logDagNodes(dag.selected(), 'Selected Nodes')
 
-// Util.compare(rxi1, 5794.6954002291168)
-// Util.compare(rxi2, 12976.692888496578)
-// Util.compare(ros1, 18.551680325448835)
-// Util.compare(ros2, 48.47042599399056)
-// Util.compare(headUpslope1, 87.573367385837855)
-// Util.compare(headUpslope2, 87.613728665173383)
-// Util.compare(flame1, 6.9996889013229229)
-// Util.compare(flame2, 16.35631663)
-// Util.compare(lwr1, 3.5015680219321221)
-// Util.compare(lwr2, 3.501581941)
-// Util.compare(scorch1, 39.580182)
-// Util.compare(scorch2, 215.682771)
+console.log(Util.moduleTreeStr(ellipse))

@@ -65,6 +65,11 @@ export const fuelMoistureLive = makeConfig('fuelMoistureLive',
         ['element', 'individually for the 1-h, 10-h, and 100-h time-lag fuels'],
         ['category', 'collectively for the dead category as a whole']])
 
+export const ellipseLengthWidthRatio = makeConfig('ellispeLengthWidthRatio',
+    'fire ellipse length-to-width ratio is', [
+        ['input', 'entered as an input parameter'],
+        ['effwind', 'calculated from effective wind speed']])
+
 export const midflameWindSpeed = makeConfig('midflameWindSpeed',
     'midflame wind speed is', [
         ['input', 'entered as an input parameter'],
@@ -112,4 +117,3 @@ export const windSpeed = makeConfig('windSpeed',
     'the open wind speed is measured at', [
         ['at20ft', '20-ft height'],
         ['at10m', '10-m height]']])
-

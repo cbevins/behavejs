@@ -25,12 +25,11 @@ export class FuelModelModule extends DagModule {
     constructor(parentMod, parentProp, configs=null) {
         super(parentMod, parentProp)
         this.depth = new DagNode(this, 'depth', U.fuelDepth)
-        this.dead = new DagModule(this, 'dead')
-        this.live = new DagModule(this, 'live')
         for(let life of ['dead', 'live']) {
+            const lcat = this[life] = new DagModule(this, life)
             for(let i=1; i<=5; i++) {
                 const prop = 'element'+i
-                const el = this[life][prop] = new DagModule(this, prop)
+                const el = lcat[prop] = new DagModule(lcat, prop)
                 el.life = new DagNode(el, 'life', U.fuelType).constant(life)
                 el.type = new DagNode(el, 'type', U.fuelType)
                 el.load = new DagNode(el, 'load', U.fuelLoad)
