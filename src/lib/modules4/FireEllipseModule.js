@@ -139,7 +139,7 @@ export class FireEllipseModule extends DagModule {
         // Fire spread vectors from ignition point or ellipse center
         //----------------------------------------------------------------------
         
-        for(let sub of ['head', 'back', 'right', 'left', 'beta5', 'beta6', 'psi']) {
+        for(let sub of ['head', 'beta5', 'beta6', 'psi']) {
             const vector = this[sub]
             if (configVectors.value === configVectors.fromNorth) {
                 vector.dir.fromHead.use(Compass.compassDiff, [
@@ -164,9 +164,18 @@ export class FireEllipseModule extends DagModule {
             }
         }
         this.head.dir.fromHead.constant(0)
+
         this.back.dir.fromHead.constant(180)
+        this.back.dir.fromNorth.use(Compass.compassOpposite, [this.head.dir.fromNorth])
+        this.back.dir.fromUpslope.use(Compass.compassOpposite, [this.head.dir.fromUpslope])
+
         this.right.dir.fromHead.constant(90)
+        this.right.dir.fromNorth.use(Compass.compass90, [this.head.dir.fromNorth])
+        this.right.dir.fromUpslope.use(Compass.compass90, [this.head.dir.fromUpslope])
+        
         this.left.dir.fromHead.constant(270)
+        this.left.dir.fromNorth.use(Compass.compass270, [this.head.dir.fromNorth])
+        this.left.dir.fromUpslope.use(Compass.compass270, [this.head.dir.fromUpslope])
 
         //----------------------------------------------------------------------
         // The following are either bound to a FireModule or are Dag.input

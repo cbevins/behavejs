@@ -33,35 +33,60 @@ const {herb, stem} = moisture.live
 //------------------------------------------------------------------------------
 
 const dag = modules.dag
-dag.select(beta, bulk, depth, savr, rxvo, xi,
-    dead.drxi, live.drxi, dead.etas, live.etas,
-    dead.etam, live.etam, qig, cured)
-dag.set(tl1, 0.05)
-dag.set(tl10, 0.07)
-dag.set(tl100, 0.09)
-dag.set(stem, 1.5)
 
-const herbmc = [1.21, 0.3]
-for(let fmod of StandardFuelModels) {
-    const fm = fmod[1]
-    dag.set(fuelKey, fm)
-    console.log(fuelKey.value)
-    for(let node of [savr, beta, bulk, rxvo, xi,
+function curingMoistureImpact() {
+    dag.select(beta, bulk, depth, savr, rxvo, xi,
         dead.drxi, live.drxi, dead.etas, live.etas,
-        // these *should* be different
-        cured, dead.etam, live.etam, qig]) {
-        const result = []
-        for (let i=0; i<2; i++) {
-            dag.set(herb, herbmc[i])
-            dag.set(tl1, 0.05 + i*0.05)
-            dag.set(tl10, 0.07 + i*0.05)
-            dag.set(tl100, 0.09 + i*0.05)
-            dag.set(stem, 1.5 + i*0.5)
-            dag.updateAll()
-            result.push(node.value)
+        dead.etam, live.etam, qig, cured)
+    dag.set(tl1, 0.05)
+    dag.set(tl10, 0.07)
+    dag.set(tl100, 0.09)
+    dag.set(stem, 1.5)
+
+    const herbmc = [1.21, 0.3]
+    for(let fmod of StandardFuelModels) {
+        const fm = fmod[1]
+        dag.set(fuelKey, fm)
+        console.log(fuelKey.value)
+        for(let node of [savr, beta, bulk, rxvo, xi,
+            dead.drxi, live.drxi, dead.etas, live.etas,
+            // these *should* be different
+            cured, dead.etam, live.etam, qig]) {
+            const result = []
+            for (let i=0; i<2; i++) {
+                dag.set(herb, herbmc[i])
+                dag.set(tl1, 0.05 + i*0.05)
+                dag.set(tl10, 0.07 + i*0.05)
+                dag.set(tl100, 0.09 + i*0.05)
+                dag.set(stem, 1.5 + i*0.5)
+                dag.updateAll()
+                result.push(node.value)
+            }
+            result[2] = result[0] - result[1]
+            console.log('    ', node.key(), result)
+            // if (result[2] !== 0) throw Error(`Curing level has impact on ${node.key()}`)
         }
-        result[2] = result[0] - result[1]
-        console.log('    ', node.key(), result)
-        // if (result[2] !== 0) throw Error(`Curing level has impact on ${node.key()}`)
     }
 }
+
+function savrValues() {
+    dag.select(savr, beta)
+    let minBeta = 9999
+    let maxBeta = 0
+    let minSavr = 9999
+    let maxSavr = 0
+    for(let fmod of StandardFuelModels) {
+        const fm = fmod[1]
+        dag.set(fuelKey, fm)
+        dag.updateAll()
+        console.log(fm, savr.value, beta.value)
+        if (beta.value > 0 && beta.value < minBeta) minBeta = beta.value
+        if (beta.value > maxBeta) maxBeta = beta.value
+        if (savr.value > 0 && savr.value < minSavr) minSavr = savr.value
+        if (savr.value > maxSavr) maxSavr = savr.value
+    }
+    console.log('SAVR range', minSavr, maxSavr)
+    console.log('Beta range', minBeta, maxBeta)
+}
+curingMoistureImpact()
+savrValues()

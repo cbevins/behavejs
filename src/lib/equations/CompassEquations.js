@@ -46,6 +46,12 @@ export class CompassEquations {
   static compassOpposite (degrees) {
     return CompassEquations.compassConstrain(degrees - 180)
   }
+  static compass90 (degrees) {
+    return CompassEquations.compassConstrain(degrees + 90)
+  }
+  static compass270 (degrees) {
+    return CompassEquations.compassConstrain(degrees + 270)
+  }
 
   /**
    * Calculate the radians of the compass azimuth (clockwise from north).

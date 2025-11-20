@@ -13,16 +13,16 @@
  * @param {string} msg Additional message on failure
  * @returns 
  */
-export const value = function (recvd, expected, msg = '') {
+export const value = function (recvd, expected, msg='', diffParts=1.0e-9) {
   let received = recvd
   if (typeof recvd === 'object' && recvd.constructor.name==='DagNode') {
     received = recvd.value
-    msg = `DagNode ${recvd.key()}: ${msg}`
+    msg = `DagNode ${recvd.key()}:${msg}`
   }
 
   // console.log(node.constructor.name, node.key())
   if (typeof expected === 'number' && typeof received === 'number')
-    return numericValue(received, expected, msg)
+    return numericValue(received, expected, msg, diffParts)
 
   else if (typeof expected === 'boolean' && typeof received === 'boolean')
     return booleanValue(received, expected, msg)
@@ -36,19 +36,19 @@ export const value = function (recvd, expected, msg = '') {
 }
 
 // Numeric
-const numericValue = function (received, expected, msg = '') {
+const numericValue = function (received, expected, msg='', diffParts=1.0e-9) {
     const ppb = (expected === 0 ) 
       ? Math.abs(received - expected)
       : Math.abs((received - expected)/expected)
     return {
       message: () =>
-        `${msg} difference exceeds 1 part per billion\nexpected: ${expected}\nreceived: ${received}\n`,
-      pass: (ppb < 0.000000001)
+        `${msg} value differs by more than 1 part per ${(1/diffParts).toFixed(0)}\nexpected value = ${expected}\nDagNode.value  = ${received}\n`,
+      pass: (ppb < diffParts)
     }
 }
 
 // Boolean
-const booleanValue = function (received, expected, msg = '') {
+const booleanValue = function (received, expected, msg) {
   return {
     message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
     pass: (received === expected)
@@ -56,7 +56,7 @@ const booleanValue = function (received, expected, msg = '') {
 }
 
 // String
-const stringValue = function (received, expected, msg = '') {
+const stringValue = function (received, expected, msg) {
   return {
     message: () => `${msg} expected: ${expected}\nreceived: ${received}\n`,
     pass: (received === expected)
