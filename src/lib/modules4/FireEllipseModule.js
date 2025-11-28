@@ -69,9 +69,9 @@ export class FireEllipseModule extends DagModule {
         const {axis, back, beta5, beta6, head, left, map, psi, right, size} = this
 
         // Add better labels for some of the modules
-        beta5._meta.label = 'ignition point v5'
-        beta6._meta.label = 'ignition point v6'
-        psi._meta.label = 'ellipse center'
+        beta5._meta.label = 'angle from ignition point v5'
+        beta6._meta.label = 'angle from ignition point v6'
+        psi._meta.label   = 'angle from ellipse center'
 
         // Create common fire point and characteristics nodes for the 7 fire ellipse angles
         for(let sub of [head, back, left, right, beta5, beta6, psi]) {
@@ -172,7 +172,7 @@ export class FireEllipseModule extends DagModule {
         this.right.dir.fromHead.constant(90)
         this.right.dir.fromNorth.use(Compass.compass90, [this.head.dir.fromNorth])
         this.right.dir.fromUpslope.use(Compass.compass90, [this.head.dir.fromUpslope])
-        
+
         this.left.dir.fromHead.constant(270)
         this.left.dir.fromNorth.use(Compass.compass270, [this.head.dir.fromNorth])
         this.left.dir.fromUpslope.use(Compass.compass270, [this.head.dir.fromUpslope])

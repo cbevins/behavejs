@@ -249,6 +249,15 @@ export class FireEllipseEquations {
     return rate * time
   }
 
+  /**
+   * 
+   * @param {*} betaHead 
+   * @param {*} rosF Catchpole & Alexander's 'a', half the major axis' ros
+   * @param {*} rosG Catchpole & Alexander's 'c', "speed at which the center of the fire is moving downwind",
+   *  (or equivaltently, c = rosMajor - rosA - rosBack)
+   * @param {*} rosH Catchpole & Alexander's 'b' half the minor axis' ros
+   * @returns 
+   */
   static thetaFromBeta (betaHead, rosF, rosG, rosH) {
     if (rosF <= 0 || rosH <= 0) {
       return 0
