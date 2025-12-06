@@ -250,8 +250,10 @@ export class FireEllipseEquations {
   }
 
   /**
-   * 
-   * @param {*} betaHead 
+   * Given the polar angle 'beta' from the fire ignition point to any point on the perimeter,
+   * this function determines the angle 'theta' from the fire ellipse center to that point.
+   * This is Catchpole et.al. (1982) Equation 5.
+   * @param {*} betaHead Beta angle
    * @param {*} rosF Catchpole & Alexander's 'a', half the major axis' ros
    * @param {*} rosG Catchpole & Alexander's 'c', "speed at which the center of the fire is moving downwind",
    *  (or equivaltently, c = rosMajor - rosA - rosBack)
