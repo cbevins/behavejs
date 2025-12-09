@@ -223,31 +223,31 @@ export class FireEllipseEquations {
    *
    *  @return The fire spread rate along the specified vector (ft+1 min-1).
    */
-  static psiSpreadRate (psiHead, rosF, rosG, rosH) {
-    let rosPsi = 0
-    if (rosF * rosG * rosH > 0) {
-      const radians = Compass.compassRadiansFromDegrees(psiHead)
-      const cosPsi = Math.cos(radians)
-      const cos2Psi = cosPsi * cosPsi
-      const sin2Psi = 1 - cos2Psi
-      const term1 = rosG * cosPsi
-      const term2 = rosF * rosF * cos2Psi
-      const term3 = rosH * rosH * sin2Psi
-      rosPsi = term1 + Math.sqrt(term2 + term3)
+    static psiSpreadRate (psiHead, rosF, rosG, rosH) {
+        let rosPsi = 0
+        if (rosF * rosG * rosH > 0) {
+            const radians = Compass.compassRadiansFromDegrees(psiHead)
+            const cosPsi = Math.cos(radians)
+            const cos2Psi = cosPsi * cosPsi
+            const sin2Psi = 1 - cos2Psi
+            const term1 = rosG * cosPsi
+            const term2 = rosF * rosF * cos2Psi
+            const term3 = rosH * rosH * sin2Psi
+            rosPsi = term1 + Math.sqrt(term2 + term3)
+        }
+        return rosPsi
     }
-    return rosPsi
-  }
 
-  /**
-   * Calculate the distance given the velocity and elapsed time.
-   *
-   * @param rate Velocity
-   * @param time Elapsed time
-   * @return Distance traveled
-   */
-  static spreadDistance (rate, time) {
-    return rate * time
-  }
+    /**
+     * Calculate the distance given the velocity and elapsed time.
+     *
+     * @param rate Velocity
+     * @param time Elapsed time
+     * @return Distance traveled
+     */
+    static spreadDistance (rate, time) {
+        return rate * time
+    }
 
   /**
    * Given the polar angle 'beta' from the fire ignition point to any point on the perimeter,
@@ -260,84 +260,81 @@ export class FireEllipseEquations {
    * @param {*} rosH Catchpole & Alexander's 'b' half the minor axis' ros
    * @returns 
    */
-  static thetaFromBeta (betaHead, rosF, rosG, rosH) {
-    if (rosF <= 0 || rosH <= 0) {
-      return 0
+    static thetaFromBeta (betaHead, rosF, rosG, rosH) {
+        if (rosF <= 0 || rosH <= 0) return 0
+        const betaRadians = Compass.compassRadiansFromDegrees(betaHead)
+        const cosBeta = Math.cos(betaRadians)
+        const cos2Beta = cosBeta * cosBeta
+        const sin2Beta = 1 - cos2Beta
+        const f2 = rosF * rosF
+        const g2 = rosG * rosG
+        const h2 = rosH * rosH
+        const term = Math.sqrt(h2 * cos2Beta + (f2 - g2) * sin2Beta)
+        const num = rosH * cosBeta * term - rosF * rosG * sin2Beta
+        const denom = h2 * cos2Beta + f2 * sin2Beta
+        const cosThetaRadians = num / denom
+        let thetaRadians = Math.acos(cosThetaRadians)
+        // Quadrant adjustment
+        if (betaRadians < Math.PI) {
+            // nothing to adjust
+        } else if (betaRadians >= Math.PI) {
+            thetaRadians = 2 * Math.PI - thetaRadians
+        }
+        // Convert theta radians to degrees
+        let thetaHead = Compass.compassDegreesFromRadians(thetaRadians)
+        if (betaHead > 180) {
+            thetaHead = 360 - thetaHead
+        }
+        return thetaHead
     }
-    const betaRadians = Compass.compassRadiansFromDegrees(betaHead)
-    const cosBeta = Math.cos(betaRadians)
-    const cos2Beta = cosBeta * cosBeta
-    const sin2Beta = 1 - cos2Beta
-    const f2 = rosF * rosF
-    const g2 = rosG * rosG
-    const h2 = rosH * rosH
-    const term = Math.sqrt(h2 * cos2Beta + (f2 - g2) * sin2Beta)
-    const num = rosH * cosBeta * term - rosF * rosG * sin2Beta
-    const denom = h2 * cos2Beta + f2 * sin2Beta
-    const cosThetaRadians = num / denom
-    let thetaRadians = Math.acos(cosThetaRadians)
-    // Quadrant adjustment
-    if (betaRadians < Math.PI) {
-      // nothing to adjust
-    } else if (betaRadians >= Math.PI) {
-      thetaRadians = 2 * Math.PI - thetaRadians
-    }
-    // Convert theta radians to degrees
-    let thetaHead = Compass.compassDegreesFromRadians(thetaRadians)
-    if (betaHead > 180) {
-      thetaHead = 360 - thetaHead
-    }
-    return thetaHead
-  }
 
-// //--------------------------------------------------------------------------
-// /** \brief Updates beta wrt head from theta.
-//  *
-//  * Calculate the degrees from the fire ignition point given the degrees
-//  * from the ellipse center and some ellipse paramaters.
-//  *
-//  * @param theta Azimuth from the ellipse center wrt the fire head
-//  * @param rosF spread rate at F
-//  * @param rosG spread rate at G
-//  * @param rosH spread rate at H
-//  * @returns The azimuth from the fire ignition point.
-//  */
-// static betaFromTheta( theta, rosF, rosG, rosH) {
-//   const thetaRadians = Compass.compassRadiansFromDegrees(theta)
-//   const num = rosH * Math.sin( thetaRadians)
-//   const denom = rosG + rosF* Math.cos(thetaRadians)
-//   let betaRadians = ( denom <= 0 ) ? 0 : Math.atan( num / denom )
-//   // Quandrant adjustment
-//   const boundary1 = 150
-//   const boundary2 = 210
-//   if (theta <= boundary1) {
-//     // no adjustment required
-//   } else if (theta > boundary1 && theta <= boundary2) {
-//     betaRadians += Math.PI
-//   } else if (theta > boundary2) {
-//     betaRadians += 2.0 * Math.PI
-//   }
-//   // Convert beta radians to degrees
-//   return Compass.compassDegreesFromRadians(betaRadians)
-// }
+    //--------------------------------------------------------------------------
+    /** \brief Updates beta wrt head from theta.
+     *
+     * Calculate the degrees from the fire ignition point given the degrees
+     * from the ellipse center and some ellipse paramaters.
+     *
+     * @param theta Azimuth from the ellipse center wrt the fire head
+     * @param rosF spread rate at F
+     * @param rosG spread rate at G
+     * @param rosH spread rate at H
+     * @returns The azimuth from the fire ignition point.
+     */
+    static betaFromTheta( theta, rosF, rosG, rosH) {
+        const thetaRadians = Compass.compassRadiansFromDegrees(theta)
+        const num = rosH * Math.sin( thetaRadians)
+        const denom = rosG + rosF* Math.cos(thetaRadians)
+        let betaRadians = ( denom <= 0 ) ? 0 : Math.atan( num / denom )
+        // Quandrant adjustment
+        const boundary1 = 150
+        const boundary2 = 210
+        if (theta <= boundary1) {
+            // no adjustment required
+        } else if (theta > boundary1 && theta <= boundary2) {
+            betaRadians += Math.PI
+        } else if (theta > boundary2) {
+            betaRadians += 2.0 * Math.PI
+        }
+        // Convert beta radians to degrees
+        return Compass.compassDegreesFromRadians(betaRadians)
+    }
 
-// static thetaFromPsi( psiHead, rosF, rosH ) {
-//   if ( rosF <= 0 ) {
-//     return 0.0
-//   }
-//   const tanThetaRadians = Math.tan( psiHead ) * rosH / rosF
-//   let thetaRadians = Math.atan( tanThetaRadians )
-//   // Quadrant adjustment
-//   if ( psiRadians <= 0.5 * Math.PI ) {
-//     // no adjustment
-//   } else if ( psiRadians > 0.5 * Math.PI && psiRadians <= 1.5 * Math.PI ) {
-//     thetaRadians += Math.PI
-//   } else if ( psiRadians > 1.5 * Math.PI ) {
-//     thetaRadians += 2 * Math.PI
-//   }
-//   //thetaRadians += ( thetaRadians < 0. || psiradians > pi ) ? pi : 0.
-//   // Convert theta radians to degrees
-//   thetaDegrees = Compass.compassDegreesFromRadians( thetaRadians )
-//   return thetaRadians
-// }
+    static thetaFromPsi( psiHead, rosF, rosH ) {
+        if ( rosF <= 0 ) return 0.0
+        const psiRadians = Compass.compassRadiansFromDegrees(psiHead)
+        let tanThetaRadians = Math.tan(psiRadians) * rosH / rosF
+        let thetaRadians = Math.atan( tanThetaRadians )
+        // Quadrant adjustment
+        if ( psiRadians <= 0.5 * Math.PI ) {
+            // no adjustment
+        } else if ( psiRadians > 0.5 * Math.PI && psiRadians <= 1.5 * Math.PI ) {
+            thetaRadians += Math.PI
+        } else if ( psiRadians > 1.5 * Math.PI ) {
+            thetaRadians += 2 * Math.PI
+        }
+        //thetaRadians += ( thetaRadians < 0. || psiradians > pi ) ? pi : 0.
+        // Convert theta radians to degrees
+        const thetaDegrees = Compass.compassDegreesFromRadians( thetaRadians )
+        return thetaDegrees
+    }
 }
