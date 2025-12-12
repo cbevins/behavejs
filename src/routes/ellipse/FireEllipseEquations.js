@@ -21,81 +21,56 @@ export function radians(degrees) {return degrees * Math.PI / 180 }
  *  between the fire heading vector and some point on the fire ellipse perimeter
  * Note that the backing spread rate 'c' = f - g
  */
-export class FireEllipse {
+export class FireEllipseEquations {
 
     //--------------------------------------------------------------------------
     // Ellipse shape functions
     //--------------------------------------------------------------------------
 
+    static distance(rate, time) { return rate * time }
+    
     static eccent(lwr) { return Math.sqrt(lwr * lwr - 1) / lwr }
 
     // BehavePlus method
-    static backRos(headRos, lwr) {
-        const eccent = FireEllipse.eccent(lwr)
+    static _backRos(headRos, lwr) {
+        const eccent = FireEllipseEquations.eccent(lwr)
         return headRos * (1 - eccent) / (1 + eccent)
     }
+    static backRos(headRos, eccent) { return headRos * (1 - eccent) / (1 + eccent) }
     
-    static majorRos(headRos, lwr) {
-        return headRos + FireEllipse.backRos(headRos, lwr)
-    }
+    static majorRos(headRos, backRos) { return headRos + backRos }
+    static _majorRos(headRos, lwr) { return headRos + FireEllipseEquations.backRos(headRos, lwr) }
 
-    static minorRos(headRos, lwr) {
-        return FireEllipse.majorRos(headRos, lwr) / lwr
-    }
+    static minorRos(majorRos, lwr) { return majorRos / lwr }
+    static _minorRos(headRos, lwr) { return FireEllipseEquations.majorRos(headRos, lwr) / lwr }
 
-    static fRos(headRos, lwr) {
-        return 0.5 * FireEllipse.majorRos(headRos, lwr)
-    }
+    static fRos(majorRos) { return 0.5 * majorRos }
+    static _fRos(headRos, lwr) { return 0.5 * FireEllipseEquations.majorRos(headRos, lwr) }
 
-    static hRos(headRos, lwr) {
-        return 0.5 * FireEllipse.minorRos(headRos, lwr)
-    }
+    static hRos(minorRos) { return 0.5 * minorRos }
+    static _hRos(headRos, lwr) { return 0.5 * FireEllipseEquations.minorRos(headRos, lwr) }
 
-    static gRos(headRos, lwr) {
-        return FireEllipse.fRos(headRos, lwr) - FireEllipse.backRos(headRos, lwr)
-    }
+    static gRos(fRos, backRos) { return fRos - backRos }
+    static _gRos(headRos, lwr) { return FireEllipseEquations.fRos(headRos, lwr) - FireEllipseEquations.backRos(headRos, lwr) }
 
     // The following is Catchpole & Alexander Eq 10, which produces same result as BP
     // but requires knowing 'f' (half the major axis ros) in advance 
-    static gRos2(lwr) {
-        return FireEllipse.f(headRos, lwr) * Math.sqrt(1-Math.pow(lwr, -2))
-    }
-
-    static length(headRos, lwr, minutes) {
-        return minutes * FireEllipse.majorRos(headRos, lwr)
-    }
-
-    static width(headRos, lwr, minutes) {
-        return minutes * FireEllipse.minorRos(headRos, lwr)
-    }
+    static gRos2(fRos, lwr) { return fRos * Math.sqrt(1-Math.pow(lwr, -2)) }
+    static _gRos2(lwr) { return FireEllipseEquations.f(headRos, lwr) * Math.sqrt(1-Math.pow(lwr, -2)) }
 
     //--------------------------------------------------------------------------
     // Fire behavior at beta and psi
     //--------------------------------------------------------------------------
 
-    static betaDist(headRos, lwr, betaDeg, t) {
-        return FireEllipse.betaRos(headRos, lwr, betaDeg) * t
-    }
-
-    static betaPoint(headRos, lwr, betaDeg, t) {
-        const beta = radians(betaDeg)
-        const fRos = FireEllipse.fRos(headRos, lwr)
-        const gRos = FireEllipse.gRos(headRos, lwr)
-        const hRos = FireEllipse.hRos(headRos, lwr)
-        const x = t * (gRos + fRos * Math.cos(beta))
-        const y = t * hRos * Math.sin(beta)
-        return [x,y]
-    }
-
     static betaRos(headRos, lwr, betaDeg) {
         if (betaDeg === 0) return headRos
         const beta = radians(betaDeg)
-        const eccent = FireEllipse.eccent(lwr)
+        const eccent = FireEllipseEquations.eccent(lwr)
         return (headRos * (1 - eccent)) / (1 - eccent * Math.cos(beta))
     }
 
     /**
-     * Catchpole et.al. (1982) Eq 7
+     * Catchpole et.al. (1982) Equation 7
      */
     static psiRos(psiDeg, f, g, h) {
         if (f * g * h <= 0) return 0
@@ -113,8 +88,8 @@ export class FireEllipse {
 
     // Returns beta degrees at fire ellipse ignition point given the psi degrees
     static betaFromPsi(psiDeg, f, g, h) {
-        const thetaDeg = FireEllipse.thetaFromPsi(psiDeg, f, h)
-        const betaDeg = FireEllipse.betaFromTheta(thetaDeg, f, g, h)
+        const thetaDeg = FireEllipseEquations.thetaFromPsi(psiDeg, f, h)
+        const betaDeg = FireEllipseEquations.betaFromTheta(thetaDeg, f, g, h)
         return betaDeg
     }
     
@@ -139,12 +114,12 @@ export class FireEllipse {
         if (b >= Math.PI) theta = 2 * Math.PI - theta // theta in radians when beta >= PI
         // Convert theta radians to degrees
         let thetaDeg = degrees(theta)
-        if (betaDeg > 180) thetaDeg = 360 - thetaDeg
+        // if (betaDeg > 180) thetaDeg = 360 - thetaDeg
         return thetaDeg
     }
 
     /**
-     * Catchpole et.al. (1982) Eq 6
+     * Catchpole et.al. (1982) Equation 6
      * Used only by psiFromBeta()
      */
     static psiFromTheta(thetaDeg, f, h) {
@@ -160,15 +135,15 @@ export class FireEllipse {
         // 2nd and 3rd quadrants
         else if (theta > 0.5 * Math.PI && theta <= 1.5 * Math.PI) { psi += Math.PI }
         // 4th quadrant
-        else if (thetaRadians > 1.5 * Math.PI) { psi += 2 * Math.PI }
+        else if (theta > 1.5 * Math.PI) { psi += 2 * Math.PI }
         const psiDeg = degrees(psi)
         return psiDeg
     }
 
     // Returns psi degrees given beta degrees
     static psiFromBeta(betaDeg, f, g, h) {
-        const thetaDeg = FireEllipse.thetaFromBeta(betaDeg, f, g, h)
-        const psiDeg = FireEllipse.psiFromTheta(thetaDeg, f, h)
+        const thetaDeg = FireEllipseEquations.thetaFromBeta(betaDeg, f, g, h)
+        const psiDeg = FireEllipseEquations.psiFromTheta(thetaDeg, f, h)
         return psiDeg
     }
 
@@ -201,4 +176,27 @@ export class FireEllipse {
         // Convert theta radians to degrees
         return degrees(theta)
     }
+
+    static thetaRadius(thetaDeg, majorDist, minorDist, cx=0, cy=0) {
+        const [x,y] = FireEllipseEquations.thetaPoint(thetaDeg, majorDist, minorDist, cx, cy)
+        const dist = Math.sqrt(x*x + y+y)
+        return dist
+    }
+    
+    static betaPerimeterPoint(betaDeg, betaRos, t, x0=0, y0=0) {
+        const beta = radians(betaDeg)
+        const dx = x0 + t * betaRos * Math.cos(beta)
+        const dy = y0 + t * betaRos * Math.sin(beta)
+        return [dx, dy]
+    }
+
+    // Assumes ellipse center is [0,0]
+    // ERROR - thetaY needs to be negative when betaY is negative
+    static thetaPerimeterPoint(thetaDeg, majorDist, minorDist, x0=0, y0=0) {
+        let theta = radians(thetaDeg)
+        const dx = x0 + majorDist * Math.cos(theta)
+        const dy = y0 + minorDist * Math.sin(theta)
+        return [dx, dy]
+    }
+
 }

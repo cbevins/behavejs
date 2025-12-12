@@ -38,8 +38,9 @@ export const yukonUnits = [
     // The thermochemical Btu is based on the thermochemical calorie which equals 4.184 kJ exactly.
     {type: 'energy', base: 'J', label: 'energy', units: [
             ['J', 1, 'J'],
-            ['btu',     1055.87, 'J'],  // applied
+            ['btu',     1055.87, 'J'], // applied
             ['btu(BP)', 1055.87, 'J'], // used by BehavePlus
+            ['btu(Al)', 1055.00, 'J'], // Albini (1976) Tables 4, 5, 6
             ['btu(X)',  1055.87, 'J'], // mean BTU
             ['btu(39)', 1059.67, 'J'], // BTU at 39 oF
             ['btu(59)', 1054.80, 'J'], // BTU at 59 oF
@@ -67,8 +68,11 @@ export const yukonUnits = [
     // fuel efficiency - volume = energy/volume = J/m3
 
     // heat of combustion, heat density = energy/area = J/m2
+    // hpua (Albini 1976 'total heat release') = energy/area = J/m2
     
-    // heat flux density = watt/area = J/m2-s = W/m2
+    // heat flux density (Albini 1976 'reaction intensity') = watt/area = J/m2-s = W/m2
+    // fireline intensity = energy/length/time
+    
     // pressure = force/area = pascal [Pa] = 1 newton/square meter
     // specific heat capacity = joule/kilogram/K [J/(kg*K)]
 
