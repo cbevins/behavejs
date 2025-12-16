@@ -10,7 +10,6 @@
         ellipseBeta(e, b)
         eArray.push({...e})
     }
-    console.log(ellipse)
 </script>
 
 {@render ellipseTable(title, eArray)}

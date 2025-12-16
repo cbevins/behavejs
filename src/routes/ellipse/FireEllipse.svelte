@@ -26,10 +26,6 @@
     const tscale = minutes * 0.9 * radius / actual.fDist / 2
     let ellipse = fireEllipse(headRos, lwr, ignX, ignY, headDeg, tscale, betaDeg) 
 </script>
-
-<p>Head at {headDeg} deg, x={headX.toFixed(2)} y={headY.toFixed(2)} </p>
-<p>Beta at {betaDeg} deg, x={betaX.toFixed(2)} y={betaY.toFixed(2)} </p>
-
 <FireEllipseFig1 {ellipse}/>
 <FireEllipsePsi {ellipse}/>
 <FireEllipseTable {ellipse}/>

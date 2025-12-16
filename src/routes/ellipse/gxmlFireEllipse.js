@@ -1,5 +1,4 @@
 import { gxmlStr } from '$lib/gxml/gxmlStr'
-import { gxmlText } from '$lib/gxml/gxmlTemplates'
 import { fireEllipse, ellipseBeta, ellipseTheta } from './fireEllipse.js'
 
 // Returns an array of Gxml elements to render the axis and ts perimeter
@@ -23,6 +22,7 @@ export function gxmlAxis(radius, els) {
     els.push({el:'circle', cx: radius, cy: 0, r, fill})
     els.push({el:'circle', cx: 0, cy: radius, r, fill})
     els.push({el:'circle', cx: 0, cy: -radius, r, fill})
+    return els
 }
 
 // Adds Gxml elements for the fire ignition point, fire ellipse center,
@@ -31,7 +31,8 @@ export function gxmlIgnitionCenterSubtend(e, els) {
     els.push({el:'circle', cx: e.ignX, cy: e.ignY, r: 3, fill: 'red'})
     els.push({el:'circle', cx: e.cX, cy: e.cY, r: 3, fill: 'red'})
     els.push({el:'circle', cx: e.cX, cy: e.cY, r: e.fDist,
-        fill:'none', stroke:'gray', 'stroke-width': 0.5})
+        fill:'none', stroke:'gray','stroke-dasharray': "4 2", 'stroke-width': 0.5})
+    return els
 }
 
 export function gxmlPerimeter(e, els, useTheta=true) {
@@ -47,6 +48,7 @@ export function gxmlPerimeter(e, els, useTheta=true) {
     }
     // restore the betaDeg for the remaining drawing
     ellipseBeta(e, initialBetaDeg)
+    return els
 }
 
 // Adds beta, theta, and psi vectors
@@ -55,7 +57,7 @@ export function gxmlBetaThetaPsi(e, els) {
     let stroke = 'magenta'
     els.push({el:'line', x1: e.ignX, y1: e.ignY, x2: e.betaX, y2: e.betaY,
         stroke: stroke, 'stroke-width': 2})
-    els.push({el:'circle', cx: e.betaX, cy: e.betaY, r: 3, fill:stroke})
+    els.push({el:'circle', cx: e.betaX, cy: e.betaY, r: 3, fill: 'cyan'})
 
     // theta line at this beta and its subtending circle intersection point
     stroke = 'green'
@@ -91,6 +93,7 @@ export function gxmlPsiTicks(e, els, useTheta=true) {
     }
     // restore the betaDeg for the remaining drawing
     ellipseBeta(e, initialBetaDeg)
+    return els
 }
 
 export function gxmlFireEllipseSvg(radius, els) {
@@ -103,4 +106,14 @@ export function gxmlFireEllipseSvgQtr(radius, els) {
     return gxmlStr({el:'svg',
         viewBox: `${-radius/4} ${-radius} ${1.25*radius} ${1.5*radius}`,
         height: 2*radius, width: 2*radius, els: [els]})
+}
+
+export function gxmlText(x, y, stroke, str) {
+    return {el: 'text', x, y, stroke,
+        'text-anchor': 'start',
+        'font-family': 'sans-serif',
+        'font-weight': 'normal',
+        'font-size': 14,
+        els: [{el: 'inner', content: str}]
+    }
 }

@@ -56,13 +56,13 @@ export function ellipseBeta(e, betaDeg) {
     // Reverse: psiDeg -> thetaDeg -> betaDeg
     // e.thetaFromPsi = FE.thetaFromPsi(e.psiDeg, e.fRos, e.hRos)
     // e.betaFromTheta = FE.betaFromTheta(e.thetaFromPsi, e.fRos, e.gRos, e.hRos)
-    updateAngles(e)
+    return updateAngles(e)
 }
 
 // Updates the ellipse orientation and related center and perimeter points
 export function ellipseHeadDeg(e, headDeg) {
     e.headDeg = headDeg
-    updateAngles(e)
+    return updateAngles(e)
 }
 
 // Updates spread rates, distances, and perimeter points after an angle change
@@ -99,7 +99,7 @@ export function ellipseTheta(e, thetaDeg) {
     e.thetaDeg = thetaDeg
     e.betaDeg = FE.betaFromTheta(e.thetaDeg, e.fRos, e.gRos, e.hRos)
     e.psiDeg = FE.psiFromTheta(e.thetaDeg, e.fRos, e.hRos)
-    updateAngles(e)
+    return updateAngles(e)
 }
 
 // Updates the psiDeg and corresponding betaDeg amd thetaDeg
@@ -108,5 +108,5 @@ export function ellipsePsi(e, psiDeg) {
     e.psiDeg = psiDeg
     e.thetaDeg = FE.thetaFromPsi(e.psiDeg, e.fRos, e.hRos)
     e.betaDeg = FE.betaFromTheta(e.thetaDeg, e.fRos, e.gRos, e.hRos)
-    update(e)
+    return update(e)
 }
