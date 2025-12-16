@@ -13,9 +13,9 @@ export class CompassEquations {
     // given degrees clockwise from north (vertical)
     static easting(northing) { return Compass.constrain(450 - northing) }
 
-    // Returns degrees clockwise from north (vertical)
+    // Returns azimuth as degrees clockwise from north (or vertical media axis)
     // given degrees counter-clockwise from east (horizontal)
-    static northing(easting) { return Compass.constrain(450 - easting) }
+    static azimuth(easting) { return Compass.constrain(450 - easting) }
 
     static radians(degrees) {return degrees * Math.PI / 180 }
 }

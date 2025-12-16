@@ -87,6 +87,7 @@ export class FireEllipseEquations {
     //--------------------------------------------------------------------------
 
     // Returns beta degrees at fire ellipse ignition point given the psi degrees
+    // Unimplemented by BehavePlus
     static betaFromPsi(psiDeg, f, g, h) {
         const thetaDeg = FireEllipseEquations.thetaFromPsi(psiDeg, f, h)
         const betaDeg = FireEllipseEquations.betaFromTheta(thetaDeg, f, g, h)
@@ -148,21 +149,24 @@ export class FireEllipseEquations {
     }
 
     // Used only by betaFromPsi()
+    // Unused by BehavePlus
+    // Note: at thetaDeg 162, betaDeg suddenly drops from 87.52 deg to 0
+    // where it remains until thetaDeg 199 when it pops back up to -87.52
     static betaFromTheta(thetaDeg, f, g, h) {
         const theta = radians(thetaDeg)
-        const num = h * Math.sin( theta)
-        const denom = g + f * Math.cos(theta)
-        let beta = ( denom <= 0 ) ? 0 : Math.atan(num / denom)
+        // The following are from Catchpole (1982) Eq 2
+        const y = h * Math.sin(theta)         // y = R * t * h * sin(theta)
+        const x = g + f * Math.cos(theta)   // x = R * t * (g + f * cos(theta))
+        if (x === 0) { console.log(`*** FireEllipseEquations.betaFromTheta() - x is zero at theta ${thetaDeg}`)}
+        let beta = ( x === 0) ? theta : Math.atan(y/x)
         // Quandrant adjustment
-        const boundary1 = 150
-        const boundary2 = 210
-        if (theta <= boundary1) {}
-        else if (theta > boundary1 && theta <= boundary2) { beta += Math.PI }
-        else if (theta > boundary2) { beta += 2.0 * Math.PI }
+        if (beta < 0) beta +=  Math.PI
+        if (thetaDeg > 180) beta += Math.PI
         return degrees(beta)
     }
-
+ 
     // Used only by betaFromPsi()
+    // Unused by BehavePlus
     static thetaFromPsi(psiDeg, f, h) {
         if ( f <= 0 ) return 0
         const psi = radians(psiDeg)
@@ -177,26 +181,24 @@ export class FireEllipseEquations {
         return degrees(theta)
     }
 
+    // Unused???
     static thetaRadius(thetaDeg, majorDist, minorDist, cx=0, cy=0) {
         const [x,y] = FireEllipseEquations.thetaPoint(thetaDeg, majorDist, minorDist, cx, cy)
         const dist = Math.sqrt(x*x + y+y)
         return dist
     }
     
-    static betaPerimeterPoint(betaDeg, betaRos, t, x0=0, y0=0) {
-        const beta = radians(betaDeg)
-        const dx = x0 + t * betaRos * Math.cos(beta)
-        const dy = y0 + t * betaRos * Math.sin(beta)
+    static betaPerimeterPoint(betaDeg, betaDist, x0=0, y0=0, headDeg=0) {
+        const rad = radians(betaDeg+headDeg)
+        const dx = x0 + betaDist * Math.cos(rad)
+        const dy = y0 + betaDist * Math.sin(rad)
         return [dx, dy]
     }
 
-    // Assumes ellipse center is [0,0]
-    // ERROR - thetaY needs to be negative when betaY is negative
-    static thetaPerimeterPoint(thetaDeg, majorDist, minorDist, x0=0, y0=0) {
-        let theta = radians(thetaDeg)
-        const dx = x0 + majorDist * Math.cos(theta)
-        const dy = y0 + minorDist * Math.sin(theta)
+    static thetaPerimeterPoint(thetaDeg, majorDist, minorDist, x0=0, y0=0, headDeg=0) {
+        let rad = radians(thetaDeg+headDeg)
+        const dx = x0 + majorDist * Math.cos(rad)
+        const dy = y0 + minorDist * Math.sin(rad)
         return [dx, dy]
     }
-
 }

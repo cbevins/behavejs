@@ -7,7 +7,7 @@
  * 2 invoke ellipseSize() to update distance properties whenever the elapsed time changes
  * 3 invoke ellipseBeta() to update beta-theta-psi angles and points for a new beta angle
  */
-import { FireEllipseEquations as FE, radians} from './FireEllipseEquations.js'
+import { FireEllipseEquations as FE, radians } from './FireEllipseEquations.js'
 import { CompassEquations as Compass } from './CompassEquations.js'
 
 export function fireEllipse(headRos=1, lwr=1, ignX=0, ignY=0, headDeg=0,
@@ -42,37 +42,71 @@ export function ellipseSize(e, minutes) {
     e.hDist = FE.distance(e.hRos, e.minutes)
     e.length = FE.distance(e.majorRos, e.minutes)
     e.width = FE.distance(e.minorRos, e.minutes)
-    // Following needs to be adjusted for headDeg!!
-    e.cX = e.gDist
-    e.cY = 0
     return e
 }
 
+// Updates the betaDeg and corresponding thetaDeg amd psiDeg
+// and their related spread rates, distances, and perimeter points
 export function ellipseBeta(e, betaDeg) {
     // Forward: betaDeg -> thetaDeg -> psiDeg -> psiRos
     e.betaDeg = betaDeg
     e.thetaDeg = FE.thetaFromBeta(e.betaDeg, e.fRos, e.gRos, e.hRos)
+    e.psiDeg = FE.psiFromTheta(e.thetaDeg, e.fRos, e.hRos)
+
+    // Reverse: psiDeg -> thetaDeg -> betaDeg
+    // e.thetaFromPsi = FE.thetaFromPsi(e.psiDeg, e.fRos, e.hRos)
+    // e.betaFromTheta = FE.betaFromTheta(e.thetaFromPsi, e.fRos, e.gRos, e.hRos)
+    updateAngles(e)
+}
+
+// Updates the ellipse orientation and related center and perimeter points
+export function ellipseHeadDeg(e, headDeg) {
+    e.headDeg = headDeg
+    updateAngles(e)
+}
+
+// Updates spread rates, distances, and perimeter points after an angle change
+function updateAngles(e) {
     e.betaRos = FE.betaRos(e.headRos, e.lwr, e.betaDeg)
     e.betaDist = FE.distance(e.betaRos, e.minutes)
-    e.psiDeg = FE.psiFromTheta(e.thetaDeg, e.fRos, e.hRos)
     e.psiRos = FE.psiRos(e.psiDeg, e.fRos, e.gRos, e.hRos)
     e.psiDist = FE.distance(e.psiRos, e.minutes)
 
-    // Reverse: psiDeg -> thetaDeg -> betaDeg
-    e.thetaFromPsi = FE.thetaFromPsi(e.psiDeg, e.fRos, e.hRos)
-    e.betaFromTheta = FE.betaFromTheta(e.thetaFromPsi, e.fRos, e.gRos, e.hRos)
+    const head = radians(e.headDeg)
+    e.cX = e.ignX + e.gDist * Math.cos(head)
+    e.cY = e.ignY + e.gDist * Math.sin(head)
 
-    // const [x,y] = FE._betaPoint(e.headRos, e.lwr, e.betaDeg, e.minutes)
-    let [x,y] = FE.betaPerimeterPoint(e.betaDeg, e.betaRos, e.minutes, e.ignX, e.ignY)
+    let [hx, hy] = FE.betaPerimeterPoint(0, e.headDist, e.ignX, e.ignY, e.headDeg)
+    e.headX = hx
+    e.headY = hy
+
+    let [x,y] = FE.betaPerimeterPoint(e.betaDeg, e.betaDist, e.ignX, e.ignY, e.headDeg)
     e.betaX = x
     e.betaY = y
 
-    let [tx,ty] = FE.thetaPerimeterPoint(e.thetaDeg, e.fDist, e.hDist, e.cX, e.cY)
+    let [tx,ty] = FE.thetaPerimeterPoint(e.thetaDeg, e.fDist, e.hDist, e.cX, e.cY, e.headDeg)
     e.thetaX = tx
     e.thetaY = ty
 
-    e.subtendX = e.betaX
-    e.subtendY = e.cY + e.fDist * Math.sin(radians(e.thetaDeg))
-
+    e.subtendX = e.cX + e.fDist * Math.cos(radians(e.thetaDeg+e.headDeg))
+    e.subtendY = e.cY + e.fDist * Math.sin(radians(e.thetaDeg+e.headDeg))
     return e
+}
+
+// Updates the thetaDeg and corresponding betaDeg amd psiDeg
+// and their related spread rates, distances, and perimeter points
+export function ellipseTheta(e, thetaDeg) {
+    e.thetaDeg = thetaDeg
+    e.betaDeg = FE.betaFromTheta(e.thetaDeg, e.fRos, e.gRos, e.hRos)
+    e.psiDeg = FE.psiFromTheta(e.thetaDeg, e.fRos, e.hRos)
+    updateAngles(e)
+}
+
+// Updates the psiDeg and corresponding betaDeg amd thetaDeg
+// and their related spread rates, distances, and perimeter points
+export function ellipsePsi(e, psiDeg) {
+    e.psiDeg = psiDeg
+    e.thetaDeg = FE.thetaFromPsi(e.psiDeg, e.fRos, e.hRos)
+    e.betaDeg = FE.betaFromTheta(e.thetaDeg, e.fRos, e.gRos, e.hRos)
+    update(e)
 }
