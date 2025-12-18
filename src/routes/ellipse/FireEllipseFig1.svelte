@@ -8,10 +8,24 @@
     radius = parseFloat(radius)
     let els = $state([])
 	let beta = $state(0)
-
+    let count = $state(0)
+    let runState = $state(true)
+    let runLabel = $state('Pause')
+    let dirState = $state(true)
+    let dirLabel = $state('Backward')
+    function dirControl() {
+        dirState = !dirState
+        dirLabel = dirState ? 'Reverse' : 'Forward'
+    }
+    function runControl() {
+        runState = !runState
+        runLabel = runState ? 'Pause' : 'Run'
+    }
 	onMount( () => {
 		const interval = setInterval(() => {
-	        beta = beta + 5
+            if(!runState) return
+            let step = dirState ? 5 : -5
+	        beta = beta + step
             if (beta >= 360) beta = 0
             ellipseBeta(ellipse, beta)
             // Get gxml array with the fire ellipse axis and perimeter
@@ -34,4 +48,14 @@
 	})
 
 </script>
+<div class='ml-4'>
+    <button onclick={runControl}  type="button"
+        class="border-2 border-green-500 rounded px-1 py-1 outline-2 outline-offset-2 outline-blue-500">
+        {runLabel}
+    </button>
+    <button onclick={dirControl}  type="button"
+        class="border-2 border-green-500 rounded px-1 py-1 outline-2 outline-offset-2 outline-blue-500">
+        {dirLabel}
+    </button>
+</div>
 {@html gxmlFireEllipseSvgQtr(radius, els)}
