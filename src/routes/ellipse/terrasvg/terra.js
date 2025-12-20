@@ -1,9 +1,11 @@
 export class Terra {
-    constructor(width, height, easting, northing, scale) {
+    constructor(easting, northing, width=1000, height=1000, scale=1) {
         this.width = width
         this.height = height
         this.easting = easting
         this.northing = northing
+        this.scale = scale
+        this.updateBoundaries()
     }
     updateBoundaries() {
         this.north = this.northing + this.scale * this.height/2
