@@ -20,7 +20,12 @@
 <div class="border-2 border-black rounded overflow-hidden mt-4 mb-4 p-4">
     <table class='ml-4 table-auto text-sm'>
         <tbody>
-            {@render tocRow('/ellipse', 'Fire Ellipse', 'Catchpole Fig 1, Beta, Theta, Psi')}
+            {@render tocRow('/ellipse/catchpole', 'Catchpole Fig 3',
+                'Interactive version of Catchpole (1982) Fig 3, Quantites involved in the elliptical fire model.')}
+            {@render tocRow('/ellipse/betaPsi', 'Beta v Psi',
+                'Comparison of elliptical fire growth using beta v psi.')}
+            {@render tocRow('/ellipse/terrasvg', 'Terra SVG',
+                'Geographic mapper for creating SVGs.')}
             {@render tocRow('/clock', 'Clock', 'Svelte playground example')}
             {@render tocRow('/wfms', 'WFMS Hierarchy', 'Deprecated WFMS DagNode hierarchy')}
         </tbody>
